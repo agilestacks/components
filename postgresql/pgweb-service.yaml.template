@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgweb
+  labels:
+    provider:  agilestacks.com
+    project:   postgresql
+    qualifier: pgweb
+spec:
+  ports:
+  - name: http
+    port: 8081
+    protocol: TCP
+    targetPort: http
+  selector:
+    provider:  agilestacks.com
+    project:   postgresql
+    qualifier: pgweb
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pgweb
+  labels:
+    provider:  agilestacks.com
+    project:   postgresql
+    qualifier: pgweb
+  annotations:
+    agilestacks.com/stack-component: pgweb
+spec:
+  rules:
+  - host: pgweb.postgresql.app.${dns.domain}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: pgweb
+          servicePort: 8081
