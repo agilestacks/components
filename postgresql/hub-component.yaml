@@ -1,0 +1,28 @@
+---
+version: 1
+kind: component
+meta:
+  name: postgresql
+  brief: PostgreSQL
+  source:
+      dir: ../../components/postgresql
+
+parameters:
+  - name: component.postgresql.namespace
+    brief: Kubernetes namespace to install into
+    kind: user
+    default: default
+    env: NAMESPACE
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+    env: DOMAIN_NAME
+  - name: component.postgresql
+    kind: tech
+    parameters:
+    - name: user
+    - name: database
+
+templates:
+  files:
+    - "*.template"

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name:      postgresql
+  labels:
+    provider:  agilestacks.com
+    project:   postgresql
+    qualifier: postgresql
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9187"
+spec:
+  ports:
+    - name: peer
+      port: 5432
+      protocol: TCP
+  selector:
+    provider:  agilestacks.com
+    project:   postgresql
+    qualifier: postgresql
