@@ -1,0 +1,3 @@
+This file has been picked up by Jenkins.
+
+You can put your own config files by placing it inside of Jenkins container into the same directory (see the comment)
