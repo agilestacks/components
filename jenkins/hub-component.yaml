@@ -1,0 +1,33 @@
+---
+version: 1
+kind: component
+meta:
+  name: jenkins
+  brief: Jenkins CI Server
+  source:
+      dir: ../../components/jenkins
+
+parameters:
+  - name: component.jenkins.namespace
+    brief: Kubernetes namespace to install into
+    kind: user
+    default: jenkins
+    env: NAMESPACE
+  - name: cloud.region
+    kind: user
+    env: AWS_REGION
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+    env: DOMAIN_NAME
+  - name: docker.registry
+    brief: DNS domain
+    kind: tech
+    env: DOCKER_REGISTRY
+  - name: nfs.server
+    kind: tech
+    brief: NFS server for NFS volumes
+
+templates:
+  files:
+    - "*.template"

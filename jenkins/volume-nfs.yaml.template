@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jenkins-nfs-vol-00
+  namespace: ${component.jenkins.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   jenkins
+    storage:   nfs
+    qualifier: workspace
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: ${nfs.server}
+    path: "/jenkins/vol-00"
+  persistentVolumeReclaimPolicy: "Retain"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jenkins-nfs-vol-01
+  namespace: ${component.jenkins.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   jenkins
+    storage:   nfs
+    qualifier: jobs
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: ${nfs.server}
+    path: "/jenkins/vol-01"
+  persistentVolumeReclaimPolicy: "Retain"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jenkins-nfs-vol-02
+  namespace: ${component.jenkins.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   jenkins
+    storage:   nfs
+    qualifier: secrets
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: ${nfs.server}
+    path: "/jenkins/vol-02"
+  persistentVolumeReclaimPolicy: "Retain"
