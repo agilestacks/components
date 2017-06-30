@@ -6,6 +6,14 @@ export VOLUME_TYPE ?= hostpath
 
 export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
+build: 
+	cd docker && $(MAKE) build
+.PHONY: build
+
+push: build
+	cd docker && $(MAKE) push
+.PHONY: build
+
 deploy-test:
 	@echo $(kubectl)
 	@echo Outputs:
