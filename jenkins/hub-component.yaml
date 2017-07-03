@@ -7,6 +7,9 @@ meta:
   source:
       dir: ../../components/jenkins
 
+requires:
+  - kubernetes
+
 parameters:
   - name: component.jenkins.namespace
     brief: Kubernetes namespace to install into
