@@ -1,0 +1,118 @@
+  apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    name:      jenkins
+    namespace: jenkins
+    labels:
+      provider:  agilestacks.com
+      project:   jenkins
+      qualifier: master
+  spec:
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+    template:
+      metadata:
+        name:      jenkins
+        namespace: jenkins
+        labels:
+          provider:  agilestacks.com
+          project:   jenkins
+          qualifier: master
+      spec:
+        securityContext:
+          runAsUser: 0
+        initContainers:
+        - name: config-exporter
+          image: ${component.jenkins.image}
+          imagePullPolicy: Always
+          command: ["sh", "/var/jenkins_home/bin/export.sh"]
+          volumeMounts:
+          - name: plugins-dir
+            mountPath: /jenkins_plugins
+          - name: groovy-configs-dir
+            mountPath: /jenkins_groovy
+          - name: script-approval-dir
+            mountPath: /jenkins_approval
+          - name: jenkins-init-bin
+            mountPath: /var/jenkins_home/bin
+        containers:
+        - name: jenkins-master
+          image: ${component.jenkins.image}
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "300m"
+            limits:
+              memory: "3Gi"
+              cpu: "600m"
+          imagePullPolicy: Always
+          env:
+          - name:  AWS_REGION
+            value: ${AWS_REGION}
+          - name:  PRIVATE_REGISTRY
+            value: ${PRIVATE_REGISTRY}
+          - name:  ROOT_DOMAIN_NAME
+            value: ${ROOT_DOMAIN_NAME}
+          ports:
+          - name: http
+            containerPort: 8080
+          - name: jnlp
+            containerPort: 50000
+          volumeMounts:
+          - name: workspace-volume
+            mountPath: /var/jenkins_home/workspace
+            readOnly: false
+          - name: jobs-volume
+            mountPath: /var/jenkins_home/jobs
+            readOnly: false
+          - name: secrets-dir
+            mountPath: /usr/share/jenkins/ref/secrets/
+            readOnly: true
+          - name: script-approval-dir
+            mountPath: /usr/share/jenkins/ref/approval.d/
+            readOnly: true
+          - name: plugins-dir
+            mountPath: /usr/share/jenkins/ref/plugins/
+            readOnly: false
+          - name: groovy-configs-dir
+            mountPath: /usr/share/jenkins/ref/init.groovy.d/
+            readOnly: true
+          - name: jenkins-config
+            mountPath: /usr/share/jenkins/ref/config.d
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: 8080
+          livenessProbe:
+            timeoutSeconds: 3
+            initialDelaySeconds: 420
+            failureThreshold: 30
+            httpGet:
+              path: /login
+              port: 8080
+        volumes:
+          - name: workspace-volume
+            persistentVolumeClaim:
+              claimName: workspace-volume
+          - name: jobs-volume
+            persistentVolumeClaim:
+              claimName: jobs-volume
+          - name: script-approval-dir
+            hostPath:
+              path: /etc/jenkins/approval.d
+          - name: groovy-configs-dir
+            hostPath:
+              path: /etc/jenkins/init.groovy.d
+          - name: plugins-dir
+            hostPath:
+              path: /etc/jenkins/plugins
+          - name: secrets-dir
+            secret:
+              secretName: jenkins-secrets
+          - name: jenkins-config
+            configMap:
+              name: jenkins-config
+          - name: jenkins-init-bin
+            configMap:
+              name: jenkins-init-bin
