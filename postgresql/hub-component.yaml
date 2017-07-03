@@ -7,6 +7,9 @@ meta:
   source:
       dir: ../../components/postgresql
 
+requires:
+  - kubernetes
+
 parameters:
   - name: component.postgresql.namespace
     brief: Kubernetes namespace to install into
