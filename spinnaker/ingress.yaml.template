@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: spinnaker
+  namespace: ${component.spinnaker.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   spinnaker
+  annotations:
+    agilestacks.com/stack-component: Spinnaker
+spec:
+  rules:
+  - host: ${component.spinnaker.namespace}.app.${dns.domain}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ${component.spinnaker.namespace}-spinnaker-deck
+          servicePort: 9000

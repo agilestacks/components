@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: spinnaker
+  namespace: spinnaker
+  labels:
+    provider:  agilestacks.com
+    project:   spinnaker
+  annotations:
+    agilestacks.com/stack-component: Jenkins
+spec:
+  rules:
+  - host: spinnaker.app.anton4.kubernetes.delivery
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: spinnaker-spinnaker-deck
+          servicePort: 9000
