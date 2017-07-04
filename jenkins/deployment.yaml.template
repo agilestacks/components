@@ -49,11 +49,11 @@
           imagePullPolicy: Always
           env:
           - name:  AWS_REGION
-            value: ${AWS_REGION}
+            value: ${cloud.region}
           - name:  PRIVATE_REGISTRY
-            value: ${PRIVATE_REGISTRY}
+            value: ${docker.registry}
           - name:  ROOT_DOMAIN_NAME
-            value: ${ROOT_DOMAIN_NAME}
+            value: ${dns.name}
           ports:
           - name: http
             containerPort: 8080

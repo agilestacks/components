@@ -15,7 +15,7 @@ parameters:
     brief: Kubernetes namespace to install into
     kind: user
     default: jenkins
-    env: NAMESPACE
+    env: JENKINS_NAMESPACE
   - name: component.jenkins.image
     kind: user
     default: docker.io/agilestacks/jenkins:2.46.1-3
