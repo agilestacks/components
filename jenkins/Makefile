@@ -1,10 +1,10 @@
 .DEFAULT_GOAL := deploy
 
-export DOMAIN_NAME ?= default 
-export NAMESPACE   ?= jenkins
-export VOLUME_TYPE ?= hostpath
+export DOMAIN_NAME        ?= default 
+export JENKINS_NAMESPACE  ?= jenkins
+export VOLUME_TYPE        ?= hostpath
 
-export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(JENKINS_NAMESPACE)"
 
 build: 
 	cd docker && $(MAKE) build
