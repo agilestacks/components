@@ -1,0 +1,19 @@
+---
+version: 1
+kind: component
+meta:
+  name: agilestacks-jenkins
+  brief: AgileStacks Jenkins Container
+  source:
+    dir: ../../components/agilestacks-jenkins
+
+requires:
+- agilestacks-jenkins-repository
+
+parameters:
+- name: agilestacks.jenkins.image_name
+  kind: tech
+  env:  IMAGE_NAME
+
+templates:
+  files: ["*.template"]
