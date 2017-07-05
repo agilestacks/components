@@ -1,8 +1,9 @@
 .DEFAULT_GOAL := build
 
-IMAGE_NAME   ?= $(notdir $(abspath .))
-VERSION      ?= latest
-DOCKER_IMAGE ?= $(IMAGE_NAME):$(VERSION)
+IMAGE_NAME   			 ?= $(notdir $(abspath .))
+VERSION      			 ?= latest
+DOCKER_IMAGE 			 ?= $(IMAGE_NAME):$(VERSION)
+AWS_DEFAULT_REGION ?= us-east-1
 
 build:
 	docker build --no-cache --force-rm -t $(DOCKER_IMAGE) .
@@ -17,6 +18,7 @@ attach:
 .PHONY: run
 
 push:
+	aws ecr get-login --region us-east-2 | sed -e 's/[ +]-e[ +]none[ +]/ /g' | sh -
 	docker push $(DOCKER_IMAGE)
 .PHONY: push
 
