@@ -6,7 +6,7 @@ export AWS_DEFAULT_REGION ?= us-east-2
 export TF_VAR_base_domain ?= stacks.delivery
 export TF_LOG             ?= debug
 export TF_LOG_PATH        ?= .terraform/$(TF_VAR_name).$(TF_VAR_base_domain).log
-export TF_OPTS            ?=
+export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
 
 export terraform          ?= terraform
