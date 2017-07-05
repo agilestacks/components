@@ -50,7 +50,7 @@ gate:
   allowedOriginsPattern: '^https?://(?:localhost|[^/]+\.example\.com)(?::[1-9]\d*)?/?$'
 
 # Bucket to use when storing config data in S3 compatible storage
-storageBucket: spinnaker
+storageBucket: files.anton5.kubernetes.delivery
 
 # Change service type for UI service
 serviceType: ClusterIP

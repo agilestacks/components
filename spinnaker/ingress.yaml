@@ -7,10 +7,10 @@ metadata:
     provider:  agilestacks.com
     project:   spinnaker
   annotations:
-    agilestacks.com/stack-component: Jenkins
+    agilestacks.com/stack-component: Spinnaker
 spec:
   rules:
-  - host: spinnaker.app.anton4.kubernetes.delivery
+  - host: spinnaker.app.anton5.kubernetes.delivery
     http:
       paths:
       - path: /

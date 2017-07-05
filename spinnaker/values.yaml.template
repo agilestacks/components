@@ -26,7 +26,7 @@ mail:
   host: smtp.example.org
   username: admin
   password: admin
-  fromAddress: spinnaker@${dns.domain}
+  fromAddress: spinnaker@anton4.kubernetes.delivery
   port: 25
 
 # Images for each component
@@ -50,7 +50,7 @@ gate:
   allowedOriginsPattern: '^https?://(?:localhost|[^/]+\.example\.com)(?::[1-9]\d*)?/?$'
 
 # Bucket to use when storing config data in S3 compatible storage
-storageBucket: spinnaker
+storageBucket: ${cloud.bucket}
 
 # Change service type for UI service
 serviceType: ClusterIP

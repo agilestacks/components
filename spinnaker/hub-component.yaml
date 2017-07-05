@@ -19,6 +19,9 @@ parameters:
   - name: cloud.region
     kind: user
     env: AWS_REGION
+  - name: cloud.bucket
+    kind: tech
+    brief: Bucket for Spinnaker. Coming from basestack
   - name: dns.domain
     brief: DNS domain
     kind: tech
@@ -27,12 +30,6 @@ parameters:
     brief: DNS domain
     kind: tech
     env: DOCKER_REGISTRY
-  - name: nfs.server
-    kind: tech
-    brief: NFS server for NFS volumes
-  - name: nfs.server
-    kind: tech
-    brief: NFS server for NFS volumes
 
 templates:
   files:
