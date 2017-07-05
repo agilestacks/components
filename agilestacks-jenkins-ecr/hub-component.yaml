@@ -1,0 +1,28 @@
+---
+version: 1
+kind: component
+meta:
+  name: agilestacks-jenkins-ecr
+  brief: ECR Repository for Agile Stacks Jenkins 
+  source:
+    dir: ../../components/agilestacks-jenkins-ecr
+
+requires:
+- kubernetes
+provides:
+- agilestacks-jenkins-repository
+
+parameters:
+- name: dns.name
+  default: default
+  env: TV_VAR_name
+- name: dns.baseDomain
+  default: stacks.delivery
+  env: TV_VAR_base_domain
+outputs:
+- name: agilestacks.jenkins.image_name
+  brief: Agile Stacks Jenkins docker repository
+  fromTfVar: repository_url
+
+templates:
+  files: ["*.template"]
