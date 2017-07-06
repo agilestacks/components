@@ -18,7 +18,7 @@ parameters:
   env: AWS_DEFAULT_REGION
 
 outputs:
-- name: agilestacks.jenkins.image
+- name: component.jenkins.image
   brief: Agile Stacks Jenkins docker image
   fromTfVar: image_name
 
