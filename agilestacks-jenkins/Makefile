@@ -28,5 +28,7 @@ undeploy:
 	echo "do nothing"
 
 output:
-	echo image_name=$(DOCKER_IMAGE)
+	@echo Outputs:
+	@echo image_name=$(DOCKER_IMAGE)
+	@echo Agile Stacks Jenkisn image pushed successfully
 .PHONY: output
