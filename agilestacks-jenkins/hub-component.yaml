@@ -17,5 +17,11 @@ parameters:
 - name: cloud.region
   env: AWS_DEFAULT_REGION
 
+outputs:
+- name: agilestacks.jenkins.image
+  brief: Agile Stacks Jenkins docker image
+  fromTfVar: image_name
+
 templates:
   files: ["*.template"]
+
