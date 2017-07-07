@@ -1,7 +1,7 @@
 FROM docker.io/agilestacks/jenkins:2.46.1-3
 
-ENV  JENKINS_URL        jenkins.app.anton7.kubernetes.delivery
-ENV  GITHUB_DEPLOY_KEY  75e43dd2d24dd39b6c205a600b47d642daed4d04
+ENV  JENKINS_URL        ${component.jenkins.namespace}.app.${dns.domain}
+ENV  GITHUB_DEPLOY_KEY  ${agilestacks.jenkins.github_key}
 
 COPY init.groovy.d/*.groovy /usr/share/jenkins/ref/init.groovy.d/
 

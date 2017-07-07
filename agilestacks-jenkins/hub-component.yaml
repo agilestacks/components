@@ -14,8 +14,15 @@ parameters:
 - name: agilestacks.jenkins.image_name
   kind: tech
   env:  IMAGE_NAME
+- name: agilestacks.jenkins.github_key
 - name: cloud.region
   env: AWS_DEFAULT_REGION
+- name: component.jenkins.namespace
+  default: jenkins
+- name: dns.domain
+  brief: DNS domain
+  kind: tech
+  env: DOMAIN_NAME
 
 outputs:
 - name: component.jenkins.image
