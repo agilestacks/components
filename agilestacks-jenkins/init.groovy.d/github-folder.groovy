@@ -19,33 +19,33 @@ import java.util.logging.Logger
 def log = Logger.getLogger(this.class.name)
 def store = Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
 def domain = Domain.global()
-def secretsHome = System.getenv('JENKINS_SECRETS_HOME') ?: '/usr/share/jenkins/ref/secrets'
-def secretsFile = new File(secretsHome, 'github-token.txt')
+// def secretsHome = System.getenv('JENKINS_SECRETS_HOME') ?: '/usr/share/jenkins/ref/agilestacks/api-key.txt'
+// def secretsFile = new File(secretsHome, 'github-key.txt')
 
 def userPass
-if (secretsFile.exists()) {
-  def credentials = new org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl(
-    CredentialsScope.GLOBAL,
-    'github-secret',
-    'GitHub deployment keys',
-    new hudson.util.Secret( secretsFile.text.trim() ))
-  store.addCredentials(domain, credentials)
+// if (secretsFile.exists()) {
+def credentials = new org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl(
+  CredentialsScope.GLOBAL,
+  'github-secret',
+  'GitHub deployment keys',
+  new hudson.util.Secret( System.getenv("GITHUB_DEPLOY_KEY") ))
+store.addCredentials(domain, credentials)
 
-  userPass = new UsernamePasswordCredentialsImpl(
-    CredentialsScope.GLOBAL,
-    "github-user", "Github deployment keys",
-    "admin",
-    secretsFile.text.trim()
-  )
-  store.addCredentials(domain, userPass)
+userPass = new UsernamePasswordCredentialsImpl(
+  CredentialsScope.GLOBAL,
+  "github-user", "Github deployment keys",
+  "admin",
+  secretsFile.text.trim()
+)
+store.addCredentials(domain, userPass)
 
-  def githubs = GitHubPluginConfig.all().get(GitHubPluginConfig.class)
-  githubs.configs << new GitHubServerConfig( credentials.id )
-  githubs.save()
-  log.info("GitHub has been configured successfully based on secret from: ${secretsFile.path}")
-} else {
-  log.warning("Cannot find GitHub token in ${secretsFile.path}. Your github has not been configured")
-}
+def githubs = GitHubPluginConfig.all().get(GitHubPluginConfig.class)
+githubs.configs << new GitHubServerConfig( credentials.id )
+githubs.save()
+log.info("GitHub has been configured successfully based on secret from GITHUB_DEPLOY_KEY")
+// } else {
+//   log.warning("Cannot find GitHub token in ${secretsFile.path}. Your github has not been configured")
+// }
 
 
 def jenk = Jenkins.instance
