@@ -3,11 +3,13 @@
 import jenkins.model.*
 import java.util.logging.Logger
 
-def log = Logger.getLogger(this.class.name)
+def log   = Logger.getLogger(this.class.name)
+def url   = System.getenv('JENKINS_URL')
+def email = System.getenv('ADMIN_EMAIL')
 
 // override jenkins
 def jlc = JenkinsLocationConfiguration.get()
-jlc.setUrl('${jenkins_url}') // changed during provisioning
-jlc.setAdminAddress('dev@agilestacks.com') // changed during provisioning
-log.info('Override Jenkins URL to ${jenkins_url}')
+jlc.setUrl( url )
+jlc.setAdminAddress(email) 
+log.info("Override Jenkins URL to $url")
 jlc.save()

@@ -11,10 +11,16 @@ requires:
 - agilestacks-jenkins-repository
 
 parameters:
-- name: agilestacks.jenkins.image_name
-  kind: tech
-  env:  IMAGE_NAME
-- name: agilestacks.jenkins.github_key
+- name: agilestacks.postgresql
+  parameters:
+  - name: jenkins.image_name
+    kind: tech
+    env:  IMAGE_NAME
+  - name: github_key
+  - name: jenkins.url
+  - name: jenkins.email
+    default: dev@agilestacks.com
+
 - name: cloud.region
   env: AWS_DEFAULT_REGION
 - name: component.jenkins.namespace
