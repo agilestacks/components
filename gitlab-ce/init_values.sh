@@ -27,9 +27,7 @@ $AWS=/opt/bin/aws
 
 #aws rds wait db-instance-available --db-instance-identifier gitlab-ce.${ROOT_DOMAIN_NAME}
 
-
-
-pushd $DIR
+#TODO define Okta variables
 
 cat << EOF > values.yaml
 image: gitlab/gitlab-ce:9.3.3-ce.0
@@ -101,6 +99,3 @@ okta:
   certIssuer: $OKTA_CERT_ISSUER 
 EOF
 
-helm install --name gitlab-ce -f values.yaml ./
-
-popd
