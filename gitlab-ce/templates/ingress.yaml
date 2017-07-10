@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gitlab-ce
+  namespace: default
+  labels:
+    provider:  agilestacks.com
+    project:   gitlab
+    component: gitlab-ce
+  annotations:
+    agilestacks.com/stack-component: Gitlab
+spec:
+  rules:
+  - host: gitlab.app.${ROOT_DOMAIN_NAME}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: http
+          servicePort: 80
+
