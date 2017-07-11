@@ -13,7 +13,7 @@ deploy: clean init fetch wait install
 init:
 	mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
-	@mkdir -p tmp
+	@mkdir -p charts
 
 wait:
 	@for i in $$(seq 1 60); do \
@@ -29,12 +29,12 @@ wait:
 
 fetch:
 	$(helm) fetch \
-			--destination tmp \
+			--destination charts \
 			--untar stable/spinnaker
 .PHONY: fetch
 
 install:
-	$(helm) install tmp/spinnaker \
+	$(helm) install charts/spinnaker \
 			--name $(SPINNAKER_NAMESPACE) \
 			--namespace $(SPINNAKER_NAMESPACE) \
 			--replace \
@@ -42,10 +42,10 @@ install:
 .PHONY: install
 
 undeploy: init
-	$(helm) delete $(SPINNAKER_NAMESPACE)
-	$(helm) undeploy -f hub.component
+	$(helm) delete --purge $(SPINNAKER_NAMESPACE)
+	# $(helm) undeploy -f hub.component
 .PHONY: undeploy
 
 clean:
 	rm -rf $(HELM_HOME)
-	rm -rf tmp
+	rm -rf charts

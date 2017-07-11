@@ -7,8 +7,8 @@ meta:
   source:
       dir: ../../components/spinnaker
 
-requires:
-  - kubernetes
+# requires:
+#   - kubernetes
 
 parameters:
   - name: component.spinnaker.namespace
