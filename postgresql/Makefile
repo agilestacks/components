@@ -1,35 +1,59 @@
 .DEFAULT_GOAL := deploy
 
-export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+export HELM_HOME           ?= $(shell pwd)/.helm
+export NAMESPACE    	   	 ?= postgresql
+export COMPONENT_NAME      ?= postgresql
+export DOMAIN_NAME         ?= default 
+export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy-test:
-	@echo $(kubectl)
-	@echo Outputs:
-	@echo password = supersecret
-	@echo PostgreSQL deployed
-.PHONY: deploy-test
 
-deploy:
-	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply -f config.yaml
-	$(kubectl) apply -f secrets.yaml
-	$(kubectl) apply -f volume-hostpath.yaml
-	$(kubectl) apply -f volume-claim.yaml
-	$(kubectl) apply -f pgsql-service.yaml
-	$(kubectl) apply -f pgsql-deployment.yaml
-	$(kubectl) apply -f pgweb-service.yaml
-	$(kubectl) apply -f pgweb-deployment.yaml
-	@echo Outputs:
-	@echo password = supersecret
+deploy: clean init fetch wait install output
+	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
 
-undeploy:
-	$(kubectl) delete -f pgweb-deployment.yaml
-	$(kubectl) delete -f pgweb-service.yaml
-	$(kubectl) delete -f pgsql-deployment.yaml
-	$(kubectl) delete -f pgsql-service.yaml
-	$(kubectl) delete -f volume-claim.yaml
-	$(kubectl) delete -f volume-hostpath.yaml
-	$(kubectl) delete -f secrets.yaml
-	$(kubectl) delete -f config.yaml
+init:
+	@mkdir -p $(HELM_HOME)
+	@$(helm) init --client-only --upgrade
+	@mkdir -p charts
+
+wait:
+	@for i in $$(seq 1 60); do \
+		if $(helm) version; then \
+			exit 0; \
+		fi; \
+		echo "Waiting for Tiller pod is up and running ($$i)..."; \
+		sleep 10; \
+	done; \
+	echo "Timeout waiting for Tiller" \
+	exit 1
+
+
+fetch:
+	$(helm) fetch \
+		--destination charts \
+		--untar stable/$(COMPONENT_NAME)
+.PHONY: fetch
+
+install:
+	$(helm) install charts/$(COMPONENT_NAME) \
+		--name $(NAMESPACE) \
+		--namespace $(NAMESPACE) \
+		--replace \
+		--values values.yaml
+.PHONY: install
+
+undeploy: init
+	$(helm) delete $(NAMESPACE)
+	# $(helm) undeploy -f hub.component
 .PHONY: undeploy
+
+clean:
+	@rm -rf $(HELM_HOME)
+	@rm -rf charts
+
+output:
+	@echo Outputs:
+	@echo postgresql_url=$(NAMESPACE)-$(COMPONENT_NAME).$(NAMESPACE).svc.cluster.local
+	@echo PostgreSQL has been installed successfully
+.PHONY: output
