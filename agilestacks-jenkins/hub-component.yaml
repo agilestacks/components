@@ -7,11 +7,11 @@ meta:
   source:
     dir: ../../components/agilestacks-jenkins
 
-requires:
-- agilestacks-jenkins-repository
+# requires:
+# - agilestacks-jenkins-repository
 
 parameters:
-- name: agilestacks.postgresql
+- name: agilestacks
   parameters:
   - name: jenkins.image_name
     kind: tech

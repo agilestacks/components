@@ -7,8 +7,8 @@ meta:
   source:
       dir: ../../components/jenkins
 
-requires:
-  - kubernetes
+# requires:
+#   - kubernetes
 
 parameters:
   - name: component.jenkins.namespace

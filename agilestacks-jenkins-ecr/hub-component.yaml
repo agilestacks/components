@@ -7,10 +7,10 @@ meta:
   source:
     dir: ../../components/agilestacks-jenkins-ecr
 
-requires:
-- kubernetes
-provides:
-- agilestacks-jenkins-repository
+# requires:
+# - kubernetes
+# provides:
+# - agilestacks-jenkins-repository
 
 parameters:
 - name: dns.name
