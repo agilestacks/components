@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: pgweb
+  labels:
+    app: {{ template "fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  template:
+    metadata:
+      labels:
+        provider:  agilestacks.com
+        project:   postgresql
+        qualifier: pgweb
+    spec:
+      containers:
+      - name: pgweb
+        image: "sosedoff/pgweb:0.9.7"
+        imagePullPolicy: Always
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ template "fullname" . }}-config
+              key: postgres-url
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: {{ template "fullname" . }}-config
+              key: postgres-port
+        - name: AUTH_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "fullname" . }}
+              key: postgres-user
+        - name: AUTH_PASS
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "fullname" . }}
+              key: postgres-password
+        ports:
+        - name: http
+          containerPort: 8081
+        livenessProbe:
+          httpGet:
+            port: http
+          initialDelaySeconds: 1
+        readinessProbe:
+          httpGet:
+            port: http
+          initialDelaySeconds: 1

@@ -1,0 +1,17 @@
+image: "sosedoff/pgweb:0.9.7"
+
+postgresUrl:      ${component.postgresql.url}
+postgresPort:     ${component.postgresql.port}
+postgresUser:     ${component.postgresql.user}
+postgresPassword: ${component.postgresql.password}
+postgresDatabase: ${component.postgresql.database}
+
+ingress:
+  enabled: true
+  fqdn: ${component.pgweb.name}.${component.postgresql.namespace}.app.${dns.domain}.app.${dns.domain}
+  path: /
+  imageTag: v0.1.1
+  imagePullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 8081
