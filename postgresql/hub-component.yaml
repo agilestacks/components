@@ -19,18 +19,25 @@ parameters:
     env: DOMAIN_NAME
   - name: component.postgresql
     parameters:
-    - name: namespace
+    - name:    name
       default: postgresql
-    - name: user
-    - name: password
-    - name: database
-    - name: volume
+      env:     COMPONENT_NAME
+    - name:    namespace
+      default: postgresql
+      env:     NAMESPACE
+    - name:    url
+    - name:    user
+    - name:    password
+    - name:    database
+    - name:    volume
       default: 8Gi
+    - name:    port
+      default: 5432
 
 outputs:
 - name: component.postgresql.url
   brief: PostgreSQL URL
-  fromTfVar: postgresql_url
+  fromTfVar: component.postgresql.url
 
 templates:
   files:

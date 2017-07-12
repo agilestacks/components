@@ -32,19 +32,19 @@ wait:
 fetch:
 	$(helm) fetch \
 		--destination charts \
-		--untar stable/$(COMPONENT_NAME)
+		--untar stable/postgresql
 .PHONY: fetch
 
 install:
-	$(helm) install charts/$(COMPONENT_NAME) \
-		--name $(NAMESPACE) \
+	$(helm) install charts/postgresql \
+		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
 		--replace \
 		--values values.yaml
 .PHONY: install
 
 undeploy: init
-	$(helm) delete $(NAMESPACE)
+	$(helm) delete $(COMPONENT_NAME)
 	# $(helm) undeploy -f hub.component
 .PHONY: undeploy
 
@@ -54,6 +54,6 @@ clean:
 
 output:
 	@echo Outputs:
-	@echo postgresql_url=$(NAMESPACE)-$(COMPONENT_NAME).$(NAMESPACE).svc.cluster.local
+	@echo component.postgresql.url=$(NAMESPACE)-postgresql.$(NAMESPACE).svc.cluster.local
 	@echo PostgreSQL has been installed successfully
 .PHONY: output
