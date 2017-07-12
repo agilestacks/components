@@ -1,0 +1,16 @@
+description: PGWeb is the  Postgres SQL Web Client 
+engine: gotpl
+home: https://www.postgresql.org/
+icon: https://www.postgresql.org/media/img/about/press/elephant.png
+keywords:
+- postgresql
+- postgres
+- database
+- sql
+- web
+maintainers:
+- name: akranga
+name: pgweb
+sources:
+- https://github.com/kubernetes/charts
+version: 0.1.0

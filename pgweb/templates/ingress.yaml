@@ -1,0 +1,22 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pgweb
+  labels:
+    app: {{ template "fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  annotations:
+    agilestacks.com/stack-component: pgweb
+spec:
+  rules:
+  - host: {{ .Values.ingress.fqdn | quote }}
+    http:
+      paths:
+      - path: {{ .Values.ingress.path | quote }}
+        backend:
+          serviceName: pgweb
+          servicePort: 8081
+{{- end }}

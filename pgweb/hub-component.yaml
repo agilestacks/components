@@ -1,0 +1,39 @@
+---
+version: 1
+kind: component
+meta:
+  name: pgweb
+  brief: PostgreSQL Web Client
+  source:
+      dir: ../../components/postgresql
+
+# requires:
+#   - postgresql
+
+parameters:
+  - name: component.postgresql.namespace
+    brief: Kubernetes namespace to install into
+    kind: user
+    default: default
+    env: NAMESPACE
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+    env: DOMAIN_NAME
+  - name: component.pgweb.name
+    default: pgweb
+    env: COMPONENT_NAME
+  - name: component.postgresql
+    kind: tech
+    parameters:
+    - name: url
+    - name: user
+    - name: password
+    - name: port
+    - name: database
+    - name: volume
+      default: 8Gi
+
+templates:
+  files:
+    - "*.template"
