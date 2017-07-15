@@ -8,7 +8,7 @@ postgresDatabase: ${component.postgresql.database}
 
 ingress:
   enabled: true
-  fqdn: ${component.pgweb.name}.${component.postgresql.namespace}.app.${dns.domain}.app.${dns.domain}
+  fqdn: ${component.pgweb.name}.app.${dns.domain}
   path: /
   imageTag: v0.1.1
   imagePullPolicy: IfNotPresent

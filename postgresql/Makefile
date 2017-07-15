@@ -54,6 +54,6 @@ clean:
 
 output:
 	@echo Outputs:
-	@echo component.postgresql.url=$(NAMESPACE)-postgresql.$(NAMESPACE).svc.cluster.local
+	@echo database_url=$(NAMESPACE)-postgresql.$(NAMESPACE).svc.cluster.local
 	@echo PostgreSQL has been installed successfully
 .PHONY: output

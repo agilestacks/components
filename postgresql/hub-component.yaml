@@ -25,7 +25,6 @@ parameters:
     - name:    namespace
       default: postgresql
       env:     NAMESPACE
-    - name:    url
     - name:    user
     - name:    password
     - name:    database
@@ -37,7 +36,7 @@ parameters:
 outputs:
 - name: component.postgresql.url
   brief: PostgreSQL URL
-  fromTfVar: component.postgresql.url
+  fromTfVar: database_url
 
 templates:
   files:
