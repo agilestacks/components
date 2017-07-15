@@ -11,24 +11,20 @@ meta:
 # - agilestacks-jenkins-repository
 
 parameters:
-- name: agilestacks
+- name: component.jenkins
   parameters:
-  - name: jenkins.image_name
-    kind: tech
+  - name: image
     env:  IMAGE_NAME
-  - name: github_key
-  - name: jenkins.url
-  - name: jenkins.email
+  - name: email
     default: dev@agilestacks.com
+  - name: namespace
+    default: jenkins
+    env: NAMESPACE
 
 - name: cloud.region
   env: AWS_DEFAULT_REGION
-- name: component.jenkins.namespace
-  default: jenkins
 - name: dns.domain
   brief: DNS domain
-  kind: tech
-  env: DOMAIN_NAME
 
 outputs:
 - name: component.jenkins.image
