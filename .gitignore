@@ -1,2 +1,3 @@
 spinnaker/tmp
 .helm
+postgresql/charts

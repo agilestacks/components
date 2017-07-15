@@ -20,7 +20,7 @@ parameters:
   default: stacks.delivery
   env: TF_VAR_base_domain
 outputs:
-- name: agilestacks.jenkins.image_name
+- name: component.jenkins.image
   brief: Agile Stacks Jenkins docker repository
   fromTfVar: repository_url
 
