@@ -14,7 +14,7 @@ parameters:
 - name: component.jenkins
   parameters:
   - name: image
-    env:  IMAGE_NAME
+    env:  DOCKER_IMAGE
   - name: email
     default: dev@agilestacks.com
   - name: namespace
