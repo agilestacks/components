@@ -13,25 +13,20 @@ meta:
 parameters:
   - name: component.jenkins.namespace
     brief: Kubernetes namespace to install into
-    kind: user
     default: jenkins
     env: JENKINS_NAMESPACE
   - name: component.jenkins.image
-    kind: user
     default: docker.io/agilestacks/jenkins:2.46.1-3
   - name: cloud.region
     kind: user
     env: AWS_REGION
   - name: dns.domain
     brief: DNS domain
-    kind: tech
     env: DOMAIN_NAME
   - name: docker.registry
     brief: DNS domain
-    kind: tech
     env: DOCKER_REGISTRY
   - name: nfs.server
-    kind: tech
     brief: NFS server for NFS volumes
 
 templates:
