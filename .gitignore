@@ -2,3 +2,16 @@ spinnaker/tmp
 .helm
 postgresql/charts
 Dockerfile
+jenkins/config.yaml
+jenkins/deployment.yaml
+jenkins/ingress.yaml
+jenkins/namespace.yaml
+jenkins/secrets.yaml
+jenkins/service.yaml
+jenkins/volume-claims.yaml
+jenkins/volume-hostpath.yaml
+jenkins/volume-nfs.yaml
+pgweb/values.yaml
+postgresql/values.yaml
+postgresql/volume-claim.yaml
+postgresql/volume-hostpath.yaml
