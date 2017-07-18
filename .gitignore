@@ -1,3 +1,4 @@
 spinnaker/tmp
 .helm
 postgresql/charts
+Dockerfile
