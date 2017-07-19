@@ -35,7 +35,8 @@ userPass = new UsernamePasswordCredentialsImpl(
   CredentialsScope.GLOBAL,
   "github-user", "Github deployment keys",
   "admin",
-  secretsFile.text.trim()
+  System.getenv("GITHUB_DEPLOY_KEY")
+  // secretsFile.text.trim()
 )
 store.addCredentials(domain, userPass)
 
