@@ -1,6 +1,6 @@
 FROM docker.io/agilestacks/jenkins:2.46.1-3
 
-ENV  JENKINS_URL        ${component.jenkins.namespace}.app.${dns.domain}
+ENV  JENKINS_URL        http://${component.jenkins.namespace}.app.${dns.domain}
 ENV  ADMIN_EMAIL        ${component.jenkins.email}
 ENV  GITHUB_DEPLOY_KEY  ${component.jenkins.github_key}
 

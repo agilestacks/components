@@ -40,13 +40,12 @@ output:
 .PHONY: output
 
 undeploy:
-	$(kubectl) delete -f namespace.yaml | true
 	$(kubectl) delete -f deployment.yaml | true
-	$(kubectl) delete -f deployment.yaml | true
+	$(kubectl) delete -f ingress.yaml | true
+	$(kubectl) delete -f service.yaml | true
 	$(kubectl) delete -f volume-claims.yaml | true
 	$(kubectl) delete -f secrets.yaml | true
 	$(kubectl) delete -f config.yaml | true
 	$(kubectl) delete -f volume-$(VOLUME_TYPE).yaml | true
-	$(kubectl) delete -f ingress.yaml | true
-	$(kubectl) delete -f service.yaml | true
+	$(kubectl) delete -f namespace.yaml | true
 .PHONY: undeploy

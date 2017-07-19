@@ -29,7 +29,6 @@ userPass = new UsernamePasswordCredentialsImpl(
   "admin",
   System.getenv("GITHUB_DEPLOY_KEY") )
   //secretsFile.text.trim()
-)
 store.addCredentials(domain, userPass)
 
 def githubs = GitHubPluginConfig.all().get(GitHubPluginConfig.class)

@@ -8,5 +8,5 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 data:
-  postgres-url: {{.Values.postgresUrl | quote }}
+  postgres-url: postgres://{{ .Values.postresUser }}@{{ .Values.postgresUrl }}:{{ .Values.postgresPort }}/{{ .Values.postgresDatabase }}
   postgres-port:  {{ .Values.postgresPort | quote }}
