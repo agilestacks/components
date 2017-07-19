@@ -18,7 +18,7 @@ attach:
 .PHONY: run
 
 push:
-	aws ecr get-login --region us-east-2 | sed -e 's/[ +]-e[ +]none[ +]/ /g' | sh -
+	aws ecr get-login --region $(AWS_DEFAULT_REGION) | sed -e 's/[ +]-e[ +]none[ +]/ /g' | sh -
 	docker push $(DOCKER_IMAGE)
 .PHONY: push
 
