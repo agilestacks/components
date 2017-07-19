@@ -22,6 +22,7 @@ parameters:
     env: NAMESPACE
 
 - name: cloud.region
+  kind: user
   env: AWS_DEFAULT_REGION
 - name: dns.domain
   brief: DNS domain
