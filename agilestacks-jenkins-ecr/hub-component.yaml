@@ -19,6 +19,8 @@ parameters:
 - name: dns.baseDomain
   default: stacks.delivery
   env: TF_VAR_base_domain
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
 outputs:
 - name: component.jenkins.image
   brief: Agile Stacks Jenkins docker repository
