@@ -20,6 +20,7 @@ parameters:
   default: stacks.delivery
   env: TF_VAR_base_domain
 - name: cloud.region
+  kind: user
   env: AWS_DEFAULT_REGION
 outputs:
 - name: component.jenkins.image
