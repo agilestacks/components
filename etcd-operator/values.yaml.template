@@ -1,0 +1,38 @@
+# Default values for etcd-operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+image:
+  repository: quay.io/coreos/etcd-operator
+  tag: v0.3.2
+  pullPolicy: IfNotPresent
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+## etcd-cluster specific values
+cluster:
+  enabled: false
+  name: ${component.etcd.operator.name}
+  size: ${component.etcd.operator.cluster.size}
+  version: ${component.etcd.operator.cluster.version}
+  backup:
+    enabled: false
+    ## Cloud specific PV provisioner
+    ## Supports either kubernetes.io/gce-pd or kubernetes.io/aws-ebs
+    provisioner: kubernetes.io/aws-ebs
+    config:
+      ## short snapshot interval for testing, do not use this in production!
+      snapshotIntervalInSecond: 30
+      maxSnapshot: 5
+      storageType: PersistentVolume
+      pv:
+        volumeSizeInMB: ${component.etcd.operator.volume.size}
+
+## Install Default RBAC roles and bindings
+rbac:
+  install: false
+  apiVersion: v1beta1
