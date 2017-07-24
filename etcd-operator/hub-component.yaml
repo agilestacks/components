@@ -1,0 +1,46 @@
+---
+version: 1
+kind: component
+meta:
+  name: etcd-operator
+  brief: etcd Operator
+  source:
+      dir: ../../components/etcd-operator
+
+requires:
+  - kubernetes
+provides:
+  - etcd-operator
+
+parameters:
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+    env: DOMAIN_NAME
+  - name: component.etcd.operator
+    parameters:
+    - name:    name
+      default: etcd-operator
+      env:     COMPONENT_NAME
+    - name:    namespace
+      brief: Kubernetes namespace to install into
+      default: etcd-operator
+      env:     NAMESPACE
+    - name: cluster.size
+      default: 3
+    - name:    cluster.version
+      default: v3.1.8
+    - name:    volume.size
+      brief: Volume size in MB
+      default: 512
+    - name:    cluster.port
+      default: 2379
+
+outputs:
+- name: component.etcd.operator.url
+  brief: etcd URL
+  fromTfVar: database_url
+
+templates:
+  files:
+    - "*.template"
