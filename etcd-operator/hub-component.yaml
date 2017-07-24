@@ -36,11 +36,6 @@ parameters:
     - name:    cluster.port
       default: 2379
 
-outputs:
-- name: component.etcd.operator.url
-  brief: etcd URL
-  fromTfVar: database_url
-
 templates:
   files:
     - "*.template"
