@@ -1,11 +1,19 @@
-FROM jenkinsci/jenkins:2.46.1-alpine
+FROM jenkins/jenkins:2.71-alpine
 MAINTAINER Antons Kranga <anton@agilestacks.com>
 
 ENV JENKINS_SLAVE_AGENT_PORT  50000
 ENV JENKINS_SECRETS_HOME      /usr/share/jenkins/ref/secrets
 ENV JENKINS_OPTS              -Djava.awt.headless=true
 # ENV JENKINS_OPTS -Dhudson.footerURL=http://agilestacks.com -Djenkins.slaves.JnlpSlaveAgentProtocol3.enabled=true -Djenkins.security.ApiTokenProperty.showTokenToAdmins=true
-ENV JAVA_OPTS "-Dhudson.model.UpdateCenter.never=true -Dhudson.model.DirectoryBrowserSupport.CSP=\"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';\" -Djenkins.model.DirectoryBrowserSupport.CSP=\"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';\""
+ARG UC_DISABLED=true
+
+ENV JAVA_OPTS " -Dpermissive-script-security.enabled=true \
+                -Dorg.jenkinsci.plugins.permissivescriptsecurity.PermissiveWhitelist.enabled=true \
+                -Dhudson.model.UpdateCenter.never=${UC_DISABLED} \
+                -Djenkins.install.runSetupWizard=false \
+                -Dhudson.model.DirectoryBrowserSupport.CSP=\"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';\" \
+                -Djenkins.model.DirectoryBrowserSupport.CSP=\"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';\""
+
 ENV SCRIPT_APPROVAL_DIR        /usr/share/jenkins/ref/approval.d
 ENV CONFIG_DIR                /usr/share/jenkins/ref/config.d
 

@@ -4,6 +4,8 @@ IMAGE_NAME   			 ?= $(notdir $(abspath .))
 VERSION      			 ?= latest
 DOCKER_IMAGE 			 ?= $(IMAGE_NAME):$(VERSION)
 AWS_DEFAULT_REGION ?= us-east-1
+NAMESPACE          ?= automation-hub
+export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 build:
 	docker build --no-cache --force-rm -t $(DOCKER_IMAGE) .
@@ -22,10 +24,14 @@ push:
 	docker push $(DOCKER_IMAGE)
 .PHONY: push
 
-deploy: build push output
+deploy: build push
+	$(kubectl) apply -f config.yaml
+	$(MAKE) output
+.PHONY: deploy
 
 undeploy: 
-	echo "do nothing"
+	$(kubectl) apply -f config.yaml
+.PHONY: undeploy
 
 output:
 	@echo Outputs:

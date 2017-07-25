@@ -1,13 +1,14 @@
 .DEFAULT_GOAL := build
 
-dirname   := $(notdir $(abspath .))
+dirname   := $(notdir $(abspath ..))
 registry  ?= docker.io
-version   ?= 2.46.1-3
+version   ?= 2.7-1
 image     ?= $(registry)/agilestacks/$(dirname):$(version)
 container ?= jenkins
+UC_DISABLED ?= true
 
 build:
-	docker build --no-cache --force-rm -t $(image) .
+	docker build --build-arg="UC_DISABLED=$(UC_DISABLED)" --no-cache --force-rm -t $(image) .
 .PHONY: build
 
 run:
