@@ -1,9 +1,10 @@
 .DEFAULT_GOAL := deploy
 
 export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   	 ?= etcd
+export NAMESPACE    	   	 ?= etcd-operator
 export COMPONENT_NAME      ?= etcd-operator
-export DOMAIN_NAME         ?= default 
+export DOMAIN_NAME         ?= default
+export CLUSTER_ENABLED	   ?= false
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
@@ -41,9 +42,9 @@ install:
 		--namespace $(NAMESPACE) \
 		--replace \
 		--values values.yaml
-	sleep 10;
+	@sleep 20;
 	$(helm) upgrade \
-		--set cluster.enabled=true \
+		--set cluster.enabled=${CLUSTER_ENABLED} \
 		--namespace $(NAMESPACE) \
 		$(COMPONENT_NAME) \
 		charts/etcd-operator
