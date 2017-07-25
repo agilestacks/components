@@ -16,7 +16,7 @@ parameters:
     default: jenkins
     env: JENKINS_NAMESPACE
   - name: component.jenkins.image
-    default: docker.io/agilestacks/jenkins:2.46.1-3
+    default: docker.io/agilestacks/jenkins:2.7-1
   - name: cloud.region
     kind: user
     env: AWS_REGION
