@@ -26,6 +26,9 @@ parameters:
       brief: Kubernetes namespace to install into
       default: etcd-operator
       env:     NAMESPACE
+    - name: cluster.enabled
+      brief: Start etcd cluster
+      env:     CLUSTER_ENABLED
     - name: cluster.size
       default: 3
     - name:    cluster.version
