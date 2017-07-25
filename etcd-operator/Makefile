@@ -41,11 +41,12 @@ install:
 		--namespace $(NAMESPACE) \
 		--replace \
 		--values values.yaml
+	sleep 10;
 	$(helm) upgrade \
 		--set cluster.enabled=true \
 		--namespace $(NAMESPACE) \
 		$(COMPONENT_NAME) \
-		stable/etcd-operator
+		charts/etcd-operator
 .PHONY: install
 
 undeploy: init
