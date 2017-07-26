@@ -47,6 +47,7 @@ install:
 	$(helm) upgrade \
 		--set cluster.enabled=${CLUSTER_ENABLED} \
 		--set cluster.backup.enabled=${BACKUP_ENABLED} \
+		--values values.yaml \
 		--namespace $(NAMESPACE) \
 		$(COMPONENT_NAME) \
 		charts/etcd-operator
