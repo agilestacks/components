@@ -5,6 +5,7 @@ export NAMESPACE    	   	 ?= etcd-operator
 export COMPONENT_NAME      ?= etcd-operator
 export DOMAIN_NAME         ?= default
 export CLUSTER_ENABLED	   ?= false
+export BACKUP_ENABLED	   ?= false
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
@@ -45,6 +46,7 @@ install:
 	sleep 20;
 	$(helm) upgrade \
 		--set cluster.enabled=${CLUSTER_ENABLED} \
+		--set cluster.backup.enabled=${BACKUP_ENABLED} \
 		--namespace $(NAMESPACE) \
 		$(COMPONENT_NAME) \
 		charts/etcd-operator

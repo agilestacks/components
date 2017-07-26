@@ -33,11 +33,18 @@ parameters:
       default: 3
     - name:    cluster.version
       default: v3.1.8
+    - name:    backup.enabled
+      brief: Enable backups
+      env: BACKUP_ENABLED
     - name:    cluster.s3bucket
       brief: Name of the S3 backup backet
       default: etcd-backup.agilestacks.com
     - name:    cluster.awssecret
       default: awsetcd
+    - name:    cluster.backupInterval
+      default: 3600
+    - name:    cluster.maxBackups
+      default: 5
 
 templates:
   files:
