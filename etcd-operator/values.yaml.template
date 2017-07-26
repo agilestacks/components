@@ -28,8 +28,8 @@ cluster:
     enabled: false
     config:
       ## short snapshot interval for testing, do not use this in production!
-      backupIntervalInSecond: 300
-      maxBackups: 5
+      backupIntervalInSecond: ${component.etcd.operator.cluster.backupInterval}
+      maxBackups: ${component.etcd.operator.cluster.maxBackups}
       storageType: "S3"
       s3:
         s3Bucket: ${component.etcd.operator.cluster.s3bucket}
