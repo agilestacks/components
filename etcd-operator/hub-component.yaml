@@ -33,11 +33,11 @@ parameters:
       default: 3
     - name:    cluster.version
       default: v3.1.8
-    - name:    volume.size
-      brief: Volume size in MB
-      default: 512
-    - name:    cluster.port
-      default: 2379
+    - name:    cluster.s3bucket
+      brief: Name of the S3 backup backet
+      default: etcd-backup.agilestacks.com
+    - name:    cluster.awssecret
+      default: awsetcd
 
 templates:
   files:

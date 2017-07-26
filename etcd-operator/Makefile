@@ -42,7 +42,7 @@ install:
 		--namespace $(NAMESPACE) \
 		--replace \
 		--values values.yaml
-	@sleep 20;
+	sleep 20;
 	$(helm) upgrade \
 		--set cluster.enabled=${CLUSTER_ENABLED} \
 		--namespace $(NAMESPACE) \
