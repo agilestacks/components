@@ -4,7 +4,7 @@
 replicaCount: 1
 image:
   repository: quay.io/coreos/etcd-operator
-  tag: v0.4.2
+  tag: ${component.etcd.operator.version}
   pullPolicy: IfNotPresent
 resources:
   limits:

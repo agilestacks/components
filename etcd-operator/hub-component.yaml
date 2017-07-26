@@ -21,6 +21,9 @@ parameters:
     parameters:
     - name:    name
       default: etcd-operator
+    - name:    version
+      brief:   etcd-operator version
+      default: v0.4.2
       env:     COMPONENT_NAME
     - name:    namespace
       brief: Kubernetes namespace to install into
@@ -32,10 +35,11 @@ parameters:
     - name: cluster.size
       default: 3
     - name:    cluster.version
+      brief:   etcd version
       default: v3.1.8
     - name:    backup.enabled
-      brief: Enable backups
-      env: BACKUP_ENABLED
+      brief:   Enable backups
+      env:     BACKUP_ENABLED
     - name:    cluster.s3bucket
       brief: Name of the S3 backup backet
       default: etcd-backup.agilestacks.com
