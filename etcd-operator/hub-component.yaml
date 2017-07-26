@@ -21,10 +21,10 @@ parameters:
     parameters:
     - name:    name
       default: etcd-operator
+      env:     COMPONENT_NAME
     - name:    version
       brief:   etcd-operator version
       default: v0.4.2
-      env:     COMPONENT_NAME
     - name:    namespace
       brief: Kubernetes namespace to install into
       default: etcd-operator
