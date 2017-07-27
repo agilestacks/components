@@ -17,7 +17,7 @@ parameters:
     env:  DOCKER_IMAGE
   - name: email
     default: dev@agilestacks.com
-  # - name: namespace
+  # - name: namespace  
   #   default: jenkins
   #   env: NAMESPACE
 
@@ -26,10 +26,23 @@ parameters:
   env: AWS_DEFAULT_REGION
 - name: dns.domain
   brief: DNS domain
-- name: component.automation-hub.image
-- name: component.automation-hub.namespace
-  env:  NAMESPACE
-- name: component.auth-service.image
+- name: component.automation-hub
+  parameters:
+  - name: service
+  - name: image
+  - name: namespace
+    env:  NAMESPACE
+  - name: image
+- name: component.auth-service
+  parameters:
+  - name: namespace
+  - name: service
+  - name: image
+- name: component.secrets-service
+  parameters:
+  - name: namespace
+  - name: service
+  - name: image
 - name: ui.reactor
 
 outputs:
@@ -39,4 +52,3 @@ outputs:
 
 templates:
   files: ["*.template"]
-
