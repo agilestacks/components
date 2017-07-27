@@ -18,7 +18,7 @@ init:
 	@$(helm) init --client-only --upgrade
 
 install:
-	$(helm) install vault \
+	$(helm) install . \
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
 		--replace \
