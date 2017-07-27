@@ -1,0 +1,16 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: jenkins
+  namespace: ${component.automation-hub.namespace}
+data:
+  cloud.json: |-
+    {
+        "automation_hub_image": "${component.automation-hub.image}",
+        "auth_service_image":   "${component.auth-service.image}",
+        "secrets_service_image":   "${component.secrets-service.image}",
+        "control_plane": "${ui.reactor}",
+        "automation_hub_endpoint": "http://${component.automation-hub.service}.${component.automation-hub.namespace}.svc.cluster.local",
+        "auth_service_endpoint": "http://${component.auth-service.service}.${component.auth-service.namespace}.svc.cluster.local/api/v1"
+        "secrets_service_endpoint": "http://${component.secrets-service.service}.${component.secrets-service.namespace}.svc.cluster.local/api/v1"
+    }

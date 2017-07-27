@@ -15,3 +15,4 @@ pgweb/values.yaml
 postgresql/values.yaml
 postgresql/volume-claim.yaml
 postgresql/volume-hostpath.yaml
+config.yaml
