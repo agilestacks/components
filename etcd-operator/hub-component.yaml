@@ -31,6 +31,7 @@ parameters:
       env:     NAMESPACE
     - name: cluster.enabled
       brief: Start etcd cluster
+      default: false
       env:     CLUSTER_ENABLED
     - name: cluster.size
       default: 3
@@ -39,6 +40,7 @@ parameters:
       default: v3.1.8
     - name:    backup.enabled
       brief:   Enable backups
+      default: false
       env:     BACKUP_ENABLED
     - name:    cluster.s3bucket
       brief: Name of the S3 backup backet
