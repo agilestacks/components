@@ -1,0 +1,43 @@
+#!/bin/bash -e
+
+ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name ${dns.domain} --max-items 1 | jq -Mr .HostedZones[0].Id | sed -e 's/\/hostedzone\///')
+ELB=""
+echo "Waiting for Load Balancer"
+for i in {1..30}; do
+  ELB=$(kubectl --namespace="${NAMESPACE}" describe svc traefik | grep Ingress | awk '{print $3}')
+  if [ ! -z "${ELB}" ]; then
+    break
+  fi
+  echo "retry..."
+  sleep 3;
+done
+
+echo "Create ${component}.${ROOT_DOMAIN_NAME} CNAME for ${ELB}"
+cat << EOF > ${DIR}/upsert.json
+{
+  "Comment": "Traefik ingress",
+  "Changes": [{
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "${component.ingress.url_prefix}.${dns.domain}",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "${ELB}"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "*.${component.ingress.url_prefix}.${dns.domain}",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "{{ELB}}"
+      }]
+    }
+  }]
+}
+EOF
+
+aws route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch=file://${DIR}/upsert.json

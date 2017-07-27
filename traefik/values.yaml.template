@@ -1,0 +1,67 @@
+# Default values for Traefik
+image: traefik
+imageTag: 1.3.1
+serviceType: LoadBalancer
+replicas: 1
+cpuRequest: 100m
+memoryRequest: 20Mi
+cpuLimit: 100m
+memoryLimit: 30Mi
+nodeSelector: {}
+  #key: value
+tolerations: []
+  #- key: "key"
+  #operator: "Equal|Exists"
+  #value: "value"
+  #effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+ssl:
+  enabled: ${component.ingress.ssl.enabled}
+  enforced: false
+  defaultCert: ${component.ingress.ssl.cert}
+  defaultKey: ${component.ingress.ssl.key}
+acme:
+  enabled: false
+  email: admin@example.com
+  staging: true
+  persistence:
+    enabled: true
+    storageClass: default
+    accessMode: ReadWriteOnce
+    size: 1Gi
+dashboard:
+  enabled: ${component.ingress.dashboard}
+  domain: ${component.ingress.url_prefix}.${dns.domain}
+  ingress:
+    labels:
+      provider:  agilestacks.com
+      project:   ingress
+      component: traefik-dashboard
+    annotations:
+      agilestacks.com/stack-component: Traefik
+  auth:
+    basic:
+      ${component.ingress.user}: ${component.ingress.password}
+service:
+  labels:
+    provider:  agilestacks.com
+    project:   ingress
+    component: traefik
+    kubernetes.io/name: Traefik
+    kubernetes.io/cluster-service: "true"
+  annotations:
+    fabric8.io/app-menu: development
+    api.service.kubernetes.io/path: ${component.ingress.url_prefix}.${dns.domain}
+gzip:
+  enabled: true
+accessLogs:
+  enabled: false
+  ## Path to the access logs file. If not provided, Traefik defaults it to stdout.
+  # filePath: ""
+  format: common  # choices are: common, json
+# Kubernetes ingress filters
+#kubernetes:
+#  namespaces:
+#  - default
+#  labelSelector:
+rbac:
+  enabled: false
