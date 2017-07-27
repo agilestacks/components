@@ -7,11 +7,10 @@ meta:
   source:
       dir: ../../components/vault
 
-requires:
-  - kubernetes
-  - etcd-operator
-provides:
-  - vault
+#requires:
+ # - kubernetes
+#provides:
+#  - vault
 
 
 parameters:
