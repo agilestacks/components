@@ -10,7 +10,7 @@ export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 
-deploy: clean init fetch wait install output
+deploy: clean init fetch wait install enable output
 	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
 
@@ -30,6 +30,16 @@ wait:
 	echo "Timeout waiting for Tiller" \
 	exit 1
 
+wait_tpr:
+	@for i in $$(seq 1 60); do \
+		if $(kubectl) get thirdpartyresources/cluster.etcd.coreos.com; then \
+			exit 0; \
+		fi; \
+		echo "Waiting for thirdpartyresource/cluster.etcd.coreos.com to be deployed ($$i)..."; \
+		sleep 20; \
+	done; \
+	echo "Timeout waiting for thirdpartyresource to be deployed" \
+	exit 1
 
 fetch:
 	$(helm) fetch \
@@ -43,7 +53,8 @@ install:
 		--namespace $(NAMESPACE) \
 		--replace \
 		--values values.yaml
-	sleep 20;
+.PHONY: install
+enable: wait_tpr
 	$(helm) upgrade \
 		--set cluster.enabled=${CLUSTER_ENABLED} \
 		--set cluster.backup.enabled=${BACKUP_ENABLED} \
@@ -51,7 +62,7 @@ install:
 		--namespace $(NAMESPACE) \
 		$(COMPONENT_NAME) \
 		charts/etcd-operator
-.PHONY: install
+.PHONY: enable
 
 undeploy: init
 	$(kubectl) get --namespace $(NAMESPACE) cluster/$(COMPONENT_NAME) -o=yaml|$(kubectl) delete -f -
