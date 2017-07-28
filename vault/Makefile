@@ -5,7 +5,6 @@ export NAMESPACE    	   ?= vault
 export COMPONENT_NAME      ?= vault-service
 export DOMAIN_NAME         ?= default
 export INGRESS_ENABLED	   ?= false
-#export ETCD_CLIENT_URL	   ?= "http://etcd-operator-client.etcd-operator.svc.cluster.local:2379"
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
