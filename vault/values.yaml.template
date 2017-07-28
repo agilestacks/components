@@ -32,7 +32,7 @@ vault:
       tls_disable: ${component.vault.tls.disabled}
   storage:
     etcd:
-      address: ${component.vault.storage.url}
+      address: http://${component.etcd.operator.name}-client.${component.etcd.operator.namespace}.svc.cluster.local:2379
       etcd_api: ${component.vault.etcd.api}
 resources:
   limits:

@@ -49,12 +49,15 @@ parameters:
       default: "0.0.0.0"
     - name: tls.disabled
       default: false
-    - name: storage.url
-      default: "http://etcd-operator.etcd-operator.svc.cluster.local:2379"
-      env: ETCD_CLIENT_URL
+    #- name: storage.url
+     # default: "http://etcd-operator-client.etcd-operator.svc.cluster.local:2379"
+      #env: ETCD_CLIENT_URL
     - name: etcd.api
       default: "v3"
-    
+  - name: component.etcd.operator
+    parameters:
+      - name: name
+      - name: namespace
 
 templates:
   files:
