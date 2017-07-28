@@ -5,7 +5,7 @@ This directory contains a Hub component and helm chart to deploy a Vault server.
 ## Prerequisites Details
 
 * Kubernetes 1.5
-* Backend storage for Vault already deployed
+* etcd-operator component as a backend storage (uses storage address composed from etcd-operator vars)
 
 ## Chart Details
 
@@ -50,23 +50,22 @@ The following tables lists the configurable parameters of the vault component an
 | `component.vault.image.repository`      | Container image to use              | `vault`                                             |
 | `component.vault.version`             | Container image tag to deploy       | `0.7.3`                                             |
 | `component.vault.name`    | Vault service name to use           | `vault-service`
- |
-| `component.vault.namespace` | k8s namespace to install component into | `vault`
- |
-| `component.vault.ipaddress`             | Vault server IP address | `0.0.0.0`
- |
+                |
+| `component.vault.namespace` | k8s namespace to install component into         | `vault`
+                |
+| `component.vault.ipaddress`             | Vault server IP address             | `0.0.0.0`
+                |
 | `component.vault.port`    | Vault server and service port to use                   | `8200`
- |
+                |
 | `component.vault.ingress.enabled`       | Ingress for Vault      | `false`
- |
-| `component.vault.tls.disabled`          | Specifies if TLS will be disabled | `false`
- |
+                |
+| `component.vault.tls.disabled`          | Specifies if TLS will be disabled        | `false`
+                |
 | `vault`                 | Vault configuration, currently only storage backend      | `etcd` 
  |
-| `component.vault.storage.url`           | etcd url to use for storage backend      | ``
- |
+| `component.vault.storage.url`           | etcd url to use for storage backend      | `composed from etcd-operator vars`                  |
 | `component.vault.etcd.api`              | etcd API version to use            | `v3`
- |
+                  |
 | `component.vault.replicaCount`          | k8s replicas                        | `1`                                                 |
 | `component.vault.resources.limits.memory` | Container requested memory        | `128Mi`                                             |
 
