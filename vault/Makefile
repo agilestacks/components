@@ -22,6 +22,8 @@ install:
 		--namespace $(NAMESPACE) \
 		--replace \
 		--values values.yaml
+	$(kubectl) run --rm -i --tty --env VAULT_ADDR=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:8200 \
+	vault-init --image=vault --restart=Never -n default -- /bin/sh -c "vault init"
 .PHONY: install
 
 undeploy: init
@@ -34,6 +36,8 @@ clean:
 
 output:
 	@echo Outputs:
+	@echo vault_url=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:8200
+	@echo Vault has been installed and initialized successfully.
 .PHONY: output
 
 wait:
