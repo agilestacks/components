@@ -38,11 +38,11 @@ data:
     {
       name: 'saml',
       args: {
-               assertion_consumer_service_url: 'https://' + ENV['EXTERNAL_URL'] + '/users/auth/saml/callback',
-               idp_cert_fingerprint: ENV['IDP_CERT_FINGERPRINT'],
-               idp_sso_target_url: ENV['IDP_SSO_TARGET_URL'],
-               issuer: ENV['SSO_CERT_ISSUER'],
-               name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
+               assertion_consumer_service_url: 'https://${component.gitlab.url}/users/auth/saml/callback',
+               idp_cert: '${component.gitlab.saml_idp_cert}',
+               idp_sso_target_url: '${component.gitlab.saml_provider_url}',
+               issuer: '${component.gitlab.saml_issuer_id}',
+               name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
              },
-      label: 'Okta' # optional label for SAML login button, defaults to "Saml"
+      label: 'Gitlab SAML Login'
     } ]

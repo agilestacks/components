@@ -1,38 +1,54 @@
+
 .DEFAULT_GOAL := deploy
 
 export HELM_HOME           ?= $(shell pwd)/.helm
-export SPINNAKER_NAMESPACE ?= spinnaker
+export NAMESPACE	   ?= gitlab
+export COMPONENT_NAME      ?= gitlab
 export DOMAIN_NAME         ?= default 
-export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(SPINNAKER_NAMESPACE)"
+export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-check:
-	if [ ! $(which helm) ]; then \
-		echo "ERROR - Helm is not installed"; \
-		exit 1; \
-	fi
 
-#verify that the tiller service is running, init it if needed
-init: check
-	if [[ $($(helm) version) -ne 0 ]]; then \
-		mkdir -p $(HELM_HOME); \
-		$(helm) init --client-only --upgrade; \
-		for i in $$(seq 1 12); do \
-			if $(helm) version; then \
-				exit 0; \
-			fi; \
-			echo "Waiting for Tiller pod is up and running ($$i)..."; \
-			sleep 10; \
-		done; \
-		echo "Timeout waiting for Tiller" \
-		exit 1; \
-	fi;
-
-deploy: init
-	./init_values.sh
-	$(helm) install --name gitlab-ce -f values.yaml ./
+deploy: clean init fetch wait install
+	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
 
-undeploy:
-	$(helm) delete --name gitlab-ce
+init:
+	@mkdir -p $(HELM_HOME)
+	@$(helm) init --client-only --upgrade
+	@mkdir -p charts
+
+wait:
+	@for i in $$(seq 1 60); do \
+		if $(helm) version; then \
+			exit 0; \
+		fi; \
+		echo "Waiting for Tiller pod is up and running ($$i)..."; \
+		sleep 10; \
+	done; \
+	echo "Timeout waiting for Tiller" \
+	exit 1
+
+
+fetch:
+	$(helm) fetch \
+		--destination charts \
+		--untar stable/gitlab-ce
+.PHONY: fetch
+
+install:
+	$(helm) install charts/gitlab-ce \
+		--name $(COMPONENT_NAME) \
+		--namespace $(NAMESPACE) \
+		--replace \
+		--values values.yaml
+.PHONY: install
+
+undeploy: init
+	$(helm) delete $(COMPONENT_NAME)
+	# $(helm) undeploy -f hub.component
 .PHONY: undeploy
+
+clean:
+	@rm -rf $(HELM_HOME)
+	@rm -rf charts
