@@ -5,7 +5,7 @@ This directory contains a Hub component and helm chart to deploy a Vault server.
 ## Prerequisites Details
 
 * Kubernetes 1.5
-* etcd-operator component as a backend storage (uses storage address composed from etcd-operator vars)
+* [etcd-operator component](https://github.com/agilestacks/components/tree/master/etcd-operator) as a backend storage (uses storage address composed from etcd-operator vars)
 
 ## Chart Details
 

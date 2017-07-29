@@ -66,7 +66,7 @@ enable: wait_tpr
 
 undeploy: init
 	$(kubectl) get --namespace $(NAMESPACE) cluster/$(COMPONENT_NAME) -o=yaml|$(kubectl) delete -f -
-	$(helm) delete $(COMPONENT_NAME)
+	$(helm) delete --purge $(COMPONENT_NAME)
 	# $(helm) undeploy -f hub.component
 .PHONY: undeploy
 
