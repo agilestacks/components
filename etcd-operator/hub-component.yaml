@@ -44,7 +44,7 @@ parameters:
       env:     BACKUP_ENABLED
     - name:    cluster.s3bucket
       brief: Name of the S3 backup backet
-      default: etcd-backup.agilestacks.com
+      default: terraform.agilestacks.com
     - name:    cluster.awssecret
       default: awsetcd
     - name:    cluster.backupInterval
