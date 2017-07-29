@@ -1,0 +1,66 @@
+---
+version: 1
+kind: component
+meta:
+  name: gitlab
+  brief: gitlab
+  source:
+      dir: ../../components/gitlab
+
+requires:
+  - kubernetes
+provides:
+  - gitlab
+
+parameters:
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+    env: DOMAIN_NAME
+  - name: component.gitlab
+    parameters:
+    - name:    name
+      default: gitlab
+      env:     COMPONENT_NAME
+    - name:    namespace
+      default: gitlab 
+      env:     NAMESPACE
+    - name:    user
+    - name:    password
+    - name:    database
+    - name:    volume
+      default: 8Gi
+    - name:    port
+      default: 5432
+    - name:    saml_provider_url
+      default: https://dev-458481.oktapreview.com/app/generic-saml/exkbff0f7nb3y4CcU0h7/saml2
+      env:     SAML_PROVIDER_URL
+    - name:    saml_issuer_id
+      default: exkbff0f7nb3y4CcU0h7
+      env:     SAML_ISSUER_ID
+    - name:    saml_idp_cert
+      env:     SAML_IDP_CERT
+      default: |
+        -----BEGIN CERTIFICATE-----
+        MIIDpDCCAoygAwIBAgIGAVyqCRDsMA0GCSqGSIb3DQEBCwUAMIGSMQswCQYDVQQGEwJVUzETMBEG
+        A1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzENMAsGA1UECgwET2t0YTEU
+        MBIGA1UECwwLU1NPUHJvdmlkZXIxEzARBgNVBAMMCmRldi00NTg0ODExHDAaBgkqhkiG9w0BCQEW
+        DWluZm9Ab2t0YS5jb20wHhcNMTcwNjE1MDQzNDM5WhcNMjcwNjE1MDQzNTM5WjCBkjELMAkGA1UE
+        BhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWExFjAUBgNVBAcMDVNhbiBGcmFuY2lzY28xDTALBgNV
+        BAoMBE9rdGExFDASBgNVBAsMC1NTT1Byb3ZpZGVyMRMwEQYDVQQDDApkZXYtNDU4NDgxMRwwGgYJ
+        KoZIhvcNAQkBFg1pbmZvQG9rdGEuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+        j7UtFqH4ptpCiBXB9UPO7q1vEYTcT+qyYDD1B/Cd5ALg989vxu7GK3OrYGJvr5xNCszn4ceuYU7C
+        2C3nX3jFwTsEm6DRlsHKbQ5zdRBuIw2lJWMYcBpGe7r+r1tYiniHwKPo/YMF3K7hB1gW+HumdWjK
+        bgt8NnmZSjpnHmoEOPuXBcjq4OJnwl0ymAuSG7w+DM2G7brlruiYBb169ivwecy+jeN7XZvJVM93
+        spEJWAMb1BoNhId8fhhgGRfllG8b6FO8QbCm4uQXvJQn0dFxylvpi3nRaizecwLNrkKJuUL2vjX1
+        uuG5t4ALrdrgzq80gRXe84C/8eCit7Ch3wtfoQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQB/XMIw
+        8J/gKbnqCHWT8+nFvaT5qae6ONb3LY+sVQo04hRTkbLgZhhN2+v1WWSuD0Z2qQVjEiesW5mhVKhI
+        cH0aMTBMmZjd4ABEGw8/NdR7V8xSW1QBsC5OlvCnILBLQL/yNOAhoev+ntYvzdiDKGpggSn8m4J0
+        0uoWu/qylikH81w9KWa2r2uBTjH/maWvPxXaMghYSwk2ujEhqam5UVsmVjJi+uHqW2PKgibisLZV
+        HC0+Hx/bFAY3n2AH9fk9tQWVIxFwFRuFXDeMNQA4t5qMyWmqPUXFSSjvcGS81EzjE0Ipj3GceJRg
+        emA3bhvVzLYJeVSIz5dbJNLXU8aDTbky
+        -----END CERTIFICATE-----
+
+templates:
+  files:
+    - "*.template"
