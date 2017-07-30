@@ -1,1 +1,3 @@
 charts/
+configmap.yaml
+values.yaml

@@ -37,6 +37,11 @@ fetch:
 .PHONY: fetch
 
 install:
+	@cp secrets.yaml      charts/gitlab-ce/templates/
+	@cp deployment.yaml   charts/gitlab-ce/templates/
+	@cp configmap.yaml    charts/gitlab-ce/templates/
+	@cp requirements.yaml charts/gitlab-ce/
+	@rm charts/gitlab-ce/requirements.lock
 	$(helm) install charts/gitlab-ce \
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \

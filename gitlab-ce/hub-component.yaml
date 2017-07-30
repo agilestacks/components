@@ -7,8 +7,6 @@ meta:
   source:
       dir: ../../components/gitlab
 
-requires:
-  - kubernetes
 provides:
   - gitlab
 
@@ -17,6 +15,10 @@ parameters:
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
+  - name: component.postgresql
+    parameters:
+    - name:    url
+      default: automation-hub-db-postgresql.automation-hub.svc.cluster.local
   - name: component.gitlab
     parameters:
     - name:    name
@@ -25,6 +27,12 @@ parameters:
     - name:    namespace
       default: gitlab 
       env:     NAMESPACE
+    - name:    db-name
+      default: gitlab
+    - name:    db-password
+      default: supersecret
+    - name:    database
+      default: gitlab
     - name:    volume
       default: 8Gi
     - name:    port
@@ -37,26 +45,26 @@ parameters:
       env:     SAML_ISSUER_ID
     - name:    saml_idp_cert
       env:     SAML_IDP_CERT
-      default: |
-        -----BEGIN CERTIFICATE-----
-        MIIDpDCCAoygAwIBAgIGAVyqCRDsMA0GCSqGSIb3DQEBCwUAMIGSMQswCQYDVQQGEwJVUzETMBEG
-        A1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzENMAsGA1UECgwET2t0YTEU
-        MBIGA1UECwwLU1NPUHJvdmlkZXIxEzARBgNVBAMMCmRldi00NTg0ODExHDAaBgkqhkiG9w0BCQEW
-        DWluZm9Ab2t0YS5jb20wHhcNMTcwNjE1MDQzNDM5WhcNMjcwNjE1MDQzNTM5WjCBkjELMAkGA1UE
-        BhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWExFjAUBgNVBAcMDVNhbiBGcmFuY2lzY28xDTALBgNV
-        BAoMBE9rdGExFDASBgNVBAsMC1NTT1Byb3ZpZGVyMRMwEQYDVQQDDApkZXYtNDU4NDgxMRwwGgYJ
-        KoZIhvcNAQkBFg1pbmZvQG9rdGEuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
-        j7UtFqH4ptpCiBXB9UPO7q1vEYTcT+qyYDD1B/Cd5ALg989vxu7GK3OrYGJvr5xNCszn4ceuYU7C
-        2C3nX3jFwTsEm6DRlsHKbQ5zdRBuIw2lJWMYcBpGe7r+r1tYiniHwKPo/YMF3K7hB1gW+HumdWjK
-        bgt8NnmZSjpnHmoEOPuXBcjq4OJnwl0ymAuSG7w+DM2G7brlruiYBb169ivwecy+jeN7XZvJVM93
-        spEJWAMb1BoNhId8fhhgGRfllG8b6FO8QbCm4uQXvJQn0dFxylvpi3nRaizecwLNrkKJuUL2vjX1
-        uuG5t4ALrdrgzq80gRXe84C/8eCit7Ch3wtfoQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQB/XMIw
-        8J/gKbnqCHWT8+nFvaT5qae6ONb3LY+sVQo04hRTkbLgZhhN2+v1WWSuD0Z2qQVjEiesW5mhVKhI
-        cH0aMTBMmZjd4ABEGw8/NdR7V8xSW1QBsC5OlvCnILBLQL/yNOAhoev+ntYvzdiDKGpggSn8m4J0
-        0uoWu/qylikH81w9KWa2r2uBTjH/maWvPxXaMghYSwk2ujEhqam5UVsmVjJi+uHqW2PKgibisLZV
-        HC0+Hx/bFAY3n2AH9fk9tQWVIxFwFRuFXDeMNQA4t5qMyWmqPUXFSSjvcGS81EzjE0Ipj3GceJRg
-        emA3bhvVzLYJeVSIz5dbJNLXU8aDTbky
-        -----END CERTIFICATE-----
+      default: |-2
+            -----BEGIN CERTIFICATE-----
+            MIIDpDCCAoygAwIBAgIGAVyqCRDsMA0GCSqGSIb3DQEBCwUAMIGSMQswCQYDVQQGEwJVUzETMBEG
+            A1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzENMAsGA1UECgwET2t0YTEU
+            MBIGA1UECwwLU1NPUHJvdmlkZXIxEzARBgNVBAMMCmRldi00NTg0ODExHDAaBgkqhkiG9w0BCQEW
+            DWluZm9Ab2t0YS5jb20wHhcNMTcwNjE1MDQzNDM5WhcNMjcwNjE1MDQzNTM5WjCBkjELMAkGA1UE
+            BhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWExFjAUBgNVBAcMDVNhbiBGcmFuY2lzY28xDTALBgNV
+            BAoMBE9rdGExFDASBgNVBAsMC1NTT1Byb3ZpZGVyMRMwEQYDVQQDDApkZXYtNDU4NDgxMRwwGgYJ
+            KoZIhvcNAQkBFg1pbmZvQG9rdGEuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+            j7UtFqH4ptpCiBXB9UPO7q1vEYTcT+qyYDD1B/Cd5ALg989vxu7GK3OrYGJvr5xNCszn4ceuYU7C
+            2C3nX3jFwTsEm6DRlsHKbQ5zdRBuIw2lJWMYcBpGe7r+r1tYiniHwKPo/YMF3K7hB1gW+HumdWjK
+            bgt8NnmZSjpnHmoEOPuXBcjq4OJnwl0ymAuSG7w+DM2G7brlruiYBb169ivwecy+jeN7XZvJVM93
+            spEJWAMb1BoNhId8fhhgGRfllG8b6FO8QbCm4uQXvJQn0dFxylvpi3nRaizecwLNrkKJuUL2vjX1
+            uuG5t4ALrdrgzq80gRXe84C/8eCit7Ch3wtfoQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQB/XMIw
+            8J/gKbnqCHWT8+nFvaT5qae6ONb3LY+sVQo04hRTkbLgZhhN2+v1WWSuD0Z2qQVjEiesW5mhVKhI
+            cH0aMTBMmZjd4ABEGw8/NdR7V8xSW1QBsC5OlvCnILBLQL/yNOAhoev+ntYvzdiDKGpggSn8m4J0
+            0uoWu/qylikH81w9KWa2r2uBTjH/maWvPxXaMghYSwk2ujEhqam5UVsmVjJi+uHqW2PKgibisLZV
+            HC0+Hx/bFAY3n2AH9fk9tQWVIxFwFRuFXDeMNQA4t5qMyWmqPUXFSSjvcGS81EzjE0Ipj3GceJRg
+            emA3bhvVzLYJeVSIz5dbJNLXU8aDTbky
+            -----END CERTIFICATE-----
 
 templates:
   files:

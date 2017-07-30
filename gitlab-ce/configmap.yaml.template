@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: gitlab-config
+  name: {{ template "fullname" . }}
   labels:
-    app: gitlab
-    chart: Agilestacks Gitlab CE
-    release: 0.1
-    heritage: gitlab
+    app: {{ template "fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
 data:
   db_host: ${ component.postgresql.url }
   db_name: gitlab
@@ -18,7 +18,7 @@ data:
     root_pass = ENV['GITLAB_ROOT_PASSWORD'];
     gitlab_rails['initial_root_password'] = root_pass unless root_pass.to_s == '';
     postgresql['enable'] = false;
-    gitlab_rails['db_host'] = ENV['DB_HOST'];
+    gitlab_rails['db_host'] = ENV['DB_HOSTNAME'];
     gitlab_rails['db_password'] = ENV['DB_PASSWORD'];
     gitlab_rails['db_username'] = ENV['DB_USER'];
     gitlab_rails['db_database'] = ENV['DB_DATABASE'];
@@ -40,8 +40,8 @@ data:
     {
       name: 'saml',
       args: {
-               assertion_consumer_service_url: 'https://${component.gitlab.url}/users/auth/saml/callback',
-               idp_cert: '${component.gitlab.saml_idp_cert}',
+               assertion_consumer_service_url: 'https://${component.gitlab.name}.app.${dns.name}/users/auth/saml/callback',
+               idp_cert: %q( ${component.gitlab.saml_idp_cert} ),
                idp_sso_target_url: '${component.gitlab.saml_provider_url}',
                issuer: '${component.gitlab.saml_issuer_id}',
                name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
