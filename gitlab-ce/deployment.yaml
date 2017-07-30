@@ -5,7 +5,7 @@ metadata:
   name: {{ template "fullname" . }}
   labels:
     app: {{ template "fullname" . }}
-    chart: "Agilestacks {{ .Chart.Name }}-{{ .Chart.Version }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
@@ -15,6 +15,49 @@ spec:
       labels:
         app: {{ template "fullname" . }}
     spec:
+      initContainers:
+      - name: init-gitlab-db
+        image: postgres:9.6
+        command: 
+        - "sh"
+        - "-c"
+        - psql -c "create database {{ .Values.gitlab.database }};" && psql -c "create user {{ .Values.gitlab.databaseUser }} with unencrypted password '{{ .Values.gitlab.databasePassword }}';" &&  psql -c "grant all privileges on database {{ .Values.gitlab.database }} to {{ .Values.gitlab.databaseUser }};" || true
+        env:
+        - name: PGHOST
+          value: {{ .Values.postgresql.postgresHostname }}
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "fullname" . }}
+              key: admin-db-user
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "fullname" . }}
+              key: admin-db-password
+        - name: PGDATABASE
+          value: {{ .Values.postgresql.postgresDatabase }}
+      - name: add-gitlab-extension
+        image: postgres:9.6
+        command: 
+        - "sh"
+        - "-c"
+        - psql -c 'CREATE EXTENSION IF NOT EXISTS "pg_trgm"'
+        env:
+        - name: PGHOST
+          value: {{ .Values.postgresql.postgresHostname }}
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "fullname" . }}
+              key: admin-db-user
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "fullname" . }}
+              key: admin-db-password
+        - name: PGDATABASE
+          value: {{ .Values.gitlab.database }}
       containers:
       - name: {{ template "fullname" . }}
         image: {{ .Values.image }}
@@ -29,7 +72,7 @@ spec:
         - name: GITLAB_OMNIBUS_CONFIG
           valueFrom:
             configMapKeyRef:
-              name: gitlab-config
+              name: {{ template "fullname" . }}
               key: gitlab_omnibus_config
         - name: GITLAB_ROOT_PASSWORD
         {{- if default "" .Values.gitlabRootPassword }}
@@ -40,26 +83,24 @@ spec:
         {{ end }}
         - name: EXTERNAL_URL
           value: {{ default "" .Values.externalUrl | quote }}
-        - name: DB_HOST
-          valueFrom: 
-            configMapKeyRef:
-              name: gitlab-config
-              key: db_host
+        ## DB configuration
+        ##
+        - name: DB_HOSTNAME
+          value: {{ .Values.postgresql.postgresHostname }}
         - name: DB_USER
           valueFrom:
             secretKeyRef:
               name: {{ template "fullname" . }}
-              key: db_user
+              key: db-user
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ template "fullname" . }}
-              key: db_password
+              key: db-password
         - name: DB_DATABASE
-          valuefrom:
-            configMapKeyRef:
-              name: gitlab-config
-              key: db_name
+          value: {{ .Values.gitlab.database | quote }}
+        ## Redis configuration
+        ##
         - name: REDIS_HOST
           value: {{ template "redis.fullname" . }}
         - name: REDIS_PASSWORD

@@ -1,3 +1,36 @@
+# GitLab CE Component for Agilestacks Automation Hub
+
+
+## Dependencies
+
+This component dependes on the Agilestacks `postgres` component. 
+
+## Configuration
+
+Parameters : 
+* name:    name default: gitlab
+* name:    namespace default: gitlab
+* name:    db-name default: gitlab
+* name:    db-password default: supersecret
+* name:    database default: gitlab
+* name:    volume default: 8Gi
+* name:    port default: 80
+* name:    saml_provider_url default: https://dev-458481.oktapreview.com/app/generic-saml/exkbff0f7nb3y4CcU0h7/saml2
+* name:    saml_issuer_id default: exkbff0f7nb3y4CcU0h7
+* name:    saml_idp_cert env:   <Okta self-signed cert for dev account 458481>
+
+This component leverages the admin user/pass from `postgres` in order to create it's own gitlab specific user and password. 
+
+It leverages several parameters defined for `postgres` including : 
+
+* component.postgresql.user
+* component.postgresql.password
+* component.postgresql.database
+* component.postgresql.url
+
+If the `url` is not supplied,  it will guess the url by synthesizing the postgres service name and namespace. 
+
+
 # GitLab Community Edition
 
 [GitLab Community Edition](https://about.gitlab.com/) is an application to code, test, and deploy code together. It provides Git repository management with fine grained access controls, code reviews, issue tracking, activity feeds, wikis, and continuous integration. 
@@ -8,21 +41,13 @@ This chart stands up a GitLab Community Edition install. This includes:
 
 - A [GitLab Omnibus](https://docs.gitlab.com/omnibus/) Pod
 - Redis
-- Postgresql
 
 ## Prerequisites
 
 - _At least_ 3 GB of RAM available on your cluster, in chunks of 1 GB
-- Kubernetes 1.4+ with Beta APIs enabled
+- Kubernetes 1.6
 - PV provisioner support in the underlying infrastructure
 - The ability to point a DNS entry or URL at your GitLab install
-
-## Installing the Chart
-
-run
-```
-   make deploy
-```
 
 ## Persistence
 

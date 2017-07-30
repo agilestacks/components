@@ -12,7 +12,7 @@ image: gitlab/gitlab-ce:9.4.1-ce.0
 ## The URL (with protocol) that your users will use to reach the install.
 ## ref: https://docs.gitlab.com/omnibus/settings/configuration.html#configuring-the-external-url-for-gitlab
 ##
-externalUrl: gitlab.${component.gitlab.name}.app.${dns.name}
+externalUrl: http://${component.gitlab.name}.app.${dns.name}
 
 ## Change the initial default admin password if set. If not set, you'll be
 ## able to set it when you first visit your install.
@@ -35,7 +35,7 @@ ingress:
       # - secretName: gitlab.cluster.local
       #   hosts:
       #     - gitlab.cluster.local
-  url: gitlab.${component.gitlab.name}.app.${dns.name}
+  url: ${component.gitlab.name}.app.${dns.name}
 
 ## Configure external service ports
 ## ref: http://kubernetes.io/docs/user-guide/services/
@@ -52,10 +52,10 @@ resources:
   ## ref: https://docs.gitlab.com/ce/install/requirements.html#hardware-requirements
   requests:
     memory: 1Gi
-    cpu: 500m
+    cpu: 100m
   limits:
     memory: 2Gi
-    cpu: 1
+    cpu: 500m
 
 ## Enable persistence using Persistent Volume Claims
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
@@ -89,12 +89,20 @@ persistence:
 ##
 postgresql:
 
-  postgresUser: ${ component.postgresql.user } 
-  postgresPassword: ${ component.postgresql.password }
-  postgresDatabase: gitlab
+  postgresUser: ${component.postgresql.user} 
+  postgresPassword: ${component.postgresql.password}
+  postgresDatabase: ${component.postgresql.database}
+  postgresHostname: ${component.postgresql.url}
 
   persistence:
     size: 10Gi
+
+
+## Configure the gitlab spceific database
+gitlab:
+  databaseUser: ${component.gitlab.db-user}
+  databasePassword: ${component.gitlab.db-password}
+  database: gitlab
 
 ## Configuration values for the redis dependency.
 ## ref: https://github.com/kubernetes/charts/blob/master/stable/redis/README.md
