@@ -25,13 +25,10 @@ parameters:
     - name:    namespace
       default: gitlab 
       env:     NAMESPACE
-    - name:    user
-    - name:    password
-    - name:    database
     - name:    volume
       default: 8Gi
     - name:    port
-      default: 5432
+      default: 80 
     - name:    saml_provider_url
       default: https://dev-458481.oktapreview.com/app/generic-saml/exkbff0f7nb3y4CcU0h7/saml2
       env:     SAML_PROVIDER_URL

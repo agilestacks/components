@@ -88,13 +88,9 @@ persistence:
 ## ref: https://github.com/kubernetes/charts/blob/master/stable/postgresql/README.md
 ##
 postgresql:
-  # 9.6 is the newest supported version for the GitLab container
-  imageTag: "9.6"
-  cpu: 1000m
-  memory: 1Gi
 
-  postgresUser: gitlab
-  postgresPassword: gitlab
+  postgresUser: ${ component.postgresql.user } 
+  postgresPassword: ${ component.postgresql.password }
   postgresDatabase: gitlab
 
   persistence:

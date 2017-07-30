@@ -1,13 +1,15 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "fullname" . }}
+  name: gitlab-config
   labels:
-    app: {{ template "fullname" . }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
+    app: gitlab
+    chart: Agilestacks Gitlab CE
+    release: 0.1
+    heritage: gitlab
 data:
+  db_host: ${ component.postgresql.url }
+  db_name: gitlab
   ## This is used by GitLab Omnibus as the primary means of configuration.
   ## ref: https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template
   ##
