@@ -4,13 +4,11 @@ metadata:
   name: jenkins
   namespace: ${component.automation-hub.namespace}
 data:
-  cloud.json: |-
-    {
-        "automation_hub_image": "${component.automation-hub.image}",
-        "auth_service_image":   "${component.auth-service.image}",
-        "secrets_service_image":   "${component.secrets-service.image}",
-        "control_plane": "${ui.reactor}",
-        "automation_hub_endpoint": "http://${component.automation-hub.service}.${component.automation-hub.namespace}.svc.cluster.local",
-        "auth_service_endpoint": "http://${component.auth-service.service}.${component.auth-service.namespace}.svc.cluster.local/api/v1",
-        "secrets_service_endpoint": "http://${component.secrets-service.service}.${component.secrets-service.namespace}.svc.cluster.local/api/v1"
-    }
+  AUTOMATION_HUB_IMAGE: "${component.automation-hub.image}"
+  AUTH_SERVICE_IMAGE:   "${component.auth-service.image}"
+  SECRETS_SERVICE_IMAGE:   "${component.secrets-service.image}"
+  CONTROL_PLANE: "${ui.reactor}"
+  AUTOMATION_HUB_ENDPOINT: "http://${component.automation-hub.service}.${component.automation-hub.namespace}.svc.cluster.local"
+  AUTH_SERVICE_ENDPOINT: "http://${component.auth-service.service}.${component.auth-service.namespace}.svc.cluster.local/api/v1"
+  SECRETS_SERVICE_ENDPOINT: "http://${component.secrets-service.service}.${component.secrets-service.namespace}.svc.cluster.local/api/v1"
+  JENKINS_URL: "http://${component.jenkins.namespace}.app.${dns.domain}"
