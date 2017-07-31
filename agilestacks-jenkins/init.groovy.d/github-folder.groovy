@@ -2,6 +2,7 @@
 
 import jenkins.branch.OrganizationFolder
 import org.jenkinsci.plugins.github_branch_source.*
+import com.cloudbees.jenkins.GitHubWebHook
 
 import jenkins.*
 import jenkins.model.*
@@ -13,7 +14,7 @@ import com.cloudbees.plugins.credentials.common.*
 import com.cloudbees.plugins.credentials.domains.*
 import org.jenkinsci.plugins.plaincredentials.impl.*
 import org.jenkinsci.plugins.github.config.*
-import jenkins.branch.BranchIndexingCause;
+import jenkins.branch.BranchIndexingCause
 import java.util.logging.Logger
 
 def log = Logger.getLogger(this.class.name)
@@ -60,5 +61,6 @@ if (!ofs.any { it.name == 'agilestacks' }) {
   gh.description = 'Agile Stacks Inc, Github Organization'
   gh.navigators << nav
   gh.scheduleBuild(0, new BranchIndexingCause())
+  def registered = GitHubWebHook.get().reRegisterAllHooks();
   jenk.save()
 }
