@@ -12,4 +12,4 @@ staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods find java.util.Col
 method io.fabric8.kubernetes.api.model.Container getImage
 method io.fabric8.kubernetes.api.model.Container setImage java.lang.String
 method io.fabric8.kubernetes.client.dsl.Replaceable replace java.lang.Object
-staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods find java.util.Collection 
+staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods find java.util.Collection
