@@ -1,14 +1,14 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: jenkins
-  namespace: ${component.automation-hub.namespace}
+  name: agilestacks
+  namespace: ${component.jenkins.namespace}
 data:
   AUTOMATION_HUB_IMAGE: "${component.automation-hub.image}"
   AUTH_SERVICE_IMAGE:   "${component.auth-service.image}"
   SECRETS_SERVICE_IMAGE:   "${component.secrets-service.image}"
   CONTROL_PLANE: "${ui.reactor}"
-  AUTOMATION_HUB_ENDPOINT: "http://${component.automation-hub.service}.${component.automation-hub.namespace}.svc.cluster.local"
+  AUTOMATION_HUB_ENDPOINT: "http://${component.automation-hub.service}.${component.automation-hub.namespace}.svc.cluster.local/api/v1"
   AUTH_SERVICE_ENDPOINT: "http://${component.auth-service.service}.${component.auth-service.namespace}.svc.cluster.local/api/v1"
   SECRETS_SERVICE_ENDPOINT: "http://${component.secrets-service.service}.${component.secrets-service.namespace}.svc.cluster.local/api/v1"
   JENKINS_URL: "http://${component.jenkins.namespace}.app.${dns.domain}"
