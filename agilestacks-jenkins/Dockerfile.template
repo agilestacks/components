@@ -3,6 +3,7 @@ FROM docker.io/agilestacks/jenkins:2.46.1-3
 ENV  JENKINS_URL        http://${component.jenkins.namespace}.app.${dns.domain}
 ENV  ADMIN_EMAIL        ${component.jenkins.email}
 ENV  GITHUB_DEPLOY_KEY  ${component.jenkins.github_key}
+ENV  SLACK_TOKEN        ${component.jenkins.slack.token}
 
 COPY init.groovy.d/*.groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY approvals.txt $SCRIPT_APPROVAL_DIR/agilestacks.txt
