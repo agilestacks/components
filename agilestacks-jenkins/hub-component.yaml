@@ -15,6 +15,9 @@ parameters:
   parameters:
   - name: image
     env:  DOCKER_IMAGE
+  - name: namespace
+    env: NAMESPACE
+    default: jenkins
   - name: email
     default: dev@agilestacks.com
   # - name: namespace  
@@ -31,7 +34,6 @@ parameters:
   - name: service
   - name: image
   - name: namespace
-    env:  NAMESPACE
   - name: image
 - name: component.auth-service
   parameters:
