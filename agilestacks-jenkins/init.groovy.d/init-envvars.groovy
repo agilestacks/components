@@ -15,7 +15,7 @@ def globalProps = jenk.globalNodeProperties
 def envVarsNodePropertyList = globalProps.envVars
 
 if (envVarsNodePropertyList == null || envVarsNodePropertyList.empty) {
- globalProps << new hudson.slaves.EnvironmentVariablesNodeProperty()
+  globalProps << new hudson.slaves.EnvironmentVariablesNodeProperty()
 }
 
 def envVars = envVarsNodePropertyList[0]
