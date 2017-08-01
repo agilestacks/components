@@ -17,3 +17,5 @@ postgresql/volume-claim.yaml
 postgresql/volume-hostpath.yaml
 config.yaml
 namespace.yaml
+etcd-operator/charts
+values.yaml
