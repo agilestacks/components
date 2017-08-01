@@ -4,7 +4,7 @@ IMAGE_NAME   			 ?= $(notdir $(abspath .))
 VERSION      			 ?= latest
 DOCKER_IMAGE 			 ?= $(IMAGE_NAME):$(VERSION)
 AWS_DEFAULT_REGION ?= us-east-1
-NAMESPACE          ?= automation-hub
+NAMESPACE          ?= jenkins
 export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 build:
@@ -13,7 +13,7 @@ build:
 
 run:
 	docker run --name=jenkins --env "JENKINS_OPTS=-Djenkins.slaves.JnlpSlaveAgentProtocol3.enabled=true" --rm -i -t -p 8080:8080 -p 50000:50000 -p 50001:50001 $(DOCKER_IMAGE)
-.PHONY: run
+	.PHONY: run
 
 attach:
 	docker exec -i -t jenkins bash
@@ -25,6 +25,7 @@ push:
 .PHONY: push
 
 deploy: build push
+	$(kubectl) apply -f namespace.yaml
 	$(kubectl) apply -f config.yaml
 	$(MAKE) output
 .PHONY: deploy

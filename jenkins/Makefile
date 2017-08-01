@@ -47,5 +47,4 @@ undeploy:
 	$(kubectl) delete -f secrets.yaml | true
 	$(kubectl) delete -f config.yaml | true
 	$(kubectl) delete -f volume-$(VOLUME_TYPE).yaml | true
-	$(kubectl) delete -f namespace.yaml | true
 .PHONY: undeploy
