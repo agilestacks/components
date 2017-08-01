@@ -18,6 +18,7 @@ parameters:
   - name: namespace
     env: NAMESPACE
     default: jenkins
+  - name: slack.token
   - name: email
     default: dev@agilestacks.com
   # - name: namespace  
