@@ -8,8 +8,7 @@ method io.fabric8.kubernetes.api.model.extensions.Deployment getSpec
 method io.fabric8.kubernetes.api.model.extensions.DeploymentSpec getTemplate
 method io.fabric8.kubernetes.api.model.PodTemplateSpec getSpec
 method io.fabric8.kubernetes.api.model.PodSpec getContainers
-staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods find java.util.Collection
 method io.fabric8.kubernetes.api.model.Container getImage
 method io.fabric8.kubernetes.api.model.Container setImage java.lang.String
 method io.fabric8.kubernetes.client.dsl.Replaceable replace java.lang.Object
-staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods find java.util.Collection
+staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods find java.util.Collection groovy.lang.Closure
