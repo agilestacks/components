@@ -29,7 +29,7 @@ endif
 enable: wait_pod	
 	$(kubectl) run -i \
 		--env VAULT_ADDR=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:8200 \
-		vault-init --image=vault --restart=Never -n default -- /bin/sh -c "vault init"
+		vault-init --image=vault --restart=Never -n default -- /bin/sh -c "vault init -check || vault init"
 .PHONY: enable
 
 undeploy: init
