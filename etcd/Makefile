@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := deploy
 
 export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   	 ?= etcd-operator
-export COMPONENT_NAME      ?= etcd-operator
+export NAMESPACE    	   	 ?= etcd-cluster
+export COMPONENT_NAME      ?= etcd-cluster
 export DOMAIN_NAME         ?= default
 export CLUSTER_ENABLED	   ?= false
 export BACKUP_ENABLED	   ?= false
@@ -10,8 +10,7 @@ export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 
-deploy: clean init fetch wait install enable output
-	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
+deploy: clean init fetch wait install enable wait_cluster output
 .PHONY: deploy
 
 init:
@@ -69,7 +68,6 @@ enable: wait_tpr
 undeploy: init
 	$(kubectl) get --namespace $(NAMESPACE) cluster/$(COMPONENT_NAME) -o=yaml|$(kubectl) delete -f -
 	$(helm) delete --purge $(COMPONENT_NAME)
-	# $(helm) undeploy -f hub.component
 .PHONY: undeploy
 
 clean:
@@ -81,3 +79,18 @@ output:
 	@echo etcd_url=http://$(COMPONENT_NAME)-client.$(NAMESPACE).svc.cluster.local:2379
 	@echo etcd has been installed successfully.
 .PHONY: output
+
+wait_cluster:
+	@echo Waiting for etcd cluster to become healthy.
+	@for i in $$(seq 1 60); do \
+		if $(kubectl) run --rm -i -n $(NAMESPACE) --env="ETCDCTL_API=3" \
+			--env="ETCDCTL_ENDPOINTS=http://$(COMPONENT_NAME)-client.$(NAMESPACE).svc.cluster.local:2379" \
+			etcd-test --image quay.io/coreos/etcd --restart=Never -- /bin/sh -c "etcdctl endpoint health|grep -q healthy"; then \
+				echo "etcd cluster is healthy."; \
+				exit 0; \
+		fi; \
+		echo "Waiting for etcd cluster to become healthy ($$i)..."; \
+		sleep 10; \
+	done; \
+	echo "Timeout waiting for etcd cluster to become healthy" \
+	exit 1
