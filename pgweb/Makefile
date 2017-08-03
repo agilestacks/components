@@ -15,11 +15,13 @@ init:
 	@$(helm) init --client-only --upgrade
 
 install:
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	@$(helm) install . \
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
 		--replace \
 		--values values.yaml
+endif
 .PHONY: install
 
 undeploy: init

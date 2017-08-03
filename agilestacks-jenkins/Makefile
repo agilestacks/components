@@ -37,5 +37,5 @@ undeploy:
 output:
 	@echo Outputs:
 	@echo image_name=$(DOCKER_IMAGE)
-	@echo Agile Stacks Jenkisn image pushed successfully
+	@echo Agile Stacks Jenkins image pushed successfully
 .PHONY: output
