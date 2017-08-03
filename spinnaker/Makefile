@@ -34,11 +34,13 @@ fetch:
 .PHONY: fetch
 
 install:
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	$(helm) install charts/spinnaker \
 			--name $(SPINNAKER_NAMESPACE) \
 			--namespace $(SPINNAKER_NAMESPACE) \
 			--replace \
 			--values values.yaml
+endif
 .PHONY: install
 
 undeploy: init

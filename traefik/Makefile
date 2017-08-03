@@ -36,11 +36,13 @@ fetch:
 .PHONY: fetch
 
 install:
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	$(helm) install charts/traefik \
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
 		--replace \
 		--values values.yaml
+endif
 .PHONY: install
 
 undeploy: init

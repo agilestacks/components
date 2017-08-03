@@ -19,11 +19,13 @@ init:
 	@$(helm) init --client-only --upgrade
 
 install:
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	$(helm) install . \
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
 		--replace \
 		--values values.yaml
+endif
 enable: wait_pod	
 	$(kubectl) run -i \
 		--env VAULT_ADDR=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:8200 \

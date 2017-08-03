@@ -7,7 +7,6 @@ export DOMAIN_NAME         ?= default
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-
 deploy: clean init fetch wait install output
 	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
@@ -36,11 +35,13 @@ fetch:
 .PHONY: fetch
 
 install:
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	$(helm) install charts/postgresql \
-		--name $(COMPONENT_NAME) \
-		--namespace $(NAMESPACE) \
-		--replace \
-		--values values.yaml
+			--name $(COMPONENT_NAME) \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--values values.yaml
+endif
 .PHONY: install
 
 undeploy: init
