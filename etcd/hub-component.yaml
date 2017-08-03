@@ -2,32 +2,32 @@
 version: 1
 kind: component
 meta:
-  name: etcd-operator
-  brief: etcd Operator
+  name: etcd
+  brief: etcd distributed storage
   source:
-      dir: ../../components/etcd-operator
+      dir: ../../components/etcd
 
 requires:
   - kubernetes
 provides:
-  - etcd-operator
+  - etcd
 
 parameters:
   - name: dns.domain
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
-  - name: component.etcd.operator
+  - name: component.etcd
     parameters:
     - name:    name
-      default: etcd-operator
+      default: etcd-cluster
       env:     COMPONENT_NAME
     - name:    version
       brief:   etcd-operator version
       default: v0.4.2
     - name:    namespace
       brief: Kubernetes namespace to install into
-      default: etcd-operator
+      default: etcd-cluster
       env:     NAMESPACE
     - name: cluster.enabled
       brief: Start etcd cluster

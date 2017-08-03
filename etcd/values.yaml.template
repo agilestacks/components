@@ -4,7 +4,7 @@
 replicaCount: 1
 image:
   repository: quay.io/coreos/etcd-operator
-  tag: ${component.etcd.operator.version}
+  tag: ${component.etcd.version}
   pullPolicy: IfNotPresent
 resources:
   limits:
@@ -21,19 +21,19 @@ commandArgs:
 ## etcd-cluster specific values
 cluster:
   enabled: false
-  name: ${component.etcd.operator.name}
-  size: ${component.etcd.operator.cluster.size}
-  version: ${component.etcd.operator.cluster.version}
+  name: ${component.etcd.name}
+  size: ${component.etcd.cluster.size}
+  version: ${component.etcd.cluster.version}
   backup:
     enabled: false
     config:
       ## short snapshot interval for testing, do not use this in production!
-      backupIntervalInSecond: ${component.etcd.operator.cluster.backupInterval}
-      maxBackups: ${component.etcd.operator.cluster.maxBackups}
+      backupIntervalInSecond: ${component.etcd.cluster.backupInterval}
+      maxBackups: ${component.etcd.cluster.maxBackups}
       storageType: "S3"
       s3:
-        s3Bucket: ${component.etcd.operator.cluster.s3bucket}
-        awsSecret: ${component.etcd.operator.cluster.awssecret}
+        s3Bucket: ${component.etcd.cluster.s3bucket}
+        awsSecret: ${component.etcd.cluster.awssecret}
 
 ## Install Default RBAC roles and bindings
 rbac:

@@ -1,4 +1,4 @@
-# ETCD Operator Hub Component
+# ETCD Hub Component
 
 [etcd Operator](https://github.com/coreos/etcd-operator) Hub Component as Kubernetes deployment installed from kubernetes chart [stable/etcd-operator](https://github.com/kubernetes/charts/tree/master/stable/etcd-operator).
 
