@@ -10,7 +10,7 @@ export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 
-deploy: clean init fetch wait install enable wait_cluster output
+deploy: clean init fetch wait install enable output
 .PHONY: deploy
 
 init:
@@ -52,6 +52,7 @@ ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
 		--replace \
+		--wait \
 		--values values.yaml
 endif
 .PHONY: install
@@ -61,6 +62,7 @@ enable: wait_tpr
 		--set cluster.backup.enabled=${BACKUP_ENABLED} \
 		--values values.yaml \
 		--namespace $(NAMESPACE) \
+		--wait \
 		$(COMPONENT_NAME) \
 		charts/etcd-operator
 .PHONY: enable
@@ -80,17 +82,3 @@ output:
 	@echo etcd has been installed successfully.
 .PHONY: output
 
-wait_cluster:
-	@echo Waiting for etcd cluster to become healthy.
-	@for i in $$(seq 1 60); do \
-		if $(kubectl) run --rm -i -n $(NAMESPACE) --env="ETCDCTL_API=3" \
-			--env="ETCDCTL_ENDPOINTS=http://$(COMPONENT_NAME)-client.$(NAMESPACE).svc.cluster.local:2379" \
-			etcd-test --image quay.io/coreos/etcd --restart=Never -- /bin/sh -c "etcdctl endpoint health|grep -q healthy"; then \
-				echo "etcd cluster is healthy."; \
-				exit 0; \
-		fi; \
-		echo "Waiting for etcd cluster to become healthy ($$i)..."; \
-		sleep 10; \
-	done; \
-	echo "Timeout waiting for etcd cluster to become healthy" \
-	exit 1

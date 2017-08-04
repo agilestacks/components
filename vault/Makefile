@@ -24,9 +24,10 @@ ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
 		--replace \
+		--wait \
 		--values values.yaml
 endif
-enable: wait_pod	
+enable:	
 	$(kubectl) run -i \
 		--env VAULT_ADDR=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:8200 \
 		vault-init --image=vault --restart=Never -n default -- /bin/sh -c "vault init -check || vault init"
@@ -62,13 +63,3 @@ wait:
 	echo "Timeout waiting for Tiller" \
 	exit 1
 
-wait_pod:
-	@for i in $$(seq 1 60); do \
-		if $(kubectl) get pods -n ${NAMESPACE} -o jsonpath="{.items[0].status.containerStatuses[0].ready}"|grep true; then \
-			exit 0; \
-		fi; \
-		echo "Waiting for vault pod to be deployed ($$i)..."; \
-		sleep 10; \
-	done; \
-	echo "Timeout waiting for vault pod to be deployed" \
-	exit 1
