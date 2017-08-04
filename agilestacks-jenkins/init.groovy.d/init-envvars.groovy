@@ -20,10 +20,10 @@ if (envVarsNodePropertyList == null || envVarsNodePropertyList.empty) {
 
 def envVars = envVarsNodePropertyList[0]
   
-def facts =  new DefaultKubernetesClient(new ConfigBuilder().build()).
+def conf =  new DefaultKubernetesClient(new ConfigBuilder().build()).
                   configMaps().
                   inNamespace(namespace).
                   withName('agilestacks').get().data
 
-envVars << facts
+envVars << conf
 jenk.save()
