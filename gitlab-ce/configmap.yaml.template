@@ -40,7 +40,7 @@ data:
     {
       name: 'saml',
       args: {
-               assertion_consumer_service_url: 'https://${component.gitlab.name}.app.${dns.name}/users/auth/saml/callback',
+               assertion_consumer_service_url: 'https://${component.gitlab.name}.app.${dns.domain}/users/auth/saml/callback',
                idp_cert: %q( ${component.gitlab.saml_idp_cert} ),
                idp_sso_target_url: '${component.gitlab.saml_provider_url}',
                issuer: '${component.gitlab.saml_issuer_id}',
