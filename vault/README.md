@@ -5,7 +5,7 @@ This directory contains a Hub component and helm chart to deploy a Vault server.
 ## Prerequisites Details
 
 * Kubernetes 1.5
-* [etcd-operator component](https://github.com/agilestacks/components/tree/master/etcd-operator) as a backend storage (uses storage address composed from etcd-operator vars)
+* [etcd component](https://github.com/agilestacks/components/tree/master/etcd) as a backend storage (uses storage address composed from etcd component vars)
 
 ## Chart Details
 
@@ -56,7 +56,7 @@ The following tables lists the configurable parameters of the vault component an
 | `component.vault.ingress.enabled`       | Ingress for Vault      | `false`                                                        |
 | `component.vault.tls.disabled`          | Specifies if TLS will be disabled        | `false`                                      |
 | `vault`                 | Vault configuration, currently only storage backend      | `etcd`                                       |
-| `component.vault.storage.url`           | etcd url to use for storage backend      | `composed from etcd-operator vars`                                     |
+| `component.vault.storage.url`           | etcd url to use for storage backend      | `composed from etcd vars`                                     |
 | `component.vault.etcd.api`              | etcd API version to use            | `v3`                                                |
 | `component.vault.replicaCount`          | k8s replicas                        | `1`                                                 |
 | `component.vault.resources.limits.memory` | Container requested memory        | `128Mi`                                             |
