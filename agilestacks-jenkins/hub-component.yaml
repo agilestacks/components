@@ -43,6 +43,11 @@ parameters:
   - name: namespace
   - name: service
   - name: image
+- name: component.git-service
+  parameters:
+  - name: namespace
+  - name: service
+  - name: image
 - name: component.secrets-service
   parameters:
   - name: namespace
