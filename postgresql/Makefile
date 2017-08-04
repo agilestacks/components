@@ -35,6 +35,7 @@ fetch:
 .PHONY: fetch
 
 install:
+	$(kubectl) apply -f namespace.yaml
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	$(helm) install charts/postgresql \
 			--name $(COMPONENT_NAME) \
