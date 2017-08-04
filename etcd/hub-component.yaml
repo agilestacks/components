@@ -48,9 +48,9 @@ parameters:
     - name:    cluster.awssecret
       default: awsetcd
     - name:    cluster.backupInterval
-      default: 3600
+      default: 7200
     - name:    cluster.maxBackups
-      default: 5
+      default: 24
 
 templates:
   files:
