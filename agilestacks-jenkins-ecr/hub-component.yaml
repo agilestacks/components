@@ -22,6 +22,9 @@ parameters:
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
+- name: component.jenkins.service
+  default: jenkins
+  env: COMPONENT_NAME
 outputs:
 - name: component.jenkins.image
   brief: Agile Stacks Jenkins docker repository

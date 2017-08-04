@@ -16,6 +16,9 @@ parameters:
     brief:   Database instance name
     default: postgresql
     env: TF_VAR_name
+  - name: service
+    default: postgresql
+    env: COMPONENT_NAME
   - name:    database
     env: TF_VAR_database_name
   - name:    username
