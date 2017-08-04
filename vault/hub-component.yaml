@@ -51,7 +51,7 @@ parameters:
       default: 1
     - name: etcd.api
       default: "v3"
-  - name: component.etcd.operator
+  - name: component.etcd
     parameters:
       - name: name
       - name: namespace

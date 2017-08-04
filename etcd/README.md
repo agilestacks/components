@@ -1,6 +1,6 @@
 # ETCD Hub Component
 
-[etcd Operator](https://github.com/coreos/etcd-operator) Hub Component as Kubernetes deployment installed from kubernetes chart [stable/etcd-operator](https://github.com/kubernetes/charts/tree/master/stable/etcd-operator).
+etcd Hub Component (based on [etcd-operator](https://github.com/coreos/etcd-operator)) as Kubernetes deployment installed from kubernetes chart [stable/etcd-operator](https://github.com/kubernetes/charts/tree/master/stable/etcd-operator).
 
 ## Needs:
 1) kubernetes secret with aws config, cluster won't start without it if you use `backup.enabled=true`:
