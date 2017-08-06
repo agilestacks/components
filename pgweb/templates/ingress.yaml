@@ -17,6 +17,6 @@ spec:
       paths:
       - path: {{ .Values.ingress.path | quote }}
         backend:
-          serviceName: pgweb
-          servicePort: 8081
+          serviceName: {{ template "fullname" . }}
+          servicePort: {{ .Values.service.port }}
 {{- end }}
