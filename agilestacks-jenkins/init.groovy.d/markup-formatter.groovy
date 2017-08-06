@@ -1,8 +1,8 @@
-#!/usr/bin/env groovy
+// #!/usr/bin/env groovy
 
-import hudson.markup.RawHtmlMarkupFormatter
+// import hudson.markup.RawHtmlMarkupFormatter
 
-Jenkins.instance.setMarkupFormatter(new RawHtmlMarkupFormatter(false))
-Jenkins.instance.save()
+// Jenkins.instance.setMarkupFormatter(new RawHtmlMarkupFormatter(false))
+// Jenkins.instance.save()
 
-println 'Markup formatter configured.'
+// println 'Markup formatter configured.'
