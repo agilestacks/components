@@ -43,8 +43,9 @@ JSONObject formData = ['slack': ['tokenCredentialId': 'slack-secret']] as JSONOb
 def params = [
   slackTeamDomain: conf.SLACK_TEAM,
   slackToken: '',
-  slackRoom: conf.SLACK_ROOM,
+  slackRoom: conf.SLACK_CHANNEL,
   slackBuildServerUrl: conf.JENKINS_URL,
+  slackBotUser: true,
   slackSendAs: ''
 ]
 def req = [
