@@ -45,7 +45,7 @@ def params = [
   slackToken: '',
   slackRoom: conf.SLACK_CHANNEL,
   slackBuildServerUrl: conf.JENKINS_URL,
-  slackBotUser: true,
+  slackBotUser: 'true',
   slackSendAs: ''
 ]
 def req = [

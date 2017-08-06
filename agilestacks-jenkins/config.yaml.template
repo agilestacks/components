@@ -18,3 +18,4 @@ data:
   SLACK_TOKEN: "${component.jenkins.slack.token}"
   SLACK_TEAM: "${component.jenkins.slack.team}"
   SLACK_CHANNEL: "${component.jenkins.slack.channel}"
+  SLACK_WEBHOOK_TOKEN: "${component.jenkins.slack.webhookToken}"
