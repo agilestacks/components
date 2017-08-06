@@ -14,16 +14,19 @@ def jenk = Jenkins.instance
 def globalProps = jenk.globalNodeProperties
 def envVarsNodePropertyList = globalProps.envVars
 
+def envVars
 if (envVarsNodePropertyList == null || envVarsNodePropertyList.empty) {
-  globalProps << new hudson.slaves.EnvironmentVariablesNodeProperty()
+  def envVarProps = new hudson.slaves.EnvironmentVariablesNodeProperty()
+  globalProps.add( envVarProps )
+  envVars = envVarProps.envVars
+} else {
+  envVars = envVarsNodePropertyList[0]
 }
-
-def envVars = envVarsNodePropertyList[0]
   
 def conf =  new DefaultKubernetesClient(new ConfigBuilder().build()).
                   configMaps().
                   inNamespace(namespace).
                   withName('agilestacks').get().data
 
-envVars << conf
+envVars.putAll( conf )
 jenk.save()
