@@ -21,6 +21,7 @@ parameters:
   - name: slack.team
   - name: slack.token
   - name: slack.channel
+  - name: slack.webhookToken
   - name: email
     default: dev@agilestacks.com
   # - name: namespace  
