@@ -2,10 +2,10 @@
 version: 1
 kind: component
 meta:
-  name: postgresql
-  brief: PostgreSQL
+  name: traefik
+  brief: Traefik Server as ingress Controller
   source:
-      dir: ../../components/postgresql
+      dir: ../../components/traefik
 
 requires:
   - kubernetes
@@ -17,10 +17,12 @@ parameters:
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
+  - name: dns.domain.zone_id
   - name: component.ingress
     parameters:
     - name:    url_prefix
       default: www
+      env:     URL_PREFIX
     - name:    namespace
       default: ingress
       env:     NAMESPACE
@@ -40,5 +42,9 @@ outputs:
   fromTfVar: ingress_fqdn
 
 templates:
-  files:
-    - "*.template"
+  files: ["templates/*.template"]
+  extra:
+  - kind: mustache
+    files: ["deploy-aws.sh.template", "undeploy-aws.sh.template"]
+  - kind: curly
+    files: ["values.yaml.template"]

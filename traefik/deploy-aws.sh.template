@@ -1,0 +1,55 @@
+#!/bin/bash -e
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name {{dns.domain}} --max-items 1 | jq -Mr .HostedZones[0].Id | sed -e 's/\/hostedzone\///')
+ELB=""
+echo "Waiting for Load Balancer"
+for i in {1..30}; do
+  ELB=$(kubectl --namespace="{{component.ingress.namespace}}" describe svc traefik | grep Ingress | awk '{print $3}')
+  if [ ! -z "${ELB}" ]; then
+    break
+  fi
+  echo "retry..."
+  sleep 3;
+done
+
+echo "Create {{component.ingress.url_prefix}}.{{dns.domain}} CNAME for ${ELB}"
+cat << EOF > ${DIR}/upsert.json
+{
+  "Comment": "Traefik ingress",
+  "Changes": [{
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "{{component.ingress.url_prefix}}.{{dns.domain}}",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "${ELB}"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "*.{{component.ingress.url_prefix}}.{{dns.domain}}",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "${ELB}"
+      }]
+    }
+  }]
+}
+EOF
+
+CHANGE_ID=$(
+  aws route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch=file://${DIR}/upsert.json  \
+    | jq  -Mr '.ChangeInfo.Id'
+)
+
+for i in $(seq 1 60); do
+  _status=$(
+    aws route53 get-change --id ${CHANGE_ID} | jq  -Mr '.ChangeInfo.Status'
+  )
+  echo "Wait to propagate DNS record: ${_status}"
+  test "${_status}" == "INSYNC" && break
+  sleep 3
+done

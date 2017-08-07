@@ -6,9 +6,10 @@ export COMPONENT_NAME      ?= traefik
 export DOMAIN_NAME         ?= default 
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-
+export kind                ?= aws
 
 deploy: clean init fetch wait install output
+	sh ./deploy-$(kind).sh
 	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
 
@@ -41,13 +42,14 @@ ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
 		--replace \
+		--wait \
 		--values values.yaml
 endif
 .PHONY: install
 
 undeploy: init
+	sh ./undeploy-$(kind).sh
 	$(helm) delete $(COMPONENT_NAME)
-	# $(helm) undeploy -f hub.component
 .PHONY: undeploy
 
 clean:
