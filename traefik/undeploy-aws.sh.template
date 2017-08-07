@@ -1,11 +1,7 @@
-#!/bin/bash
+#!/bin/bash -e
 
-. /etc/environment
-. /etc/functions
-
-SERVICE_NAME=traefik
-NAMESPACE=${NAMESPACE:-"ingress"}
 CURR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name {{dns.domain}} --max-items 1 | jq -Mr .HostedZones[0].Id | sed -e 's/\/hostedzone\///')
 
 function delete_r53_record() {
   local record=$(
@@ -30,11 +26,5 @@ function delete_r53_record() {
   done
 }
 
-delete_r53_record "\\\\052.app.${ROOT_DOMAIN_NAME}."
-delete_r53_record "app.${ROOT_DOMAIN_NAME}."
-
-/opt/bin/kubectl --namespace="${NAMESPACE}" delete configmap traefik-config || true
-/opt/bin/kubectl --namespace="${NAMESPACE}" delete -f /srv/kubernetes/ingress/service.yaml || true
-/opt/bin/kubectl --namespace="${NAMESPACE}" delete -f /srv/kubernetes/ingress/dashboard-service.yaml || true
-/opt/bin/kubectl --namespace="${NAMESPACE}" delete -f /srv/kubernetes/ingress/deployment.yaml || true
-/opt/bin/kubectl --namespace="${NAMESPACE}" delete -f /srv/kubernetes/ingress/dashboard-ingress.yaml || true
+delete_r53_record "\\\\052.{{component.ingress.url_prefix}}.{{dns.domain}}."
+delete_r53_record "{{component.ingress.url_prefix}}.{{dns.domain}}."

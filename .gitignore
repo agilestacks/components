@@ -19,3 +19,7 @@ config.yaml
 namespace.yaml
 etcd/charts
 values.yaml
+deploy-aws.sh
+undeploy-aws.sh
+upsert.json
+traefik/charts
