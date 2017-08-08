@@ -13,7 +13,7 @@ data:
   AUTH_SERVICE_ENDPOINT: "http://${component.auth-service.service}.${component.auth-service.namespace}.svc.cluster.local/api/v1"
   GIT_SERVICE_ENDPOINT: "http://${component.git-service.service}.${component.git-service.namespace}.svc.cluster.local/api/v1"
   SECRETS_SERVICE_ENDPOINT: "http://${component.secrets-service.service}.${component.secrets-service.namespace}.svc.cluster.local/api/v1"
-  JENKINS_URL: "http://${component.jenkins.namespace}.app.${dns.domain}"
+  JENKINS_URL: "http://${component.jenkins.namespace}.${component.ingress.fqdn}"
   JENKINS_EMAIL: "${component.jenkins.email}"
   SLACK_TOKEN: "${component.jenkins.slack.token}"
   SLACK_TEAM: "${component.jenkins.slack.team}"

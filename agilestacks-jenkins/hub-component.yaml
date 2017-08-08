@@ -11,6 +11,7 @@ meta:
 # - agilestacks-jenkins-repository
 
 parameters:
+- name: component.ingress.fqdn
 - name: component.jenkins
   parameters:
   - name: image

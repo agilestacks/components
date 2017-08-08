@@ -18,6 +18,7 @@ parameters:
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
+  - name: component.ingress.fqdn
   - name: component.vault
     parameters:
     - name:    name

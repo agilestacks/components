@@ -11,6 +11,7 @@ meta:
 #   - kubernetes
 
 parameters:
+  - name: component.ingress.fqdn
   - name: component.spinnaker.namespace
     brief: Kubernetes namespace to install into
     kind: user

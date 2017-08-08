@@ -12,7 +12,7 @@ image: gitlab/gitlab-ce:9.4.1-ce.0
 ## The URL (with protocol) that your users will use to reach the install.
 ## ref: https://docs.gitlab.com/omnibus/settings/configuration.html#configuring-the-external-url-for-gitlab
 ##
-externalUrl: http://${component.gitlab.name}.app.${dns.domain}
+externalUrl: http://${component.gitlab.name}.${component.ingress.fqdn}
 
 ## Change the initial default admin password if set. If not set, you'll be
 ## able to set it when you first visit your install.
@@ -35,7 +35,7 @@ ingress:
       # - secretName: gitlab.cluster.local
       #   hosts:
       #     - gitlab.cluster.local
-  url: ${component.gitlab.name}.app.${dns.domain}
+  url: ${component.gitlab.name}.${component.ingress.fqdn}
 
 ## Configure external service ports
 ## ref: http://kubernetes.io/docs/user-guide/services/
