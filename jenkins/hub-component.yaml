@@ -11,6 +11,7 @@ meta:
 #   - kubernetes
 
 parameters:
+  - name: component.ingress.fqdn
   - name: component.jenkins.namespace
     brief: Kubernetes namespace to install into
     default: jenkins
