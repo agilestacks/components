@@ -46,8 +46,9 @@ endif
 .PHONY: install
 
 undeploy: init
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete $(COMPONENT_NAME)
-	# $(helm) undeploy -f hub.component
+endif
 .PHONY: undeploy
 
 clean:

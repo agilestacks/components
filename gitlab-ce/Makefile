@@ -42,16 +42,19 @@ install:
 	@cp configmap.yaml    charts/gitlab-ce/templates/
 	@cp requirements.yaml charts/gitlab-ce/
 	@rm charts/gitlab-ce/requirements.lock
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	$(helm) install charts/gitlab-ce \
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
 		--replace \
 		--values values.yaml
+endif
 .PHONY: install
 
 undeploy: init
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete $(COMPONENT_NAME)
-	# $(helm) undeploy -f hub.component
+endif
 .PHONY: undeploy
 
 clean:
