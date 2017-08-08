@@ -35,15 +35,20 @@ fetch:
 .PHONY: fetch
 
 install:
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	$(helm) install charts/linkerd \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--replace \
+			--wait \
 			--values values.yaml
+endif
 .PHONY: install
 
 undeploy: init
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete $(COMPONENT_NAME) --purge
+endif
 .PHONY: undeploy
 
 clean:

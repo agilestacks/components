@@ -34,7 +34,9 @@ enable:
 .PHONY: enable
 
 undeploy: init
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete --purge $(COMPONENT_NAME)
+endif
 .PHONY: undeploy
 
 clean:

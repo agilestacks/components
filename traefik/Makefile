@@ -49,7 +49,9 @@ endif
 
 undeploy: init
 	sh ./undeploy-$(kind).sh
+ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete $(COMPONENT_NAME)
+endif
 .PHONY: undeploy
 
 clean:
