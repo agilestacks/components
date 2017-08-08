@@ -17,7 +17,6 @@ parameters:
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
-  - name: dns.domain.zone_id
   - name: component.ingress
     parameters:
     - name:    url_prefix
