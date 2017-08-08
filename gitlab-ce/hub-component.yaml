@@ -11,6 +11,7 @@ provides:
   - gitlab
 
 parameters:
+  - name: component.ingress.fqdn
   - name: dns.domain
     brief: DNS domain
     kind: tech

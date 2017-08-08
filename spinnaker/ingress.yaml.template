@@ -10,7 +10,7 @@ metadata:
     agilestacks.com/stack-component: Spinnaker
 spec:
   rules:
-  - host: ${component.spinnaker.namespace}.app.${dns.domain}
+  - host: ${component.spinnaker.namespace}.${component.ingress.fqdn}
     http:
       paths:
       - path: /

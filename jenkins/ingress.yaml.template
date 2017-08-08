@@ -10,7 +10,7 @@ metadata:
     agilestacks.com/stack-component: Jenkins
 spec:
   rules:
-  - host: ${component.jenkins.namespace}.app.${dns.domain}
+  - host: ${component.jenkins.namespace}.${component.ingress.fqdn}
     http:
       paths:
       - path: /
