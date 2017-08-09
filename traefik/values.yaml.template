@@ -40,7 +40,7 @@ dashboard:
       agilestacks.com/stack-component: Traefik
   auth:
     basic:
-      ${component.ingress.user}: ${component.ingress.password}
+      ${component.ingress.user}:${component.ingress.password}
 service:
   labels:
     provider:  agilestacks.com
