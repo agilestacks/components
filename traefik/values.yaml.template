@@ -38,9 +38,9 @@ dashboard:
       component: traefik-dashboard
     annotations:
       agilestacks.com/stack-component: Traefik
-  auth:
-    basic:
-      ${component.ingress.user}:${component.ingress.password}
+#  auth:
+#    basic:
+#     ${component.ingress.user}: ${component.ingress.password}
 service:
   labels:
     provider:  agilestacks.com
@@ -52,7 +52,7 @@ service:
     fabric8.io/app-menu: development
     api.service.kubernetes.io/path: ${component.ingress.url_prefix}.${dns.domain}
 gzip:
-  enabled: true
+  enabled: false
 accessLogs:
   enabled: false
   ## Path to the access logs file. If not provided, Traefik defaults it to stdout.
