@@ -1,0 +1,38 @@
+---
+version: 1
+kind: component
+meta:
+  name: dex
+  brief: Dex OIDC and OAuth2 provider
+  source:
+      dir: ../../components/dex
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: component.dex.namespace
+    brief: Kubernetes namespace to install into
+    default: dex
+    env: NAMESPACE
+  - name: component.dex.image
+    default: quay.io/coreos/dex:v2.4.1
+  - name: component.dex.oidc.id
+    default: okta
+  - name: component.dex.oidc.name
+    default: "Okta with OpenID"
+  - name: component.dex.oidc.issuer
+    default: https://dev-458481.oktapreview.com
+  - name: component.dex.oidc.client.id
+    default: 0oabjgo0o0UIr8IPx0h7
+  - name: component.dex.oidc.client.secret
+    default: IvQuKBs-8bqOLS9HEzxSmVPudjH6W7rubuaakQhI
+  - name: cloud.region
+    kind: user
+    env: AWS_REGION
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+    env: DOMAIN_NAME
+
+templates:
+  files:
+    - "*.template"

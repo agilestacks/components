@@ -1,0 +1,60 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: dex
+  namespace: ${component.dex.namespace}
+data:
+  config.yaml: |
+    issuer: https://auth.${component.ingress.fqdn}
+    storage:
+      type: kubernetes
+      config:
+        inCluster: true
+    web:
+      http: 0.0.0.0:5556
+    grpc:
+      addr: 0.0.0.0:5557
+      tlsCert: /etc/dex-grpc-server-secret/tls-cert
+      tlsKey: /etc/dex-grpc-server-secret/tls-key
+      tlsClientCA: /etc/dex-grpc-server-secret/ca-cert
+    connectors:
+    - type: oidc
+      id: ${component.dex.oidc.id}
+      name: ${component.dex.oidc.name}
+      config:
+        issuer: ${component.dex.oidc.issuer}
+        clientID: ${component.dex.oidc.client.id}
+        clientSecret: ${component.dex.oidc.client.secret}
+        redirectURI: https://auth.${component.ingress.fqdn}/callback
+        basicAuthUnsupported: true
+    oauth2:
+      skipApprovalScreen: true
+    staticClients:
+    - id: agilestacks-console
+      redirectURIs:
+      - 'https://kubernetes.${component.ingress.fqdn}/auth/callback'
+      name: 'Agilestacks Control plane'
+      secret: FlAYFMJHIj-W5Nm3yCbYow
+    - id: agilestacks-kubectl
+      public: true
+      trustedPeers:
+      - agilestacks-console
+      name: 'Kubectl'
+      secret: LD8eafPG6-Wcc-a1sSk3XQ
+    - id: example-app
+      secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+      name: 'Example App'
+      # Where the app will be running.
+      redirectURIs:
+      - 'http://127.0.0.1:5555/callback'
+    enablePasswordDB: true
+    staticPasswords:
+    - email: "admin@agilestacks.com"
+      hash: "$2a$10$ug2BiwFAOd3nA6bDwLL7zeCZx7m4zNsmJdIFW7WM7HKqFp/KDTNuC"
+      username: "admin"
+      userID: "08a8684b-db88-4b73-90a9-3cd1661f5466"
+  consoleClientID: agilestacks-console
+  consoleSecret: FlAYFMJHIj-W5Nm3yCbYow
+  issuer: 'https://auth.${component.ingress.fqdn}'
+  kubectlClientID: agilestacks-kubectl
+  kubectlSecret: LD8eafPG6-Wcc-a1sSk3XQ
