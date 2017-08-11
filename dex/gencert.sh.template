@@ -1,0 +1,23 @@
+#!/bin/bash
+
+mkdir -p ssl
+
+cat << EOF > ssl/req.cnf
+[req]
+req_extensions = v3_req
+distinguished_name = req_distinguished_name
+
+[req_distinguished_name]
+
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = auth.${component.ingress.fqdn}
+EOF
+
+openssl genrsa -out ssl/key.pem 2048
+openssl req -new -key ssl/key.pem -out ssl/csr.pem -subj "/CN=kube-ca" -config ssl/req.cnf
+openssl x509 -req -in ssl/csr.pem -CA ../../../stack-k8s-aws/.terraform/$(DOMAIN_NAME)/.terraform/$(DOMAIN_NAME)-ca.pem -CAkey ../../../stack-k8s-aws/.terraform/$(DOMAIN_NAME)/.terraform/ca-key.pem -CAcreateserial -out ssl/cert.pem -days 10 -extensions v3_req -extfile ssl/req.cnf
