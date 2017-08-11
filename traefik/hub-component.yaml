@@ -21,6 +21,7 @@ parameters:
     parameters:
     - name:    url_prefix
       default: www
+      kind:    user
       env:     URL_PREFIX
     - name:    namespace
       default: ingress
