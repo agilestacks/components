@@ -15,7 +15,7 @@ keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = auth.${component.ingress.fqdn}
+DNS.1 = auth.${component.nginx.ingress.fqdn}
 EOF
 
 openssl genrsa -out ssl/key.pem 2048
