@@ -1,7 +1,7 @@
 spinnaker/tmp
 .helm
 postgresql/charts
-Dockerfile
+./Dockerfile
 jenkins/config.yaml
 jenkins/deployment.yaml
 jenkins/ingress.yaml
@@ -23,3 +23,4 @@ deploy-aws.sh
 undeploy-aws.sh
 upsert.json
 traefik/charts
+Dockerfile
