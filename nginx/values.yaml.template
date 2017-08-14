@@ -4,9 +4,9 @@
 controller:
   name: controller
   image:
-    repository: ${component.nginx.ingress.version.image.repository}
-    tag: ${component.nginx.ingress.version}
-    pullPolicy: ${component.nginx.ingress.image.pullPolicy}
+    repository: ${component.ingress.version.image.repository}
+    tag: ${component.ingress.version}
+    pullPolicy: ${component.ingress.image.pullPolicy}
 
   config: {}
 
@@ -55,7 +55,7 @@ controller:
   ##
   podAnnotations: {}
 
-  replicaCount: ${component.nginx.ingress.replicaCount}
+  replicaCount: ${component.ingress.replicaCount}
 
   resources: {}
     # limits:

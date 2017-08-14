@@ -26,5 +26,5 @@ function delete_r53_record() {
   done
 }
 
-delete_r53_record "\\\\052.{{component.nginx.ingress.url_prefix}}.{{dns.domain}}."
-delete_r53_record "{{component.nginx.ingress.url_prefix}}.{{dns.domain}}."
+delete_r53_record "\\\\052.{{component.ingress.url_prefix}}.{{dns.domain}}."
+delete_r53_record "{{component.ingress.url_prefix}}.{{dns.domain}}."

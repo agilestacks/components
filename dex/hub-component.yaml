@@ -8,7 +8,10 @@ meta:
       dir: ../../components/dex
 
 parameters:
-  - name: component.nginx.ingress.fqdn
+  - name: component.dex.fqdn
+    brief: Dex ingress fqdn
+    kind: user
+    env: TF_VAR_oidc_issuer_fqdn
   - name: component.dex.namespace
     brief: Kubernetes namespace to install into
     default: dex

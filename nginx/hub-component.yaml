@@ -17,7 +17,7 @@ parameters:
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
-  - name: component.nginx.ingress
+  - name: component.ingress
     parameters:
     - name:    name
       default: nginx
@@ -39,7 +39,7 @@ parameters:
       env:     NAMESPACE
 
 outputs:
-- name: component.nginx.ingress.fqdn
+- name: component.ingress.fqdn
   brief: FQDN of ingress
   fromTfVar: ingress_fqdn
 

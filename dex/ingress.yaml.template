@@ -11,10 +11,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - auth.${component.nginx.ingress.fqdn}
+        - ${component.dex.fqdn}
       secretName: dex-ingress-tls-secret
   rules:
-  - host: auth.${component.nginx.ingress.fqdn}
+  - host: ${component.dex.fqdn}
     http:
       paths:
       - path: /
