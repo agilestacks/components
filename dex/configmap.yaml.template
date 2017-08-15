@@ -5,7 +5,7 @@ metadata:
   namespace: ${component.dex.namespace}
 data:
   config.yaml: |
-    issuer: https://{component.dex.fqdn}
+    issuer: https://${kubernetes.oidc_issuer_fqdn}
     storage:
       type: kubernetes
       config:
@@ -25,7 +25,7 @@ data:
         issuer: ${component.dex.oidc.issuer}
         clientID: ${component.dex.oidc.client.id}
         clientSecret: ${component.dex.oidc.client.secret}
-        redirectURI: https://${component.dex.fqdn}/callback
+        redirectURI: https://${kubernetes.oidc_issuer_fqdn}/callback
         basicAuthUnsupported: true
     oauth2:
       skipApprovalScreen: true

@@ -8,6 +8,7 @@ meta:
       dir: ../../components/dex
 
 parameters:
+  - name: component.ingress.fqdn
   - name: kubernetes.oidc_issuer_fqdn
     kind: user
     env: OIDC_ISSUER_FQDN
@@ -39,5 +40,7 @@ parameters:
     env: TF_VAR_name
 
 templates:
-  files:
-    - "*.template"
+  files: ["templates/*.template"]
+  extra:
+  - kind: mustache
+    files: ["gencert.sh.template"]
