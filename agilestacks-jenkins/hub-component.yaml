@@ -11,6 +11,7 @@ meta:
 # - agilestacks-jenkins-repository
 
 parameters:
+- name: component.reactor.bucket
 - name: component.ingress.fqdn
 - name: component.jenkins
   parameters:
@@ -44,6 +45,12 @@ parameters:
   parameters:
   - name: namespace
   - name: service
+  - name: image
+- name: component.auth-proxy
+  parameters:
+  - name: service
+  - name: image
+  - name: namespace
   - name: image
 - name: component.git-service
   parameters:
