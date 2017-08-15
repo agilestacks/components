@@ -1,7 +1,8 @@
 .DEFAULT_GOAL := deploy
 
-export DOMAIN_NAME        ?= default 
-export NAMESPACE  ?= dex
+export TF_VAR_name   ?= test
+export DOMAIN_NAME   ?= default 
+export NAMESPACE  	 ?= dex
 
 export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
@@ -16,7 +17,6 @@ deploy-test:
 deploy:
 	sh ./gencert.sh
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply -f ca-cert-secret.yaml
 	$(kubectl) create secret tls dex-ingress-tls-secret -n $(NAMESPACE) --cert=ssl/cert.pem --key=ssl/key.pem
 	$(kubectl) apply -f grpc-client-secret.yaml
 	$(kubectl) apply -f grpc-server-secret.yaml
@@ -41,7 +41,6 @@ undeploy:
 	$(kubectl) delete -f grpc-client-secret.yaml | true
 	$(kubectl) delete -f grpc-server-secret.yaml | true
 	$(kubectl) delete secret tls dex-ingress-tls-secret -n $(NAMESPACE) | true
-	$(kubectl) delete -f ca-cert-secret.yaml | true
 	$(kubectl) delete -f configmap.yaml | true
 	
 	@rm -rf ssl
