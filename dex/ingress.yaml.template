@@ -11,10 +11,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - ${component.dex.fqdn}
+        - ${kubernetes.oidc_issuer_fqdn}
       secretName: dex-ingress-tls-secret
   rules:
-  - host: ${component.dex.fqdn}
+  - host: ${kubernetes.oidc_issuer_fqdn}
     http:
       paths:
       - path: /
