@@ -40,7 +40,8 @@ parameters:
     env: TF_VAR_name
 
 templates:
-  files: ["templates/*.template"]
+  files:
+    - "*.template"
   extra:
   - kind: mustache
     files: ["gencert.sh.template"]
