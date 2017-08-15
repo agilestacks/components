@@ -17,6 +17,9 @@ parameters:
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
+  - name: kubernetes.oidc_issuer_fqdn
+    kind: user
+    env: OIDC_ISSUER_FQDN
   - name: component.ingress
     parameters:
     - name:    name
@@ -44,7 +47,6 @@ outputs:
   fromTfVar: ingress_fqdn
 
 templates:
-  files: ["templates/*.template"]
   extra:
   - kind: mustache
     files: ["deploy-aws.sh.template", "undeploy-aws.sh.template"]
