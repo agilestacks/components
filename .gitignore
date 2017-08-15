@@ -24,3 +24,7 @@ undeploy-aws.sh
 upsert.json
 traefik/charts
 Dockerfile
+gencert.sh
+dex/ssl
+dex/charts
+nginx/charts

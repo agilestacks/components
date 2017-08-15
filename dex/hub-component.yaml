@@ -8,10 +8,9 @@ meta:
       dir: ../../components/dex
 
 parameters:
-  - name: component.dex.fqdn
-    brief: Dex ingress fqdn
+  - name: kubernetes.oidc_issuer_fqdn
     kind: user
-    env: TF_VAR_oidc_issuer_fqdn
+    env: OIDC_ISSUER_FQDN
   - name: component.dex.namespace
     brief: Kubernetes namespace to install into
     default: dex
@@ -35,6 +34,9 @@ parameters:
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
+  - name: dns.name
+    default: default
+    env: TF_VAR_name
 
 templates:
   files:

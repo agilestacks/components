@@ -4,7 +4,7 @@
 controller:
   name: controller
   image:
-    repository: ${component.ingress.version.image.repository}
+    repository: ${component.ingress.image.repository}
     tag: ${component.ingress.version}
     pullPolicy: ${component.ingress.image.pullPolicy}
 
