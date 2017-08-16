@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-auth-svc
+  namespace: ${component.dex.namespace}
+  labels:
+    k8s-app: jenkins-auth
+spec:
+  type: ClusterIP
+  selector:
+    k8s-app: jenkins-auth
+  ports:
+  - name: http
+    port: 4180
+    targetPort: http
