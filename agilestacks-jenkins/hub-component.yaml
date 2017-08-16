@@ -41,27 +41,33 @@ parameters:
   - name: image
   - name: namespace
   - name: image
+  - name: endpoint
+  - name: toolbox.image
 - name: component.auth-service
   parameters:
   - name: namespace
   - name: service
   - name: image
-- name: component.auth-proxy
+  - name: endpoint
+- name: component.api-proxy
   parameters:
   - name: service
   - name: image
   - name: namespace
   - name: image
+  - name: endpoint
 - name: component.git-service
   parameters:
   - name: namespace
   - name: service
   - name: image
+  - name: endpoint
 - name: component.secrets-service
   parameters:
   - name: namespace
   - name: service
   - name: image
+  - name: endpoint
 - name: ui.reactor
 
 outputs:
