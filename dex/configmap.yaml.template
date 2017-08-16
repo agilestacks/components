@@ -34,6 +34,7 @@ data:
     - id: agilestacks-console
       redirectURIs:
       - 'https://kubernetes.${component.ingress.fqdn}/auth/callback'
+      - 'https://jenkins.${component.ingress.fqdn}/auth/callback'
       name: 'Agilestacks Control plane'
       secret: FlAYFMJHIj-W5Nm3yCbYow
     - id: agilestacks-kubectl

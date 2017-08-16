@@ -37,7 +37,7 @@ spec:
         - name: COOKIE_SECRET
           valueFrom:
             secretKeyRef:
-              name: "monitoring-auth"
+              name: "auth-proxy"
               key: "cookie_secret"
         args:
         - '-provider=oidc'
