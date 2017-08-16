@@ -18,15 +18,16 @@ data:
       tlsKey: /etc/dex-grpc-server-secret/tls-key
       tlsClientCA: /etc/dex-grpc-server-secret/ca-cert
     connectors:
-    - type: oidc
-      id: ${component.dex.oidc.id}
-      name: ${component.dex.oidc.name}
+    - type: saml
+      id: ${component.dex.saml.id}
+      name: ${component.dex.saml.name}
       config:
-        issuer: ${component.dex.oidc.issuer}
-        clientID: ${component.dex.oidc.client.id}
-        clientSecret: ${component.dex.oidc.client.secret}
+        ssoURL: ${component.dex.saml.ssoUrl}
+        caData: ${component.dex.saml.caData}
         redirectURI: https://${kubernetes.oidc_issuer_fqdn}/callback
-        basicAuthUnsupported: true
+        usernameAttr: ${component.dex.saml.usernameAttr}
+        emailAttr: ${component.dex.saml.emailAttr}
+        groupsAttr: ${component.dex.saml.groupsAttr}
     oauth2:
       skipApprovalScreen: true
     staticClients:
