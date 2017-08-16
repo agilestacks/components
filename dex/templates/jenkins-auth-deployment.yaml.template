@@ -1,19 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: monitoring-auth-dashboard
+  name: jenkins-auth
   namespace: ${component.dex.namespace}
   labels:
-    k8s-app: monitoring-auth-dashboard
+    k8s-app: jenkins-auth
 spec:
   replicas: 1
   selector:
     matchLabels:
-      k8s-app: monitoring-auth-dashboard
+      k8s-app: jenkins-auth
   template:
     metadata:
       labels:
-        k8s-app: monitoring-auth-dashboard
+        k8s-app: jenkins-auth
     spec:
       containers:
       - name: auth-proxy
@@ -45,20 +45,20 @@ spec:
         - '-client-secret=$(CLIENT_SECRET)'
         - '-cookie-secret=$(COOKIE_SECRET)'
         - >-
-          -external-url=https://kubernetes.${component.ingress.fqdn}
+          -external-url=https://jenkins.${component.ingress.fqdn}
         - '-proxy-prefix=/auth'
         - '-pass-host-header=true'
         - '-pass-user-headers=true'
         - '-pass-basic-auth=false'
-        - '-cookie-name=_agilestacks_monitoring_auth'
-        - '-cookie-domain=kubernetes.${component.ingress.fqdn}'
+        - '-cookie-name=_agilestacks_jenkins_auth'
+        - '-cookie-domain=jenkins.${component.ingress.fqdn}'
         - '-cookie-expire=8h0m0s'
         - '-email-domain=agilestacks.com'
         - >-
-          -redirect-url=https://kubernetes.${component.ingress.fqdn}/oauth2/auth/callback
+          -redirect-url=https://jenkins.${component.ingress.fqdn}/oauth2/auth/callback
         - '-oidc-issuer-url=$(OIDC_ISSUER_URL)'
         - '-http-address=http://0.0.0.0:4180'
-        - '-upstream=http://kubernetes-dashboard.kube-system.svc:80'
+        - '-upstream=http://jenkins.jenkins.svc:8080'
         - '-ssl-insecure-skip-verify'
         ports:
         - name: http
