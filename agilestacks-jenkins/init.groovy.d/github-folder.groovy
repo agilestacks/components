@@ -13,6 +13,7 @@ import com.cloudbees.plugins.credentials.impl.*
 import com.cloudbees.plugins.credentials.common.*
 import com.cloudbees.plugins.credentials.domains.*
 import org.jenkinsci.plugins.plaincredentials.impl.*
+import org.jenkinsci.plugins.github.*
 import org.jenkinsci.plugins.github.config.*
 import jenkins.branch.BranchIndexingCause
 import java.util.logging.Logger
