@@ -26,6 +26,13 @@ deploy:
 	$(kubectl) apply -f service.yaml
 	$(kubectl) apply -f ingress.yaml
 	
+	$(kubectl) apply -f templates/monitoring-auth-secret.yaml
+	$(kubectl) create secret tls oauth-ingress-tls-secret -n $(NAMESPACE) --cert=ssl/cert.pem --key=ssl/key.pem
+	$(kubectl) apply -f templates/monitoring-auth-configmap.yaml
+	$(kubectl) apply -f templates/monitoring-auth-dashboard-deployment.yaml
+	$(kubectl) apply -f templates/monitoring-auth-dashboard-svc.yaml
+	$(kubectl) apply -f templates/monitoring-auth-ingress.yaml
+	
 	$(MAKE) output
 .PHONY: deploy
 
@@ -43,6 +50,13 @@ undeploy:
 	$(kubectl) delete -f grpc-server-secret.yaml | true
 	$(kubectl) delete secret tls dex-ingress-tls-secret -n $(NAMESPACE) | true
 	$(kubectl) delete -f configmap.yaml | true
+
+	$(kubectl) delete -f templates/monitoring-auth-ingress.yaml | true
+	$(kubectl) delete -f templates/monitoring-auth-dashboard-svc.yaml | true
+	$(kubectl) delete -f templates/monitoring-auth-dashboard-deployment.yaml | true
+	$(kubectl) delete -f templates/monitoring-auth-configmap.yaml | true
+	$(kubectl) delete -f templates/monitoring-auth-secret.yaml | true
+	$(kubectl) delete secret tls oauth-ingress-tls-secret -n $(NAMESPACE) | true
 	
 	@rm -rf ssl
 .PHONY: undeploy

@@ -16,6 +16,8 @@ subjectAltName = @alt_names
 
 [alt_names]
 DNS.1 = auth.{{dns.domain}}
+DNS.2 = kubernetes.{{component.ingress.fqdn}}
+DNS.3 = jenkins.{{component.ingress.fqdn}}
 EOF
 
 aws s3 cp s3://terraform.agilestacks.com/stack-k8s-aws/{{dns.name}}/ca-key.pem ssl/ca-key.pem
