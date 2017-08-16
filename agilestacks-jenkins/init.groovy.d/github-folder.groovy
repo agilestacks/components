@@ -41,8 +41,14 @@ userPass = new UsernamePasswordCredentialsImpl(
 )
 store.addCredentials(domain, userPass)
 
-def githubs = GitHubPluginConfig.all().get(GitHubPluginConfig.class)
-githubs.configs << new GitHubServerConfig( credentials.id )
+def githubs = GitHubPlugin.configuration()
+
+def githubConfig = new GitHubServerConfig( credentials.id )
+githubConfig.manageHooks = true
+githubs.hookSecretConfig = new HookSecretConfig( credentials.id )
+
+githubs.configs << githubConfig
+
 githubs.save()
 log.info("GitHub has been configured successfully based on secret from GITHUB_DEPLOY_KEY")
 // } else {
