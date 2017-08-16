@@ -1,0 +1,87 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: monitoring-auth-dashboard
+  namespace: ${component.dex.namespace}
+  labels:
+    k8s-app: monitoring-auth-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: monitoring-auth-dashboard
+  template:
+    metadata:
+      labels:
+        k8s-app: monitoring-auth-dashboard
+    spec:
+      containers:
+      - name: auth-proxy
+        image: 'quay.io/coreos/tectonic-monitoring-auth:v0.0.1'
+        env:
+        - name: CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: "oauth"
+              key: "consoleClientID"
+        - name: CLIENT_SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: "oauth"
+              key: "consoleSecret"
+        - name: OIDC_ISSUER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: "oauth"
+              key: "issuer"
+        - name: COOKIE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: "monitoring-auth"
+              key: "cookie_secret"
+        args:
+        - '-provider=oidc'
+        - '-client-id=$(CLIENT_ID)'
+        - '-client-secret=$(CLIENT_SECRET)'
+        - '-cookie-secret=$(COOKIE_SECRET)'
+        - >-
+          -external-url=https://kubernetes.${component.ingress.fqdn}
+        - '-proxy-prefix=/auth'
+        - '-pass-host-header=true'
+        - '-pass-user-headers=true'
+        - '-pass-basic-auth=false'
+        - '-cookie-name=_agilestacks_monitoring_auth'
+        - '-cookie-domain=kubernetes.${component.ingress.fqdn}'
+        - '-cookie-expire=8h0m0s'
+        - '-email-domain=agilestacks.com'
+        - >-
+          -redirect-url=https://kubernetes.${component.ingress.fqdn}/oauth2/auth/callback
+        - '-oidc-issuer-url=$(OIDC_ISSUER_URL)'
+        - '-http-address=http://0.0.0.0:4180'
+        - '-upstream=http://kubernetes-dashboard.kube-system.svc:80'
+        - '-ssl-insecure-skip-verify'
+        ports:
+        - name: http
+          containerPort: 4180
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 4180
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 4180
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 5m
+            memory: 10Mi
+          limits:
+            cpu: 10m
+            memory: 20Mi
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534

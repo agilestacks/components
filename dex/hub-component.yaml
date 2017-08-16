@@ -46,6 +46,7 @@ parameters:
 templates:
   files:
     - "*.template"
+    - "templates/*.template"
   extra:
   - kind: mustache
     files: ["gencert.sh.template"]

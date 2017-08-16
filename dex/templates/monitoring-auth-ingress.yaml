@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+  name: monitoring-auth-ingress
+  namespace: dex
+spec:
+  tls:
+    - hosts:
+        - kubernetes.app.oleg17.kubernetes.delivery
+      secretName: oauth-ingress-tls-secret
+  rules:
+  - host: kubernetes.app.oleg17.kubernetes.delivery
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: monitoring-auth-dashboard
+          servicePort: 4180
