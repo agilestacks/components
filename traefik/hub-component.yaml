@@ -17,6 +17,7 @@ parameters:
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
+  - name: kubernetes.oidc_issuer_fqdn
   - name: component.ingress
     parameters:
     - name:    url_prefix
