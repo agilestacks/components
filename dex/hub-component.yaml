@@ -17,7 +17,7 @@ parameters:
     default: dex
     env: NAMESPACE
   - name: component.dex.image
-    default: quay.io/coreos/dex:v2.4.1
+    default: quay.io/coreos/dex:v2.6.0
   - name: component.dex.saml.id
     default: saml
   - name: component.dex.saml.name
