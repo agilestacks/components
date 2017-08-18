@@ -12,6 +12,17 @@ for i in {1..30}; do
   sleep 3;
 done
 
+echo "Check if {{component.ingress.url_prefix}}.{{dns.domain}} exists"
+record=$(
+    aws route53 list-resource-record-sets --hosted-zone-id "${ZONE_ID}" --start-record-name "{{dns.domain}}." --start-record-type "CNAME" \
+    | jq -Mc ".ResourceRecordSets[] | select(.Name == \"{{component.ingress.url_prefix}}.{{dns.domain}}\")" \
+)
+
+if [ ! -z "${record}" ]; then
+  echo "Record {{component.ingress.url_prefix}}.{{dns.domain}} already exists \n Skip DNS UPSERT"
+  exit 0
+fi
+
 echo "Create {{component.ingress.url_prefix}}.{{dns.domain}} and {{kubernetes.oidc_issuer_fqdn}} CNAMEs for ${ELB}"
 cat << EOF > ${DIR}/upsert.json
 {
