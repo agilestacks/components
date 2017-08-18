@@ -10,7 +10,6 @@ meta:
 parameters:
   - name: component.ingress.fqdn
   - name: kubernetes.oidc_issuer_fqdn
-    env: OIDC_ISSUER_FQDN
   - name: component.dex.namespace
     brief: Kubernetes namespace to install into
     default: dex
