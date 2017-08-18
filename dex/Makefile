@@ -3,8 +3,6 @@
 export TF_VAR_name   ?= test
 export DOMAIN_NAME   ?= default 
 export NAMESPACE  	 ?= dex
-export OIDC_ISSUER_FQDN    ?= auth.$(TF_VAR_name).$(TF_VAR_base_domain)
-
 export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy-test:
