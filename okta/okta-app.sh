@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 curl="curl --silent  -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json'"
 jq="jq"
@@ -158,3 +158,6 @@ function get_creds {
 
 #function delete {}
 get_creds
+
+
+
