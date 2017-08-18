@@ -1,0 +1,83 @@
+#!/bin/bash -e
+
+curl="curl --silent  -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json'"
+jq="jq"
+
+base_url=""
+api_key=""
+app_name=""
+sso_url=""
+
+
+usage()
+{
+cat << EOF
+usage: $0 [options] command
+
+This script creates/delete Okta application
+
+OPTIONS:
+   -h      Show this message
+   -b      Url of Okta account
+   -k      Okta API key
+   -a      Okta application name
+   -u      Url of user application to use for callback
+
+Example: 
+Create application:
+$0 -b 'https://example.okta.com' -k aBCdEf0GhiJkLMno1pq2 -a 'My okta app'  -u 'https://example.net/your_application/callback' create
+Delete application:
+$0 -id 'https://example.okta.com' -k aBCdEf0GhiJkLMno1pq2 -a 'My okta app'  -u 'https://example.net/your_application/callback' delete
+EOF
+}
+
+while getopts ":b:k:a:uc:" OPTION
+do
+    case $OPTION in
+    b)
+        base_url="$OPTARG"
+    ;;
+    k)
+        api_key="$OPTARG"
+    ;;
+    a)
+        app_name="$OPTARG"
+    ;;
+    u)
+        sso_url="$OPTARG"
+    ;;
+    c)
+        operation="$OPTARG"
+    ;;
+    h)
+        usage
+        exit 1
+    ;;
+    \?)
+        usage
+        exit 1
+    ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+    ;;
+    esac
+done
+
+function check {
+    app=$($curl -G "$base_url/api/v1/apps" --data-urlencode "q=$app_name" -H "authorization: SSWS $api_key")
+    found_app=$(echo $app | jq -r .[0].label)
+    if [ "$app_name" = "$found_app" ]; then
+        echo "Okta application with name '$app_name' already exists"
+        exit 1
+    else 
+        echo "Okta application doens't exist"
+        exit 0
+    fi
+}
+
+#function create {}
+#function delete {}
+#function get_creds {}
+
+check
