@@ -1,0 +1,28 @@
+variable "role_arn" {
+  type = "string"
+  description = "Arn of the role to assume"
+}
+
+variable "external_id" {
+  type = "string"
+  description = "(OPTIONAL) external id. If blank then will be derived from var.role_arn"
+  default = ""
+}
+
+provider "aws" {
+  alias  = "client"
+
+  assume_role {
+    role_arn     = "${var.role_arn}"
+    session_name = "${uuid()}"
+    external_id  = "element(split(":","${var.role_arn}"), 4)"
+  }
+  access_key     = "${var.client_aws_access_key}"
+  secret_key     = "${var.client_aws_secret_key}"
+  region         = "${var.client_aws_region}"
+}
+
+
+output "role_arn" {
+  value = "${var.role_arn}"
+}

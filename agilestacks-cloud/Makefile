@@ -15,8 +15,9 @@ export TF_VAR_backend_bucket ?= terraform.agilestacks.com
 export TF_VAR_backend_region ?= us-east-1
 
 export COMPONENT_NAME     ?= $(notdir $(abspath .))
+export INIT_TYPE          ?= aws
 
-deploy: init plan apply
+deploy: init plan apply output
 
 init:
 	@mkdir -p .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)/.terraform
@@ -28,7 +29,13 @@ init:
  		-backend-config="key=$(COMPONENT_NAME)/$(TF_VAR_name).$(TF_VAR_base_domain)/terraform.tfstate" \
  		-backend-config="profile=$(TF_VAR_aws_profile)" \
  		. .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)
-.PHONY: init
+	$(MAKE) init_$(INIT_AWS)
+
+init_role:
+	cp -f role.tf.ignore .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)/aws.tf
+
+init_aws:
+	cp -f creds.tf.ignore .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)/aws.tf
 
 get:
 	@cd .terraform/$(TF_VAR_name).$(TF_VAR_base_domain) && \
@@ -55,3 +62,7 @@ output:
 	@cd .terraform/$(TF_VAR_name).$(TF_VAR_base_domain) && \
 	$(terraform) output -json
 .PHONY: apply
+
+
+clean:
+	rm -rf .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)
