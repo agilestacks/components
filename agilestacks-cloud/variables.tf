@@ -10,20 +10,10 @@ variable "assume_role_arn" {
   default = ""
 }
 
-variable "external_aws_region" {
+variable "client_aws_region" {
   type = "string"
   description = "External account region"
   default = "us-east-2"
-}
-
-variable "external_aws_access_key" {
-  type = "string"
-  default = ""
-}
-
-variable "external_aws_secret_key" {
-  type = "string"
-  default = ""
 }
 
 variable "base_domain" {
