@@ -1,12 +1,12 @@
-variable "role_arn" {
-  type = "string"
-  description = "Arn of the role to assume"
-}
-
 variable "external_id" {
   type = "string"
-  description = "(OPTIONAL) external id. If blank then will be derived from var.role_arn"
+  description = "External ID to assume role"
   default = ""
+}
+
+variable "assume_role_arn" {
+  type = "string"
+  description = "arn of the role to assume"
 }
 
 provider "aws" {
@@ -15,7 +15,7 @@ provider "aws" {
   assume_role {
     role_arn     = "${var.role_arn}"
     session_name = "${uuid()}"
-    external_id  = "element(split(":","${var.role_arn}"), 4)"
+    external_id  = "element(split(":","${var.assume_role_arn}"), 4)"
   }
   access_key     = "${var.client_aws_access_key}"
   secret_key     = "${var.client_aws_secret_key}"
@@ -24,5 +24,5 @@ provider "aws" {
 
 
 output "role_arn" {
-  value = "${var.role_arn}"
+  value = "${var.assume_role_arn}"
 }

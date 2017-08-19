@@ -14,8 +14,8 @@ export terraform          ?= terraform
 export TF_VAR_backend_bucket ?= terraform.agilestacks.com
 export TF_VAR_backend_region ?= us-east-1
 
-export COMPONENT_NAME     ?= $(notdir $(abspath .))
-export INIT_TYPE          ?= aws
+export COMPONENT_NAME      	 ?= $(notdir $(abspath .))
+export TYPE       		     ?= aws
 
 deploy: init plan apply output
 
@@ -29,7 +29,7 @@ init:
  		-backend-config="key=$(COMPONENT_NAME)/$(TF_VAR_name).$(TF_VAR_base_domain)/terraform.tfstate" \
  		-backend-config="profile=$(TF_VAR_aws_profile)" \
  		. .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)
-	$(MAKE) init_$(INIT_AWS)
+	$(MAKE) init_$(TYPE)
 
 init_role:
 	cp -f role.tf.ignore .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)/aws.tf
