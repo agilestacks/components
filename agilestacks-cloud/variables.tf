@@ -1,15 +1,3 @@
-variable "external_id" {
-  type = "string"
-  description = "External ID to assume role"
-  default = ""
-}
-
-variable "assume_role_arn" {
-  type = "string"
-  description = "arn of the role to assume"
-  default = ""
-}
-
 variable "client_aws_region" {
   type = "string"
   description = "External account region"
