@@ -23,7 +23,7 @@ DOCKER_IMAGE 			 ?= $(IMAGE_NAME):$(VERSION)
 AWS_DEFAULT_REGION ?= us-east-1
 
 build:
-	docker build --build-arg=from=IMAGE_NAME --no-cache --force-rm -t $(DOCKER_IMAGE) .
+	docker build --no-cache --force-rm -t $(DOCKER_IMAGE) .
 .PHONY: build
 
 run:
