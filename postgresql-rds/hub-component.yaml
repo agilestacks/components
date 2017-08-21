@@ -10,7 +10,7 @@ meta:
 parameters:
 - name: cloud.vpc
   env:  TF_VAR_vpc_id
-- name: component.postgresql.rds
+- name: component.postgresql
   parameters:
   - name:    name
     brief:   Database instance name
