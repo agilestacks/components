@@ -13,7 +13,6 @@ export terraform          ?= terraform
 
 export TF_VAR_backend_bucket ?= terraform.agilestacks.com
 export TF_VAR_backend_region ?= us-east-1
-export TF_VAR_stack_components ?= '["traefik", "jenkins"]'
 
 export COMPONENT_NAME     ?= $(notdir $(abspath .))
 
