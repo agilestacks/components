@@ -45,7 +45,7 @@ init:
 		-backend-config="bucket=$(TF_VAR_backend_bucket)" \
  		-backend-config="region=$(TF_VAR_backend_region)" \
  		-backend-config="key=$(COMPONENT_NAME)/$(TF_VAR_name).$(TF_VAR_base_domain)/terraform.tfstate" \
- 		-backend-config="profile=$(TF_VAR_aws_profile)" \
+ 		-backend-config="profile=$(AWS_PROFILE)" \
  		. .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)
 	$(MAKE) init_$(KIND)
 
