@@ -1,0 +1,32 @@
+---
+version: 1
+kind: component
+meta:
+  name: agilestacks-cloud
+  brief: AgileStacks Jenkins Container
+  source:
+    dir: ../../components/agilestacks-cloud
+
+parameters:
+- name: dns.name
+  default: default
+  env: TF_VAR_name
+- name: dns.baseDomain
+  default: stacks.delivery
+  env: TF_VAR_base_domain
+- name: cloud.region
+  kind: user
+  env: AWS_DEFAULT_REGION
+- name: component.automation-hub.toolbox.image
+
+outputs:
+- name: component.automation-hub.cloud.image
+  brief: Docker image in ECR
+  fromTfVar: repository_url
+
+templates:
+  files: ["docker/*.template"]
+  extra:
+  - kind: curly
+    files: ["*.template"]
+

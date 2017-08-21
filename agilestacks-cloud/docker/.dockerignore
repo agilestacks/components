@@ -1,0 +1,4 @@
+.terraform
+README.md
+*.template
+*.tfvars
