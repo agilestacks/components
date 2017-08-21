@@ -17,26 +17,22 @@ export TF_VAR_backend_region ?= us-east-1
 export COMPONENT_NAME      	 ?= $(notdir $(abspath .))
 export KIND       		     ?= creds
 
-IMAGE_NAME   			 ?= $(notdir $(abspath .))
-VERSION      			 ?= latest
-DOCKER_IMAGE 			 ?= $(IMAGE_NAME):$(VERSION)
-AWS_DEFAULT_REGION ?= us-east-1
+export TF_VAR_name        ?= dev
+export TF_VAR_base_domain ?= stack.delivery
+export AWS_DEFAULT_REGION ?= us-east-2
+export REGISTRY           ?= $(subst https://,,$(lastword $(shell aws ecr get-login --region $(AWS_DEFAULT_REGION))))
+export IMAGE              ?= $(REGISTRY)/agilestacks/$(TF_VAR_name).${TF_VAR_base_domain}/cloud-job
+export IMAGE_VERSION      ?= $(shell git rev-parse HEAD | colrm 7)
 
 build:
-	docker build --no-cache --force-rm -t $(DOCKER_IMAGE) .
+	@docker build -t $(IMAGE):$(IMAGE_VERSION) .
 .PHONY: build
-
-run:
-	docker run --name=jenkins --env "JENKINS_OPTS=-Djenkins.slaves.JnlpSlaveAgentProtocol3.enabled=true" --rm -i -t -p 8080:8080 -p 50000:50000 -p 50001:50001 $(DOCKER_IMAGE)
-	.PHONY: run
-
-attach:
-	docker exec -i -t jenkins bash
-.PHONY: run
 
 push:
 	aws ecr get-login --region $(AWS_DEFAULT_REGION) | sed -e 's/[ +]-e[ +]none[ +]/ /g' | sh -
-	docker push $(DOCKER_IMAGE)
+	docker tag  $(IMAGE):$(IMAGE_VERSION) $(IMAGE):latest
+	docker push $(IMAGE):$(IMAGE_VERSION)
+	docker push $(IMAGE):latest
 .PHONY: push
 
 deploy: init plan apply output
