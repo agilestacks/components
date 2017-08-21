@@ -4,8 +4,8 @@ export TF_VAR_name        ?= dev
 export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-2
 export TF_VAR_base_domain ?= stacks.delivery
-export TF_LOG             := debug
-export TF_LOG_PATH        := .terraform/terraform.log
+export TF_LOG             ?= debug
+export TF_LOG_PATH        ?= .terraform/$(TF_VAR_name).$(TF_VAR_base_domain).log
 export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
 
@@ -14,28 +14,27 @@ export terraform          ?= terraform
 export TF_VAR_backend_bucket ?= terraform.agilestacks.com
 export TF_VAR_backend_region ?= us-east-1
 
-export COMPONENT_NAME      	 ?= $(notdir $(abspath .))
-export TYPE       		     ?= aws
-
-deploy: init plan apply output
+deploy: init plan apply build push
 
 init:
-	@mkdir -p .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)/.terraform
+	@mkdir -p .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)
 	@rm -rf .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)/*
 	yes yes | $(terraform) init -get=true $(TF_CMD_OPTS) -force-copy  \
 		-backend=true -input=false \
 		-backend-config="bucket=$(TF_VAR_backend_bucket)" \
- 		-backend-config="region=$(TF_VAR_backend_region)" \
- 		-backend-config="key=$(COMPONENT_NAME)/$(TF_VAR_name).$(TF_VAR_base_domain)/terraform.tfstate" \
- 		-backend-config="profile=$(TF_VAR_aws_profile)" \
- 		. .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)
-	$(MAKE) init_$(TYPE)
+		-backend-config="region=$(TF_VAR_backend_region)" \
+		-backend-config="key=automation-hub-cloud/$(TF_VAR_name).$(TF_VAR_base_domain)/terraform.tfstate" \
+		-backend-config="profile=$(AWS_PROFILE)" \
+		. .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)
+.PHONY: init
 
-init_role:
-	cp -f role.tf.ignore .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)/aws.tf
+build:
+	@cd docker && $(MAKE) build IMAGE=$(shell $(MAKE) output | jq -rM .repository_url.value)
+.PHONY: build
 
-init_aws:
-	cp -f creds.tf.ignore .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)/aws.tf
+push:
+	@cd docker && $(MAKE) push IMAGE=$(shell $(MAKE) output | jq -rM .repository_url.value)
+.PHONY: push
 
 get:
 	@cd .terraform/$(TF_VAR_name).$(TF_VAR_base_domain) && \
@@ -61,8 +60,4 @@ undeploy: init
 output:
 	@cd .terraform/$(TF_VAR_name).$(TF_VAR_base_domain) && \
 	$(terraform) output -json
-.PHONY: apply
-
-
-clean:
-	rm -rf .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)
+.PHONY: output

@@ -1,0 +1,10 @@
+FROM ${component.automation-hub.toolbox.image}
+
+LABEL maintainer="Antons Kranga <anton@agilestacks.com>"
+
+COPY . /app
+
+WORKDIR /app
+
+ENTRYPOINT make
+CMD [deploy]
