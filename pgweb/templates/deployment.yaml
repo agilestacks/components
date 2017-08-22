@@ -22,24 +22,9 @@ spec:
         env:
         - name: DATABASE_URL
           valueFrom:
-            configMapKeyRef:
-              name: {{ template "fullname" . }}-config
-              key: postgres-url
-        - name: PORT
-          valueFrom:
-            configMapKeyRef:
-              name: {{ template "fullname" . }}-config
-              key: postgres-port
-        - name: AUTH_USER
-          valueFrom:
             secretKeyRef:
               name: {{ template "fullname" . }}
-              key: postgres-user
-        - name: AUTH_PASS
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "fullname" . }}
-              key: postgres-password
+              key: database-url
         ports:
         - name: http
           containerPort: 8081

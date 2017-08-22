@@ -30,8 +30,6 @@ parameters:
     - name: port
       default: "5432"
     - name: database
-    - name: volume
-      default: 8Gi
 
 templates:
   files:
