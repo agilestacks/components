@@ -1,10 +1,6 @@
 image: "sosedoff/pgweb:0.9.7"
 
-postgresUrl:      ${component.postgresql.url}
-postgresPort:     ${component.postgresql.port}
-postgresUser:     ${component.postgresql.user}
-postgresPassword: ${component.postgresql.password}
-postgresDatabase: ${component.postgresql.database}
+databaseUrl:      postgres://${component.postgresql.user}:${component.postgresql.password}@${component.postgresql.url}:${component.postgresql.port}/${component.postgresql.database}?sslmode=[mode]
 
 ingress:
   enabled: true
