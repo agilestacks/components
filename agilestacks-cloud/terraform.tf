@@ -17,7 +17,7 @@ variable "base_domain" {
 
 
 module "ecr" {
-  source = "github.com/agilestacks/terraform-modules//ecr"
+  source = "github.com/agilestacks/terraform-modules.git//ecr"
   name   = "agilestacks/${var.name}.${var.base_domain}/cloud"
 }
 
