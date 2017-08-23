@@ -12,7 +12,7 @@ A component that to bootstrap AgileStacks resources in cloud account of the clie
 Terraform 0.9+ should be installed. 
 - `AWS_DEFAULT_PROFILE` - base cloud account credentials are taken from profile or EC2 instance profile
 - `AWS_DEFAULT_REGION` - region of base cloud account
-- `KIND` - `creds` or `role`
+- `KIND` - `creds`, `role` or `creds-with-iam`
 - `TF_VAR_name` - name of the cloud account (in terms of Control Plane)
 - `TF_VAR_base_domain` - base domain (a hosted zone name in out account)
 - `TF_VAR_client_aws_region` - AWS region in cloud account
