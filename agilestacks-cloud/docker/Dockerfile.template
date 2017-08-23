@@ -1,4 +1,4 @@
-FROM ${component.automation-hub.toolbox.image}
+FROM ${component.automation-hub.toolbox.image_name}
 
 LABEL maintainer="Antons Kranga <anton@agilestacks.com>"
 

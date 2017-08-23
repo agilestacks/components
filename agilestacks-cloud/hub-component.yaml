@@ -17,7 +17,7 @@ parameters:
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
-- name: component.automation-hub.toolbox.image
+- name: component.automation-hub.toolbox.image_name
 
 outputs:
 - name: component.automation-hub.cloud.image
