@@ -15,7 +15,7 @@ provider "aws" {
   assume_role {
     role_arn     = "${var.role_arn}"
     session_name = "${uuid()}"
-    external_id  = "${coalesce("${"${var.external_id}", "${element(split(":","${var.assume_role_arn}"), 4)}")}"
+    external_id  = "${coalesce("${var.external_id}", "${element(split(":","${var.assume_role_arn}"), 4)}")}"
   }
   access_key     = "${var.client_aws_access_key}"
   secret_key     = "${var.client_aws_secret_key}"
