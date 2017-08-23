@@ -19,7 +19,7 @@ deploy: init plan apply build push
 init:
 	@mkdir -p .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)
 	@rm -rf .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)/*
-	yes yes | $(terraform) init -get=true $(TF_CMD_OPTS) -force-copy  \
+	$(terraform) init -get=true $(TF_CMD_OPTS) -force-copy  \
 		-backend=true -input=false \
 		-backend-config="bucket=$(TF_VAR_backend_bucket)" \
 		-backend-config="region=$(TF_VAR_backend_region)" \
