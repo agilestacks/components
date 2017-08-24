@@ -44,3 +44,6 @@ dex/templates/jenkins-auth-svc.yaml
 dex/templates/monitoring-auth-dashboard-deployment.yaml
 dex/templates/monitoring-auth-dashboard-svc.yaml
 nginx/charts
+vault/init.txt
+
+.init.txt
