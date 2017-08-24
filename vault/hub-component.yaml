@@ -57,6 +57,22 @@ parameters:
       - name: name
       - name: namespace
 
+outputs:
+- name: component.vault.url
+  fromTfVar: vault_url
+- name: component.vault.token.root
+  fromTfVar: Initial_Root_Token
+- name: component.vault.key.unseal1
+  fromTfVar: Unseal_Key_1
+- name: component.vault.key.unseal2
+  fromTfVar: Unseal_Key_2
+- name: component.vault.key.unseal3
+  fromTfVar: Unseal_Key_3
+- name: component.vault.key.unseal4
+  fromTfVar: Unseal_Key_4
+- name: component.vault.key.unseal5
+  fromTfVar: Unseal_Key_5
+
 templates:
   files:
     - "*.template"
