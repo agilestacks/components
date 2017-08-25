@@ -41,9 +41,9 @@ endif
 .PHONY: undeploy
 
 clean:
-	@rm -rf $(HELM_HOME)
-	@rm -rf charts
-	@rm -f .init.txt
+	@rm -rf $(HELM_HOME) || true
+	@rm -rf charts       || true
+	@rm -f .init.txt     || true
 
 output:
 	@echo Outputs:
