@@ -43,7 +43,7 @@ endif
 clean:
 	@rm -rf $(HELM_HOME)
 	@rm -rf charts
-	@rm .init.txt
+	@rm -f .init.txt
 
 output:
 	@echo Outputs:
