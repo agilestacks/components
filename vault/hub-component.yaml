@@ -26,7 +26,7 @@ parameters:
       env:     COMPONENT_NAME
     - name:    version
       brief:   vault version
-      default: 0.7.3
+      default: 0.8.1
     - name:    image.repository
       default: vault
     - name:    image.pullPolicy
@@ -42,6 +42,7 @@ parameters:
     - name: port
       brief: Port to listen on
       default: 8200
+      env: VAULT_PORT
     - name: ingress.enabled
       brief: Deploy ingress for vault
       env:     INGRESS_ENABLED
