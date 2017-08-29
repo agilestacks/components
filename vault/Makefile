@@ -9,15 +9,13 @@ export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export vault               ?= vault
 
-export SECRET_SHARES     ?= 5
-export SECRET_THRESHOLD  ?= 3
-
-export VAULT_ADDR        := http://127.0.0.1:8200
-export VAULT_SKIP_VERIFY ?= true
+export SECRET_SHARES       ?= 5
+export SECRET_THRESHOLD    ?= 3
+export VAULT_ADDR          := http://127.0.0.1:8200
+export VAULT_SKIP_VERIFY   ?= true
 
 VAULT_PORT  ?= 8200
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
-VAULT_POD   := $(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name})
 
 # deploy: enable output
 deploy: clean init wait install connect enable unseal disconnect output
@@ -63,11 +61,11 @@ seal: auth
 .PHONY: seal
 
 
-undeploy: init
+undeploy: init disconnect
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete --purge $(COMPONENT_NAME)
 endif
-	rm -f $(UNSEAL_FILE)
+	# rm -f $(UNSEAL_FILE)
 .PHONY: undeploy
 
 auth:
@@ -77,7 +75,7 @@ auth:
 
 connect:
 	@$(MAKE) disconnect
-	@$(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}
+	$(eval VAULT_POD=$(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}))
 	@echo Start proxy to pod/$(VAULT_POD)
 	nohup $(kubectl) port-forward $(VAULT_POD) $(VAULT_PORT):8200 &
 	@echo Connecting to vault at $(VAULT_ADDR)
@@ -86,7 +84,7 @@ connect:
 			exit 0; \
 		fi; \
 		echo "Waiting for pod/$(VAULT_POD) to connect ($$i)..."; \
-		sleep 1; \
+		sleep 3; \
 	done; \
 	echo "Timeout for pod/$(VAULT_POD)"; \
 	exit 1
@@ -94,7 +92,7 @@ connect:
 
 
 disconnect:
-	@echo Drop connection to pod/$(VAULT_POD)
+	@echo Drop connection to vault pod
 	@kill $(shell ps aux | grep -E "kubectl*|port-forward*|$(VAULT_PORT):8200" | awk '{print $$2}' | xargs) | true
 .PHONY: connect
 
