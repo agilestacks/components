@@ -47,3 +47,4 @@ nginx/charts
 vault/init.txt
 
 .init.txt
+vault/.vault
