@@ -7,15 +7,24 @@ export DOMAIN_NAME         ?= default
 export INGRESS_ENABLED	   ?= false
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+export vault               ?= vault
 
-UNSEAL_KEYS = $(shell cat .init.txt |grep '^Unseal' | sed -e 's/ /_/g' | sed -e 's/:_/=/g' | for key in $$(cat -); do echo $$key; done)
-ROOT_TOKEN = $(shell cat .init.txt | grep '^Initial' | sed -e 's/ /_/g' | sed -e 's/:_/=/g')
+export SECRET_SHARES     ?= 5
+export SECRET_THRESHOLD  ?= 3
+
+export VAULT_ADDR        := http://127.0.0.1:8200
+export VAULT_SKIP_VERIFY ?= true
+
+VAULT_PORT  ?= 8200
+UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
+VAULT_POD   := $(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name})
 
 # deploy: enable output
-deploy: clean init wait install enable output
+deploy: clean init wait install connect enable unseal disconnect output
 .PHONY: deploy
 
 init:
+	@mkdir -p .vault
 	@mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
 
@@ -28,30 +37,77 @@ ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 		--wait \
 		--values values.yaml
 endif
+
+
 enable:
-	$(kubectl) run -i --rm \
-		--env VAULT_ADDR=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:8200 \
-		vault-init --image=vault --restart=Never -n default -- /bin/sh -c "vault init -check || vault init" > .init.txt
+	@if [ `curl -sS $(VAULT_ADDR)/v1/sys/health | jq -rM .initialized` == "false" ]; then \
+		echo "Initialize vault"; \
+		curl \
+	  		-sS \
+			-X PUT \
+			-d "{\"secret_shares\":$(SECRET_SHARES), \"secret_threshold\":$(SECRET_THRESHOLD)}" \
+			$(VAULT_ADDR)/v1/sys/init > $(UNSEAL_FILE); \
+	fi;
 .PHONY: enable
+
+
+unseal:
+	@for i in $$(seq 1 $(SECRET_THRESHOLD)); do \
+		vault unseal `cat $(UNSEAL_FILE) | jq -Mr .keys[$$i]`; \
+	done;
+.PHONY: unseal
+
+
+seal: auth
+	vault seal
+.PHONY: seal
+
 
 undeploy: init
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete --purge $(COMPONENT_NAME)
 endif
+	rm -f $(UNSEAL_FILE)
 .PHONY: undeploy
 
+auth:
+	@vault auth $(shell cat $(UNSEAL_FILE) | jq -rM .root_token )
+.PHONY: auth
+
+
+connect:
+	@$(MAKE) disconnect
+	@$(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}
+	@echo Start proxy to pod/$(VAULT_POD)
+	nohup $(kubectl) port-forward $(VAULT_POD) $(VAULT_PORT):8200 &
+	@echo Connecting to vault at $(VAULT_ADDR)
+	@for i in $$(seq 1 60); do \
+		if curl -sS $(VAULT_ADDR)/v1/sys/health ; then \
+			exit 0; \
+		fi; \
+		echo "Waiting for pod/$(VAULT_POD) to connect ($$i)..."; \
+		sleep 1; \
+	done; \
+	echo "Timeout for pod/$(VAULT_POD)"; \
+	exit 1
+.PHONY: connect
+
+
+disconnect:
+	@echo Drop connection to pod/$(VAULT_POD)
+	@kill $(shell ps aux | grep -E "kubectl*|port-forward*|$(VAULT_PORT):8200" | awk '{print $$2}' | xargs) | true
+.PHONY: connect
+
+
 clean:
-	@rm -rf $(HELM_HOME) || true
-	@rm -rf charts       || true
-	@rm -f .init.txt     || true
+	@rm -rf $(HELM_HOME)      | true
+	@rm -rf charts            | true
 
 output:
 	@echo Outputs:
-	@for key in $(UNSEAL_KEYS); do \
-		echo $$key; \
-	done
-	@echo $(ROOT_TOKEN)
+	@echo root_token=$(shell cat $(UNSEAL_FILE) | jq -rM .root_token )
 	@echo vault_url=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:8200
+	@cat $(UNSEAL_FILE) | jq -Mr '.keys | to_entries | map("unseal_key_" + (.key+1|tostring) + "=" + .value) | .[]'
 	@echo Vault has been installed and initialized successfully.
 .PHONY: output
 
@@ -63,6 +119,5 @@ wait:
 		echo "Waiting for Tiller pod is up and running ($$i)..."; \
 		sleep 10; \
 	done; \
-	echo "Timeout waiting for Tiller" \
+	echo "Timeout waiting for Tiller"; \
 	exit 1
-
