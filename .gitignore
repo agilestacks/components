@@ -26,8 +26,10 @@ upsert.json
 traefik/charts
 Dockerfile
 gencert.sh
+okta-app.sh
 dex/ssl
 dex/charts
+dex/okta
 dex/ca-cert-secret.yaml
 dex/configmap.yaml
 dex/deployment.yaml
