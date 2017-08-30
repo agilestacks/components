@@ -43,8 +43,8 @@ parameters:
 
 templates:
   files:
-    - "*.template"
+    - "*.yaml.template"
     - "templates/*.template"
   extra:
   - kind: mustache
-    files: ["gencert.sh.template"]
+    files: ["*.sh.template"]
