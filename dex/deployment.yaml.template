@@ -35,6 +35,9 @@ spec:
       - name: dex-grpc-server-secret
         secret:
           secretName: dex-grpc-server-secret
+      - name: dex-okta-cert-secret
+        secret:
+          secretName: dex-okta-cert-secret
       containers:
       - name: dex
         imagePullPolicy: IfNotPresent
@@ -45,6 +48,9 @@ spec:
           mountPath: /etc/dex
         - name: dex-grpc-server-secret
           mountPath: /etc/dex-grpc-server-secret
+          readOnly: true
+        - name: dex-okta-cert-secret
+          mountPath: /etc/dex-okta-cert-secret
           readOnly: true
         ports:
         - containerPort: 5556
