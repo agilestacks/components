@@ -98,14 +98,15 @@ disconnect:
 
 
 clean:
-	@rm -rf $(HELM_HOME)      | true
-	@rm -rf charts            | true
+	@rm -rf $(HELM_HOME) | true
+	@rm -rf charts       | true
 
 output:
 	@echo Outputs:
 	@echo root_token=$(shell cat $(UNSEAL_FILE) | jq -rM .root_token )
 	@echo vault_url=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:8200
 	@cat $(UNSEAL_FILE) | jq -Mr '.keys | to_entries | map("unseal_key_" + (.key+1|tostring) + "=" + .value) | .[]'
+	@echo component_dir=$(shell pwd)
 	@echo Vault has been installed and initialized successfully.
 .PHONY: output
 
