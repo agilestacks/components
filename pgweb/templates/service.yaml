@@ -11,7 +11,7 @@ spec:
   type: {{ .Values.service.type }}
   ports:
   - name: http
-    port: {{ .Values.service.port }}
+    port: {{default "80" .Values.service.port }}
     protocol: TCP
     targetPort: http
 {{- if .Values.service.externalIPs }}

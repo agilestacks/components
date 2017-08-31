@@ -19,9 +19,15 @@ parameters:
   - name: dns.domain
     brief: DNS domain
     env: DOMAIN_NAME
-  - name: component.pgweb.name
-    default: pgweb
-    env: COMPONENT_NAME
+  - name: component.pgweb
+    parameters:
+    - name: name
+      default: pgweb
+      env: COMPONENT_NAME
+    - name: ingress.url_prefix
+      default: db
+    - name: ingress.path
+      default: /
   - name: component.postgresql
     parameters:
     - name: url
