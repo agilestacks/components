@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: pgweb
+  name: {{ template "fullname" . }}
   labels:
     app: {{ template "fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
@@ -18,5 +18,5 @@ spec:
       - path: {{ .Values.ingress.path | quote }}
         backend:
           serviceName: {{ template "fullname" . }}
-          servicePort: {{ .Values.service.port }}
+          servicePort: {{default "80" .Values.service.port }}
 {{- end }}

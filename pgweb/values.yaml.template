@@ -1,13 +1,14 @@
 image: "sosedoff/pgweb:0.9.7"
 
-databaseUrl:      postgres://${component.postgresql.user}:${component.postgresql.password}@${component.postgresql.url}:${component.postgresql.port}/${component.postgresql.database}?sslmode=[mode]
+database:
+  url: "postgres://${component.postgresql.user}:${component.postgresql.password}@${component.postgresql.url}:${component.postgresql.port}/${component.postgresql.database}?sslmode=disable"
 
 ingress:
   enabled: true
-  fqdn: ${component.pgweb.name}.${component.ingress.fqdn}
-  path: /
+  fqdn: ${component.pgweb.ingress.url_prefix}.${component.ingress.fqdn}
+  path: ${component.pgweb.ingress.path}
   imageTag: v0.1.1
   imagePullPolicy: IfNotPresent
 service:
   type: ClusterIP
-  port: 8081
+  port: 80
