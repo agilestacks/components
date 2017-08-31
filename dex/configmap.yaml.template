@@ -22,8 +22,8 @@ data:
       id: ${component.dex.saml.id}
       name: ${component.dex.saml.name}
       config:
-        ssoURL: ${component.dex.saml.ssoUrl}
-        caData: ${component.dex.saml.caData}
+        ssoURL: okta_sso_url
+        ca: /etc/dex-okta-cert-secret/okta.pem
         redirectURI: https://${kubernetes.oidc_issuer_fqdn}/callback
         usernameAttr: ${component.dex.saml.usernameAttr}
         emailAttr: ${component.dex.saml.emailAttr}

@@ -15,8 +15,11 @@ deploy-test:
 
 deploy:
 	sh ./gencert.sh
+	sh ./okta-app.sh
+	sh ./replace.sh
 	$(kubectl) apply -f namespace.yaml
 	$(kubectl) create secret tls dex-ingress-tls-secret -n $(NAMESPACE) --cert=ssl/cert.pem --key=ssl/key.pem
+	$(kubectl) create secret generic dex-okta-cert-secret -n $(NAMESPACE) --from-file=okta.pem=okta/okta.pem
 	$(kubectl) apply -f grpc-client-secret.yaml
 	$(kubectl) apply -f grpc-server-secret.yaml
 	$(kubectl) apply -f configmap.yaml
@@ -33,7 +36,6 @@ deploy:
 	$(kubectl) apply -f templates/jenkins-auth-svc.yaml
 	$(kubectl) apply -f templates/auth-proxy-ingress.yaml
 
-	sh ./okta-app.sh
 	$(MAKE) output
 .PHONY: deploy
 
@@ -50,6 +52,7 @@ undeploy:
 	$(kubectl) delete -f grpc-client-secret.yaml | true
 	$(kubectl) delete -f grpc-server-secret.yaml | true
 	$(kubectl) delete secret tls dex-ingress-tls-secret -n $(NAMESPACE) | true
+	$(kubectl) delete secret dex-okta-cert-secret -n $(NAMESPACE) | true
 	$(kubectl) delete -f configmap.yaml | true
 
 	$(kubectl) delete -f templates/auth-proxy-ingress.yaml | true
@@ -62,4 +65,5 @@ undeploy:
 	$(kubectl) delete secret tls oauth-ingress-tls-secret -n $(NAMESPACE) | true
 
 	@rm -rf ssl
+	@rm -rf okta
 .PHONY: undeploy
