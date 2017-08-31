@@ -30,6 +30,10 @@ parameters:
     default: email
   - name: component.dex.saml.groupsAttr
     default: groups
+  - name: component.dex.okta.baseURL
+    kind: user
+  - name: component.dex.okta.apiKey
+    kind: user
   - name: cloud.region
     kind: user
     env: AWS_REGION
