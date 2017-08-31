@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 export TF_VAR_name   ?= test
-export DOMAIN_NAME   ?= default 
+export DOMAIN_NAME   ?= default
 export NAMESPACE  	 ?= dex
 export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
@@ -23,7 +23,7 @@ deploy:
 	$(kubectl) apply -f deployment.yaml
 	$(kubectl) apply -f service.yaml
 	$(kubectl) apply -f ingress.yaml
-	
+
 	$(kubectl) apply -f templates/auth-proxy-secret.yaml
 	$(kubectl) create secret tls oauth-ingress-tls-secret -n $(NAMESPACE) --cert=ssl/cert.pem --key=ssl/key.pem
 	$(kubectl) apply -f templates/auth-proxy-configmap.yaml
@@ -32,7 +32,8 @@ deploy:
 	$(kubectl) apply -f templates/jenkins-auth-deployment.yaml
 	$(kubectl) apply -f templates/jenkins-auth-svc.yaml
 	$(kubectl) apply -f templates/auth-proxy-ingress.yaml
-	
+
+	sh ./okta-app.sh
 	$(MAKE) output
 .PHONY: deploy
 
@@ -59,6 +60,6 @@ undeploy:
 	$(kubectl) delete -f templates/auth-proxy-configmap.yaml | true
 	$(kubectl) delete -f templates/auth-proxy-secret.yaml | true
 	$(kubectl) delete secret tls oauth-ingress-tls-secret -n $(NAMESPACE) | true
-	
+
 	@rm -rf ssl
 .PHONY: undeploy

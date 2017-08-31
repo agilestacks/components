@@ -2,16 +2,18 @@
 
 curl="curl --silent  -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json'"
 
-base_url=""
-api_key=""
-app_name=""
-sso_url=""
+base_url="{{component.dex.okta.baseURL}}"
+api_key="{{component.dex.okta.apiKey}}"
+app_name="{{dns.domain}}"
+sso_url="https://{{kubernetes.oidc_issuer_fqdn}}/callback"
 
 username='${source.email}'
 subjectNameIdFormat='${user.userName}'
 idpIssuer='${org.externalKey}'
 
+mkdir -p okta
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 
 usage()
 {
@@ -68,7 +70,7 @@ do
     esac
 done
 
-cat << EOF > "${DIR}/app.json"
+cat << EOF > "${DIR}/okta/app.json"
 {
   "label": "${app_name}",
   "accessibility": {
@@ -127,7 +129,7 @@ cat << EOF > "${DIR}/app.json"
 EOF
 
 
-function check {
+function app_exists {
     searched_app=$1
     found_app=$($curl -G -H "authorization: SSWS $api_key" "$base_url/api/v1/apps" --data-urlencode "q=$app_name" | jq -r .[0].label)
     if [ "$searched_app" = "$found_app" ]; then
@@ -137,29 +139,37 @@ function check {
     fi
 }
 
+function app_active {
+    app_info=$($curl -G -H "authorization: SSWS $api_key" "$base_url/api/v1/apps" --data-urlencode "q=$app_name" | jq -r .[0].status)
+    if [ "$app_info" = "ACTIVE" ]; then
+      return 0
+    else
+      return 1
+    fi
+}
+
 function print_creds {
     fileOption="$1"
     metadataFile="${fileOption:=creds.xml}"
     idpIssuerId=$(xpath "${metadataFile}" "/*[local-name()='EntityDescriptor']/@entityID" 2>/dev/null | awk -F'"' '$0=$2')
     idpSsoUrl=$(xpath "${metadataFile}" "/*[local-name()='EntityDescriptor']/*[local-name()='IDPSSODescriptor']/*[local-name()='SingleSignOnService' and @Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST']/@Location" 2>/dev/null |awk -F'"' '$0=$2')
-    xpath "${metadataFile}" "/*[local-name()='EntityDescriptor']/*[local-name()='IDPSSODescriptor']/*[local-name()='KeyDescriptor' and @use='signing']/*[local-name()='KeyInfo']/*[local-name()='X509Data']/*[local-name()='X509Certificate']/text()" 2>/dev/null | tr " " "\n" | sed '1s/^/-----BEGIN CERTIFICATE-----\'$'\n/g' | sed '$s/$/\'$'\n-----END CERTIFICATE-----/g' > okta.pem
-    if [ -s okta.pem ]; then
-          openssl base64 -in okta.pem -out okta.base64
+    xpath "${metadataFile}" "/*[local-name()='EntityDescriptor']/*[local-name()='IDPSSODescriptor']/*[local-name()='KeyDescriptor' and @use='signing']/*[local-name()='KeyInfo']/*[local-name()='X509Data']/*[local-name()='X509Certificate']/text()" 2>/dev/null | tr " " "\n" | sed '1s/^/-----BEGIN CERTIFICATE-----\'$'\n/g' | sed '$s/$/\'$'\n-----END CERTIFICATE-----/g' > okta/okta.pem
+    if [ -s okta/okta.pem ]; then
           cat <<EOF
 SAML Protocol Configuration:
 OktaIssuerId=${idpIssuerId}
 OktaSSOUrl=${idpSsoUrl}
-OktaBase64Cert=$(tr -d '\r\n' < okta.base64)
+OktaBase64Cert=$(realpath okta/okta.pem)
 EOF
     else
-      echo "Okta certificate is empty, maybe application was deactivated."
+      echo "Okta certificate is empty, something went wrong."
       return 1
     fi
 }
 
 function create {
-    $curl -s -X POST "$base_url/api/v1/apps" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' --data-binary "@$DIR/app.json" > /dev/null
-    if check "$app_name"; then
+    $curl -s -X POST "$base_url/api/v1/apps" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' --data-binary "@$DIR/okta/app.json" > /dev/null
+    if app_exists "$app_name"; then
         echo "Okta application $app_name was created"
         return 0
     else
@@ -173,19 +183,24 @@ function get_creds {
     app_id=$(echo "$app_info" | jq -r .[0].id)
     app_kid=$(echo "$app_info" | jq -r .[0].credentials.signing.kid)
     app_creds=$(curl -s "$base_url/api/v1/apps/$app_id/sso/saml/metadata?kid=$app_kid" -H "authorization: SSWS $api_key" -H 'cache-control: no-cache' -H 'content-type: application/json' -H 'accept: application/xml')
-    echo "$app_creds" > "${DIR}/creds.xml"
-    if print_creds "${DIR}/creds.xml"; then
-      return 0
+    echo "$app_creds" > "${DIR}/okta/creds.xml"
+    if print_creds "${DIR}/okta/creds.xml"; then
+       return 0
     else
-      return 1
+       return 1
     fi
 }
 
-if check "$app_name"; then
+if app_exists "$app_name"; then
   echo "Okta application with name \"$app_name\" already exists."
-  echo "Getting \"$app_name\" configuration..."
-  get_creds
-  exit 0
+  if app_active; then
+    echo "Trying to get \"$app_name\" configuration..."
+    get_creds
+    exit 0
+  else
+    echo "Okta application \"$app_name\" is inactive, can't get its configuration"
+    exit 1
+  fi
 fi
 if create; then
   get_creds
