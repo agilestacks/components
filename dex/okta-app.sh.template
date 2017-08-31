@@ -38,7 +38,7 @@ $0 -id 'https://example.okta.com' -k aBCdEf0GhiJkLMno1pq2 -a 'My okta app'  -u '
 EOF
 }
 
-while getopts ":b:k:a:u:c" OPTION
+while getopts ":b:k:a:u:g:c" OPTION
 do
     case $OPTION in
     b)
@@ -52,6 +52,9 @@ do
     ;;
     u)
         sso_url="$OPTARG"
+    ;;
+    g)
+        okta_groups="$OPTARG"
     ;;
     c)
         operation="$OPTARG"
@@ -190,18 +193,42 @@ function get_app_id {
     fi
 }
 
+function get_group_id {
+  group_name="$1"
+  group_id=$($curl -G -H "authorization: SSWS $api_key" "$base_url/api/v1/groups" --data-urlencode "q=$group_name" | jq -r .[0].id)
+  if [ -n "$group_id" ]; then
+    echo "$group_id"
+  else
+    return 1
+  fi
+}
+#function get_app_groups {
+#}
+
 function assign_group {
-    group_name="$1"
-    groups_info=$($curl -G -H "authorization: SSWS $api_key" "$base_url/api/v1/groups")
-    group_id=$(echo "$groups_info" | jq -c '.[] | select(.profile.name | contains("'$group_name'"))' | jq -r .id)
-    if [ -n "$group_id" ]; then
-        app_id=$(get_app_id)
-        curl -s -X PUT "$base_url/api/v1/apps/$app_id/groups/$group_id" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' > /dev/null
-        echo "Assigned Okta group \"$okta_groups\" to \"$app_name\" Okta application"
-    else
-      echo "Okta group \"$group_name\" does not exist."
-      return 1
-    fi
+  group_name="$1"
+  group_id=$(get_group_id "$group_name")
+  if [ -n "$group_id" ]; then
+      app_id=$(get_app_id)
+      curl -s -X PUT "$base_url/api/v1/apps/"$app_id"/groups/"$group_id"" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' > /dev/null
+      echo "Assigned Okta group \"$okta_groups\" to \"$app_name\" Okta application"
+  else
+    echo "Group "$group_name" does not exist."
+    return 1
+  fi
+}
+
+function remove_group {
+  group_name="$1"
+  group_id=$(get_group_id "$group_name")
+  if [ -n "$group_id" ]; then
+      app_id=$(get_app_id)
+      curl -s -X DELETE "$base_url/api/v1/apps/"$app_id"/groups/"$group_id"" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' > /dev/null
+      echo "Deleted Okta group \"$okta_groups\" from \"$app_name\" Okta application"
+  else
+    echo "Group "$group_name" does not exist."
+    return 1
+  fi
 }
 
 function print_creds {
@@ -224,13 +251,37 @@ EOF
 }
 
 function create {
-    $curl -s -X POST "$base_url/api/v1/apps" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' --data-binary "@$DIR/okta/app.json" > /dev/null
+    curl -s -X POST "$base_url/api/v1/apps" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' --data-binary "@$DIR/okta/app.json" > /dev/null
     if app_exists "$app_name"; then
         echo "Okta application \"$app_name\" was created"
         return 0
     else
         echo "Okta application \"$app_name\" was not found"
         return 1
+    fi
+}
+
+function deactivate {
+    app_id=$(get_app_id)
+    curl -s -X POST "$base_url/api/v1/apps/"$app_id"/lifecycle/deactivate" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' > /dev/null
+    if app_active $app_name; then
+      echo "Okta application still activated."
+      return 1
+    else
+      echo "Okta application was deactivated."
+      return 0
+    fi
+}
+
+function delete {
+    app_id=$(get_app_id)
+    curl -s -X DELETE "$base_url/api/v1/apps/"$app_id"" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' > /dev/null
+    if app_exists "$app_name"; then
+        echo "Okta application \"$app_name\" was not deleted."
+        return 1
+    else
+        echo "Okta application \"$app_name\" was successfully deleted."
+        return 0
     fi
 }
 
@@ -247,11 +298,15 @@ function get_creds {
     fi
 }
 
+
 if app_exists "$app_name"; then
   echo "Okta application with name \"$app_name\" already exists."
   if app_active; then
     echo "Trying to get \"$app_name\" configuration..."
     get_creds
+    remove_group "$okta_groups"
+    deactivate
+    delete
     exit 0
   else
     echo "Okta application \"$app_name\" is inactive, can't get its configuration"
@@ -262,6 +317,3 @@ if create; then
   get_creds
   assign_group "$okta_groups"
 fi
-
-
-
