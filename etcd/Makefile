@@ -6,6 +6,7 @@ export COMPONENT_NAME      ?= etcd-cluster
 export DOMAIN_NAME         ?= default
 export CLUSTER_ENABLED	   ?= false
 export BACKUP_ENABLED	   ?= false
+export RESTORE_ENABLED	   ?= false
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
@@ -60,6 +61,7 @@ enable: wait_tpr
 	$(helm) upgrade \
 		--set cluster.enabled=${CLUSTER_ENABLED} \
 		--set cluster.backup.enabled=${BACKUP_ENABLED} \
+		--set cluster.restore.enabled=${RESTORE_ENABLED} \
 		--values values.yaml \
 		--namespace $(NAMESPACE) \
 		--wait \
