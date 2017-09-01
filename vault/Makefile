@@ -107,6 +107,7 @@ output:
 	@echo vault_url=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:8200
 	@cat $(UNSEAL_FILE) | jq -Mr '.keys | to_entries | map("unseal_key_" + (.key+1|tostring) + "=" + .value) | .[]'
 	@echo component_dir=$(shell pwd)
+	@echo
 	@echo Vault has been installed and initialized successfully.
 .PHONY: output
 

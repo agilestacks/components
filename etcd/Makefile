@@ -83,6 +83,7 @@ clean:
 output:
 	@echo Outputs:
 	@echo etcd_url=http://$(COMPONENT_NAME)-client.$(NAMESPACE).svc.cluster.local:2379
+	@echo
 	@echo etcd has been installed successfully.
 .PHONY: output
 
