@@ -3,7 +3,7 @@
 export HELM_HOME           ?= $(shell pwd)/.helm
 export NAMESPACE    	   ?= ingress
 export COMPONENT_NAME      ?= traefik
-export DOMAIN_NAME         ?= default 
+export DOMAIN_NAME         ?= default
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export kind                ?= aws
@@ -61,4 +61,5 @@ clean:
 output:
 	@echo Outputs:
 	@echo ingress_fqdn=$(URL_PREFIX).$(DOMAIN_NAME)
+	@echo
 .PHONY: output

@@ -3,7 +3,7 @@
 export HELM_HOME           ?= $(shell pwd)/.helm
 export NAMESPACE    	   	 ?= postgresql
 export COMPONENT_NAME      ?= postgresql
-export DOMAIN_NAME         ?= default 
+export DOMAIN_NAME         ?= default
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
@@ -58,5 +58,6 @@ clean:
 output:
 	@echo Outputs:
 	@echo database_url=$(COMPONENT_NAME)-postgresql.$(NAMESPACE).svc.cluster.local
+	@echo
 	@echo PostgreSQL has been installed successfully
 .PHONY: output
