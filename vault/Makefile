@@ -18,8 +18,11 @@ VAULT_PORT  ?= 8200
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
 
 # deploy: enable output
-deploy: clean init wait install connect enable unseal disconnect output
+deploy: clean init wait install sleep connect enable unseal disconnect output
 .PHONY: deploy
+
+sleep:
+	@sleep 10
 
 init:
 	@mkdir -p .vault
@@ -78,6 +81,7 @@ connect:
 	$(eval VAULT_POD=$(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}))
 	@echo Start proxy to pod/$(VAULT_POD)
 	nohup $(kubectl) port-forward $(VAULT_POD) $(VAULT_PORT):8200 &
+	@sleep 2
 	@echo Connecting to vault at $(VAULT_ADDR)
 	@for i in $$(seq 1 60); do \
 		if curl -sS $(VAULT_ADDR)/v1/sys/health ; then \
