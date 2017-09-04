@@ -1,0 +1,34 @@
+# Default values for Sysdig Monitor Helm package.
+
+rbac:
+    # true here enables creation of rbac resources
+    install: {component.sysdig.rbac.install}
+    # rbac version
+    apiVersion: v1beta1
+
+image:
+    repository: "sysdig/agent"
+    tag: {component.sysdig.version}
+    pullPolicy: "Always"
+
+sysdig:
+    # Required: You need your Sysdig Monitor access key before running agents.
+    AccessKey: {component.sysdig.AccessKey}
+
+    # Optional: Key-value agent tags following the format "key:val,key2:val2".
+    AgentTags: {component.sysdig.AgentTags}
+
+    serviceAccountName: "sysdig-account"
+
+resources:
+  requests:
+    cpu: {component.sysdig.resources.requests.cpu}
+    memory: {component.sysdig.resources.requests.memory}
+  limits:
+    cpu: {component.sysdig.resources.limits.cpu}
+    memory: {component.sysdig.resources.limits.memory}
+
+# Allow sysdig to run on Kubernetes 1.6 masters.
+tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
