@@ -55,6 +55,9 @@ job-dsl:1.64
 jquery-detached:1.2.1
 junit:1.20
 kubernetes:0.12
+kubernetes-pipeline-steps:1.5
+kubernetes-pipeline-devops-steps:1.5
+kubernetes-pipeline-aggregator:1.5
 mailer:1.20
 maven-plugin:2.17
 matrix-auth:1.7
