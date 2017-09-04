@@ -10,7 +10,7 @@ build:
 	cd docker && $(MAKE) build
 .PHONY: build
 
-push: build
+push:
 	cd docker && $(MAKE) push
 .PHONY: build
 

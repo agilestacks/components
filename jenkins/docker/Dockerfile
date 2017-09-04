@@ -30,7 +30,7 @@ COPY etc/insecure-robot.secret ${JENKINS_SECRETS_HOME}/robot
 
 RUN  /usr/local/bin/plugins.sh /plugins.txt
 
-COPY plugins/*.hpi            /usr/share/jenkins/ref/plugins/
+COPY plugins/*            /usr/share/jenkins/ref/plugins/
 
 RUN chown -R jenkins:jenkins  /usr/share/jenkins/ref && \
     mkdir -p ${JENKINS_SECRETS_HOME} && \
