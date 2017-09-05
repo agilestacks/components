@@ -6,9 +6,9 @@ ENV JENKINS_SECRETS_HOME      /usr/share/jenkins/ref/secrets
 ENV JENKINS_OPTS              -Djava.awt.headless=true
 # ENV JENKINS_OPTS -Dhudson.footerURL=http://agilestacks.com -Djenkins.slaves.JnlpSlaveAgentProtocol3.enabled=true -Djenkins.security.ApiTokenProperty.showTokenToAdmins=true
 ARG UC_DISABLED=true
+ARG PERMISSIVE_SCRIPTS=true
 
-ENV JAVA_OPTS " -Dpermissive-script-security.enabled=true \
-                -Dorg.jenkinsci.plugins.permissivescriptsecurity.PermissiveWhitelist.enabled=true \
+ENV JAVA_OPTS " -Dpermissive-script-security.enabled=${PERMISSIVE_SCRIPTS} \
                 -Dhudson.model.UpdateCenter.never=${UC_DISABLED} \
                 -Djenkins.install.runSetupWizard=false \
                 -Dhudson.model.DirectoryBrowserSupport.CSP=\"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';\" \
