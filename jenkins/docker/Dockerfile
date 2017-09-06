@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:2.71-alpine
+FROM jenkins/jenkins:2.77-alpine
 MAINTAINER Antons Kranga <anton@agilestacks.com>
 
 ENV JENKINS_SLAVE_AGENT_PORT  50000
@@ -17,7 +17,21 @@ ENV JAVA_OPTS " -Dpermissive-script-security.enabled=${PERMISSIVE_SCRIPTS} \
 ENV SCRIPT_APPROVAL_DIR        /usr/share/jenkins/ref/approval.d
 ENV CONFIG_DIR                /usr/share/jenkins/ref/config.d
 
+ARG ALLURE_VERSION=2.3.3
+ENV ALLURE_HOME /opt/allure-${ALLURE_VERSION}
+ENV PATH=${ALLURE_HOME}/bin:${PATH}
+
+ADD https://dl.bintray.com/qameta/generic/io/qameta/allure/allure/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.zip /tmp/allure.zip
+
 USER root
+
+RUN apk update && apk upgrade && \
+    apk add --no-cache zip && \
+    unzip /tmp/allure.zip -d /opt && \
+    chmod +x /bin/* && \
+    rm /var/cache/apk/* && \
+    rm -rf /tmp/*
+
 COPY plugins.txt               /plugins.txt
 COPY groovy/*.groovy           /usr/share/jenkins/ref/init.groovy.d/
 COPY etc/disable-wizard        /usr/share/jenkins/ref/jenkins.install.InstallUtil.lastExecVersion
