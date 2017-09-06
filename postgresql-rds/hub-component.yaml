@@ -8,7 +8,7 @@ meta:
     dir: ../postgresql-rds
 
 parameters:
-- name: cloud.vpc
+- name: cloud.vpc.id
   env:  TF_VAR_vpc_id
 - name: component.postgresql
   parameters:
