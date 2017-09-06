@@ -1,7 +1,8 @@
 FROM java:8-alpine
 
 ARG ALLURE_VERSION=2.3.3
-ENV PATH=/opt/allure-${ALLURE_VERSION}/bin:${PATH}
+ENV ALLURE_HOME /opt/allure-${ALLURE_VERSION}
+ENV PATH=${ALLURE_HOME}/bin:${PATH}
 
 RUN mkdir -p /allure/results && \
     mkdir -p /allure/report  && \

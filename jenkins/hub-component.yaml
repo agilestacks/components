@@ -11,24 +11,24 @@ meta:
 #   - kubernetes
 
 parameters:
-  - name: component.ingress.fqdn
-  - name: component.jenkins.namespace
-    brief: Kubernetes namespace to install into
-    default: jenkins
-    env: JENKINS_NAMESPACE
-  - name: component.jenkins.image
-    default: docker.io/agilestacks/jenkins:2.7-1
-  - name: cloud.region
-    kind: user
-    env: AWS_REGION
-  - name: dns.domain
-    brief: DNS domain
-    env: DOMAIN_NAME
-  - name: docker.registry
-    brief: DNS domain
-    env: DOCKER_REGISTRY
-  - name: nfs.server
-    brief: NFS server for NFS volumes
+- name: component.ingress.fqdn
+- name: component.jenkins.namespace
+  brief: Kubernetes namespace to install into
+  default: jenkins
+  env: JENKINS_NAMESPACE
+- name: component.jenkins.image
+  default: docker.io/agilestacks/jenkins:2.7-2
+- name: cloud.region
+  kind: user
+  env: AWS_REGION
+- name: dns.domain
+  brief: DNS domain
+  env: DOMAIN_NAME
+- name: docker.registry
+  brief: DNS domain
+  env: DOCKER_REGISTRY
+- name: nfs.server
+  brief: NFS server for NFS volumes
 
 templates:
   files:
