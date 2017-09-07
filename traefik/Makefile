@@ -9,7 +9,7 @@ export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-name
 export kind                ?= aws
 
 deploy: clean init fetch wait install output
-	sh ./deploy-$(kind).sh
+	bash -e ./deploy-$(kind).sh
 	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
 
@@ -48,7 +48,7 @@ endif
 .PHONY: install
 
 undeploy: init
-	sh ./undeploy-$(kind).sh
+	bash -e ./undeploy-$(kind).sh
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete $(COMPONENT_NAME)
 endif
