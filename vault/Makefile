@@ -22,7 +22,7 @@ deploy: clean init wait install sleep connect enable unseal disconnect output
 .PHONY: deploy
 
 sleep:
-	@sleep 10
+	@sleep 20
 
 init:
 	@mkdir -p .vault
