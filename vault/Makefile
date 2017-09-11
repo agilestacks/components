@@ -11,8 +11,9 @@ export vault               ?= vault
 
 export SECRET_SHARES       ?= 5
 export SECRET_THRESHOLD    ?= 3
-export VAULT_PORT          ?= 31321
-export VAULT_ADDR           = http://127.0.0.1:$(VAULT_PORT)
+export VAULT_PORT          ?= 8200
+export VAULT_LOCAL_PORT    := 31321
+export VAULT_ADDR          := http://127.0.0.1:$(VAULT_LOCAL_PORT)
 export VAULT_SKIP_VERIFY   ?= true
 
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
@@ -80,7 +81,7 @@ connect:
 	@$(MAKE) disconnect
 	$(eval VAULT_POD=$(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}))
 	@echo Start proxy to pod/$(VAULT_POD)
-	nohup $(kubectl) port-forward $(VAULT_POD) $(VAULT_PORT):8200 &
+	nohup $(kubectl) port-forward $(VAULT_POD) $(VAULT_LOCAL_PORT):$(VAULT_PORT) &
 	@sleep 2
 	@echo Connecting to vault at $(VAULT_ADDR)
 	@for i in $$(seq 1 60); do \
@@ -97,7 +98,7 @@ connect:
 
 disconnect:
 	@echo Drop connection to vault pod
-	@kill $(shell ps aux | grep -E "kubectl*|port-forward*|$(VAULT_PORT):8200" | grep -v grep | awk '{print $$2}' | xargs) | true
+	@kill $(shell ps aux | grep -E "kubectl*|port-forward*|$(VAULT_LOCAL_PORT):$(VAULT_PORT)" | grep -v grep | awk '{print $$2}' | xargs) | true
 .PHONY: disconnect
 
 
@@ -108,7 +109,7 @@ clean:
 output:
 	@echo Outputs:
 	@echo root_token=$(shell cat $(UNSEAL_FILE) | jq -rM .root_token )
-	@echo vault_url=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:8200
+	@echo vault_url=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:$(VAULT_PORT)
 	@cat $(UNSEAL_FILE) | jq -Mr '.keys | to_entries | map("unseal_key_" + (.key+1|tostring) + "=" + .value) | .[]'
 	@echo component_dir=$(shell pwd)
 	@echo
