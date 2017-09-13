@@ -1,3 +1,4 @@
+kubernetes:1.0
 ace-editor:1.1
 allure-jenkins-plugin:2.20
 amazon-ecr:1.6
@@ -58,11 +59,6 @@ jira:2.4.2
 job-dsl:1.64
 jquery-detached:1.2.1
 junit:1.21
-kubernetes:0.12
-kubernetes-pipeline-steps:1.5
-kubernetes-pipeline-devops-steps:1.5
-kubernetes-pipeline-aggregator:1.5
-kubernetes-pipeline-arquillian-steps:1.5
 mailer:1.20
 maven-plugin:2.17
 matrix-auth:1.7
@@ -73,7 +69,6 @@ momentjs:1.1.1
 one-shot-executor:1.2
 openid:2.2
 openid4java:0.9.8.0
-permissive-script-security:0.1
 pipeline-build-step:2.5.1
 pipeline-github-lib:1.0
 pipeline-graph-analysis:1.5

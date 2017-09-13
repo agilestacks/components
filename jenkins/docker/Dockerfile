@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:2.77-alpine
+FROM jenkins/jenkins:2.78-alpine
 MAINTAINER Antons Kranga <anton@agilestacks.com>
 
 ENV JENKINS_SLAVE_AGENT_PORT  50000
@@ -6,7 +6,7 @@ ENV JENKINS_SECRETS_HOME      /usr/share/jenkins/ref/secrets
 ENV JENKINS_OPTS              -Djava.awt.headless=true
 # ENV JENKINS_OPTS -Dhudson.footerURL=http://agilestacks.com -Djenkins.slaves.JnlpSlaveAgentProtocol3.enabled=true -Djenkins.security.ApiTokenProperty.showTokenToAdmins=true
 ARG UC_DISABLED=true
-ARG PERMISSIVE_SCRIPTS=true
+ARG PERMISSIVE_SCRIPTS=false
 
 ENV JAVA_OPTS " -Dpermissive-script-security.enabled=${PERMISSIVE_SCRIPTS} \
                 -Dhudson.model.UpdateCenter.never=${UC_DISABLED} \
@@ -23,9 +23,12 @@ ENV PATH=${ALLURE_HOME}/bin:${PATH}
 
 ADD https://dl.bintray.com/qameta/generic/io/qameta/allure/allure/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.zip /tmp/allure.zip
 
+ENV  SHARED_LIBS        '/shared-libs'
+
 USER root
 
-RUN apk update && apk upgrade && \
+RUN mkdir -p $SHARED_LIBS && \
+    apk update && apk upgrade && \
     apk add --no-cache zip && \
     unzip /tmp/allure.zip -d /opt && \
     chmod +x /bin/* && \
