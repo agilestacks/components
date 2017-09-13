@@ -12,8 +12,8 @@ export vault               ?= vault
 export SECRET_SHARES       ?= 5
 export SECRET_THRESHOLD    ?= 3
 export VAULT_PORT          ?= 8200
-export VAULT_LOCAL_PORT    := 31321
-export VAULT_ADDR          := http://127.0.0.1:$(VAULT_LOCAL_PORT)
+export VAULT_LOCAL_PORT    ?= 31321
+export VAULT_ADDR          ?= http://127.0.0.1:$(VAULT_LOCAL_PORT)
 export VAULT_SKIP_VERIFY   ?= true
 
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
