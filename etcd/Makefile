@@ -33,6 +33,7 @@ wait:
 wait_tpr:
 	@for i in $$(seq 1 60); do \
 		if $(kubectl) get thirdpartyresources/cluster.etcd.coreos.com; then \
+			sleep 5; \
 			exit 0; \
 		fi; \
 		echo "Waiting for thirdpartyresource/cluster.etcd.coreos.com to be deployed ($$i)..."; \
