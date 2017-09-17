@@ -27,13 +27,13 @@ parameters:
   - name:    password
     env: TF_VAR_database_password
 outputs:
-- name: component.postgresql.rds.host
+- name: component.postgresql.host
   fromTfVar: endpoint
-- name: component.postgresql.rds.url
+- name: component.postgresql.url
   fromTfVar: hostname
-- name: component.postgresql.rds.port
+- name: component.postgresql.port
   fromTfVar: port
-- name: component.postgresql.rds.user
+- name: component.postgresql.user
   fromTfVar: username
 
 templates:
