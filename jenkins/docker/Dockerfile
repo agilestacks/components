@@ -17,7 +17,7 @@ ENV JAVA_OPTS " -Dpermissive-script-security.enabled=${PERMISSIVE_SCRIPTS} \
 ENV SCRIPT_APPROVAL_DIR        /usr/share/jenkins/ref/approval.d
 ENV CONFIG_DIR                /usr/share/jenkins/ref/config.d
 
-ARG ALLURE_VERSION=2.3.3
+ARG ALLURE_VERSION=2.3.5
 ENV ALLURE_HOME /opt/allure-${ALLURE_VERSION}
 ENV PATH=${ALLURE_HOME}/bin:${PATH}
 
