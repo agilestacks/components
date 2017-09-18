@@ -26,6 +26,9 @@ parameters:
     env: TF_VAR_database_username
   - name:    password
     env: TF_VAR_database_password
+  - name: rds.instance_type
+    default: db.t2.micro
+    env: TF_VAR_instance_type
 outputs:
 - name: component.postgresql.host
   fromTfVar: endpoint
