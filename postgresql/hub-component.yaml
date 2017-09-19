@@ -30,6 +30,8 @@ parameters:
     - name:    database
     - name:    volume
       default: 8Gi
+    - name:    storageClass
+      default: ebs-gp2
     - name:    port
       default: 5432
 

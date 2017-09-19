@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   	 ?= postgresql
+export NAMESPACE    	   ?= postgresql
 export COMPONENT_NAME      ?= postgresql
 export DOMAIN_NAME         ?= default
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
@@ -31,7 +31,7 @@ fetch:
 	$(helm) fetch \
 		--destination charts \
 		--untar stable/postgresql \
-		--version 0.8.2
+		--version 0.8.3
 .PHONY: fetch
 
 install:
