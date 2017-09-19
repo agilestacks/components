@@ -35,7 +35,7 @@ parameters:
       default: "83c6bb73-95b4-44f1-9729-bfbf7d1726db"
     - name: AgentTags
       brief: Key-value agent tags following the format "key:val,key2:val2"
-      default: ""
+      default: " "
     - name:    resources.limits.memory
       default: "768Mi"
     - name:    resources.requests.memory
