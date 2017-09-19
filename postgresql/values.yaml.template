@@ -13,7 +13,7 @@ persistence:
   ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
   ## Default: volume.alpha.kubernetes.io/storage-class: default
   ##
-  # storageClass:
+  storageClass: ${component.postgresql.storageClass}
   accessMode: ReadWriteOnce
   size: 8Gi
   subPath: "postgresql-db"
@@ -21,7 +21,7 @@ persistence:
 metrics:
   enabled: false
   image: wrouesnel/postgres_exporter
-  imageTag: v0.1.1Ō¬
+  imageTag: v0.1.1
   imagePullPolicy: IfNotPresent
   resources:
     requests:
