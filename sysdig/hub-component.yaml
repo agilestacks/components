@@ -31,9 +31,9 @@ parameters:
       env:     NAMESPACE
     - name: rbac.install
       default: false
-    - name: AccessKey
+    - name: accessKey
       default: "83c6bb73-95b4-44f1-9729-bfbf7d1726db"
-    - name: AgentTags
+    - name: agentTags
       brief: Key-value agent tags following the format "key:val,key2:val2"
       default: " "
     - name:    resources.limits.memory
