@@ -13,10 +13,10 @@ image:
 
 sysdig:
     # Required: You need your Sysdig Monitor access key before running agents.
-    AccessKey: ${component.sysdig.AccessKey}
+    AccessKey: ${component.sysdig.accessKey}
 
     # Optional: Key-value agent tags following the format "key:val,key2:val2".
-    AgentTags: ${component.sysdig.AgentTags}
+    AgentTags: ${component.sysdig.agentTags}
 
     serviceAccountName: "sysdig-account"
 
