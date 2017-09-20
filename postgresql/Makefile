@@ -31,7 +31,7 @@ fetch:
 	$(helm) fetch \
 		--destination charts \
 		--untar stable/postgresql \
-		--version 0.8.3
+		--version 0.8.2
 .PHONY: fetch
 
 install:
