@@ -5,10 +5,10 @@ meta:
   name: jenkins
   brief: Jenkins CI Server
   source:
-      dir: ../../components/jenkins
+    dir: ../../components/jenkins
 
-# requires:
-#   - kubernetes
+requires:
+  - kubernetes
 
 parameters:
 - name: component.ingress.fqdn

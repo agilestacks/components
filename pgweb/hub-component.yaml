@@ -5,10 +5,11 @@ meta:
   name: pgweb
   brief: PostgreSQL Web Client
   source:
-      dir: ../../components/postgresql
+    dir: ../../components/postgresql
 
-# requires:
-#   - postgresql
+requires:
+  - kubernetes
+  - postgresql
 
 parameters:
   - name: component.ingress.fqdn

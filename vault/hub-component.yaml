@@ -5,12 +5,12 @@ meta:
   name: vault
   brief: Vault a tool for managing secrets
   source:
-      dir: ../../components/vault
+    dir: ../../components/vault
 
-#requires:
- # - kubernetes
-#provides:
-#  - vault
+requires:
+  - kubernetes
+provides:
+  - vault
 
 
 parameters:

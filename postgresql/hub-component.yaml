@@ -5,7 +5,7 @@ meta:
   name: postgresql
   brief: PostgreSQL
   source:
-      dir: ../../components/postgresql
+    dir: ../../components/postgresql
 
 requires:
   - kubernetes
