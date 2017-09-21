@@ -9,7 +9,6 @@ meta:
 
 requires:
   - kubernetes
-  - postgresql
 
 parameters:
   - name: component.ingress.fqdn
