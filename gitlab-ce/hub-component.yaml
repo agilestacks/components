@@ -13,22 +13,25 @@ provides:
 parameters:
   - name: component.ingress.fqdn
   - name: dns.domain
-    brief: DNS domain
-    kind: tech
     env: DOMAIN_NAME
   - name: component.postgresql
     parameters:
-    - name:    url
-      default: automation-hub-db-postgresql.automation-hub.svc.cluster.local
+    - name: database
+    - name: user
+    - name: password
+    - name: url
   - name: component.gitlab
+    #kind: user
     parameters:
     - name:    name
       default: gitlab
       env:     COMPONENT_NAME
     - name:    namespace
-      default: gitlab 
+      default: gitlab
       env:     NAMESPACE
     - name:    db-name
+      default: gitlab
+    - name:    db-user
       default: gitlab
     - name:    db-password
       default: supersecret
@@ -37,7 +40,7 @@ parameters:
     - name:    volume
       default: 8Gi
     - name:    port
-      default: 80 
+      default: 80
     - name:    saml_provider_url
       default: https://dev-458481.oktapreview.com/app/generic-saml/exkbff0f7nb3y4CcU0h7/saml2
       env:     SAML_PROVIDER_URL

@@ -88,8 +88,7 @@ persistence:
 ## ref: https://github.com/kubernetes/charts/blob/master/stable/postgresql/README.md
 ##
 postgresql:
-
-  postgresUser: ${component.postgresql.user} 
+  postgresUser: ${component.postgresql.user}
   postgresPassword: ${component.postgresql.password}
   postgresDatabase: ${component.postgresql.database}
   postgresHostname: ${component.postgresql.url}
@@ -100,9 +99,9 @@ postgresql:
 
 ## Configure the gitlab spceific database
 gitlab:
+  database: ${component.gitlab.db-name}
   databaseUser: ${component.gitlab.db-user}
   databasePassword: ${component.gitlab.db-password}
-  database: gitlab
 
 ## Configuration values for the redis dependency.
 ## ref: https://github.com/kubernetes/charts/blob/master/stable/redis/README.md
