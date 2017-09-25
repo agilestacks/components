@@ -1,6 +1,6 @@
 name: vault
 version: 0.1.0
-appVersion: 0.8.1
+appVersion: 0.8.3
 description: A Helm chart for Vault, a tool for managing secrets
 engine: gotpl
 keywords:
