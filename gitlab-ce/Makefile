@@ -1,12 +1,12 @@
 
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE	   ?= gitlab
-export COMPONENT_NAME      ?= gitlab
-export DOMAIN_NAME         ?= default 
-export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+export HELM_HOME      ?= $(shell pwd)/.helm
+export NAMESPACE	  ?= gitlab
+export COMPONENT_NAME ?= gitlab-ce
+export DOMAIN_NAME    ?= default
+export kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+export helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 
 deploy: clean init fetch wait install
@@ -28,7 +28,6 @@ wait:
 	done; \
 	echo "Timeout waiting for Tiller" \
 	exit 1
-
 
 fetch:
 	$(helm) fetch \

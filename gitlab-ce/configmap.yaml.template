@@ -8,7 +8,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 data:
-  db_host: ${ component.postgresql.url }
+  db_host: ${component.postgresql.url}
   db_name: gitlab
   ## This is used by GitLab Omnibus as the primary means of configuration.
   ## ref: https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template
@@ -40,8 +40,8 @@ data:
     {
       name: 'saml',
       args: {
-               assertion_consumer_service_url: 'https://${component.gitlab.name}.app.${dns.domain}/users/auth/saml/callback',
-               idp_cert: %q( ${component.gitlab.saml_idp_cert} ),
+               assertion_consumer_service_url: 'http://${component.gitlab.name}.app.${dns.domain}/users/auth/saml/callback',
+               idp_cert: %q(${component.gitlab.saml_idp_cert}),
                idp_sso_target_url: '${component.gitlab.saml_provider_url}',
                issuer: '${component.gitlab.saml_issuer_id}',
                name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
