@@ -61,5 +61,6 @@ clean:
 output:
 	@echo Outputs:
 	@echo ingress_fqdn=$(URL_PREFIX).$(DOMAIN_NAME)
+	@echo sso_ingress_fqdn=$(SSO_URL_PREFIX).$(DOMAIN_NAME)
 	@echo
 .PHONY: output
