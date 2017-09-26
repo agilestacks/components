@@ -23,7 +23,7 @@ if [ ! -z "${record}" ]; then
   exit 0
 fi
 
-echo "Create {{component.ingress.url_prefix}}.{{dns.domain}} and {{kubernetes.oidc_issuer_fqdn}} CNAMEs for ${ELB}"
+echo "Create {{component.ingress.url_prefix}}.{{dns.domain}}, {{component.ingress.sso_url_prefix}}.{{dns.domain}} and {{kubernetes.oidc_issuer_fqdn}} CNAMEs for ${ELB}"
 cat << EOF > ${DIR}/upsert.json
 {
   "Comment": "Traefik ingress",
@@ -41,6 +41,26 @@ cat << EOF > ${DIR}/upsert.json
     "Action": "UPSERT",
     "ResourceRecordSet": {
       "Name": "*.{{component.ingress.url_prefix}}.{{dns.domain}}",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "${ELB}"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "{{component.ingress.sso_url_prefix}}.{{dns.domain}}",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "${ELB}"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "*.{{component.ingress.sso_url_prefix}}.{{dns.domain}}",
       "Type": "CNAME",
       "TTL": 30,
       "ResourceRecords": [{
