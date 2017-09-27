@@ -16,6 +16,7 @@ pgweb/values.yaml
 postgresql/values.yaml
 postgresql/volume-claim.yaml
 postgresql/volume-hostpath.yaml
+postgresql/aws-storage-class.yaml
 config.yaml
 namespace.yaml
 etcd/charts
