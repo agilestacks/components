@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker exec -it halyard bash /usr/local/bin/hal "$@"
