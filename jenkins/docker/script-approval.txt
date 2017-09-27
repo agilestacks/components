@@ -47,3 +47,5 @@ staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getText java.io.Fi
 staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getText java.net.URL
 staticMethod org.codehaus.groovy.runtime.EncodingGroovyMethods decodeBase64 java.lang.String
 staticMethod org.jenkinsci.plugins.configfiles.GlobalConfigFiles get
+method groovy.lang.Binding getVariables
+
