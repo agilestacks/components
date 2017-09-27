@@ -31,11 +31,12 @@ fetch:
 	$(helm) fetch \
 		--destination charts \
 		--untar stable/postgresql \
-		--version 0.8.2
+		--version 0.8.3
 .PHONY: fetch
 
 install:
 	$(kubectl) apply -f namespace.yaml
+	$(kubectl) apply -f aws-storage-class.yaml
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	$(helm) install charts/postgresql \
 			--name $(COMPONENT_NAME) \
@@ -48,6 +49,7 @@ endif
 undeploy: init
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete $(COMPONENT_NAME)
+	$(kubectl) delete -f aws-storage-class.yaml | true
 endif
 .PHONY: undeploy
 
