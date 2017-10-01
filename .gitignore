@@ -54,3 +54,4 @@ vault/init.txt
 vault/.vault
 spinnaker-hal/.hal
 redis/charts
+values-ha.yaml

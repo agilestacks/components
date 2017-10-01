@@ -6,6 +6,15 @@ export NAMESPACE 		   ?= redis
 export DOMAIN_NAME         ?= default
 export kubectl     		   ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm        		   ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+export HA_ENABLED          ?= false
+
+ifeq ($(HA_ENABLED),true)
+HELM_CHART=stable/redis-ha
+VALUES_FILE=values-ha.yaml
+else
+HELM_CHART=stable/redis
+VALUES_FILE=values.yaml
+endif
 
 deploy: clean init fetch wait install
 
@@ -29,20 +38,20 @@ wait:
 fetch:
 	$(helm) fetch \
 			--destination charts \
-			--untar stable/redis
+			--untar $(HELM_CHART)
 .PHONY: fetch
 
 install:
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	$(kubectl) create namespace $(NAMESPACE) || true
 	$(kubectl) apply -f storage-class.yaml
-	$(helm) install charts/redis \
+	$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \
 			--name-template $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--replace \
 			--wait \
-			--values values.yaml
+			--values $(VALUES_FILE)
 endif
 .PHONY: install
 
@@ -54,4 +63,5 @@ endif
 
 clean:
 	rm -rf $(HELM_HOME)
+	rm -rf charts/$(notdir $(HELM_CHART))
 	rm -rf tmp
