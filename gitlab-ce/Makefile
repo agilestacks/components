@@ -36,6 +36,8 @@ fetch:
 .PHONY: fetch
 
 install:
+	./okta-app.sh ./okta-app.sh -c create
+	./replace.sh
 	@cp secrets.yaml      charts/gitlab-ce/templates/
 	@cp deployment.yaml   charts/gitlab-ce/templates/
 	@cp configmap.yaml    charts/gitlab-ce/templates/

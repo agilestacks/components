@@ -40,11 +40,11 @@ data:
     {
       name: 'saml',
       args: {
-               assertion_consumer_service_url: 'http://${component.gitlab.name}.app.${dns.domain}/users/auth/saml/callback',
-               idp_cert: %q(${component.gitlab.saml_idp_cert}),
-               idp_sso_target_url: '${component.gitlab.saml_provider_url}',
-               issuer: '${component.gitlab.saml_issuer_id}',
-               name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
+               assertion_consumer_service_url: '{{ .Values.saml.serviceUrl }}',
+               idp_cert_fingerprint: '{{ .Values.saml.certFingerprint }}',
+               idp_sso_target_url: '{{ .Values.saml.targetUrl }}',
+               issuer: '{{ .Values.saml.issuer }}',
+               name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
              },
-      label: 'Gitlab SAML Login'
+      label: 'Gitlab Okta App'
     } ]

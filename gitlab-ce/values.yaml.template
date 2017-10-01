@@ -103,6 +103,13 @@ gitlab:
   databaseUser: ${component.gitlab.db-user}
   databasePassword: ${component.gitlab.db-password}
 
+## configure the SAML specific login details
+saml:
+  serviceUrl: {{component.ingress.protocol}}://{{kubernetes.oidc_issuer_fqdn}}/users/auth/saml/callback }}
+  certFingerprint: #SAML_FINGERPRINT#
+  targetUrl: #SAML_TARGET_URL#
+  issuer: {{kubernetes.oidc_issuer_fqdn }}
+
 ## Configuration values for the redis dependency.
 ## ref: https://github.com/kubernetes/charts/blob/master/stable/redis/README.md
 ##
