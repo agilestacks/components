@@ -14,26 +14,41 @@ export AWS_ECR_LOGIN_STRING ?= $(shell aws ecr get-login))
 export AWS_ECR_USER         ?= $(word 4,$(AWS_ECR_LOGIN_STRING))
 export AWS_ECR_REGISTRY     ?= $(lastword $(AWS_ECR_LOGIN_STRING))
 
+export SPINNAKER_FQDN       ?= spinnaker.app.$(TF_VAR_name).$(TF_VAR_base_domain)
 
-hal ?= $(abspath .)/hal
+HALYARD_HOME                ?= $(abspath .hal)/$(TF_VAR_name).$(TF_VAR_base_domain)
+hal ?= $(abspath .)/hal --color=false
+# hal ?= @docker exec -it halyard bash /usr/local/bin/hal
 
 init:
-	@mkdir -p $(abspath .hal)
-	@echo $(word 6,$(AWS_ECR_LOGIN_STRING)) > $(abspath .hal)/.ecr-pass.txt
+	@mkdir -p $(HALYARD_HOME)
+	@echo $(word 6,$(AWS_ECR_LOGIN_STRING)) > $(HALYARD_HOME)/.ecr-pass.txt
 
 start-proxy:
 	@docker pull gcr.io/spinnaker-marketplace/halyard:stable
-	docker run -d -p 127.0.0.1:8084:8084 -p 127.0.0.1:9000:9000 \
+	docker run -d \
 		--name halyard --rm \
-		-v $(abspath .hal):/root/.hal \
+		-v $(HALYARD_HOME):/root/.hal \
 		-v ~/.kube:/root/.kube:ro \
 		-v ~/.aws:/root/.aws:ro \
 		-v /$(shell pwd):$(shell pwd) \
 		-v $(STACK_K8S_AWS):$(STACK_K8S_AWS):ro \
-		-v $(abspath .hal)/.ecr-pass.txt:$(abspath .hal)/.ecr-pass.txt \
+		-v $(HALYARD_HOME)/.ecr-pass.txt:$(HALYARD_HOME)/.ecr-pass.txt \
 		gcr.io/spinnaker-marketplace/halyard:stable
-	# sleep 3
 .PHONY: start-proxy
+
+wait-proxy:
+	@for i in $$(seq 1 60); do \
+		if $(hal) --ready; then \
+			echo "Done!"; \
+			exit 0; \
+		fi; \
+		echo "Waiting for Spinnaker CLI container is up and running ($$i)..."; \
+		sleep 1; \
+	done; \
+	echo "Timeout waiting for Spinnaker CLI" \
+	exit 1
+.PHONY:  wait-proxy
 
 configure:
 	$(eval AWS_ECR_LOGIN_STRING=$(shell aws ecr get-login))
@@ -44,7 +59,7 @@ configure:
 	$(hal) config provider docker-registry enable
 	$(hal) config provider docker-registry account add ecr \
 		--username $(AWS_ECR_USER) \
-		--password-file $(abspath .hal)/.ecr-pass.txt \
+		--password-file $(HALYARD_HOME)/.ecr-pass.txt \
 		--address $(AWS_ECR_REGISTRY:https://%=%) || true
 
 	@echo added registry account ecr
@@ -58,9 +73,13 @@ configure:
 		--root-folder /spinnaker \
 		--bucket $(AWS_S3_BUCKET) \
 		--assume-role $(AWS_ASSUME_ROLE)
+
+	$(hal) config security ui edit --override-base-url http://$(SPINNAKER_FQDN)
+	# $(hal) config security authn oauth2 edit --pre-established-redirect-uri http://api.$(SPINNAKER_FQDN)
+	$(hal) config security api edit --override-base-url http://api.$(SPINNAKER_FQDN)
 .PHONY: configure
 
-deploy:
+install:
 	$(hal) config storage edit --type s3
 	$(hal) config deploy edit \
 		--account-name kubernetes \
@@ -73,4 +92,4 @@ stop-proxy:
 .PHONY: stop-proxy
 
 clean:
-	rm -rf $(abspath .hal)
+	rm -rf $(HALYARD_HOME)
