@@ -20,11 +20,15 @@ HALYARD_HOME                ?= $(abspath .hal)/$(TF_VAR_name).$(TF_VAR_base_doma
 hal ?= $(abspath .)/hal --color=false
 # hal ?= @docker exec -it halyard bash /usr/local/bin/hal
 
+deploy: init start-proxy wait configure install stop-proxy
+
+undeploy: start-proxy wait delete stop-proxy clean
+
 init:
 	@mkdir -p $(HALYARD_HOME)
 	@echo $(word 6,$(AWS_ECR_LOGIN_STRING)) > $(HALYARD_HOME)/.ecr-pass.txt
 
-start-proxy:
+start-proxy: stop-proxy
 	@docker pull gcr.io/spinnaker-marketplace/halyard:stable
 	docker run -d \
 		--name halyard --rm \
@@ -37,18 +41,17 @@ start-proxy:
 		gcr.io/spinnaker-marketplace/halyard:stable
 .PHONY: start-proxy
 
-wait-proxy:
+wait:
 	@for i in $$(seq 1 60); do \
 		if $(hal) --ready; then \
-			echo "Done!"; \
 			exit 0; \
 		fi; \
-		echo "Waiting for Spinnaker CLI container is up and running ($$i)..."; \
+		echo "Waiting for halyard container is up and running ($$i)..."; \
 		sleep 1; \
 	done; \
-	echo "Timeout waiting for Spinnaker CLI" \
+	echo "Timeout waiting for halyard" \
 	exit 1
-.PHONY:  wait-proxy
+.PHONY: wait
 
 configure:
 	$(eval AWS_ECR_LOGIN_STRING=$(shell aws ecr get-login))
@@ -86,6 +89,12 @@ install:
 		--type distributed
 	$(hal) deploy apply
 .PHONY: halyard-deploy
+
+delete:
+	@echo "Undeploy Spinnaker"
+	$(hal) deploy clean --quiet || true
+	@echo "Done"
+.PHONY: delete
 
 stop-proxy:
 	@docker stop halyard || true
