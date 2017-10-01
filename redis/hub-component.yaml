@@ -1,0 +1,49 @@
+---
+version: 1
+kind: component
+meta:
+  name: redis
+  brief: Redis component
+  source:
+      dir: ../../components/linkerd
+
+requires:
+  - kubernetes
+
+parameters:
+  - name: component.redis
+    parameters:
+    - name: volume.storageClass
+      default: "ebs-gp2"
+    - name: volume.size
+      default: 8Gi
+    - name: usePassword
+      default: "false"
+    - name: password
+      default: ""
+    - name: namespace
+      env: NAMESPACE
+      default: redis
+    - name: name
+      env: COMPONENT_NAME
+      default: redis
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+    env: DOMAIN_NAME
+  - name: docker.registry
+    brief: DNS domain
+    kind: tech
+    env: DOCKER_REGISTRY
+
+outputs:
+- name: component.redis.host
+  value: ${component.redis.name}-redis.${component.redis.namespace}.svc.cluster.local
+- name: component.redis.port
+  value: "6379"
+- name: component.redis.url
+  value: redis://${component.redis.name}-redis.${component.redis.namespace}.svc.cluster.local:6379
+
+templates:
+  files:
+    - "*.template"

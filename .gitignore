@@ -53,3 +53,4 @@ vault/init.txt
 .init.txt
 vault/.vault
 spinnaker-hal/.hal
+redis/charts
