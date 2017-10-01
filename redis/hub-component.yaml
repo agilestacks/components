@@ -13,6 +13,9 @@ requires:
 parameters:
   - name: component.redis
     parameters:
+    - name: volume.enabled
+      brief: true if persistence enabled
+      default: "true"
     - name: volume.storageClass
       default: "ebs-gp2"
     - name: volume.size
@@ -27,6 +30,43 @@ parameters:
     - name: name
       env: COMPONENT_NAME
       default: redis
+    - name: image
+      default: bitnami/redis:3.2.9-r2
+    - name: requests.memory
+      default: 256Mi
+    - name: requests.cpu
+      default: 100m
+    - name: ha
+      parameters:
+      - name: enabled
+        default: "true"
+        env: HA_ENABLED
+      - name: image
+        default: gcr.io/google_containers/redis:v1
+      - name: master
+        default: 1
+      - name: slave
+        default: 1
+      - name: sentinel
+        default: 3
+      - name: master.requests.memory
+        default: 200Mi
+      - name: master.requests.cpu
+        default: 100m
+      - name: master.limits.memory
+        default: 700Mi
+      - name: slave.requests.memory
+        default: 200Mi
+      - name: slave.requests.cpu
+        default: 100m
+      - name: slave.limits.memory
+        default: 200Mi
+      - name: sentinel.requests.memory
+        default: 200Mi
+      - name: sentinel.requests.cpu
+        default: 100m
+      - name: sentinel.limits.memory
+        default: 200Mi
   - name: dns.domain
     brief: DNS domain
     kind: tech
