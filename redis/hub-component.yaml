@@ -39,7 +39,7 @@ parameters:
     - name: ha
       parameters:
       - name: enabled
-        default: "true"
+        default: "false"
         env: HA_ENABLED
       - name: image
         default: gcr.io/google_containers/redis:v1
