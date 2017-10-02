@@ -49,9 +49,10 @@ dex/templates/monitoring-auth-dashboard-svc.yaml
 nginx/charts
 sysdig/charts
 vault/init.txt
-
 .init.txt
 vault/.vault
 spinnaker-hal/.hal
 redis/charts
 values-ha.yaml
+prometheus/values-operator.yaml
+prometheus/values-prometheus.yaml
