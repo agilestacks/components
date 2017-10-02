@@ -1,0 +1,48 @@
+---
+version: 1
+kind: component
+meta:
+  name: prometheus
+  brief: Prometheus monitoring service
+  source:
+    dir: ../../components/prometheus
+
+requires:
+  - kubernetes
+
+provides:
+  - prometheus
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+  - name: component.prometheus
+    parameters:
+    - name:    name
+      default: prometheus
+      env:     COMPONENT_NAME
+    - name:    namespace
+      brief: Kubernetes namespace to install into
+      default: prometheus
+      env:     NAMESPACE
+    - name:    version
+      brief:   Prometheus version
+      default: 1.7.1
+    - name:    ingress.enabled
+      default:  true
+    - name:    ingress.url_prefix
+      default:  prometheus
+    - name:    ingress.path
+      default: /
+
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.prometheus.url
+    brief: Prometheus URL
+    value: http://prometheus.${ingress.url_prefix}.${component.ingress.fqdn}
