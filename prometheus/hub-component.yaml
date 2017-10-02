@@ -29,13 +29,15 @@ parameters:
       env:     NAMESPACE
     - name:    version
       brief:   Prometheus version
-      default: 1.7.1
+      default: v1.7.1
     - name:    ingress.enabled
       default:  true
     - name:    ingress.url_prefix
       default:  prometheus
     - name:    ingress.path
       default: /
+    - name:    rbac.enabled
+      default: false
 
 
 templates:
@@ -45,4 +47,4 @@ templates:
 outputs:
   - name: component.prometheus.url
     brief: Prometheus URL
-    value: http://prometheus.${ingress.url_prefix}.${component.ingress.fqdn}
+    value: http://prometheus.${component.prometheus.ingress.url_prefix}.${component.ingress.fqdn}

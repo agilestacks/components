@@ -38,7 +38,7 @@ nodeSelector: {}
 
 ## If true, create & use RBAC resources
 ##
-rbacEnable: false
+rbacEnable: ${component.prometheus.rbac.enabled}
 
 ## Prometheus-operator resource limits & requests
 ## Ref: https://kubernetes.io/docs/user-guide/compute-resources/

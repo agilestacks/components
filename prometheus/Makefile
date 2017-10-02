@@ -42,7 +42,7 @@ wait_tpr:
 install_operator:
 ifeq ($(findstring $(COMPONENT_NAME)-operator, $(shell $(helm) list -q | xargs)),)
 	$(helm) install charts/prometheus-operator \
-		--name $(COMPONENT_NAME) \
+		--name $(COMPONENT_NAME)-operator \
 		--namespace $(NAMESPACE) \
 		--replace \
 		--wait \
@@ -65,7 +65,12 @@ endif
 
 
 undeploy: init
-	$(kubectl) get --namespace $(NAMESPACE) cluster/$(COMPONENT_NAME) -o=yaml|$(kubectl) delete -f - || true
+	$(kubectl) get --namespace $(NAMESPACE) jobs/$(COMPONENT_NAME)-operator-$(COMPONENT_NAME)-operator-get-crd -o=yaml|$(kubectl) delete -f - || true
+	$(kubectl) get --namespace $(NAMESPACE) statefulsets/$(COMPONENT_NAME)-$(COMPONENT_NAME) -o=yaml|$(kubectl) delete -f - || true
+	$(kubectl) get --namespace $(NAMESPACE) svc/$(COMPONENT_NAME)-operated -o=yaml|$(kubectl) delete -f - || true
+ifeq ($(findstring $(COMPONENT_NAME)-operator, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-operator)
+	$(helm) delete --purge $(COMPONENT_NAME)-operator
+endif
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete --purge $(COMPONENT_NAME)
 endif
