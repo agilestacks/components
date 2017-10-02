@@ -69,7 +69,7 @@ paused: false
 
 ## If true, create & use RBAC resources
 ##
-rbacEnable: false
+rbacEnable: ${component.prometheus.rbac.enabled}
 
 ## Number of Prometheus replicas desired
 ##
