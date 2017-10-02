@@ -34,7 +34,6 @@ wait:
 	echo "Timeout waiting for Tiller" \
 	exit 1
 
-
 fetch:
 	$(helm) fetch \
 			--destination charts \
