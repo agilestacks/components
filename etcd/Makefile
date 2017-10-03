@@ -11,13 +11,12 @@ export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 
-deploy: clean init fetch wait install enable output
+deploy: clean init wait install enable output
 .PHONY: deploy
 
 init:
 	@mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
-	@mkdir -p charts
 
 wait:
 	@for i in $$(seq 1 60); do \
@@ -30,46 +29,39 @@ wait:
 	echo "Timeout waiting for Tiller" \
 	exit 1
 
-wait_tpr:
+wait_crd:
 	@for i in $$(seq 1 60); do \
-		if $(kubectl) get thirdpartyresources/cluster.etcd.coreos.com; then \
+		if $(kubectl) get customresourcedefinitions/etcdclusters.etcd.database.coreos.com; then \
 			sleep 5; \
 			exit 0; \
 		fi; \
-		echo "Waiting for thirdpartyresource/cluster.etcd.coreos.com to be deployed ($$i)..."; \
+		echo "Waiting for customresourcedefinitions/etcdclusters.etcd.database.coreos.com to be deployed ($$i)..."; \
 		sleep 20; \
 	done; \
-	echo "Timeout waiting for thirdpartyresource to be deployed" \
+	echo "Timeout waiting for customresourcedefinitions to be deployed" \
 	exit 1
-
-fetch:
-	$(helm) fetch \
-		--destination charts \
-		--untar stable/etcd-operator
-.PHONY: fetch
 
 install:
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
-	$(helm) install charts/etcd-operator \
+	$(helm) install . \
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
-		--version 0.4.3
 		--replace \
 		--wait \
 		--values values.yaml
 endif
 .PHONY: install
-enable: wait_tpr
+
+enable: wait_crd
 	$(helm) upgrade \
 		--set cluster.enabled=${CLUSTER_ENABLED} \
 		--set cluster.backup.enabled=${BACKUP_ENABLED} \
 		--set cluster.restore.enabled=${RESTORE_ENABLED} \
 		--values values.yaml \
 		--namespace $(NAMESPACE) \
-		--version 0.4.3
 		--wait \
 		$(COMPONENT_NAME) \
-		charts/etcd-operator
+		.
 .PHONY: enable
 
 undeploy: init
@@ -84,6 +76,7 @@ clean:
 	@rm -rf charts
 
 output:
+	# https://github.com/coreos/etcd-operator/pull/1341
 	@echo Outputs:
 	@echo etcd_url=http://$(COMPONENT_NAME)-client.$(NAMESPACE).svc.cluster.local:2379
 	@echo
