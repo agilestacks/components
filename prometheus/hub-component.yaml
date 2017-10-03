@@ -47,4 +47,4 @@ templates:
 outputs:
   - name: component.prometheus.url
     brief: Prometheus URL
-    value: http://prometheus.${component.prometheus.ingress.url_prefix}.${component.ingress.fqdn}
+    value: http://${component.prometheus.ingress.url_prefix}.${component.ingress.fqdn}
