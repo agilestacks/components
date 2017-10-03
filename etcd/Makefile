@@ -53,6 +53,7 @@ ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	$(helm) install charts/etcd-operator \
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
+		--version 0.4.3
 		--replace \
 		--wait \
 		--values values.yaml
@@ -65,6 +66,7 @@ enable: wait_tpr
 		--set cluster.restore.enabled=${RESTORE_ENABLED} \
 		--values values.yaml \
 		--namespace $(NAMESPACE) \
+		--version 0.4.3
 		--wait \
 		$(COMPONENT_NAME) \
 		charts/etcd-operator
