@@ -65,10 +65,10 @@ enable: wait_crd
 .PHONY: enable
 
 undeploy: init
-	$(kubectl) get --namespace $(NAMESPACE) cluster/$(COMPONENT_NAME) -o=yaml|$(kubectl) delete -f - || true
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete --purge $(COMPONENT_NAME)
 endif
+	$(kubectl) get --namespace $(NAMESPACE) EtcdClusters/$(COMPONENT_NAME) -o=yaml|$(kubectl) delete -f - || true
 .PHONY: undeploy
 
 clean:
