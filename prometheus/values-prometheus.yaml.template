@@ -1,11 +1,11 @@
 ## Alertmanagers to which alerts will be sent
 ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#alertmanagerendpoints
 ##
-alertingEndpoints: []
-#   - name: ""
-#     namespace: ""
-#     port: 9093
-#     scheme: http
+alertingEndpoints:
+   - name: "prometheus-alertmanager-alertmanager"
+     namespace: ${component.prometheus.namespace}
+     port: 9093
+     scheme: http
 
 ## Prometheus configuration directives
 ## Ignored if serviceMonitors are defined
@@ -153,7 +153,17 @@ service:
 ## Service monitors selector
 ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/design.md
 ##
-serviceMonitorsSelector: {}
+serviceMonitorsSelector:
+  component: kube-state
+  component: kube-api
+  component: kube-controller-manager
+  component: kube-dns
+  component: kube-etcd
+  component: kube-scheduler
+  component: kubelets
+  component: node-exporter
+  prometheus: prometheus
+
 
 ## ServiceMonitor CRDs to create & be scraped by the Prometheus instance.
 ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/service-monitor.md

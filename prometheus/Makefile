@@ -101,6 +101,12 @@ endif
 	$(kubectl) get --namespace $(NAMESPACE) statefulsets/$(COMPONENT_NAME)-$(COMPONENT_NAME) -o=yaml|$(kubectl) delete -f - || true
 	$(kubectl) get --namespace $(NAMESPACE) statefulsets/alertmanager-$(COMPONENT_NAME)-alertmanager -o=yaml|$(kubectl) delete -f - || true
 	$(kubectl) get --namespace $(NAMESPACE) svc/$(COMPONENT_NAME)-operated -o=yaml|$(kubectl) delete -f - || true
+	$(kubectl) get --namespace $(NAMESPACE) svc/alertmanager-operated -o=yaml|$(kubectl) delete -f - || true
+	$(kubectl) get --namespace $(NAMESPACE) secrets/$(COMPONENT_NAME)-prometheus -o=yaml|$(kubectl) delete -f - || true
+	$(kubectl) get --namespace $(NAMESPACE) ServiceMonitors/$(COMPONENT_NAME)-operator -o=yaml|$(kubectl) delete -f - || true
+	$(kubectl) get --namespace $(NAMESPACE) crd/alertmanagers.monitoring.coreos.com -o=yaml|$(kubectl) delete -f - || true
+	$(kubectl) get --namespace $(NAMESPACE) crd/prometheuses.monitoring.coreos.com -o=yaml|$(kubectl) delete -f - || true
+	$(kubectl) get --namespace $(NAMESPACE) crd/servicemonitors.monitoring.coreos.com -o=yaml|$(kubectl) delete -f - || true
 .PHONY: undeploy
 
 clean:
