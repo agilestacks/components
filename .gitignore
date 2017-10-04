@@ -36,3 +36,5 @@ redis/charts
 values-ha.yaml
 prometheus/values-operator.yaml
 prometheus/values-prometheus.yaml
+prometheus/values-alertmanager.yaml
+prometheus/values-kube-prometheus.yaml

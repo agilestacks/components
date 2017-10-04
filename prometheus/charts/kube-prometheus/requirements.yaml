@@ -1,0 +1,36 @@
+dependencies:
+  - name: exporter-kube-api
+    version: 0.1.0
+    repository: file://charts/exporter-kube-api
+
+  - name: exporter-kube-controller-manager
+    version: 0.1.0
+    repository: file://charts/exporter-kube-controller-manager
+
+  - name: exporter-kube-dns
+    version: 0.1.0
+    repository: file://charts/exporter-kube-dns
+
+  - name: exporter-kube-etcd
+    version: 0.1.0
+    repository: file://charts/exporter-kube-etcd
+
+  - name: exporter-kube-scheduler
+    version: 0.1.0
+    repository: file://charts/exporter-kube-scheduler
+
+  - name: exporter-kube-state
+    version: 0.1.2
+    repository: file://charts/exporter-kube-state
+
+  - name: exporter-kubelets
+    version: 0.1.0
+    repository: file://charts/exporter-kubelets
+
+  - name: exporter-kubernetes
+    version: 0.1.0
+    repository: file://charts/exporter-kubernetes
+
+  - name: exporter-node
+    version: 0.1.0
+    repository: file://charts/exporter-node

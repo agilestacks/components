@@ -30,15 +30,25 @@ parameters:
     - name:    version
       brief:   Prometheus version
       default: v1.7.1
+    - name:    rbac.enabled
+      default:  false
     - name:    ingress.enabled
       default:  true
     - name:    ingress.url_prefix
       default:  prometheus
     - name:    ingress.path
-      default: /
-    - name:    rbac.enabled
-      default: false
-
+      default:  /
+  - name: component.prometheus.alertmanager
+    parameters:
+    - name:    version
+      brief:   Alertmanager version
+      default: v0.9.1
+    - name:    ingress.enabled
+      default:  true
+    - name:    ingress.url_prefix
+      default:  alertmanager
+    - name:    ingress.path
+      default: "/"
 
 templates:
   files:
@@ -48,3 +58,6 @@ outputs:
   - name: component.prometheus.url
     brief: Prometheus URL
     value: http://${component.prometheus.ingress.url_prefix}.${component.ingress.fqdn}
+  - name: component.prometheus.alertmanager_url
+    brief: Alertmanager URL
+    value: http://${component.prometheus.alertmanager.ingress.url_prefix}.${component.ingress.fqdn}
