@@ -85,7 +85,7 @@ ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 endif
 .PHONY: install_prom
 
-undeploy: init
+undeploy: init clean
 ifeq ($(findstring $(COMPONENT_NAME)-grafana, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-grafana)
 	$(helm) delete --purge $(COMPONENT_NAME)-grafana
 endif
@@ -118,6 +118,7 @@ endif
 
 clean:
 	@rm -rf $(HELM_HOME)
+	@rm -rf grafana-gen/output
 
 output:
 	@echo Outputs:

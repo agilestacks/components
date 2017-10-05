@@ -236,7 +236,13 @@ bin-pack-files() {
     test -f "$file" || { echo "# INTERNAL ERROR: File not found: $file"; continue; }
 #    echo "debug: Processing file $(basename $file)"
 
-    file_size_bytes="$(stat -f%z "$file")" || true
+    # stat command flags are different for different OSes
+    osType=$(uname)
+    if [[ "$osType" == 'Linux' ]]; then
+      file_size_bytes="$(stat -c%s "$file")" || true
+    elif [[ "$osType" == 'Darwin' ]]; then
+      file_size_bytes="$(stat -f%z "$file")" || true
+    fi
 
     # If the file is bigger than the configured limit we skip it file
     if [ "$file_size_bytes" -gt "$DATA_SIZE_LIMIT" ]; then
