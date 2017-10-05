@@ -1,27 +1,17 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  labels:
-    app: {{ template "grafana.fullname" . }}
-    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    heritage: "{{ .Release.Service }}"
-    release: "{{ .Release.Name }}"
-  name: {{ template "grafana.server.fullname" . }}
+  name: grafana
 spec:
   replicas: 1
   template:
     metadata:
-      annotations:
-      {{- range $key, $value := .Values.annotations }}
-        {{ $key }}: {{ $value }}
-      {{- end }}
       labels:
-        app: {{ template "grafana.fullname" . }}
-        release: "{{ .Release.Name }}"
+        app: grafana
     spec:
       containers:
       - name: grafana
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: grafana/grafana:4.4.1
         env:
         - name: GF_AUTH_BASIC_ENABLED
           value: "true"
@@ -30,12 +20,12 @@ spec:
         - name: GF_SECURITY_ADMIN_USER
           valueFrom:
             secretKeyRef:
-              name: {{ template "grafana.server.fullname" . }}
+              name: grafana-credentials
               key: user
         - name: GF_SECURITY_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ template "grafana.server.fullname" . }}
+              name: grafana-credentials
               key: password
         volumeMounts:
         - name: grafana-storage
@@ -53,18 +43,18 @@ spec:
       - name: grafana-watcher
         image: quay.io/coreos/grafana-watcher:v0.0.8
         args:
-          - '--watch-dir=/var/grafana-dashboards'
+XXX_WATCH_DIR_XXX
           - '--grafana-url=http://localhost:3000'
         env:
         - name: GRAFANA_USER
           valueFrom:
             secretKeyRef:
-              name: {{ template "grafana.server.fullname" . }}
+              name: grafana-credentials
               key: user
         - name: GRAFANA_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ template "grafana.server.fullname" . }}
+              name: grafana-credentials
               key: password
         resources:
           requests:
@@ -74,20 +64,8 @@ spec:
             memory: "32Mi"
             cpu: "100m"
         volumeMounts:
-          - name: grafana-dashboards
-            mountPath: /var/grafana-dashboards
-    {{- if .Values.nodeSelector }}
-      nodeSelector:
-    {{ toYaml .Values.nodeSelector | indent 4 }}
-    {{- end }}
+XXX_VOLUME_MOUNTS_XXX
       volumes:
-        - name: grafana-storage
-          {{- if .Values.storageSpec }}
-          persistentVolumeClaim:
-            claimName: {{ template "grafana.server.fullname" . }}
-          {{- else }}
-          emptyDir: {}
-          {{- end }}
-        - name: grafana-dashboards
-          configMap:
-            name: grafana-dashboards-0
+      - name: grafana-storage
+        emptyDir: {}
+XXX_VOLUMES_XXX

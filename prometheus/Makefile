@@ -6,13 +6,14 @@ export COMPONENT_NAME      ?= prometheus
 export DOMAIN_NAME         ?= default
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+export generator		   ?= ./grafana-gen/bin/grafana_dashboards_generate.sh --namespace "$(NAMESPACE)"
 
-
-deploy: clean init wait install_operator install_prom install_alertmanager install_kube_prom output
+deploy: clean init wait install_operator install_prom install_alertmanager install_kube_prom install_grafana output
 .PHONY: deploy
 
 init:
 	@mkdir -p $(HELM_HOME)
+	@mkdir -p grafana-gen/output
 	@$(helm) init --client-only --upgrade
 
 
@@ -25,18 +26,6 @@ wait:
 		sleep 10; \
 	done; \
 	echo "Timeout waiting for Tiller" \
-	exit 1
-
-wait_tpr:
-	@for i in $$(seq 1 60); do \
-		if $(kubectl) get thirdpartyresources/cluster.etcd.coreos.com; then \
-			sleep 5; \
-			exit 0; \
-		fi; \
-		echo "Waiting for thirdpartyresource/cluster.etcd.coreos.com to be deployed ($$i)..."; \
-		sleep 20; \
-	done; \
-	echo "Timeout waiting for thirdpartyresource to be deployed" \
 	exit 1
 
 install_operator:
@@ -72,6 +61,19 @@ ifeq ($(findstring $(COMPONENT_NAME)-alertmanager, $(shell $(helm) list -q | xar
 endif
 .PHONY: install_alertmanager
 
+install_grafana:
+ifeq ($(findstring $(COMPONENT_NAME)-grafana, $(shell $(helm) list -q | xargs)),)
+	$(generator) -s 1000000 -o grafana-gen/output/dashboards-configmap.yaml \
+				-i grafana-gen/templates/grafana-dashboards --apply-configmap --apply-type create
+	$(helm) install charts/grafana \
+		--name $(COMPONENT_NAME)-grafana \
+		--namespace $(NAMESPACE) \
+		--replace \
+		--wait \
+		--values values-grafana.yaml
+endif
+.PHONY: install_grafana
+
 install_prom:
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 	$(helm) install charts/prometheus \
@@ -84,8 +86,11 @@ endif
 .PHONY: install_prom
 
 undeploy: init
-ifeq ($(findstring $(COMPONENT_NAME)-operator, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-operator)
-	$(helm) delete --purge $(COMPONENT_NAME)-operator
+ifeq ($(findstring $(COMPONENT_NAME)-grafana, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-grafana)
+	$(helm) delete --purge $(COMPONENT_NAME)-grafana
+endif
+ifeq ($(findstring $(COMPONENT_NAME)-kube-prom, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-kube-prom)
+	$(helm) delete --purge $(COMPONENT_NAME)-kube-prom
 endif
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete --purge $(COMPONENT_NAME)
@@ -93,9 +98,11 @@ endif
 ifeq ($(findstring $(COMPONENT_NAME)-alertmanager, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-alertmanager)
 	$(helm) delete --purge $(COMPONENT_NAME)-alertmanager
 endif
-ifeq ($(findstring $(COMPONENT_NAME)-kube-prom, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-kube-prom)
-	$(helm) delete --purge $(COMPONENT_NAME)-kube-prom
+ifeq ($(findstring $(COMPONENT_NAME)-operator, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-operator)
+	$(helm) delete --purge $(COMPONENT_NAME)-operator
 endif
+
+	$(kubectl) get --namespace $(NAMESPACE) cm/grafana-dashboards-0 -o=yaml|$(kubectl) delete -f - || true
 	$(kubectl) get --namespace $(NAMESPACE) jobs/$(COMPONENT_NAME)-operator-$(COMPONENT_NAME)-operator-get-crd -o=yaml|$(kubectl) delete -f - || true
 	$(kubectl) get --namespace $(NAMESPACE) jobs/$(COMPONENT_NAME)-operator-$(COMPONENT_NAME)-operator-create-sm-job -o=yaml|$(kubectl) delete -f - || true
 	$(kubectl) get --namespace $(NAMESPACE) statefulsets/$(COMPONENT_NAME)-$(COMPONENT_NAME) -o=yaml|$(kubectl) delete -f - || true
@@ -114,8 +121,9 @@ clean:
 
 output:
 	@echo Outputs:
-	@echo prometheus=http://$(COMPONENT_NAME).$(NAMESPACE).svc.cluster.local:9090
-	@echo alertmanager=http://$(COMPONENT_NAME)-alertmanager.$(NAMESPACE).svc.cluster.local:9093
+	@echo prometheus=http://$(COMPONENT_NAME)-prometheus.$(NAMESPACE).svc.cluster.local:9090
+	@echo alertmanager=http://$(COMPONENT_NAME)-alertmanager-alertmanager.$(NAMESPACE).svc.cluster.local:9093
+	@echo grafana=http://$(COMPONENT_NAME)-grafana-grafana.$(NAMESPACE).svc.cluster.local:80
 	@echo
 	@echo Prometheus has been installed successfully.
 .PHONY: output
