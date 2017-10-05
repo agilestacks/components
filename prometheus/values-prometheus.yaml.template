@@ -4,7 +4,7 @@
 alertingEndpoints:
    - name: "prometheus-alertmanager-alertmanager"
      namespace: ${component.prometheus.namespace}
-     port: 9093
+     port: http
      scheme: http
 
 ## Prometheus configuration directives
@@ -98,7 +98,8 @@ routePrefix: ${component.prometheus.ingress.path}
 ## Rules configmap selector
 ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/design.md
 ##
-rulesSelector: {}
+rulesSelector:
+  app: prometheus
 
 ## Prometheus alerting & recording rules
 ## Ref: https://prometheus.io/docs/querying/rules/
