@@ -594,7 +594,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(100 - (avg by (instance) (rate(node_cpu{job=\"node-exporter\",mode=\"idle\"}[5m])) * 100)) / count(node_cpu{job=\"node-exporter\",mode=\"idle\"})",
+              "expr": "sum(100 - (avg by (instance) (rate(node_cpu{job=\"prometheus-kube-prom-exporter-node\",mode=\"idle\"}[5m])) * 100)) / count(node_cpu{job=\"prometheus-kube-prom-exporter-node\",mode=\"idle\"})",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "",
