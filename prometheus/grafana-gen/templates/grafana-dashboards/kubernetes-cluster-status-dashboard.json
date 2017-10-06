@@ -99,7 +99,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(up{job=~\"apiserver|kube-scheduler|kube-controller-manager\"} == 0)",
+              "expr": "sum(up{job=~\"prometheus-kube-prom-exporter-kube-api|prometheus-kube-prom-exporter-kube-scheduler|prometheus-kube-prom-exporter-kube-controller-manager\"} == 0)",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "",
@@ -266,7 +266,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "(sum(up{job=\"apiserver\"} == 1) / count(up{job=\"apiserver\"})) * 100",
+              "expr": "(sum(up{job=\"prometheus-kube-prom-exporter-kube-api\"} == 1) / count(up{job=\"prometheus-kube-prom-exporter-kube-api\"})) * 100",
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
@@ -345,7 +345,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "(sum(up{job=\"kube-controller-manager\"} == 1) / count(up{job=\"kube-controller-manager\"})) * 100",
+              "expr": "(sum(up{job=\"prometheus-kube-prom-exporter-kube-controller-manager\"} == 1) / count(up{job=\"prometheus-kube-prom-exporter-kube-controller-manager\"})) * 100",
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
@@ -424,7 +424,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "(sum(up{job=\"kube-scheduler\"} == 1) / count(up{job=\"kube-scheduler\"})) * 100",
+              "expr": "(sum(up{job=\"prometheus-kube-prom-exporter-kube-scheduler\"} == 1) / count(up{job=\"prometheus-kube-prom-exporter-kube-scheduler\"})) * 100",
               "format": "time_series",
               "interval": "",
               "intervalFactor": 2,
