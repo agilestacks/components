@@ -105,7 +105,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "(sum(up{job=\"apiserver\"} == 1) / sum(up{job=\"apiserver\"})) * 100",
+              "expr": "(sum(up{job=\"prometheus-kube-prom-exporter-kube-api\"} == 1) / sum(up{job=\"prometheus-kube-prom-exporter-kube-api\"})) * 100",
               "format": "time_series",
               "intervalFactor": 2,
               "refId": "A",
@@ -181,7 +181,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "(sum(up{job=\"kube-controller-manager\"} == 1) / sum(up{job=\"kube-controller-manager\"})) * 100",
+              "expr": "(sum(up{job=\"prometheus-kube-prom-exporter-kube-controller-manager\"} == 1) / sum(up{job=\"prometheus-kube-prom-exporter-kube-controller-manager\"})) * 100",
               "format": "time_series",
               "intervalFactor": 2,
               "refId": "A",
@@ -257,7 +257,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "(sum(up{job=\"kube-scheduler\"} == 1) / sum(up{job=\"kube-scheduler\"})) * 100",
+              "expr": "(sum(up{job=\"prometheus-kube-prom-exporter-kube-scheduler\"} == 1) / sum(up{job=\"prometheus-kube-prom-exporter-kube-scheduler\"})) * 100",
               "format": "time_series",
               "intervalFactor": 2,
               "refId": "A",
@@ -486,7 +486,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "cluster:scheduler_e2e_scheduling_latency_seconds:quantile",
+              "expr": "cluster:scheduler_e2e_scheduling_latency:quantile_seconds",
               "format": "time_series",
               "intervalFactor": 2,
               "refId": "A",
