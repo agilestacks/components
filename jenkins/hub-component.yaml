@@ -12,12 +12,21 @@ requires:
 
 parameters:
 - name: component.ingress.fqdn
-- name: component.jenkins.namespace
-  brief: Kubernetes namespace to install into
-  default: jenkins
-  env: JENKINS_NAMESPACE
-- name: component.jenkins.image
-  default: docker.io/agilestacks/jenkins:2.7-4
+- name: component.jenkins
+  parameters:
+  - name: namespace
+    default: jenkins
+    env: JENKINS_NAMESPACE
+  - name: image
+    default: docker.io/agilestacks/jenkins:2.7-4
+  - name: admin.user
+    default: admin
+  - name: admin.password
+    default: secret
+  - name: serviceaccount.user
+    default: robot
+  - name: serviceaccount.password
+    default: supersecret
 - name: cloud.region
   kind: user
   env: AWS_REGION
@@ -29,6 +38,16 @@ parameters:
   env: DOCKER_REGISTRY
 - name: nfs.server
   brief: NFS server for NFS volumes
+
+outputs:
+- name:  component.jenkins.internal.host
+  value: jenkins.${component.jenkins.namespace}.svc.cluster.local
+- name:  component.jenkins.internal.port
+  value: 8080
+- name:  component.jenkins.internal.url
+  value: http://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
+- name:  component.jenkins.fqdn
+  value: ${component.jenkins.namespace}.${component.ingress.fqdn}
 
 templates:
   files:
