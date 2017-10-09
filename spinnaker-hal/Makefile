@@ -13,33 +13,10 @@ export KUBE_CONTEXT         := $(shell kubectl config current-context)
 
 export AWS_ECR_LOGIN_STRING ?= $(shell aws ecr get-login)
 export AWS_ECR_USER         ?= $(word 4,$(AWS_ECR_LOGIN_STRING))
-start-proxy: stop-proxy
-	@docker pull gcr.io/spinnaker-marketplace/halyard:stable
-	docker run -d \
-		--name halyard --rm \
-		-v $(HALYARD_HOME):/root/.hal \
-		-v ~/.kube:/root/.kube:ro \
-		-v ~/.aws:/root/.aws:ro \
-		-v /$(shell pwd):$(shell pwd) \
-		-v $(STACK_K8S_AWS):$(STACK_K8S_AWS):ro \
-		-v $(HALYARD_HOME)/.ecr-pass.txt:$(HALYARD_HOME)/.ecr-pass.txt \
-		gcr.io/spinnaker-marketplace/halyard:stable
-.PHONY: start-proxy
-
-wait:
-	@for i in $$(seq 1 60); do \
-		if $(hal) --ready; then \
-			exit 0; \
-		fi; \
-		echo "Waiting for halyard container is up and running ($$i)..."; \
-		sleep 1; \
-	done; \
-	echo "Timeout waiting for halyard" \
-	exit 1
-.PHONY: wait
 export AWS_ECR_REGISTRY     ?= $(subst https://,,$(lastword $(AWS_ECR_LOGIN_STRING)))
 export SHELL                := /bin/bash
 export SPINNAKER_VERSION    ?= 1.4.2
+export NAMESPACE            ?= spinnaker
 
 COMPONENT_NAME    ?= spinnaker
 SLACK_TOKEN       ?= unknown
@@ -50,6 +27,7 @@ JENKINS_USER      ?= robot
 JENKINS_PASSWORD  ?= password
 
 hal ?= hal --color=false
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(JENKINS_NAMESPACE)"
 
 install:
 	sudo $(SHELL) bin/$(shell uname -s | tr A-Z a-z)/InatallHalyard.sh
@@ -88,7 +66,7 @@ endif
 	$(hal) config provider kubernetes account delete $(subst .,-,$(DOMAIN_NAME)) || true
 	$(hal) config provider kubernetes account add $(subst .,-,$(DOMAIN_NAME)) \
 		--docker-registries ecr-$(AWS_DEFAULT_REGION) \
-		--context $(shell kubectl config current-context)
+		--context $(DOMAIN_NAME)
 
 	$(hal) config storage s3 edit \
 		--region $(AWS_DEFAULT_REGION) \
@@ -116,15 +94,15 @@ deploy: configure
 		--account-name $(subst .,-,$(DOMAIN_NAME)) \
 		--type distributed
 	$(hal) deploy apply
+
+	$(kubectl) apply -f ingress.yaml
 .PHONY: deploy
 
 undeploy:
+	$(kubectl) delete -f ingress.yaml || true
 	@echo "Undeploy Spinnaker"
 	$(hal) deploy clean --quiet || true
 	@echo "Done"
-stop-proxy:
-	@docker stop halyard || true
-.PHONY: stop-proxy
 .PHONY: undeploy
 
 clean:

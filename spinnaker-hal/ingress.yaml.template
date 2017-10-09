@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: spinnaker
-  namespace: spinnaker
+  namespace: ${component.spinnaker.namespace}
   labels:
     k8s-addon: ingress-nginx.addons.k8s.io
   annotations:
@@ -25,7 +25,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: spinnaker-api
-  namespace: spinnaker
+  namespace: ${component.spinnaker.namespace}
   labels:
     k8s-addon: ingress-nginx.addons.k8s.io
   annotations:
