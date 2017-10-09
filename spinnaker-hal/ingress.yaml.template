@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: spinnaker
+  namespace: ${component.spinnaker.namespace}
+  labels:
+    k8s-addon: ingress-nginx.addons.k8s.io
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+  - hosts:
+    - ${component.spinnaker.name}.${component.ingress.fqdn}
+    secretName: spinnaker-tls
+  rules:
+  - host: ${component.spinnaker.name}.${component.ingress.fqdn}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: spin-deck
+          servicePort: 9000
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: spinnaker-api
+  namespace: ${component.spinnaker.namespace}
+  labels:
+    k8s-addon: ingress-nginx.addons.k8s.io
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+  - hosts:
+    - api.${component.spinnaker.name}.${component.ingress.fqdn}
+    secretName: spinnaker-tls
+  rules:
+  - host: api.${component.spinnaker.name}.${component.ingress.fqdn}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: spin-gate
+          servicePort: 8084

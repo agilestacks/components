@@ -31,7 +31,7 @@ deploy:
 	$(kubectl) apply -f ingress.yaml
 	$(kubectl) apply -f deployment.yaml
 
-	$(MAKE) output
+	$(MAKE) wait output
 .PHONY: deploy
 
 output:
@@ -48,3 +48,14 @@ undeploy:
 	$(kubectl) delete -f config.yaml | true
 	$(kubectl) delete -f volume-$(VOLUME_TYPE).yaml | true
 .PHONY: undeploy
+
+wait:
+	@for i in $$(seq 1 90); do \
+		if [[ `$(kubectl) get pods -l 'project=jenkins,qualifier=master' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}'` ]]; then \
+			exit 0; \
+		fi; \
+		echo "Waiting for Jenkins pod is up and running ($$i)..."; \
+		sleep 10; \
+	done; \
+	echo "Timeout waiting for Jenkins"; \
+	exit 1

@@ -1,7 +1,7 @@
 ## Bitnami Redis image version
 ## ref: https://hub.docker.com/r/bitnami/redis/tags/
 ##
-image: bitnami/redis:3.2.9-r2
+image: ${component.redis.image}
 
 ## Specify a imagePullPolicy
 ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -22,7 +22,7 @@ redisPassword: ${component.redis.password}
 args:
 
 persistence:
-  enabled: true
+  enabled: ${component.redis.volume.enabled}
 
   ## A manually managed Persistent Volume and Claim
   ## Requires persistence.enabled: true
@@ -55,8 +55,8 @@ metrics:
 ##
 resources:
   requests:
-    memory: 256Mi
-    cpu: 100m
+    memory: ${component.redis.requests.memory}
+    cpu: ${component.redis.requests.cpu}
 
 ## Node labels and tolerations for pod assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
