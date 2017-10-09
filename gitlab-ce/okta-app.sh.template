@@ -5,7 +5,7 @@ curl="curl --silent  -H 'accept: application/json' -H 'cache-control: no-cache' 
 base_url="{{component.gitlab.okta.baseURL}}"
 api_key="{{component.gitlab.okta.apiKey}}"
 app_name="{{dns.domain}}"
-sso_url="{{component.ingress.protocol}}://{{kubernetes.oidc_issuer_fqdn}}/users/auth/saml/callback"
+sso_url="{{component.ingress.protocol}}://{{component.gitlab.name}}.{{component.ingress.fqdn}}/users/auth/saml/callback"
 okta_groups="{{component.gitlab.okta.groups}}"
 operation=""
 

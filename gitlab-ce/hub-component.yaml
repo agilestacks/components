@@ -62,4 +62,7 @@ parameters:
 
 templates:
   files:
-    - "*.template"
+    - "*.yaml.template"
+  extra:
+  - kind: mustache
+    files: ["*.sh.template"]
