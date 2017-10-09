@@ -18,6 +18,7 @@ parameters:
   - name: dns.domain
     brief: DNS domain
     kind: tech
+    env: DOMAIN_NAME
   - name: component.prometheus
     parameters:
     - name:    name
