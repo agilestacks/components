@@ -34,7 +34,6 @@ data:
     gitlab_rails['uploads_directory'] = '/gitlab-data/uploads';
     gitlab_ci['builds_directory'] = '/gitlab-data/builds';
     gitlab_rails['omniauth_enabled'] = true
-    gitlab_rails['omniauth_auto_link_ldap_user'] = true
     gitlab_rails['omniauth_allow_single_sign_on'] = ['saml'];
     gitlab_rails['omniauth_block_auto_created_users'] = false;
     gitlab_rails['omniauth_auto_link_saml_user'] = true;
