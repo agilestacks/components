@@ -6,6 +6,7 @@ base_url="{{component.gitlab.okta.baseURL}}"
 api_key="{{component.gitlab.okta.apiKey}}"
 app_name="{{dns.domain}}"
 sso_url="{{component.ingress.protocol}}://{{component.gitlab.name}}.{{component.ingress.fqdn}}/users/auth/saml/callback"
+audience="{{component.gitlab.name}}.{{component.ingress.fqdn}}"
 okta_groups="{{component.gitlab.okta.groups}}"
 operation=""
 
@@ -115,7 +116,7 @@ cat << EOF > "${DIR}/okta/app.json"
       "defaultRelayState": "",
       "ssoAcsUrl": "${sso_url}",
       "idpIssuer": "http://www.okta.com/$idpIssuer",
-      "audience": "${sso_url}",
+      "audience": "${audience}",
       "recipient": "${sso_url}",
       "destination": "${sso_url}",
       "subjectNameIdTemplate": "$subjectNameIdFormat",
