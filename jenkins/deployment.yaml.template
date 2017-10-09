@@ -54,6 +54,20 @@
             value: ${docker.registry}
           - name:  ROOT_DOMAIN_NAME
             value: ${dns.name}
+          - name:  ADMIN_USER
+            value: ${component.jenkins.admin.user}
+          - name:  ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: jenkins-secrets
+                key:  ${component.jenkins.admin.user}
+          - name:  SERVICE_ACCOUNT_USER
+            value: ${component.jenkins.serviceaccount.user}
+          - name:  SERVICE_ACCOUNT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: jenkins-secrets
+                key:  ${component.jenkins.serviceaccount.user}
           ports:
           - name: http
             containerPort: 8080
@@ -107,9 +121,6 @@
           # - name: plugins-dir
           #   hostPath:
           #     path: /etc/jenkins/plugins
-          - name: secrets-dir
-            secret:
-              secretName: jenkins-secrets
           - name: jenkins-config
             configMap:
               name: jenkins-config

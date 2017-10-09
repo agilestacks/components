@@ -7,19 +7,20 @@ def instance = Jenkins.getInstance()
 
 println "--> creating local user 'admin'"
 
-def hudsonRealm = new HudsonPrivateSecurityRealm(false)
-hudsonRealm.createAccount('admin', 'secret')
-instance.setSecurityRealm(hudsonRealm)
+def adminUser     = System.getenv('ADMIN_USER')     ?: "admin"
+def adminPassword = System.getenv('ADMIN_PASSWORD') ?: "secret"
+def hudsonRealm   = new HudsonPrivateSecurityRealm(false)
+hudsonRealm.createAccount(adminUser, adminPassword)
 
-def secretsHome = System.getenv('JENKINS_SECRETS_HOME') ?: "/usr/share/jenkins/ref/secrets"
-def secretsFile = new File(secretsHome, 'robot')
-if (secretsFile.exists()) {
-  secret = secretsFile.text.trim()
-  hudsonRealm.createAccount('robot', secret)
-  instance.setSecurityRealm(hudsonRealm)
+def saUser     = System.getenv('SERVICE_ACCOUNT_USER')
+def saPassword = System.getenv('SERVICE_ACCOUNT_PASSWORD')
+if (saUser != null) {
+  hudsonRealm.createAccount(saUser, saPassword)
 }
+instance.securityRealm = hudsonRealm
 
 def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
 strategy.setAllowAnonymousRead(false)
 instance.setAuthorizationStrategy(strategy)
 instance.save()
+
