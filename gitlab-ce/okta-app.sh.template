@@ -1,0 +1,368 @@
+#!/bin/bash -e
+
+curl="curl --silent  -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json'"
+
+base_url="{{component.gitlab.okta.baseURL}}"
+api_key="{{component.gitlab.okta.apiKey}}"
+app_name="{{dns.domain}}"
+sso_url="{{component.ingress.protocol}}://{{component.gitlab.name}}.{{component.ingress.fqdn}}/users/auth/saml/callback"
+audience="{{component.gitlab.name}}.{{component.ingress.fqdn}}"
+okta_groups="{{component.gitlab.okta.groups}}"
+operation=""
+
+username='${source.email}'
+subjectNameIdFormat='${user.userName}'
+idpIssuer='${org.externalKey}'
+
+mkdir -p okta
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+
+usage()
+{
+cat << EOF
+usage: $0 [options] -c command
+
+This script creates/delete Okta application
+
+OPTIONS:
+   -h      Show this message
+   -b      Url of Okta account
+   -k      Okta API key
+   -a      Okta application name
+   -u      Url of user application to use for callback
+   -c      Operations to run
+
+Example:
+Create application:
+$0 -b 'https://example.okta.com' -k aBCdEf0GhiJkLMno1pq2 -a 'My okta app'  -u 'https://example.net/your_application/callback' -c create
+Delete application:
+$0 -id 'https://example.okta.com' -k aBCdEf0GhiJkLMno1pq2 -a 'My okta app'  -u 'https://example.net/your_application/callback' -c delete
+EOF
+}
+
+while getopts ":b:k:a:u:g:c:" OPTION
+do
+    case $OPTION in
+    b)
+        base_url="$OPTARG"
+    ;;
+    k)
+        api_key="$OPTARG"
+    ;;
+    a)
+        app_name="$OPTARG"
+    ;;
+    u)
+        sso_url="$OPTARG"
+    ;;
+    g)
+        okta_groups="$OPTARG"
+    ;;
+    c)
+        operation="$OPTARG"
+    ;;
+    h)
+        usage
+        exit 1
+    ;;
+    \?)
+        usage
+        exit 1
+    ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+    ;;
+    esac
+done
+
+cat << EOF > "${DIR}/okta/app.json"
+{
+  "label": "${app_name}",
+  "accessibility": {
+    "selfService": false,
+    "errorRedirectUrl": null,
+    "loginRedirectUrl": null
+  },
+  "visibility": {
+    "autoSubmitToolbar": false,
+    "hide": {
+      "iOS": false,
+      "web": false
+    }
+  },
+  "features": [],
+  "signOnMode": "SAML_2_0",
+  "credentials": {
+    "userNameTemplate": {
+      "template": "$username",
+      "type": "BUILT_IN"
+    },
+    "signing": {}
+  },
+  "settings": {
+    "app": {},
+    "notifications": {
+      "vpn": {
+        "network": {
+          "connection": "DISABLED"
+        },
+        "message": null,
+        "helpUrl": null
+      }
+    },
+    "signOn": {
+      "defaultRelayState": "",
+      "ssoAcsUrl": "${sso_url}",
+      "idpIssuer": "http://www.okta.com/$idpIssuer",
+      "audience": "${audience}",
+      "recipient": "${sso_url}",
+      "destination": "${sso_url}",
+      "subjectNameIdTemplate": "$subjectNameIdFormat",
+      "subjectNameIdFormat": "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
+      "responseSigned": true,
+      "assertionSigned": true,
+      "signatureAlgorithm": "RSA_SHA256",
+      "digestAlgorithm": "SHA256",
+      "honorForceAuthn": true,
+      "authnContextClassRef": "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+      "spIssuer": null,
+      "requestCompressed": false,
+      "attributeStatements": [
+                    {
+                        "type": "EXPRESSION",
+                        "name": "email",
+                        "namespace": "urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified",
+                        "values": [
+                            "user.email"
+                        ]
+                    },
+                    {
+                        "type": "EXPRESSION",
+                        "name": "name",
+                        "namespace": "urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified",
+                        "values": [
+                            "user.login"
+                        ]
+                    },
+                    {
+                        "type": "EXPRESSION",
+                        "name": "user",
+                        "namespace": "urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified",
+                        "values": [
+                            "user.login"
+                        ]
+                    },
+                    {
+                        "type": "GROUP",
+                        "name": "groups",
+                        "namespace": "urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified",
+                        "filterType": "REGEX",
+                        "filterValue": ".*"
+                    }
+      ]
+    }
+  }
+}
+EOF
+
+
+function app_exists {
+    searched_app=$1
+    found_app=$($curl -G -H "authorization: SSWS $api_key" "$base_url/api/v1/apps" --data-urlencode "q=$app_name" | jq -r .[0].label)
+    if [ "$searched_app" = "$found_app" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+function app_active {
+    app_info=$($curl -G -H "authorization: SSWS $api_key" "$base_url/api/v1/apps" --data-urlencode "q=$app_name" | jq -r .[0].status)
+    if [ "$app_info" = "ACTIVE" ]; then
+      return 0
+    else
+      return 1
+    fi
+}
+
+function get_app_id {
+    app_id=$($curl -G -H "authorization: SSWS $api_key" "$base_url/api/v1/apps" --data-urlencode "q=$app_name" | jq -r .[0].id)
+    if [ -n "$app_id" ]; then
+      echo "$app_id"
+    else
+      return 1
+    fi 
+}
+
+function get_group_id {
+    group_name="$1"
+    group_id=$($curl -G -H "authorization: SSWS $api_key" "$base_url/api/v1/groups" --data-urlencode "q=$group_name" | jq -r .[0].id)
+    if [ -n "$group_id" ]; then
+      echo "$group_id"
+    else
+      return 1
+    fi 
+}
+#function get_app_groups {
+#}
+
+function assign_group {
+    group_name="$1"
+    group_id=$(get_group_id "$group_name")
+    if [ -n "$group_id" ]; then
+        app_id=$(get_app_id)
+        assign_status=$(curl -s -o /dev/null -w "%{http_code}" -X PUT "$base_url/api/v1/apps/$app_id/groups/$group_id" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json')
+        if [ "$assign_status" -eq 200 ]; then
+          echo "Assigned Okta group \"$okta_groups\" to \"$app_name\" Okta application."
+          return 0
+        else
+          echo "Got error \"$assign_status\" assigning group \"$group_name\" to \"$app_name\" Okta application."
+          return 1
+        fi
+    else
+      echo "Group \"$group_name\" does not exist."
+      return 1
+    fi
+}
+
+function remove_group {
+    group_name="$1"
+    group_id=$(get_group_id "$group_name")
+    if [ -n "$group_id" ]; then
+        app_id=$(get_app_id)
+        remove_status=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$base_url/api/v1/apps/$app_id/groups/$group_id" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json')
+        if [ "$remove_status" -eq 204 ]; then
+          echo "Deleted Okta group \"$okta_groups\" from \"$app_name\" Okta application."
+          return 0
+        else
+          echo "Got error \"$remove_status\" deleting group \"$group_name\" from \"$app_name\" Okta application."
+          return 1
+        fi
+    else
+      echo "Group \"$group_name\" does not exist."
+      return 1
+    fi
+}
+
+function print_creds {
+    fileOption="$1"
+    metadataFile="${fileOption:=creds.xml}"
+    idpIssuerId=$(xpath "${metadataFile}" "/*[local-name()='EntityDescriptor']/@entityID" 2>/dev/null | awk -F'"' '$0=$2')
+    xpath "${metadataFile}" "/*[local-name()='EntityDescriptor']/*[local-name()='IDPSSODescriptor']/*[local-name()='SingleSignOnService' and @Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST']/@Location" 2>/dev/null |awk -F'"' '$0=$2' > okta/ssoUrl
+    xpath "${metadataFile}" "/*[local-name()='EntityDescriptor']/*[local-name()='IDPSSODescriptor']/*[local-name()='KeyDescriptor' and @use='signing']/*[local-name()='KeyInfo']/*[local-name()='X509Data']/*[local-name()='X509Certificate']/text()" 2>/dev/null | tr " " "\n" | sed '1s/^/-----BEGIN CERTIFICATE-----\'$'\n/g' | sed '$s/$/\'$'\n-----END CERTIFICATE-----/g' > okta/okta.pem
+    if [ -s okta/okta.pem ]; then
+          cat <<EOF
+SAML Protocol Configuration:
+OktaIssuerId=${idpIssuerId}
+OktaSSOUrl=$(realpath okta/ssoUrl)
+OktaBase64Cert=$(realpath okta/okta.pem)
+EOF
+    else
+      echo "Okta certificate is empty, something went wrong."
+      return 1
+    fi
+}
+
+function create_app {
+    curl -s -X POST "$base_url/api/v1/apps" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' --data-binary "@$DIR/okta/app.json" > /dev/null
+    if app_exists "$app_name"; then
+        echo "Okta application \"$app_name\" was created."
+        return 0
+    else
+        echo "Okta application \"$app_name\" was not found"
+        return 1
+    fi
+}
+
+function deactivate {
+    app_id=$(get_app_id)
+    curl -s -X POST "$base_url/api/v1/apps/$app_id/lifecycle/deactivate" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' > /dev/null
+    if app_active "$app_name"; then
+      echo "Okta application \"$app_name\" is still activate."
+      return 1
+    else
+      echo "Okta application \"$app_name\" was successfully deactivated."
+      return 0
+    fi
+}
+
+function delete_app {
+    app_id=$(get_app_id)
+    curl -s -X DELETE "$base_url/api/v1/apps/$app_id" -H "authorization: SSWS $api_key" -H 'accept: application/json' -H 'cache-control: no-cache' -H 'content-type: application/json' > /dev/null
+    if app_exists "$app_name"; then
+        echo "Okta application \"$app_name\" wasn't deleted."
+        return 1
+    else
+        echo "Okta application \"$app_name\" was successfully deleted."
+        return 0
+    fi
+}
+
+function get_creds {
+    app_info=$($curl -G -H "authorization: SSWS $api_key" "$base_url/api/v1/apps" --data-urlencode "q=$app_name")
+    app_id=$(echo "$app_info" | jq -r .[0].id)
+    app_kid=$(echo "$app_info" | jq -r .[0].credentials.signing.kid)
+    app_creds=$(curl -s "$base_url/api/v1/apps/$app_id/sso/saml/metadata?kid=$app_kid" -H "authorization: SSWS $api_key" -H 'cache-control: no-cache' -H 'content-type: application/json' -H 'accept: application/xml')
+    echo "$app_creds" > "${DIR}/okta/creds.xml"
+    if print_creds "${DIR}/okta/creds.xml"; then
+       return 0
+    else
+       echo "Error getting Okta credentials."
+       return 1
+    fi
+}
+
+function create {
+                     if app_exists "$app_name"; then
+                      echo "Okta application with name \"$app_name\" already exists."
+                      if app_active; then
+                        echo "Trying to get \"$app_name\" configuration..."
+                        get_creds
+                        exit 0
+                      else
+                        echo "Okta application \"$app_name\" is inactive, can't get its configuration"
+                        exit 1
+                      fi
+                    fi
+                    if create_app; then
+                      get_creds
+                      assign_group "$okta_groups"
+                      exit 0
+                    fi
+}
+
+function delete {
+    if app_exists "$app_name"; then               
+        echo "Found Okta application with name \"$app_name\""
+        if app_active; then
+            echo "Deactivating \"$app_name\" Okta application..."
+            if remove_group "$okta_groups"; then
+                if deactivate; then
+                    if delete_app; then
+                        exit 0
+                    fi
+                fi
+            fi
+        fi
+    else
+        if delete_app; then
+            exit 0
+        fi
+    fi
+}
+case $operation in
+              create)
+                    create
+                    ;;
+              delete)
+                    delete
+                    ;;
+              *)
+                usage
+                exit 1
+                ;;
+esac  
+
+

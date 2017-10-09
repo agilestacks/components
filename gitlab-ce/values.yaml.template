@@ -1,7 +1,7 @@
 ## GitLab CE image
 ## ref: https://hub.docker.com/r/gitlab/gitlab-ce/tags/
 ##
-image: gitlab/gitlab-ce:9.4.1-ce.0
+image: gitlab/gitlab-ce:9.5.8-ce.0
 
 ## Specify a imagePullPolicy
 ## 'Always' if imageTag is 'latest', else set to 'IfNotPresent'
@@ -70,7 +70,7 @@ persistence:
     ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
     ## Default: volume.alpha.kubernetes.io/storage-class: default
     ##
-    # storageClass:
+    storageClass: aws-ebs-gp2
     accessMode: ReadWriteOnce
   ## This volume is used to store git data and other project files.
   ## ref: https://docs.gitlab.com/omnibus/settings/configuration.html#storing-git-data-in-an-alternative-directory
@@ -81,7 +81,7 @@ persistence:
     ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
     ## Default: volume.alpha.kubernetes.io/storage-class: default
     ##
-    # storageClass:
+    storageClass: aws-ebs-gp2 
     accessMode: ReadWriteOnce
 
 ## Configuration values for the postgresql dependency.
@@ -103,6 +103,13 @@ gitlab:
   databaseUser: ${component.gitlab.db-user}
   databasePassword: ${component.gitlab.db-password}
 
+## configure the SAML specific login details
+saml:
+  serviceUrl: ${component.ingress.protocol}://${component.gitlab.name}.${component.ingress.fqdn}/users/auth/saml/callback
+  certFingerprint: #SAML_CERT_FINGERPRINT#
+  targetUrl: #SAML_TARGET_URL#
+  issuer: ${component.gitlab.name}.${component.ingress.fqdn}
+
 ## Configuration values for the redis dependency.
 ## ref: https://github.com/kubernetes/charts/blob/master/stable/redis/README.md
 ##
@@ -115,4 +122,4 @@ redis:
 
   persistence:
     size: 10Gi
-
+    storageClass: aws-ebs-gp2

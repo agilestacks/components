@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ template "gitlab-ce.fullname" . }}
   labels:
-    app: {{ template "fullname" . }}
+    app: {{ template "gitlab-ce.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -23,7 +23,7 @@ data:
     gitlab_rails['db_username'] = ENV['DB_USER'];
     gitlab_rails['db_database'] = ENV['DB_DATABASE'];
     redis['enable'] = false;
-    gitlab_rails['redis_host'] = ENV['REDIS_HOST'];
+    gitlab_rails['redis_host'] = ENV['GITLAB_REDIS_SERVICE_HOST'];
     gitlab_rails['redis_password'] = ENV['REDIS_PASSWORD'];
     unicorn['worker_processes'] = 2;
     manage_accounts['enable'] = true;
@@ -33,18 +33,20 @@ data:
     gitlab_rails['shared_path'] = '/gitlab-data/shared';
     gitlab_rails['uploads_directory'] = '/gitlab-data/uploads';
     gitlab_ci['builds_directory'] = '/gitlab-data/builds';
-    gitlab_rails['omniauth_allow_single_sign_on'] = ['saml']
-    gitlab_rails['omniauth_block_auto_created_users'] = false
-    gitlab_rails['omniauth_auto_link_saml_user'] = true
+    gitlab_rails['omniauth_enabled'] = true
+    gitlab_rails['omniauth_allow_single_sign_on'] = ['saml'];
+    gitlab_rails['omniauth_block_auto_created_users'] = false;
+    gitlab_rails['omniauth_auto_link_saml_user'] = true;
+    gitlab_rails['omniauth_auto_sign_in_with_provider'] = 'saml'
     gitlab_rails['omniauth_providers'] = [
     {
       name: 'saml',
       args: {
-               assertion_consumer_service_url: 'http://${component.gitlab.name}.app.${dns.domain}/users/auth/saml/callback',
-               idp_cert: %q(${component.gitlab.saml_idp_cert}),
-               idp_sso_target_url: '${component.gitlab.saml_provider_url}',
-               issuer: '${component.gitlab.saml_issuer_id}',
-               name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
+               assertion_consumer_service_url: '{{ .Values.saml.serviceUrl }}',
+               idp_cert_fingerprint: '{{ .Values.saml.certFingerprint }}',
+               idp_sso_target_url: '{{ .Values.saml.targetUrl }}',
+               issuer: '{{ .Values.saml.issuer }}',
+               name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
              },
-      label: 'Gitlab SAML Login'
-    } ]
+      label: 'Gitlab Okta App'
+    } ];
