@@ -1,0 +1,7 @@
+apiVersion: v1
+description: A Helm chart for Postgresql exporter
+name: exporter-postgresql
+version: 0.1.0
+maintainers:
+  - name: AgileStacks Inc.
+    email: oleg@agilestacks.com
