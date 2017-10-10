@@ -7,9 +7,10 @@ export COMPONENT_NAME ?= gitlab-ce
 export DOMAIN_NAME    ?= default
 export kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-
+export kind                ?= aws
 
 deploy: clean init fetch wait install
+	bash -e ./deploy-$(kind).sh
 	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
 
@@ -53,6 +54,7 @@ endif
 .PHONY: install
 
 undeploy: init
+	bash -e ./deploy-$(kind).sh
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete $(COMPONENT_NAME)
 endif

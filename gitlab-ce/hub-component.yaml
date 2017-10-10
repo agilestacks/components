@@ -47,6 +47,8 @@ parameters:
     - name:    namespace
       default: gitlab
       env:     NAMESPACE
+    - name:    git_url_prefix
+      default: git
     - name:    db-name
       default: gitlab
     - name:    db-user
