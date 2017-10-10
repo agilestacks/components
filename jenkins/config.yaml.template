@@ -1,19 +1,6 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: jenkins-init-bin
-  namespace: ${component.jenkins.namespace}
-data:
-  export.sh: |-
-    #!/bin/sh
-    /bin/echo "Exporting Jenkins configuration"
-    /bin/cp -Rnfv /usr/share/jenkins/ref/plugins/. /jenkins_plugins/ || true
-    /bin/cp -Rnfv /usr/share/jenkins/ref/init.groovy.d/. /jenkins_groovy/ || true
-    /bin/cp -Rnfv /usr/share/jenkins/ref/approval.d/. /jenkins_approval/ || true
----
-kind: ConfigMap
-apiVersion: v1
-metadata:
   name: jenkins-config
   namespace: ${component.jenkins.namespace}
 data:
@@ -26,3 +13,16 @@ data:
       "jenkins_ingress": "${component.jenkins.namespace}.app.${dns.domain}",
       "jenkins_extternal_url": "http://${component.jenkins.namespace}.app.${dns.domain}"
     }
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: cluster-info
+  namespace: ${component.jenkins.namespace}
+data:
+  cluster_id: ${dns.domain},
+  aws_region: ${cloud.region},
+  domain_mame: ${dns.domain},
+  docker_registry: ${docker.registry}
+  jenkins_ingress: ${component.jenkins.namespace}.app.${dns.domain}
+  jenkins_extternal_url: http://${component.jenkins.namespace}.${component.ingress.fqdn}
