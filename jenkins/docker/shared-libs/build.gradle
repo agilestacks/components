@@ -1,0 +1,29 @@
+group 'com.agilestacks.jenkins'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'idea'
+apply plugin: 'groovy'
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+sourceSets {
+  main {
+    java {
+      srcDirs = ["src", "vars"]
+    }
+    resources {
+      srcDirs = ['resources']
+    }
+  }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.apache.ivy', name: 'ivy', version: '2.3.0'
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
