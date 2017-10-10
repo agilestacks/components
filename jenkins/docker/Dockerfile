@@ -37,7 +37,7 @@ RUN mkdir -p $SHARED_LIBS && \
 
 COPY plugins.txt               /plugins.txt
 COPY init.groovy.d/*.groovy    /usr/share/jenkins/ref/init.groovy.d/
-COPY shared-libs               ${SHARED_LIBS}/common
+COPY shared-libs               ${SHARED_LIBS}/default
 COPY etc/disable-wizard        /usr/share/jenkins/ref/jenkins.install.InstallUtil.lastExecVersion
 COPY etc/config.txt            ${CONFIG_DIR}/example.txt
 COPY script-approval.txt       ${SCRIPT_APPROVAL_DIR}/initial.txt
