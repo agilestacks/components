@@ -2,9 +2,6 @@
 
 def call() {
   node('master') {
-    sh script: 'git rev-parse HEAD > commit'
-    readFile('commit').trim().substring(0, 7)
+    sh(script: 'git rev-parse HEAD', returnStdout: true).take(6)
   }
 }
-
-
