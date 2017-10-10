@@ -20,9 +20,9 @@ metadata:
   name: cluster-info
   namespace: ${component.jenkins.namespace}
 data:
-  cluster_id: ${dns.domain},
-  aws_region: ${cloud.region},
-  domain_mame: ${dns.domain},
-  docker_registry: ${docker.registry}
-  jenkins_ingress: ${component.jenkins.namespace}.app.${dns.domain}
-  jenkins_extternal_url: http://${component.jenkins.namespace}.${component.ingress.fqdn}
+  CLUSTER_ID: ${dns.domain}
+  AWS_REGION: ${cloud.region}
+  DOMAIN_MAME: ${dns.domain}
+  DOCKER_REGISTRY: ${docker.registry}
+  JENKINS_INGRESS: ${component.jenkins.namespace}.${component.ingress.fqdn}
+  JENKINS_URL: http://${component.jenkins.namespace}.${component.ingress.fqdn}
