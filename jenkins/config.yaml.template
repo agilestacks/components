@@ -8,7 +8,7 @@ data:
     {
       "cluster_id": "${dns.domain}",
       "aws_region": "${cloud.region}",
-      "domain_mame": "${dns.domain}",
+      "domain_name": "${dns.domain}",
       "docker_registry": "${docker.registry}",
       "jenkins_ingress": "${component.jenkins.namespace}.app.${dns.domain}",
       "jenkins_extternal_url": "http://${component.jenkins.namespace}.app.${dns.domain}"
@@ -19,10 +19,17 @@ apiVersion: v1
 metadata:
   name: cluster-info
   namespace: ${component.jenkins.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   jenkins
+    qualifier: env-config
 data:
   CLUSTER_ID: ${dns.domain}
   AWS_REGION: ${cloud.region}
-  DOMAIN_MAME: ${dns.domain}
+  DOMAIN_NAME: ${dns.domain}
   DOCKER_REGISTRY: ${docker.registry}
-  JENKINS_INGRESS: ${component.jenkins.namespace}.${component.ingress.fqdn}
+  JENKINS_HOST: ${component.jenkins.namespace}.${component.ingress.fqdn}
   JENKINS_URL: http://${component.jenkins.namespace}.${component.ingress.fqdn}
+  INGRESS_FQDN: ${component.ingress.fqdn}
+  JENKINS_NAMESPACE: ${component.jenkins.namespace}
+
