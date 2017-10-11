@@ -55,8 +55,8 @@ pod.volumes          = [
   new EmptyDirVolume('/home/jenkins', false),
   new PersistentVolumeClaim('/home/jenkins/workspace', 'workspace-volume', false),
   new PersistentVolumeClaim('/home/jenkins/secrets', 'secrets-volume', true),
-  new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
-  // new EmptyDirVolume('/var/lib/docker', false)
+  // new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
+  new EmptyDirVolume('/var/lib/docker', false)
 ]
 
 // def container        = new ContainerTemplate('jnlp', 'jenkinsci/jnlp-slave:alpine')
