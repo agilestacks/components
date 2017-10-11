@@ -6,9 +6,10 @@ version   ?= 2.78
 image     ?= $(registry)/agilestacks/$(dirname):$(version)
 container ?= jenkins
 UC_DISABLED ?= true
+DOCKER_BUILD_OPTS ?= --no-cache --force-rm
 
 build:
-	docker build --build-arg="UC_DISABLED=$(UC_DISABLED)" --no-cache --force-rm -t $(image) .
+	docker build --build-arg="UC_DISABLED=$(UC_DISABLED)" $(BUILD_OPTS) -t $(image) .
 .PHONY: build
 
 run:
