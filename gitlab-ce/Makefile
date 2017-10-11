@@ -9,7 +9,7 @@ export kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMES
 export helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export kind                ?= aws
 
-deploy: clean init fetch wait install
+deploy: clean init fetch wait install output
 	bash -e ./deploy-$(kind).sh
 	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
@@ -37,6 +37,8 @@ fetch:
 .PHONY: fetch
 
 install:
+	# we don't use helm's postgres, we use our own component
+	rm -rf charts/gitlab-ce/charts/postgresql
 	sh ./okta-app.sh -c create
 	sh ./replace.sh
 	@cp secrets.yaml      charts/gitlab-ce/templates/
@@ -51,6 +53,7 @@ ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
 		--replace \
 		--values values.yaml
 endif
+
 .PHONY: install
 
 undeploy: init
@@ -59,6 +62,11 @@ ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPON
 	$(helm) delete $(COMPONENT_NAME)
 endif
 .PHONY: undeploy
+
+output:
+	@echo Outputs:
+	@echo git_fqdn=$(GIT_URL_PREFIX).$(DOMAIN_NAME)
+	@echo
 
 clean:
 	@rm -rf $(HELM_HOME)

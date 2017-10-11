@@ -25,6 +25,7 @@ parameters:
     - name: url
   - name: component.gitlab
     parameters:
+    - name: sub
     - name: saml.id
       default: saml
     - name: saml.name
@@ -61,6 +62,11 @@ parameters:
       default: 8Gi
     - name:    port
       default: 80
+
+outputs:
+- name: component.gitlab.git_fqdn
+  brief: FQDN of ingress
+  fromTfVar: git_fqdn
 
 templates:
   files:
