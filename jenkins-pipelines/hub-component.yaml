@@ -1,0 +1,41 @@
+---
+version: 1
+kind: component
+meta:
+  name: jenkins-pipelines
+  brief: Sample pipelines for Jenkins
+  source:
+      dir: ../../components/jenkins-pipelines
+
+requires:
+  - kubernetes
+
+parameters:
+- name: component.jenkins
+  parameters:
+  - name: namespace
+    default: jenkins
+    env: NAMESPACE
+  - name: serviceaccount.user
+    env: JENKINS_USER
+  - name: serviceaccount.password
+    env: JENKINS_PASSWORD
+  - name: internal.port
+    default: 8080
+    env: JENKINS_PORT
+- name: component.jenkins-pipelines
+  parameters:
+  - name: pipelines
+    default: nodejs
+    env: PIPELINES
+- name: cloud.region
+  kind: user
+  env: AWS_REGION
+- name: dns.domain
+  brief: DNS domain
+  kind: tech
+  env: DOMAIN_NAME
+
+templates:
+  files:
+    - "*.template"
