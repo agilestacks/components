@@ -1,0 +1,31 @@
+---
+version: 1
+kind: component
+meta:
+  name: nginx
+  brief: Nginx ingress Controller
+  source:
+      dir: ../../components/nginx
+
+requires:
+  - kubernetes
+provides:
+  - ingress
+
+parameters:
+  - name: dns.domain
+  - name: kubernetes.config
+    parameters:
+    - name: caCert
+    - name: clientCert
+    - name: clientKey
+    - name: namespace
+      default: kube-system
+
+outputs:
+- name: kubernetes.config.kubeconfig
+  fromTfVar: kubeconfig
+
+templates:
+  files:
+    - "*.template"
