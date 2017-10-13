@@ -2,15 +2,13 @@
 version: 1
 kind: component
 meta:
-  name: nginx
-  brief: Nginx ingress Controller
+  name: kubeconfig
+  brief: Create Kubeconfig
   source:
-      dir: ../../components/nginx
+      dir: ../../components/kubeconfig
 
 requires:
   - kubernetes
-provides:
-  - ingress
 
 parameters:
   - name: dns.domain
