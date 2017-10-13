@@ -23,7 +23,9 @@ deploy: clean init wait install sleep connect enable unseal disconnect output
 .PHONY: deploy
 
 sleep:
-	@sleep 20
+	@echo Waiting for Vault pod
+	@sleep 30
+.PHONY: sleep
 
 init:
 	@mkdir -p .vault
