@@ -1,16 +1,18 @@
 .DEFAULT_GOAL := deploy
 
-export DOMAIN_NAME         ?= default
+export DOMAIN_NAME ?= default
 
 deploy:
 	mkdir -p result
-	cp -f kubeconfig result/kubeconfig.$(DOMAIN_NAME)
+	mv -f kubeconfig result/kubeconfig.$(DOMAIN_NAME)
 	$(MAKE) output
 
 undeploy:
-	rm -f result/kubeconfig.$(DOMAIN_NAME) || true
+	-rm -f result/kubeconfig.$(DOMAIN_NAME)
 
 output:
+	@echo
 	@echo Outputs:
 	@echo kubeconfig = $(abspath .)/result/kubeconfig.$(DOMAIN_NAME)
+	@echo
 .PHONY: output
