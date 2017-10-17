@@ -11,18 +11,17 @@ JOB=""
 
 kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
-deploy:
-	$(eval comma := ,)
-	$(MAKE) connect
-	for pipeline in $(subst $(comma), ,$(PIPELINES)) ; do \
+deploy: connect
+	$(eval , := ,)
+	for pipeline in $(subst $(,), ,$(PIPELINES)) ; do \
 		$(MAKE) deploy-job JOB=$$pipeline ; \
 	done
 	$(MAKE) disconnect
 .PHONY: deploy
 
-undeploy:
-	$(MAKE) connect
-	for pipeline in $(subst ',', ,$(PIPELINES)) ; do \
+undeploy: connect
+	$(eval , := ,)
+	for pipeline in $(subst $(,), ,$(PIPELINES)) ; do \
 		$(MAKE) undeploy-job JOB=$$pipeline ; \
 	done
 	$(MAKE) disconnect
