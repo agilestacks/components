@@ -50,6 +50,8 @@
           env:
           - name:  JENKINS_URL
             value: http://${component.jenkins.namespace}.${component.ingress.fqdn}
+          - name:  JENKINS_PERMISSIVE_MODE
+            value: 'true'
           - name:  AWS_REGION
             value: ${cloud.region}
           - name:  PRIVATE_REGISTRY

@@ -18,13 +18,19 @@ def call(params = [:], Closure body) {
     def auth = token.authorizationData[0]
     def login = new String(auth.authorizationToken.decodeBase64()).tokenize(':')
 
-    def result = sh  script: "docker login -u ${login[0]} -p ${login[1]} ${auth.proxyEndpoint}",
-                     returnStatus:true
+    def returnStatus = sh(script: "docker login -u ${login[0]} -p ${login[1]} ${auth.proxyEndpoint}",
+                          returnStatus:true)
 
-    echo "docker login result: ${result}"
+    if (returnStatus != 0) {
+      error "I was not able to login to ECR {auth.proxyEndpoint}"
+    }
 
     if (body != null) {
+      try {
         body()
+      } catch(Exception e) {
+        error e
+      }
     }
 }
 

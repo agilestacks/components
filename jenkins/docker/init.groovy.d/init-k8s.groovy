@@ -54,7 +54,7 @@ pod.annotations = [
 pod.volumes          = [
   new EmptyDirVolume('/home/jenkins', false),
   new PersistentVolumeClaim('/home/jenkins/workspace', 'workspace-volume', false),
-  new PersistentVolumeClaim('/home/jenkins/secrets', 'secrets-volume', true),
+  // new PersistentVolumeClaim('/home/jenkins/secrets', 'secrets-volume', true),
   // new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
   new EmptyDirVolume('/var/lib/docker', false)
 ]
