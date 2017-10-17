@@ -5,15 +5,16 @@ export LOCAL_PORT       ?= 23867
 export JENKINS_USER     ?= jenkins
 export JENKINS_PASSWORD ?= secret
 export JENKINS_PORT     ?= 8080
-export PIPELINES        ?= asi-demo-nodejs asi-demo-java
+export PIPELINES        ?= asi-demo-nodejs,asi-demo-java
 
 JOB=""
 
 kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy:
+	$(eval comma := ,)
 	$(MAKE) connect
-	for pipeline in "$(PIPELINES)"; do \
+	for pipeline in $(subst $(comma), ,$(PIPELINES)) ; do \
 		$(MAKE) deploy-job JOB=$$pipeline ; \
 	done
 	$(MAKE) disconnect
@@ -21,7 +22,7 @@ deploy:
 
 undeploy:
 	$(MAKE) connect
-	for pipeline in $(PIPELINES) ; do \
+	for pipeline in $(subst ',', ,$(PIPELINES)) ; do \
 		$(MAKE) undeploy-job JOB=$$pipeline ; \
 	done
 	$(MAKE) disconnect
