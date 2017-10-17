@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
         - name: node-exporter
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          image: "{{ .Values.node_exporter.image.repository }}:{{ .Values.node_exporter.image.tag }}"
+          imagePullPolicy: "{{ .Values.node_exporter.image.pullPolicy }}"
           args:
             - --collector.procfs=/host/proc
             - --collector.sysfs=/host/sys
@@ -28,7 +28,7 @@ spec:
               containerPort: 9100
               hostPort: 9100
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.node_exporter.resources | indent 12 }}
           volumeMounts:
             - name: proc
               mountPath: /host/proc
