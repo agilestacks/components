@@ -48,7 +48,7 @@ connect: disconnect
 	@echo Start proxy to pod/$(POD_NAME)
 	nohup $(kubectl) port-forward $(POD_NAME) $(LOCAL_PORT):${JENKINS_PORT} &
 	@sleep 2
-	@echo Connecting to vault at $(POD_NAME)
+	@echo Connecting to $(POD_NAME)
 	@for i in $$(seq 1 60); do \
 		if curl -sS http://localhost:$(LOCAL_PORT)/login -o /dev/null ; then \
 			exit 0; \
