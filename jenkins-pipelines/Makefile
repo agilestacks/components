@@ -61,6 +61,7 @@ connect: disconnect
 .PHONY: connect
 
 disconnect:
-	@echo Drop connection to jenkins pod
-	@kill $(shell ps aux | grep -E "kubectl*|port-forward*|$(LOCAL_PORT):$(8080)" | grep -v grep | awk '{print $$2}' | xargs) 2>/dev/null | true
+	$(eval PIDs=$(shell ps ax | grep -E "kubectl*|port-forward*|$(LOCAL_PORT):$(JENKINS_PORT)" | grep -v grep | awk '{print $$1}' | xargs))
+	@echo Drop connection to jenkins, pid=$(PIDs)
+	@$(foreach pid,$(PIDs),kill $(pid)  2>/dev/null | true;)
 .PHONY: disconnect
