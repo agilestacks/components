@@ -28,4 +28,5 @@ def call(def deploymentName, def dockerImage, def namespace = 'automation-hub') 
     echo "Update deployment: ${answer.status}"
     ((DeploymentOperationsImpl)opts).waitUntilDeploymentIsScaled(answer.status.replicas)
     echo "Done"
+
 }
