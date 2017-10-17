@@ -5,7 +5,7 @@ export LOCAL_PORT       ?= 23867
 export JENKINS_USER     ?= jenkins
 export JENKINS_PASSWORD ?= secret
 export JENKINS_PORT     ?= 8080
-export PIPELINES        ?= nodjs
+export PIPELINES        ?= asi-demo-nodejs asi-demo-java
 
 JOB=""
 
@@ -30,7 +30,7 @@ undeploy:
 deploy-job:
 	curl -s -XPOST 'http://$(JENKINS_USER):$(JENKINS_PASSWORD)@localhost:$(LOCAL_PORT)/createItem?name=$(JOB)' \
 		 --connect-timeout 10 \
-		--data-binary @jobs/$(JOB).xml \
+		--data-binary @pipelines/$(JOB).xml \
 		-H "Content-Type:text/xml" \
 		> /dev/null
 .PHONY: deploy-job
