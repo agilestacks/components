@@ -21,17 +21,17 @@ parameters:
     parameters:
     - name:    urlPrefix
       default: www
-      kind:    user
       env:     URL_PREFIX
     - name:    ssoUrlPrefix
       default: swww
-      kind:    user
       env:     SSO_URL_PREFIX
     - name:    namespace
       default: ingress
       env:     NAMESPACE
     - name:    user
+      default: admin
     - name:    password
+      default: secret
     - name:    dashboard
       default: "true"
     - name:    ssl.cert
