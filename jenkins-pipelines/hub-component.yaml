@@ -26,7 +26,7 @@ parameters:
 - name: component.jenkins-pipelines
   parameters:
   - name: pipelines
-    default: nodejs
+    default: asi-demo-nodejs
     env: PIPELINES
 - name: cloud.region
   kind: user
