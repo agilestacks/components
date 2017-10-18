@@ -31,12 +31,11 @@ deploy-job:
 	curl -s -XPOST 'http://$(JENKINS_USER):$(JENKINS_PASSWORD)@localhost:$(LOCAL_PORT)/createItem?name=$(JOB)' \
 		 --connect-timeout 10 \
 		--data-binary @pipelines/$(JOB).xml \
-		-H "Content-Type:text/xml" \
-		> /dev/null
+		-H "Content-Type:text/xml" || true
 .PHONY: deploy-job
 
 undeploy-job:
-	curl -s -XPOST --connect-timeout 10 'http://$(JENKINS_USER):$(JENKINS_PASSWORD)@localhost:$(LOCAL_PORT)/job/$(JOB)/doDelete' >/dev/null
+	curl -s -XPOST --connect-timeout 10 'http://$(JENKINS_USER):$(JENKINS_PASSWORD)@localhost:$(LOCAL_PORT)/job/$(JOB)/doDelete' || true
 .PHONY: deploy-job
 
 undeploy:
