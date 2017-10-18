@@ -2,25 +2,32 @@
 
 import jenkins.model.*
 import hudson.security.*
+import java.util.logging.Logger
 
-def instance = Jenkins.getInstance()
+def userRegistered = false
 
-println "--> creating local user 'admin'"
+def log     = Logger.getLogger(this.class.name)
+def jenkins = Jenkins.getInstance()
 
 def adminUser     = System.getenv('ADMIN_USER')     ?: "admin"
 def adminPassword = System.getenv('ADMIN_PASSWORD') ?: "secret"
-def hudsonRealm   = new HudsonPrivateSecurityRealm(false)
-hudsonRealm.createAccount(adminUser, adminPassword)
+jenkins.securityRealm = new HudsonPrivateSecurityRealm(false)
+if (adminUser != null && adminPassword != null) {
+  jenkins.securityRealm.createAccount(adminUser, adminPassword)
+  log.info("Added user: ${adminUser}")
+  userRegistered = true
+}
 
 def saUser     = System.getenv('SERVICE_ACCOUNT_USER')
 def saPassword = System.getenv('SERVICE_ACCOUNT_PASSWORD')
-if (saUser != null) {
-  hudsonRealm.createAccount(saUser, saPassword)
+if (saUser != null && saPassword != null) {
+  jenkins.securityRealm.createAccount(saUser, saPassword)
+  log.info("Added user: ${saUser}")
+  userRegistered = true
 }
-instance.securityRealm = hudsonRealm
 
-def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
-strategy.setAllowAnonymousRead(false)
-instance.setAuthorizationStrategy(strategy)
-instance.save()
-
+if (userRegistered) {
+  jenkins.authorizationStrategy = new FullControlOnceLoggedInAuthorizationStrategy()
+  jenkins.authorizationStrategy.allowAnonymousRead = false
+  jenkins.save()
+}
