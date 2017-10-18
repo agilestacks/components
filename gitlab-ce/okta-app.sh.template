@@ -193,7 +193,7 @@ function get_app_id {
       echo "$app_id"
     else
       return 1
-    fi 
+    fi
 }
 
 function get_group_id {
@@ -203,7 +203,7 @@ function get_group_id {
       echo "$group_id"
     else
       return 1
-    fi 
+    fi
 }
 #function get_app_groups {
 #}
@@ -334,7 +334,7 @@ function create {
 }
 
 function delete {
-    if app_exists "$app_name"; then               
+    if app_exists "$app_name"; then
         echo "Found Okta application with name \"$app_name\""
         if app_active; then
             echo "Deactivating \"$app_name\" Okta application..."
@@ -363,6 +363,6 @@ case $operation in
                 usage
                 exit 1
                 ;;
-esac  
+esac
 
 

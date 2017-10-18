@@ -34,7 +34,7 @@ parameters:
       default: IfNotPresent
     - name:    replicaCount
       default: 1
-    - name:    url_prefix
+    - name:    urlPrefix
       default: www
       env:     URL_PREFIX
     - name:    namespace

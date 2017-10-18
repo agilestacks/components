@@ -24,7 +24,7 @@ parameters:
     - name: name
       default: pgweb
       env: COMPONENT_NAME
-    - name: ingress.url_prefix
+    - name: ingress.urlPrefix
       default: db
     - name: ingress.path
       default: /

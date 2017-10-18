@@ -67,7 +67,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
 
-  fqdn: ${component.prometheus.grafana.ingress.url_prefix}.${component.ingress.fqdn}
+  fqdn: ${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.fqdn}
 
   ## TLS configuration for Alertmanager Ingress
   ## Secret must be manually created in the namespace
