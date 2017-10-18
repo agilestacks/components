@@ -12,25 +12,25 @@ for i in {1..30}; do
   sleep 3;
 done
 
-echo "Check if {{component.ingress.url_prefix}}.{{dns.domain}} exists"
+echo "Check if {{component.ingress.urlPrefix}}.{{dns.domain}} exists"
 record=$(
     aws route53 list-resource-record-sets --hosted-zone-id "${ZONE_ID}" --start-record-name "{{dns.domain}}." --start-record-type "CNAME" \
-    | jq -Mc ".ResourceRecordSets[] | select(.Name == \"{{component.ingress.url_prefix}}.{{dns.domain}}\")" \
+    | jq -Mc ".ResourceRecordSets[] | select(.Name == \"{{component.ingress.urlPrefix}}.{{dns.domain}}\")" \
 )
 
 if [ ! -z "${record}" ]; then
-  echo "Record {{component.ingress.url_prefix}}.{{dns.domain}} already exists \n Skip DNS UPSERT"
+  echo "Record {{component.ingress.urlPrefix}}.{{dns.domain}} already exists \n Skip DNS UPSERT"
   exit 0
 fi
 
-echo "Create {{component.ingress.url_prefix}}.{{dns.domain}}, {{component.ingress.sso_url_prefix}}.{{dns.domain}} and {{kubernetes.oidc_issuer_fqdn}} CNAMEs for ${ELB}"
+echo "Create {{component.ingress.urlPrefix}}.{{dns.domain}}, {{component.ingress.ssoUrlPrefix}}.{{dns.domain}} and {{kubernetes.oidc_issuer_fqdn}} CNAMEs for ${ELB}"
 cat << EOF > ${DIR}/upsert.json
 {
   "Comment": "Traefik ingress",
   "Changes": [{
     "Action": "UPSERT",
     "ResourceRecordSet": {
-      "Name": "{{component.ingress.url_prefix}}.{{dns.domain}}",
+      "Name": "{{component.ingress.urlPrefix}}.{{dns.domain}}",
       "Type": "CNAME",
       "TTL": 30,
       "ResourceRecords": [{
@@ -40,7 +40,7 @@ cat << EOF > ${DIR}/upsert.json
   }, {
     "Action": "UPSERT",
     "ResourceRecordSet": {
-      "Name": "*.{{component.ingress.url_prefix}}.{{dns.domain}}",
+      "Name": "*.{{component.ingress.urlPrefix}}.{{dns.domain}}",
       "Type": "CNAME",
       "TTL": 30,
       "ResourceRecords": [{
@@ -50,7 +50,7 @@ cat << EOF > ${DIR}/upsert.json
   }, {
     "Action": "UPSERT",
     "ResourceRecordSet": {
-      "Name": "{{component.ingress.sso_url_prefix}}.{{dns.domain}}",
+      "Name": "{{component.ingress.ssoUrlPrefix}}.{{dns.domain}}",
       "Type": "CNAME",
       "TTL": 30,
       "ResourceRecords": [{
@@ -60,7 +60,7 @@ cat << EOF > ${DIR}/upsert.json
   }, {
     "Action": "UPSERT",
     "ResourceRecordSet": {
-      "Name": "*.{{component.ingress.sso_url_prefix}}.{{dns.domain}}",
+      "Name": "*.{{component.ingress.ssoUrlPrefix}}.{{dns.domain}}",
       "Type": "CNAME",
       "TTL": 30,
       "ResourceRecords": [{
