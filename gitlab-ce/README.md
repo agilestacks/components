@@ -10,8 +10,9 @@ This component dependes on the Agilestacks `postgres` component.
 Parameters : 
 * name:    name default: gitlab
 * name:    namespace default: gitlab
-* name:    db-name default: gitlab
-* name:    db-password default: supersecret
+* name:    dbHost default: "" ## IMPORTANT if this is set, it will point gitlab to an external host instead of the local PG
+* name:    dbName default: gitlab
+* name:    dbNassword default: supersecret
 * name:    database default: gitlab
 * name:    volume default: 8Gi
 * name:    port default: 80

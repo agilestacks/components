@@ -26,5 +26,5 @@ function delete_r53_record() {
   done
 }
 
-delete_r53_record "\\\\052.{{component.gitlab.git_url_prefix}}.{{dns.domain}}."
-delete_r53_record "{{component.gitlab.git_url_prefix}}.{{dns.domain}}."
+delete_r53_record "\\\\052.{{component.gitlab.gitUrlPrefix}}.{{dns.domain}}."
+delete_r53_record "{{component.gitlab.gitUrlPrefix}}.{{dns.domain}}."
