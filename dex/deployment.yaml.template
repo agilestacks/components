@@ -1,0 +1,69 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: dex
+  namespace: ${component.dex.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   dex
+    component: dex
+spec:
+  replicas: 1
+  # New dex pods must be healthy for 30 seconds
+  # before they're marked as ready.
+  minReadySeconds: 30
+  strategy:
+    rollingUpdate:
+      # During a rolling update every deployed pod must be
+      # ready before the update terminates an existing pod.
+      maxUnavailable: 0
+  template:
+    metadata:
+      name: dex
+      labels:
+        provider:  agilestacks.com
+        project:   dex
+        component: dex
+    spec:
+      volumes:
+      - name: config
+        configMap:
+          name: dex
+          items:
+          - key: config.yaml
+            path: config.yaml
+      - name: dex-grpc-server-secret
+        secret:
+          secretName: dex-grpc-server-secret
+      containers:
+      - name: dex
+        imagePullPolicy: IfNotPresent
+        image: ${component.dex.image}
+        command: ["/usr/local/bin/dex", "serve", "/etc/dex/config.yaml"]
+        volumeMounts:
+        - name: config
+          mountPath: /etc/dex
+        - name: dex-grpc-server-secret
+          mountPath: /etc/dex-grpc-server-secret
+          readOnly: true
+        ports:
+        - containerPort: 5556
+          protocol: TCP
+        - containerPort: 5557
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5556
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
+        resources:
+          requests:
+            cpu: 100m
+            memory: 50Mi
+          limits:
+            cpu: 100m
+            memory: 50Mi
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534

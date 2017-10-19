@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: dex-operator
+  namespace: ${component.dex.namespace}
+  labels:
+    app: dex-operator
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: dex-operator
+      labels:
+        app: dex-operator
+    spec:
+      containers:
+      - name: dex-operator
+        image: 'docker.io/agilestacks/dex-operator:v0.0.1'
+        imagePullPolicy: Always
+        command: ["./dex-operator"]
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/dex-operator
+      volumes:
+      - name: config-volume
+        configMap:
+          name: dex-operator
+          items:
+          - key: .dex-operator.yaml
+            path: .dex-operator.yaml
