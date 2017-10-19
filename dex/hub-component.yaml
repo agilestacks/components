@@ -1,0 +1,61 @@
+---
+version: 1
+kind: component
+meta:
+  name: dex
+  brief: Dex OIDC and OAuth2 provider
+  source:
+      dir: ../../components/dex
+
+requires:
+  - kubernetes
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: component.ingress.ssoUrlPrefix
+  - name: component.ingress.protocol
+  - name: kubernetes.oidc_issuer_fqdn
+  - name: component.dex.namespace
+    brief: Kubernetes namespace to install into
+    default: dex
+    env: NAMESPACE
+  - name: component.dex.image
+    default: quay.io/coreos/dex:v2.6.1
+  - name: component.dex.saml.id
+    default: saml
+  - name: component.dex.saml.name
+    default: "Okta with SAML"
+  - name: component.dex.saml.usernameAttr
+    default: name
+  - name: component.dex.saml.emailAttr
+    default: email
+  - name: component.dex.saml.groupsAttr
+    default: groups
+  - name: component.dex.okta.issuer
+    fromEnv: DEX_OKTA_APP_ISSUER
+    default: https://dev-458481.oktapreview.com
+  - name: component.dex.okta.clientId
+    fromEnv: DEX_OKTA_APP_CLIENT_ID
+    default: unknown
+  - name: component.dex.okta.clientSecret
+    fromEnv: DEX_OKTA_APP_CLIENT_SECRET
+    default: unknown
+  - name: cloud.region
+    kind: user
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    default: default
+    env: TF_VAR_name
+  - name: terraform.bucket
+    kind: user
+    parameters:
+    - name: name
+    - name: region
+
+templates:
+  files:
+    - "*.yaml.template"
+  extra:
+  - kind: mustache
+    files: ["*.sh.template"]

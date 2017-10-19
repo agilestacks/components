@@ -52,7 +52,7 @@ ingress:
   ##
   labels: {}
 
-  fqdn: ${component.prometheus.ingress.url_prefix}.${component.ingress.fqdn}
+  fqdn: ${component.prometheus.ingress.urlPrefix}.${component.ingress.fqdn}
 
   ## TLS configuration for Prometheus Ingress
   ## Secret must be manually created in the namespace

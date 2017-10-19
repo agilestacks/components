@@ -1,0 +1,4 @@
+shared-libs
+!shared-libs/vars
+!shared-libs/resources
+!shared-libs/src

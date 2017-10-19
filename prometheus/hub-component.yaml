@@ -35,7 +35,7 @@ parameters:
       default:  false
     - name:    ingress.enabled
       default:  true
-    - name:    ingress.url_prefix
+    - name:    ingress.urlPrefix
       default:  prometheus
     - name:    ingress.path
       default:  /
@@ -46,7 +46,7 @@ parameters:
       default: v0.9.1
     - name:    ingress.enabled
       default:  true
-    - name:    ingress.url_prefix
+    - name:    ingress.urlPrefix
       default:  alertmanager
     - name:    ingress.path
       default: "/"
@@ -57,7 +57,7 @@ parameters:
       default: 4.5.2
     - name:    ingress.enabled
       default:  true
-    - name:    ingress.url_prefix
+    - name:    ingress.urlPrefix
       default:  grafana
     - name:    ingress.path
       default: "/"
@@ -69,10 +69,10 @@ templates:
 outputs:
   - name: component.prometheus.url
     brief: Prometheus URL
-    value: http://${component.prometheus.ingress.url_prefix}.${component.ingress.fqdn}
+    value: http://${component.prometheus.ingress.urlPrefix}.${component.ingress.fqdn}
   - name: component.prometheus.alertmanager_url
     brief: Alertmanager URL
-    value: http://${component.prometheus.alertmanager.ingress.url_prefix}.${component.ingress.fqdn}
+    value: http://${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.fqdn}
   - name: component.prometheus.grafana_url
     brief: Grafana URL
-    value: http://${component.prometheus.grafana.ingress.url_prefix}.${component.ingress.fqdn}
+    value: http://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.fqdn}

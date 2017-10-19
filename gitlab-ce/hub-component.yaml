@@ -12,7 +12,7 @@ provides:
 
 parameters:
   - name: component.ingress.fqdn
-  - name: component.ingress.sso_url_prefix
+  - name: component.ingress.ssoUrlPrefix
   - name: component.ingress.protocol
   - name: kubernetes.oidc_issuer_fqdn
   - name: dns.domain
