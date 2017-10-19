@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dex-operator
+  namespace: ${component.dex.namespace}
+data:
+  .dex-operator.yaml: |
+    handler: AuthProxy
+    image: 'quay.io/coreos/tectonic-monitoring-auth:v0.0.1'
+    cookieExpire: '8h0m0s'
+    emailDomain: 'agilestacks.com'
+    ingressPrefix: ${component.ingress.ssoUrlPrefix}
+    ingressProtocol: ${component.ingress.protocol}
+    dexNamespace: ${component.dex.namespace}
