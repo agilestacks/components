@@ -11,26 +11,58 @@ meta:
 #   - kubernetes
 
 parameters:
-  - name: component.ingress.fqdn
-  - name: component.spinnaker.namespace
-    brief: Kubernetes namespace to install into
-    kind: user
-    default: spinnaker
-    env: SPINNAKER_NAMESPACE
   - name: cloud.region
     kind: user
-    env: AWS_REGION
+    env: AWS_DEFAULT_REGION
   - name: cloud.bucket
     kind: tech
     brief: Bucket for Spinnaker. Coming from basestack
+    env: AWS_S3_BUCKET
   - name: dns.domain
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
-  - name: docker.registry
-    brief: DNS domain
-    kind: tech
-    env: DOCKER_REGISTRY
+  - name: cloud.role.master
+    default: unknown
+  - name: component.ingress.fqdn
+    value: app.${dns.domain}
+    env: INGRESS_FQDN
+  - name: component.spinnaker
+    parameters:
+    - name: name
+      default: spinnaker
+      env: COMPONENT_NAME
+    - name: namespace
+      brief: Kubernetes namespace to install into
+      default: spinnaker
+      env: NAMESPACE
+    - name: ingress
+      value: spinnaker.${component.ingress.fqdn}
+      env: SPINNAKER_INGRESS
+    - name: aws.assume_role
+      value: ${cloud.role.master}
+      env: AWS_ASSUME_ROLE
+    - name: aws.keypair
+      default: agilestacks
+      env: AWS_KEY_PAIR
+    - name: slack.bot_token
+      default: unknown
+      env: SLACK_TOKEN
+  - name: component.jenkins
+    parameters:
+    - name: jenkins.fqdn
+      default: unknown
+      env: JENKINS_FQDN
+    - name: jenkins.url
+      default: unknown
+      env: JENKINS_ADDRESS
+    - name: serviceaccount.user
+      default: robot
+      env: JENKINS_USER
+    - name: serviceaccount.password
+      default: robot
+      env: JENKINS_PASSWORD
+
 
 templates:
   files:

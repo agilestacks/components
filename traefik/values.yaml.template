@@ -30,7 +30,7 @@ acme:
     size: 1Gi
 dashboard:
   enabled: ${component.ingress.dashboard}
-  domain: ${component.ingress.url_prefix}.${dns.domain}
+  domain: ${component.ingress.urlPrefix}.${dns.domain}
   ingress:
     labels:
       provider:  agilestacks.com
@@ -50,7 +50,7 @@ service:
     kubernetes.io/cluster-service: "true"
   annotations:
     fabric8.io/app-menu: development
-    api.service.kubernetes.io/path: ${component.ingress.url_prefix}.${dns.domain}
+    api.service.kubernetes.io/path: ${component.ingress.urlPrefix}.${dns.domain}
 gzip:
   enabled: false
 accessLogs:

@@ -35,7 +35,7 @@ config-file-provider:2.16.0
 display-url-api:2.0
 dockerhub-notification:2.2.0
 docker-build-publish:1.3.2
-docker-commons:1.8
+docker-commons:1.9
 docker-custom-build-environment:1.6.5
 docker-workflow:1.12
 docker-slaves:1.0.7
@@ -52,6 +52,7 @@ github:1.28.0
 gradle:1.27.1
 handlebars:1.1.1
 htmlpublisher:1.14
+http_request:1.8.21
 icon-shim:2.0.3
 javadoc:1.4
 jackson2-api:2.7.3

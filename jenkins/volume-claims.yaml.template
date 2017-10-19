@@ -39,24 +39,3 @@ spec:
   resources:
     requests:
       storage: 1Gi
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: secrets-volume
-  namespace: ${component.jenkins.namespace}
-  labels:
-    provider:  agilestacks.com
-    project:   jenkins
-    qualifier: secrets
-spec:
-  selector:
-    matchLabels:
-      provider:  agilestacks.com
-      project:   jenkins
-      qualifier: secrets
-  accessModes:
-  - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi

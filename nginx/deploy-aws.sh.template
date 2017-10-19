@@ -12,14 +12,14 @@ for i in {1..30}; do
   sleep 3;
 done
 
-echo "Create {{component.ingress.url_prefix}}.{{dns.domain}} and {{kubernetes.oidc_issuer_fqdn}} CNAMEs for ${ELB}"
+echo "Create {{component.ingress.urlPrefix}}.{{dns.domain}} and {{kubernetes.oidc_issuer_fqdn}} CNAMEs for ${ELB}"
 cat << EOF > ${DIR}/upsert.json
 {
   "Comment": "Nginx ingress",
   "Changes": [{
     "Action": "UPSERT",
     "ResourceRecordSet": {
-      "Name": "{{component.ingress.url_prefix}}.{{dns.domain}}",
+      "Name": "{{component.ingress.urlPrefix}}.{{dns.domain}}",
       "Type": "CNAME",
       "TTL": 30,
       "ResourceRecords": [{
@@ -29,7 +29,7 @@ cat << EOF > ${DIR}/upsert.json
   }, {
     "Action": "UPSERT",
     "ResourceRecordSet": {
-      "Name": "*.{{component.ingress.url_prefix}}.{{dns.domain}}",
+      "Name": "*.{{component.ingress.urlPrefix}}.{{dns.domain}}",
       "Type": "CNAME",
       "TTL": 30,
       "ResourceRecords": [{

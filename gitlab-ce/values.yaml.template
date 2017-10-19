@@ -81,7 +81,7 @@ persistence:
     ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
     ## Default: volume.alpha.kubernetes.io/storage-class: default
     ##
-    storageClass: aws-ebs-gp2 
+    storageClass: aws-ebs-gp2
     accessMode: ReadWriteOnce
 
 ## Configuration values for the postgresql dependency.

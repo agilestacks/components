@@ -9,10 +9,10 @@ metadata:
     release: {{ .Release.Name }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.node_exporter.service.type }}
   ports:
   - name: metrics
-    port: {{ .Values.service.externalPort }}
+    port: {{ .Values.node_exporter.service.externalPort }}
     protocol: TCP
   selector:
     app: {{ template "fullname" . }}

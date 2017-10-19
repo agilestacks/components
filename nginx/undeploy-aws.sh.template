@@ -26,6 +26,6 @@ function delete_r53_record() {
   done
 }
 
-delete_r53_record "\\\\052.{{component.ingress.url_prefix}}.{{dns.domain}}."
-delete_r53_record "{{component.ingress.url_prefix}}.{{dns.domain}}."
+delete_r53_record "\\\\052.{{component.ingress.urlPrefix}}.{{dns.domain}}."
+delete_r53_record "{{component.ingress.urlPrefix}}.{{dns.domain}}."
 delete_r53_record "{{kubernetes.oidc_issuer_fqdn}}."

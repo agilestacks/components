@@ -3,7 +3,7 @@
   <actions>
     <io.jenkins.blueocean.service.embedded.BlueOceanUrlAction plugin="blueocean-rest-impl@1.2.0">
       <blueOceanUrlObject class="io.jenkins.blueocean.service.embedded.BlueOceanUrlObjectImpl">
-        <mappedUrl>blue/organizations/jenkins/node</mappedUrl>
+        <mappedUrl>blue/organizations/jenkins/asi-demo-nodejs</mappedUrl>
       </blueOceanUrlObject>
     </io.jenkins.blueocean.service.embedded.BlueOceanUrlAction>
     <org.jenkinsci.plugins.workflow.multibranch.JobPropertyTrackerAction plugin="workflow-multibranch@2.16">
@@ -13,33 +13,14 @@
       </jobPropertyDescriptors>
     </org.jenkinsci.plugins.workflow.multibranch.JobPropertyTrackerAction>
   </actions>
-  <description>nodejs - demo Agile Stacks</description>
-  <displayName>nodejs - demo Agile Stacks</displayName>
+  <description>Node.js demo Agile Stacks</description>
+  <displayName>Node.js demo Agile Stacks</displayName>
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.28.0">
       <projectUrl>https://github.com/agilestacks/agile-demo/</projectUrl>
       <displayName></displayName>
     </com.coravy.hudson.plugins.github.GithubProjectProperty>
-    <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
-        <hudson.model.StringParameterDefinition>
-          <name>VERSION</name>
-          <description>Version of the container to deploy</description>
-          <defaultValue>kitten</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>NAMESPACE</name>
-          <description>Namespace where container will be deployed</description>
-          <defaultValue>default</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>REPLICAS</name>
-          <description>Number of pod replicas</description>
-          <defaultValue>3</defaultValue>
-        </hudson.model.StringParameterDefinition>
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
     <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
       <triggers/>
     </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>

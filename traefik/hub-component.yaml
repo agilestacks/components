@@ -19,19 +19,19 @@ parameters:
   - name: kubernetes.oidc_issuer_fqdn
   - name: component.ingress
     parameters:
-    - name:    url_prefix
+    - name:    urlPrefix
       default: www
-      kind:    user
       env:     URL_PREFIX
-    - name:    sso_url_prefix
+    - name:    ssoUrlPrefix
       default: swww
-      kind:    user
       env:     SSO_URL_PREFIX
     - name:    namespace
       default: ingress
       env:     NAMESPACE
     - name:    user
+      default: admin
     - name:    password
+      default: secret
     - name:    dashboard
       default: "true"
     - name:    ssl.cert
@@ -49,8 +49,8 @@ outputs:
   fromTfVar: ingress_fqdn
 - name: component.ingress.protocol
   value: ${component.ingress.protocol}
-- name: component.ingress.sso_url_prefix
-  value: ${component.ingress.sso_url_prefix}
+- name: component.ingress.ssoUrlPrefix
+  value: ${component.ingress.ssoUrlPrefix}
 
 templates:
   files: ["values.yaml.template"]
