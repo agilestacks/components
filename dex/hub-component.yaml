@@ -17,7 +17,7 @@ parameters:
   - name: kubernetes.oidc_issuer_fqdn
   - name: component.dex.namespace
     brief: Kubernetes namespace to install into
-    default: dex
+    default: kube-system
     env: NAMESPACE
   - name: component.dex.image
     default: quay.io/coreos/dex:v2.6.1
