@@ -50,10 +50,10 @@ parameters:
       env: SLACK_TOKEN
   - name: component.jenkins
     parameters:
-    - name: jenkins.fqdn
+    - name: fqdn
       default: unknown
       env: JENKINS_FQDN
-    - name: jenkins.url
+    - name: internal.url
       default: unknown
       env: JENKINS_ADDRESS
     - name: serviceaccount.user
