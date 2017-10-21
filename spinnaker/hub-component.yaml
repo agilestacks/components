@@ -63,6 +63,9 @@ parameters:
       default: robot
       env: JENKINS_PASSWORD
 
+outputs:
+- name:  component.spinnaker.fqdn
+  value: ${component.spinnaker.name}.${component.ingress.fqdn}
 
 templates:
   files:
