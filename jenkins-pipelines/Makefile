@@ -48,7 +48,7 @@ connect: disconnect
 	nohup $(kubectl) port-forward $(POD_NAME) $(LOCAL_PORT):${JENKINS_PORT} &
 	@sleep 2
 	@echo Connecting to $(POD_NAME)
-	@for i in $$(seq 1 60); do \
+	@for i in $$(seq 1 10); do \
 		if curl -sS http://localhost:$(LOCAL_PORT)/login -o /dev/null ; then \
 			exit 0; \
 		fi; \
