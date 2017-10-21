@@ -19,6 +19,7 @@ parameters:
     kind: user
     env: AWS_DEFAULT_REGION
   - name: cloud.keypair
+    default: agilestacks
     env: AWS_KEYPAIR
   - name: cloud.bucket
     kind: tech
