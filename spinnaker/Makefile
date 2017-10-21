@@ -3,37 +3,79 @@
 export DOMAIN_NAME          ?= dev.kubernetes.delivery
 export AWS_DEFAULT_REGION   ?= us-east-2
 
-export AWS_S3_BUCKET        ?= files.$(DOMAIN_NAME)
-export AWS_ASSUME_ROLE      ?= master-00b56151b407c3573a2faa6823
-export AWS_KEY_PAIR         ?= agilestacks
-export AWS_ACCOUNT_ID       ?= $(shell aws sts get-caller-identity --output text --query 'Account')
-export AWS_ALIAS            ?= $(firstword $(shell aws iam list-account-aliases --max-items=1 --query 'AccountAliases[0]' --output text) aws-default)
-
 export KUBE_CONTEXT         := $(shell kubectl config current-context)
 
-export AWS_ECR_LOGIN_STRING ?= $(shell aws ecr get-login)
-export AWS_ECR_USER         ?= $(word 4,$(AWS_ECR_LOGIN_STRING))
-export AWS_ECR_REGISTRY     ?= $(subst https://,,$(lastword $(AWS_ECR_LOGIN_STRING)))
 export SHELL                := /bin/bash
-export SPINNAKER_VERSION    ?= 1.4.2
-export NAMESPACE            ?= spinnaker
 
-COMPONENT_NAME    ?= spinnaker
-SLACK_TOKEN       ?= unknown
-INGRESS_FQDN      ?= spinnaker.app.$(DOMAIN_NAME)
-JENKINS_ADDRESS   ?= http://jenkins.jenkins.svc.cluster.local:8080
-JENKINS_INGRESS   ?= jenkins.app.$(DOMAIN_NAME)
-JENKINS_USER      ?= robot
-JENKINS_PASSWORD  ?= password
+export TF_LOG               ?= debug
+export TF_LOG_PATH          ?= .terraform/$(DOMAIN_NAME).log
+export TF_INPUT             := 0
+export TF_OPTS              :=
+export TF_UPDATE            ?= -update
 
-hal ?= hal --color=false
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(JENKINS_NAMESPACE)"
+export TF_VAR_backend_bucket ?= terraform.agilestacks.com
+export TF_VAR_backend_region ?= us-east-1
+
+COMPONENT_NAME       ?= spinnaker
+SLACK_TOKEN          ?= unknown
+INGRESS_FQDN         ?= spinnaker.app.$(DOMAIN_NAME)
+JENKINS_ADDRESS      ?= http://jenkins.jenkins.svc.cluster.local:8080
+JENKINS_INGRESS      ?= jenkins.app.$(DOMAIN_NAME)
+JENKINS_USER         ?= robot
+JENKINS_PASSWORD     ?= password
+SPINNAKER_VERSION    ?= 1.4.2
+NAMESPACE            ?= spinnaker
+AWS_S3_BUCKET        ?= files.$(DOMAIN_NAME)
+AWS_KEYPAIR          ?= agilestacks
+AWS_ECR_LOGIN_STRING ?= $(shell aws ecr get-login)
+AWS_ECR_USER         ?= $(word 4,$(AWS_ECR_LOGIN_STRING))
+AWS_ECR_REGISTRY     ?= $(subst https://,,$(lastword $(AWS_ECR_LOGIN_STRING)))
+
+terraform            ?= terraform
+hal 			     ?= hal --color=false
+kubectl 		     ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(JENKINS_NAMESPACE)"
+
+tf_init:
+	@mkdir -p .terraform/$(DOMAIN_NAME)
+	@rm -rf .terraform/$(DOMAIN_NAME)/*
+	$(terraform) init -get=true $(TF_CMD_OPTS) -force-copy  \
+		-backend=true -input=false \
+		-backend-config="bucket=$(TF_VAR_backend_bucket)" \
+		-backend-config="region=$(TF_VAR_backend_region)" \
+		-backend-config="key=spinnaker/$(DOMAIN_NAME)/terraform.tfstate" \
+		-backend-config="profile=$(AWS_PROFILE)" \
+		. .terraform/$(DOMAIN_NAME)
+
+tf_plan:
+	@cd .terraform/$(DOMAIN_NAME) && \
+	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=terraform.tfplan
+.PHONY: tf_plan
+
+tf_apply:
+	@cd .terraform/$(DOMAIN_NAME) && \
+	$(terraform) apply $(TF_OPTS) -Xshadow=false terraform.tfplan
+.PHONY: tf_apply
+
+tf_destroy: tf_init
+	@cd .terraform/$(DOMAIN_NAME) && \
+	$(terraform) plan $(TF_OPTS) -destroy -refresh=true -module-depth=-1 -out=terraform.tfplan
+	$(MAKE) tf_apply
+.PHONY: tf_destroy
+
+tf_output:
+	@cd .terraform/$(DOMAIN_NAME) && \
+	$(terraform) output -json
+.PHONY: tf_output
 
 install:
 	sudo $(SHELL) bin/$(shell uname -s | tr A-Z a-z)/InatallHalyard.sh
 
 
 configure:
+	$(eval AWS_ACCOUNT_ID=$(shell $(MAKE) tf_output | jq -rM .account_id.value))
+	$(eval AWS_ASSUME_ROLE=$(shell $(MAKE) tf_output | jq -rM .role_name.value))
+	$(eval AWS_ALIAS=$(shell $(MAKE) tf_output | jq -rM .account_alias.value))
+
 	mkdir -p .hub/$(DOMAIN_NAME)
 	@echo $(word 6,$(AWS_ECR_LOGIN_STRING)) > .hub/$(DOMAIN_NAME)/ecr-pass.txt
 
@@ -41,8 +83,8 @@ configure:
 	$(hal) config provider aws account delete $(AWS_ALIAS) || true
 	$(hal) config provider aws account add $(AWS_ALIAS) \
 		--account-id $(AWS_ACCOUNT_ID) \
-		--assume-role $(AWS_ASSUME_ROLE) \
-		--default-key-pair $(AWS_KEY_PAIR) \
+		--assume-role role/$(AWS_ASSUME_ROLE) \
+		--default-key-pair $(AWS_KEYPAIR) \
 		--regions $(AWS_DEFAULT_REGION)
 
 	$(hal) config version edit --version=$(SPINNAKER_VERSION)
@@ -63,8 +105,8 @@ else
 			--token
 endif
 	$(hal) config provider kubernetes enable
-	$(hal) config provider kubernetes account delete $(subst .,-,$(DOMAIN_NAME)) || true
-	$(hal) config provider kubernetes account add $(subst .,-,$(DOMAIN_NAME)) \
+	$(hal) config provider kubernetes account delete this-kubernetes || true
+	$(hal) config provider kubernetes account add this-kubernetes \
 		--docker-registries ecr-$(AWS_DEFAULT_REGION) \
 		--context $(DOMAIN_NAME)
 
@@ -72,7 +114,7 @@ endif
 		--region $(AWS_DEFAULT_REGION) \
 		--root-folder /spinnaker \
 		--bucket $(AWS_S3_BUCKET) \
-		--assume-role $(AWS_ASSUME_ROLE) \
+		--assume-role role/$(AWS_ASSUME_ROLE) \
 
 	$(hal) config security ui  edit --override-base-url http://$(COMPONENT_NAME).$(INGRESS_FQDN)
 	$(hal) config security api edit --override-base-url http://api.$(COMPONENT_NAME).$(INGRESS_FQDN)
@@ -87,7 +129,7 @@ endif
 			--password
 .PHONY: configure
 
-deploy: configure
+deploy: tf_init tf_plan tf_apply configure
 	$(hal) config storage edit --type redis
 	$(hal) config storage edit --type s3
 	$(hal) config deploy edit \
@@ -103,9 +145,11 @@ undeploy:
 	@echo "Undeploy Spinnaker"
 	$(hal) deploy clean --quiet || true
 	@echo "Done"
+	$(MAKE) tf_destroy
 .PHONY: undeploy
 
 clean:
+	rm -rf .terraform/$(DOMAIN_NAME)*
 	rm -rf ~/.hal/*
 	rm -rf .hal/$(DOMAIN_NAME)
 

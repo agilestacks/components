@@ -11,9 +11,15 @@ meta:
 #   - kubernetes
 
 parameters:
+  - name: terraform.bucket.name
+    env: TF_VAR_backend_bucket
+  - name: terraform.bucket.region
+    env: TF_VAR_backend_region
   - name: cloud.region
     kind: user
     env: AWS_DEFAULT_REGION
+  - name: cloud.keypair
+    env: AWS_KEYPAIR
   - name: cloud.bucket
     kind: tech
     brief: Bucket for Spinnaker. Coming from basestack
