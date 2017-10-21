@@ -1,5 +1,6 @@
 kubernetes:1.0
 ace-editor:1.1
+oic-auth:1.0
 allure-jenkins-plugin:2.20
 amazon-ecr:1.6
 async-http-client:1.7.24.1
