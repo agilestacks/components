@@ -31,6 +31,8 @@ AWS_ECR_LOGIN_STRING ?= $(shell aws ecr get-login)
 AWS_ECR_USER         ?= $(word 4,$(AWS_ECR_LOGIN_STRING))
 AWS_ECR_REGISTRY     ?= $(subst https://,,$(lastword $(AWS_ECR_LOGIN_STRING)))
 
+AWS_ACCOUNT_NAME     ?= aws
+
 terraform            ?= terraform
 hal 			     ?= hal --color=false
 kubectl 		     ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(JENKINS_NAMESPACE)"
@@ -74,15 +76,15 @@ install:
 configure:
 	$(eval AWS_ACCOUNT_ID=$(shell $(MAKE) tf_output | jq -rM .account_id.value))
 	$(eval AWS_ASSUME_ROLE=$(shell $(MAKE) tf_output | jq -rM .role_name.value))
-	$(eval AWS_ALIAS=$(shell $(MAKE) tf_output | jq -rM .account_alias.value))
+	# $(eval AWS_ALIAS=$(shell $(MAKE) tf_output | jq -rM .account_alias.value))
 
 	mkdir -p .hub/$(DOMAIN_NAME)
 	@echo $(word 6,$(AWS_ECR_LOGIN_STRING)) > .hub/$(DOMAIN_NAME)/ecr-pass.txt
 
 	$(hal) config --set-current-deployment $(DOMAIN_NAME) --deployment $(DOMAIN_NAME)
 	$(hal) config version edit --version=$(SPINNAKER_VERSION)
-	$(hal) config provider aws account delete $(AWS_ALIAS) || true
-	$(hal) config provider aws account add $(AWS_ALIAS) \
+	$(hal) config provider aws account delete $(AWS_ACCOUNT_NAME) || true
+	$(hal) config provider aws account add $(AWS_ACCOUNT_NAME) \
 		--account-id $(AWS_ACCOUNT_ID) \
 		--assume-role role/$(AWS_ASSUME_ROLE) \
 		--default-key-pair $(AWS_KEYPAIR) \

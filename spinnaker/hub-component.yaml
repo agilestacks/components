@@ -1,4 +1,4 @@
----
+]---
 version: 1
 kind: component
 meta:
@@ -55,6 +55,9 @@ parameters:
     - name: slack.bot_token
       default: unknown
       env: SLACK_TOKEN
+    - name: aws.account_name
+      default: aws
+      env: AWS_ACCOUNT_NAME
   - name: component.jenkins
     parameters:
     - name: fqdn
