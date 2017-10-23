@@ -20,7 +20,7 @@ COMPONENT_NAME       ?= spinnaker
 SLACK_TOKEN          ?= unknown
 INGRESS_FQDN         ?= spinnaker.app.$(DOMAIN_NAME)
 JENKINS_ADDRESS      ?= http://jenkins.jenkins.svc.cluster.local:8080
-JENKINS_INGRESS      ?= jenkins.app.$(DOMAIN_NAME)
+JENKINS_FQDN         ?= jenkins.app.$(DOMAIN_NAME)
 JENKINS_USER         ?= robot
 JENKINS_PASSWORD     ?= password
 SPINNAKER_VERSION    ?= 1.4.2
@@ -80,35 +80,36 @@ configure:
 	@echo $(word 6,$(AWS_ECR_LOGIN_STRING)) > .hub/$(DOMAIN_NAME)/ecr-pass.txt
 
 	$(hal) config --set-current-deployment $(DOMAIN_NAME) --deployment $(DOMAIN_NAME)
+	$(hal) config version edit --version=$(SPINNAKER_VERSION)
 	$(hal) config provider aws account delete $(AWS_ALIAS) || true
 	$(hal) config provider aws account add $(AWS_ALIAS) \
 		--account-id $(AWS_ACCOUNT_ID) \
 		--assume-role role/$(AWS_ASSUME_ROLE) \
 		--default-key-pair $(AWS_KEYPAIR) \
 		--regions $(AWS_DEFAULT_REGION)
+	$(hal) config provider aws enable
 
-	$(hal) config version edit --version=$(SPINNAKER_VERSION)
-	$(hal) config provider docker-registry enable
-	$(hal) config provider docker-registry account delete ecr-$(AWS_DEFAULT_REGION) || true
-	$(hal) config provider docker-registry account add ecr-$(AWS_DEFAULT_REGION) \
+	$(hal) config provider docker-registry account delete aws-ecr-$(AWS_DEFAULT_REGION) || true
+	$(hal) config provider docker-registry account add aws-ecr-$(AWS_DEFAULT_REGION) \
 		--username $(AWS_ECR_USER) \
 		--password-file .hub/$(DOMAIN_NAME)/ecr-pass.txt \
 		--address $(AWS_ECR_REGISTRY) || true
+	$(hal) config provider docker-registry enable
 
 ifeq ($(SLACK_TOKEN),unknown)
 	$(hal) config notification slack disable
 else
-	$(hal) config notification slack enable
 	echo $(SLACK_TOKEN) | \
 		$(hal) config notification slack edit \
 			--bot-name spinnaker \
 			--token
+	$(hal) config notification slack enable
 endif
-	$(hal) config provider kubernetes enable
-	$(hal) config provider kubernetes account delete this-kubernetes || true
-	$(hal) config provider kubernetes account add this-kubernetes \
-		--docker-registries ecr-$(AWS_DEFAULT_REGION) \
+	$(hal) config provider kubernetes account delete kubernetes || true
+	$(hal) config provider kubernetes account add kubernetes \
+		--docker-registries aws-ecr-$(AWS_DEFAULT_REGION) \
 		--context $(DOMAIN_NAME)
+	$(hal) config provider kubernetes enable
 
 	$(hal) config storage s3 edit \
 		--region $(AWS_DEFAULT_REGION) \
@@ -116,24 +117,23 @@ endif
 		--bucket $(AWS_S3_BUCKET) \
 		--assume-role role/$(AWS_ASSUME_ROLE) \
 
-	$(hal) config security ui  edit --override-base-url http://$(COMPONENT_NAME).$(INGRESS_FQDN)
-	$(hal) config security api edit --override-base-url http://api.$(COMPONENT_NAME).$(INGRESS_FQDN)
-
-	$(hal) config ci jenkins enable
-	$(hal) config ci jenkins master delete $(JENKINS_INGRESS) || true
+	$(hal) config ci jenkins master delete $(JENKINS_FQDN) || true
 	@echo $(JENKINS_PASSWORD) | \
-		$(hal) config ci jenkins master add $(JENKINS_INGRESS) \
+		$(hal) config ci jenkins master add $(JENKINS_FQDN) \
 			--no-validate \
 			--address $(JENKINS_ADDRESS) \
 			--username $(JENKINS_USER) \
 			--password
+	$(hal) config ci jenkins enable
 .PHONY: configure
 
 deploy: tf_init tf_plan tf_apply configure
+	$(hal) config security ui  edit --override-base-url http://$(COMPONENT_NAME).$(INGRESS_FQDN)
+	$(hal) config security api edit --override-base-url http://api.$(COMPONENT_NAME).$(INGRESS_FQDN)
 	$(hal) config storage edit --type redis
 	$(hal) config storage edit --type s3
 	$(hal) config deploy edit \
-		--account-name $(subst .,-,$(DOMAIN_NAME)) \
+		--account-name kubernetes \
 		--type distributed
 	$(hal) deploy apply
 
