@@ -35,7 +35,7 @@ AWS_ACCOUNT_NAME     ?= aws
 
 terraform            ?= terraform
 hal 			     ?= hal --color=false
-kubectl 		     ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(JENKINS_NAMESPACE)"
+kubectl 		     ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 tf_init:
 	@mkdir -p .terraform/$(DOMAIN_NAME)
