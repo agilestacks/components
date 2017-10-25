@@ -71,8 +71,8 @@ install:
 tf_output=$(shell cd .terraform/$(DOMAIN_NAME) && $(terraform) output -json | jq -crM .$(1).value)
 
 configure:
-	$(eval AWS_ACCOUNT_ID=$(call tf_output,account_id))
-	$(eval AWS_ASSUME_ROLE=$(call tf_output,role_name))
+	$(eval AWS_ACCOUNT_ID  := $(call tf_output,account_id))
+	$(eval AWS_ASSUME_ROLE := $(call tf_output,role_name))
 
 	mkdir -p .hub/$(DOMAIN_NAME)
 	@echo $(word 6,$(AWS_ECR_LOGIN_STRING)) > .hub/$(DOMAIN_NAME)/ecr-pass.txt
