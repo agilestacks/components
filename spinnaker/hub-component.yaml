@@ -18,7 +18,7 @@ parameters:
   - name: cloud.region
     kind: user
     env: AWS_DEFAULT_REGION
-  - name: cloud.keypair
+  - name: cloud.sshKey
     default: agilestacks
     env: AWS_KEYPAIR
   - name: cloud.bucket
