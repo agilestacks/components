@@ -55,7 +55,7 @@ wait:
 			exit 0; \
 		fi; \
 		echo "Waiting for Jenkins pod is up and running ($$i)..."; \
-		sleep 10; \
+		sleep 2; \
 	done; \
 	echo "Timeout waiting for Jenkins"; \
 	exit 1
