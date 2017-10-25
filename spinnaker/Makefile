@@ -64,19 +64,17 @@ tf_destroy: tf_init
 	$(MAKE) tf_apply
 .PHONY: tf_destroy
 
-tf_output:
-	@cd .terraform/$(DOMAIN_NAME) && \
-	$(terraform) output -json
-.PHONY: tf_output
 
 install:
 	sudo $(SHELL) bin/$(shell uname -s | tr A-Z a-z)/InatallHalyard.sh
 
 
+tf_output = $(shell cd .terraform/$(DOMAIN_NAME) && $(terraform) output -json | jq -crM .$(1).value)
+
+
 configure:
-	$(eval AWS_ACCOUNT_ID=$(shell $(MAKE) tf_output | jq -rM .account_id.value))
-	$(eval AWS_ASSUME_ROLE=$(shell $(MAKE) tf_output | jq -rM .role_name.value))
-	# $(eval AWS_ALIAS=$(shell $(MAKE) tf_output | jq -rM .account_alias.value))
+	$(eval AWS_ACCOUNT_ID  = $(call tf_out account_id))
+	$(eval AWS_ASSUME_ROLE = $(call tf_out role_name))
 
 	mkdir -p .hub/$(DOMAIN_NAME)
 	@echo $(word 6,$(AWS_ECR_LOGIN_STRING)) > .hub/$(DOMAIN_NAME)/ecr-pass.txt
