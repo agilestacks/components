@@ -32,6 +32,7 @@ AWS_ECR_USER         ?= $(word 4,$(AWS_ECR_LOGIN_STRING))
 AWS_ECR_REGISTRY     ?= $(subst https://,,$(lastword $(AWS_ECR_LOGIN_STRING)))
 
 AWS_ACCOUNT_NAME     ?= aws
+K8S_ACCOUNT_NAME     ?= kubernetes
 
 terraform            ?= terraform
 hal 			     ?= hal --color=false
@@ -103,8 +104,8 @@ else
 			--token
 	$(hal) config notification slack enable
 endif
-	$(hal) config provider kubernetes account delete kubernetes || true
-	$(hal) config provider kubernetes account add kubernetes \
+	$(hal) config provider kubernetes account delete $(K8S_ACCOUNT_NAME) || true
+	$(hal) config provider kubernetes account add $(K8S_ACCOUNT_NAME) \
 		--docker-registries aws-ecr-$(AWS_DEFAULT_REGION) \
 		--context $(DOMAIN_NAME)
 	$(hal) config provider kubernetes enable
