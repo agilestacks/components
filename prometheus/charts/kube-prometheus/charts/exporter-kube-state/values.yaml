@@ -13,25 +13,13 @@ kube_state_metrics:
     type: ClusterIP
     externalPort: 80
     internalPort: 8080
-  resources:
-    limits:
-      cpu: 50m
-      memory: 200Mi
-    requests:
-      cpu: 50m
-      memory: 128Mi
+  resources: {}
 addon_resizer:
   image:
     repository: gcr.io/google_containers/addon-resizer
     tag: "1.0"
     pullPolicy: IfNotPresent
-  resources:
-    limits:
-      cpu: 50m
-      memory: 30Mi
-    requests:
-      cpu: 50m
-      memory: 30Mi
+  resources: {}
 ruleFiles:
   kube-state.rules: |-
     # NOTE: These rules were kindly contributed by the SoundCloud engineering team.
