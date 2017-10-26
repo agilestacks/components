@@ -9,13 +9,7 @@ node_exporter:
   service:
     type: ClusterIP
     externalPort: 9100
-  resources:
-    limits:
-      cpu: 200m
-      memory: 50Mi
-    requests:
-      cpu: 100m
-      memory: 30Mi
+  resources: {}
 ruleFiles:
   node.rules: |-
     # NOTE: These rules were kindly contributed by the SoundCloud engineering team.
