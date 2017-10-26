@@ -62,10 +62,10 @@ spec:
         command:
           - /pod_nanny
           - --container={{ .Chart.Name }}
-          - --cpu=100m
-          - --extra-cpu=1m
-          - --memory=100Mi
-          - --extra-memory=2Mi
+#          - --cpu=100m
+#          - --extra-cpu=1m
+#          - --memory=100Mi
+#          - --extra-memory=2Mi
           - --threshold=5
           - --deployment={{ template "fullname" . }}
         resources:
