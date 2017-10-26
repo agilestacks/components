@@ -11,7 +11,7 @@ data "aws_region" "current" {
   current = true
 }
 
-data "aws_iam_account_alias" "current" {}
+# data "aws_iam_account_alias" "current" {}
 
 resource "aws_iam_role" "spinnaker" {
     name_prefix = "spinnaker-"
@@ -100,5 +100,6 @@ output "role_arn" {
 }
 
 output "account_alias" {
-  value = "${coalesce("${data.aws_iam_account_alias.current.account_alias}", "${data.aws_caller_identity.current.account_id}")}"
+  value = "${data.aws_caller_identity.current.account_id}"
+  # value = "${coalesce("${data.aws_iam_account_alias.current.account_alias}", "${data.aws_caller_identity.current.account_id}")}"
 }
