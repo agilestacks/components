@@ -44,12 +44,7 @@ spec:
         - name: web
           containerPort: 3000
         resources:
-          requests:
-            memory: 100Mi
-            cpu: 100m
-          limits:
-            memory: 200Mi
-            cpu: 200m
+{{ toYaml .Values.resources | indent 12 }}
       - name: grafana-watcher
         image: quay.io/coreos/grafana-watcher:v0.0.8
         args:
@@ -67,12 +62,7 @@ spec:
               name: {{ template "grafana.server.fullname" . }}
               key: password
         resources:
-          requests:
-            memory: "16Mi"
-            cpu: "50m"
-          limits:
-            memory: "32Mi"
-            cpu: "100m"
+{{ toYaml .Values.resources | indent 12 }}
         volumeMounts:
           - name: grafana-dashboards
             mountPath: /var/grafana-dashboards
