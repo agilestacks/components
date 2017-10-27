@@ -36,6 +36,12 @@ spec:
             - name: sys
               mountPath: /host/sys
               readOnly: true
+            - name: data-disk
+              mountPath: /data-disk
+              readOnly: true
+            - name: root-disk
+              mountPath: /root-disk
+              readOnly: true
       tolerations:
         - effect: NoSchedule
           operator: Exists
@@ -48,3 +54,9 @@ spec:
         - name: sys
           hostPath:
             path: /sys
+        - name: data-disk
+          hostPath:
+            path: /localdata
+        - name: root-disk
+          hostPath:
+            path: /
