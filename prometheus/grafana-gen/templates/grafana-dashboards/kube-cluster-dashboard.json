@@ -1,5 +1,4 @@
 {
-   "dashboard":{
       "__inputs":[
          {
             "name":"DS_PROMETHEUS",
@@ -43,14 +42,11 @@
       },
       "description":"Monitor a Kubernetes cluster using Prometheus TSDB.  Shows overall cluster CPU / Memory / Disk usage as well as individual pod statistics. ",
       "editable":true,
-      "gnetId":162,
+      "gnetId":null,
       "graphTooltip":1,
       "hideControls":true,
       "id":null,
-      "links":[
-
-      ],
-      "refresh":"1m",
+      "links":[],
       "rows":[
          {
             "collapse":false,
@@ -762,14 +758,5 @@
       "timezone":"browser",
       "title":"Kubernetes Cluster",
       "version":1
-   },
-   "overwrite":true,
-   "inputs":[
-      {
-         "name":"DS_PROMETHEUS",
-         "type":"datasource",
-         "pluginId":"prometheus",
-         "value":"prometheus"
-      }
-   ]
+
 }
