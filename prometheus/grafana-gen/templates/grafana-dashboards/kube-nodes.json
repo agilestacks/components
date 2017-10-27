@@ -136,8 +136,8 @@
                   },
                   "yaxes":[
                      {
-                        "format":"none",
-                        "label":"cores",
+                        "format": "decgbytes",
+                        "label":"GB",
                         "logBase":1,
                         "max":null,
                         "min":null,
@@ -248,8 +248,8 @@
                   },
                   "yaxes":[
                      {
-                        "format":"none",
-                        "label":"cores",
+                        "format": "decgbytes",
+                        "label":"GB",
                         "logBase":1,
                         "max":null,
                         "min":null,
@@ -314,7 +314,7 @@
                   "steppedLine":false,
                   "targets":[
                      {
-                        "expr":"(((node_memory_MemTotal-node_memory_MemFree-node_memory_Cached)/(node_memory_MemTotal)*100))",
+                        "expr":"(((node_memory_MemTotal-node_memory_MemFree-node_memory_Cached)/(node_memory_MemTotal)*10024))",
                         "interval":"10s",
                         "intervalFactor":1,
                         "legendFormat":"{{ instance }}",
@@ -348,8 +348,8 @@
                   },
                   "yaxes":[
                      {
-                        "format":"none",
-                        "label":"cores",
+                        "format": "decmbytes",
+                        "label":"MB",
                         "logBase":1,
                         "max":null,
                         "min":null,
