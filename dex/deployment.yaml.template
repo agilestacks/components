@@ -37,7 +37,7 @@ spec:
           secretName: dex-grpc-server-secret
       containers:
       - name: dex
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         image: ${component.dex.image}
         command: ["/usr/local/bin/dex", "serve", "/etc/dex/config.yaml"]
         volumeMounts:

@@ -20,7 +20,7 @@ parameters:
     default: kube-system
     env: NAMESPACE
   - name: component.dex.image
-    default: quay.io/coreos/dex:v2.6.1
+    default: agilestacks/dex:v2.6.1
   - name: component.dex.saml.id
     default: saml
   - name: component.dex.saml.name
