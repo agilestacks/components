@@ -31,7 +31,7 @@ parameters:
       env: COMPONENT_NAME
       default: redis
     - name: image
-      default: bitnami/redis:3.2.9-r2
+      default: bitnami/redis:4.0.2-r1
     - name: requests.memory
       default: 256Mi
     - name: requests.cpu

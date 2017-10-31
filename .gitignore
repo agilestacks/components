@@ -36,7 +36,8 @@ vault/values.yaml
 vault/.vault
 spinnaker-hal/.hal
 redis/charts
-values-ha.yaml
+redis/values.yaml
+redis/values-ha.yaml
 prometheus/values-operator.yaml
 prometheus/values-prometheus.yaml
 prometheus/values-alertmanager.yaml
