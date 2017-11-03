@@ -69,10 +69,10 @@ templates:
 outputs:
   - name: component.prometheus.url
     brief: Prometheus URL
-    value: http://${component.prometheus.ingress.urlPrefix}.${component.ingress.fqdn}
+    value: http://${component.prometheus.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
   - name: component.prometheus.alertmanager_url
     brief: Alertmanager URL
-    value: http://${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.fqdn}
+    value: http://${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
   - name: component.prometheus.grafana_url
     brief: Grafana URL
-    value: http://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.fqdn}
+    value: http://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}

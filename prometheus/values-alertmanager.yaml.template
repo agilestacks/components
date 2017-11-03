@@ -50,7 +50,7 @@ ingress:
   ##
   labels: {}
 
-  fqdn: ${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.fqdn}
+  fqdn: ${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
 
   ## TLS configuration for Alertmanager Ingress
   ## Secret must be manually created in the namespace
