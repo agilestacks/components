@@ -25,6 +25,9 @@ parameters:
     - name:    ssoUrlPrefix
       default: swww
       env:     SSO_URL_PREFIX
+    - name:    name
+      env:     COMPONENT_NAME
+      default: traefik
     - name:    namespace
       default: ingress
       env:     NAMESPACE
