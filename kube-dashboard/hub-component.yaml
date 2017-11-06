@@ -1,0 +1,46 @@
+---
+version: 1
+kind: component
+meta:
+  name: kubernetes-dashboard
+  brief: Kubernetes Dashboard
+  source:
+    dir: ../../components/kube-dashboard
+
+requires:
+  - kubernetes
+
+provides:
+  - kubernetes-dashboard
+
+parameters:
+  - name: component.ingress.ssoUrlPrefix
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+    env: DOMAIN_NAME
+  - name: component.kubernetes-dashboard
+    parameters:
+    - name:    name
+      default: kubernetes-dashboard
+      env:     COMPONENT_NAME
+    - name:    namespace
+      brief:   Kubernetes namespace to install into
+      default: kube-system
+      env:     NAMESPACE
+    - name:    version
+      brief:   Kubernetes Dashboard version
+      default: v1.6.3
+    - name:    ingress.urlPrefix
+      default:  kubernetes
+    - name:    ingress.path
+      default:  /
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.kubernetes-dashboard.url
+    brief: Kubernetes Dashboard
+    value: http://${component.kubernetes-dashboard.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}

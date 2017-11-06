@@ -44,3 +44,6 @@ prometheus/values-alertmanager.yaml
 prometheus/values-kube-prometheus.yaml
 prometheus/values-grafana.yaml
 prometheus/grafana-gen/output
+kube-dashboard/replicationcontroller.yaml
+kube-dashboard/ingress.yaml
+kube-dashboard/service.yaml

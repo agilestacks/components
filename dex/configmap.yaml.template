@@ -30,8 +30,7 @@ data:
       skipApprovalScreen: true
     staticClients:
     - id: agilestacks-console
-      redirectURIs:
-      - '${component.ingress.protocol}://kubernetes.${component.ingress.fqdn}/auth/callback'
+      redirectURIs: []
       name: 'Agilestacks Control plane'
       secret: FlAYFMJHIj-W5Nm3yCbYow
     - id: agilestacks-kubectl
