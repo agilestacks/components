@@ -59,7 +59,7 @@ parameters:
       default: aws
       env: AWS_ACCOUNT_NAME
     - name: kubernetes.accountName
-      default: aws
+      default: kubernetes
       env: K8S_ACCOUNT_NAME
   - name: component.jenkins
     parameters:
