@@ -11,7 +11,7 @@ requires:
   - kubernetes
 
 parameters:
-  - name: component.ingress.fqdn
+  - name: component.ingress.ssoUrlPrefix
   - name: component.postgresql.namespace
     brief: Kubernetes namespace to install into
     default: default
