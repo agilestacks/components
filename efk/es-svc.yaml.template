@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  labels:
+    provider: agilestacks.com
+    project: logs
+    qualifier: elasticsearch
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/path: '/_prometheus/metrics'
+    prometheus.io/port: '9200'
+spec:
+  selector:
+    provider: agilestacks.com
+    project: logs
+    qualifier: elasticsearch
+  ports:
+  - name: http
+    port: 9200
+    protocol: TCP
+

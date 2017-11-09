@@ -1,0 +1,49 @@
+## JVM configuration
+
+# start at our max heap. Better for predictability with the rest of pods
+-Xms2g
+-Xmx2g
+
+-Xss256k
+
+# for telemetry
+-XX:+PrintCommandLineFlags -XX:+PrintFlagsFinal
+
+# (don't) disable calls to System#gc
+#-XX:+DisableExplicitGC
+
+# pre-touch memory pages used by the JVM during initialization
+# slower start-up, but faster run-time
+-XX:+AlwaysPreTouch
+
+## basic
+
+# force the server VM
+-server
+
+# set to headless, just in case
+-Djava.awt.headless=true
+
+# ensure UTF-8 encoding by default (e.g. filenames)
+-Dfile.encoding=UTF-8
+
+# use our provided JNA always versus the system one
+-Djna.nosys=true
+
+# flags to keep Netty from being unsafe
+-Dio.netty.noUnsafe=true
+-Dio.netty.noKeySetOptimization=true
+
+# log4j 2
+-Dlog4j.shutdownHookEnabled=false
+-Dlog4j2.disable.jmx=true
+-Dlog4j.skipJansi=true
+
+## heap dumps
+-XX:+HeapDumpOnOutOfMemoryError
+
+## GC Optimizations recommended for ES
+-XX:+UseParNewGC 
+-XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled
+-XX:CMSInitiatingOccupancyFraction=75
+-XX:+UseCMSInitiatingOccupancyOnly

@@ -49,3 +49,13 @@ kube-dashboard/ingress.yaml
 kube-dashboard/service.yaml
 spinnaker/ingress.yaml
 spinnaker/.hub/anton9.base.devops.delivery/ecr-pass.txt
+efk/es-cerebro.yaml
+efk/es-discovery-svc.yaml
+efk/es-ebs-volume-claim.yaml
+efk/es-env.yaml
+efk/es-fluentd.yaml
+efk/es-kibana-svc.yaml
+efk/es-kibana.yaml
+efk/es-master.yaml
+efk/es-storage-class.yaml
+efk/es-svc.yaml

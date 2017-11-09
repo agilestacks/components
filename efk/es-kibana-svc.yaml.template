@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  labels:
+    provider: agilestacks.com
+    project: logs
+    qualifier: kibana
+spec:
+  ports:
+  - name: ui
+    port: 5601
+    protocol: TCP
+    targetPort: ui
+  selector:
+    provider: agilestacks.com
+    project: logs
+    qualifier: kibana
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kibana
+  labels:
+    provider: agilestacks.com
+    project: logs
+    qualifier: kibana
+  annotations:
+    agilestacks.com/stack-component: Kibana
+spec:
+  rules:
+  - host: kibana.${component.efk.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kibana
+          servicePort: 5601
