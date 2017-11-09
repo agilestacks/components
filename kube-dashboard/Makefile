@@ -15,7 +15,7 @@ deploy:
 .PHONY: deploy
 
 undeploy:
-	$(kubectl) delete --namespace $(NAMESPACE) -f ingress.yaml || true
-	$(kubectl) delete --namespace $(NAMESPACE) -f service.yaml || true
-	$(kubectl) delete --namespace $(NAMESPACE) -f replicationcontroller.yaml || true
+	$(kubectl) delete --namespace $(NAMESPACE) -f ingress.yaml | true
+	$(kubectl) delete --namespace $(NAMESPACE) -f service.yaml | true
+	$(kubectl) delete --namespace $(NAMESPACE) -f replicationcontroller.yaml | true
 .PHONY: undeploy
