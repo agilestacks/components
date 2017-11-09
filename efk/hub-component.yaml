@@ -1,0 +1,41 @@
+---
+version: 1
+kind: component
+meta:
+  name: efk
+  brief: Elasticseach Fluentd and Kibana
+  source:
+    dir: ../../components/efk
+
+requires:
+  - kubernetes
+
+provides:
+  - efk
+
+parameters:
+  - name: component.ingress.ssoUrlPrefix
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+    env: DOMAIN_NAME
+  - name: component.efk
+    parameters:
+    - name:    name
+      default: efk
+      env:     COMPONENT_NAME
+    - name:    namespace
+      brief:   Kubernetes namespace to install into
+      default: logs
+      env:     NAMESPACE
+    - name:    ingress.urlPrefix
+      default:  logs
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.efk.url
+    brief: Kibana Dashboard
+    value: http://kibana.${component.efk.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}

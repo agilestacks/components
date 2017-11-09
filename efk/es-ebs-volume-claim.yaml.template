@@ -1,0 +1,17 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: elasticsearch-data
+  labels:
+    provider:  agilestacks.com
+    project:   elasticsearch
+    qualifier: data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: ebs-gp2
+  resources:
+    requests:
+      #this is the minimum size required to achive
+      #max sustained throughput ceiling for gp2 volumes
+      storage: 40Gi
