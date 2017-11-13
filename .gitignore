@@ -59,3 +59,4 @@ efk/es-kibana.yaml
 efk/es-master.yaml
 efk/es-storage-class.yaml
 efk/es-svc.yaml
+spinnaker/.hub
