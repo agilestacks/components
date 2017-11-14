@@ -1,0 +1,41 @@
+---
+version: 1
+kind: component
+meta:
+  name: wowza
+  brief: Wowza Streaming Engine
+  source:
+    dir: ../../components/wowza
+
+requires:
+  - kubernetes
+
+provides:
+  - wowza
+
+parameters:
+  - name: component.ingress.ssoUrlPrefix
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+    env: DOMAIN_NAME
+  - name: component.wowza
+    parameters:
+    - name:    name
+      default: wowza
+      env:     COMPONENT_NAME
+    - name:    namespace
+      brief:   Kubernetes namespace to install into
+      default: wowza
+      env:     NAMESPACE
+    - name:    ingress.urlPrefix
+      default:  streaming
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.wowza.url
+    brief: Wowza URL
+    value: http://wowza.${component.wowza.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
