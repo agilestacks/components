@@ -59,4 +59,6 @@ efk/es-kibana.yaml
 efk/es-master.yaml
 efk/es-storage-class.yaml
 efk/es-svc.yaml
+efk/namespace.yaml
 spinnaker/.hub
+wowza/namespace.yaml
