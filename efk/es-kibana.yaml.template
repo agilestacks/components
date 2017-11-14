@@ -21,14 +21,8 @@ spec:
     spec:
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:5.2.2
+        image: docker.elastic.co/kibana/kibana:5.4.3
         imagePullPolicy: Always
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 5601
-          timeoutSeconds: 1
-          successThreshold: 1
         env:
           - name: ELASTICSEARCH_URL
             valueFrom:
