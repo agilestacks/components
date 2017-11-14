@@ -2,6 +2,7 @@ spinnaker/tmp
 .helm
 .terraform/
 postgresql/charts
+./Dockerfile
 jenkins/config.yaml
 jenkins/deployment.yaml
 jenkins/ingress.yaml
@@ -25,7 +26,6 @@ undeploy-aws.sh
 upsert.json
 traefik/charts
 traefik/values.yaml
-Dockerfile
 nginx/charts
 sysdig/charts
 sysdig/values.yaml
