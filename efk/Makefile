@@ -18,16 +18,16 @@ deploy:
 	$(kubectl) create --namespace $(NAMESPACE) configmap fluentd-config --from-file=fluent.conf
 	$(kubectl) create --namespace $(NAMESPACE) configmap cerebro-config --from-file=cerebro.conf
 
-	$(kubectl) apply --namespace $(NAMESPACE) -f es-cerebro.yaml
-	$(kubectl) apply --namespace $(NAMESPACE) -f es-discovery-svc.yaml
-	$(kubectl) apply --namespace $(NAMESPACE) -f es-env.yaml
-	$(kubectl) apply --namespace $(NAMESPACE) -f es-kibana.yaml
-	$(kubectl) apply --namespace $(NAMESPACE) -f es-kibana-svc.yaml
-	$(kubectl) apply --namespace $(NAMESPACE) -f es-master.yaml
-	$(kubectl) apply --namespace $(NAMESPACE) -f es-fluentd.yaml
-	$(kubectl) apply --namespace $(NAMESPACE) -f es-svc.yaml
 	$(kubectl) apply --namespace $(NAMESPACE) -f es-storage-class.yaml
 	$(kubectl) apply --namespace $(NAMESPACE) -f es-ebs-volume-claim.yaml
+	$(kubectl) apply --namespace $(NAMESPACE) -f es-env.yaml
+	$(kubectl) apply --namespace $(NAMESPACE) -f es-master.yaml
+	$(kubectl) apply --namespace $(NAMESPACE) -f es-svc.yaml
+	$(kubectl) apply --namespace $(NAMESPACE) -f es-discovery-svc.yaml
+	$(kubectl) apply --namespace $(NAMESPACE) -f es-fluentd.yaml
+	$(kubectl) apply --namespace $(NAMESPACE) -f es-cerebro.yaml
+	$(kubectl) apply --namespace $(NAMESPACE) -f es-kibana.yaml
+	$(kubectl) apply --namespace $(NAMESPACE) -f es-kibana-svc.yaml
 .PHONY: deploy
 
 undeploy:
@@ -40,9 +40,7 @@ undeploy:
 	$(kubectl) delete --namespace $(NAMESPACE) -f es-env.yaml
 	$(kubectl) delete --namespace $(NAMESPACE) -f es-kibana.yaml
 	$(kubectl) delete --namespace $(NAMESPACE) -f es-kibana-svc.yaml
-	$(kubectl) delete --namespace $(NAMESPACE) -f es-master.yaml
 	$(kubectl) delete --namespace $(NAMESPACE) -f es-fluentd.yaml
 	$(kubectl) delete --namespace $(NAMESPACE) -f es-svc.yaml
-	$(kubectl) delete --namespace $(NAMESPACE) -f es-storage-class.yaml
-	$(kubectl) delete --namespace $(NAMESPACE) -f es-ebs-volume-claim.yaml
+	$(kubectl) delete --namespace $(NAMESPACE) -f es-master.yaml
 .PHONY: undeploy
