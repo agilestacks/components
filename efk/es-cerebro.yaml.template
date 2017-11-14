@@ -60,7 +60,7 @@ spec:
     spec:
       containers:
       - name: cerebro
-        image: yannart/cerebro:0.6.1
+        image: yannart/cerebro:0.6.6
         imagePullPolicy: Always
         readinessProbe:
           httpGet:
