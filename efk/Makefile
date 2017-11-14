@@ -43,4 +43,6 @@ undeploy:
 	$(kubectl) delete --namespace $(NAMESPACE) -f es-fluentd.yaml
 	$(kubectl) delete --namespace $(NAMESPACE) -f es-svc.yaml
 	$(kubectl) delete --namespace $(NAMESPACE) -f es-master.yaml
+	$(kubectl) delete --namespace $(NAMESPACE) -f es-ebs-volume-claim.yaml
+	$(kubectl) delete --namespace $(NAMESPACE) -f es-storage-class.yaml
 .PHONY: undeploy
