@@ -2,7 +2,6 @@ spinnaker/tmp
 .helm
 .terraform/
 postgresql/charts
-./Dockerfile
 jenkins/config.yaml
 jenkins/deployment.yaml
 jenkins/ingress.yaml
