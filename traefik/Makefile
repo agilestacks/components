@@ -4,18 +4,17 @@ export HELM_HOME           ?= $(shell pwd)/.helm
 export NAMESPACE    	   ?= ingress
 export COMPONENT_NAME      ?= traefik
 export DOMAIN_NAME         ?= default
+export CLOUD_KIND          ?= aws
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-export kind                ?= aws
 
 deploy: clean init fetch wait install output
-	bash -e ./deploy-$(kind).sh
-	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
+	bash -e ./deploy-$(CLOUD_KIND).sh
 .PHONY: deploy
 
 init:
 	@mkdir -p $(HELM_HOME)
-	@$(helm) init --client-only --upgrade
+	$(helm) init --client-only --upgrade
 	@mkdir -p charts
 
 wait:
@@ -28,7 +27,6 @@ wait:
 	done; \
 	echo "Timeout waiting for Tiller" \
 	exit 1
-
 
 fetch:
 	$(helm) fetch \
@@ -48,7 +46,7 @@ endif
 .PHONY: install
 
 undeploy: init
-	bash -e ./undeploy-$(kind).sh
+	bash -e ./undeploy-$(CLOUD_KIND).sh
 ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
 	$(helm) delete $(COMPONENT_NAME)
 endif
