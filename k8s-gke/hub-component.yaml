@@ -1,0 +1,50 @@
+---
+version: 1
+kind: component
+meta:
+  name: k8s-gke
+  brief: GKE Kubernetes adapter
+  source:
+    dir: ../../components/k8s-gke
+
+requires:
+  - gcp
+  - gcs
+provides:
+  - kubernetes
+
+lifecycle:
+  readyConditions:
+    - dns: ${dns.domain}
+      url: https://${dns.domain}/api/v1/
+
+parameters:
+  - name: terraform.bucket
+    parameters:
+    - name: name
+      env: TF_VAR_backend_bucket
+    - name: region
+      default: us-east4
+      env: TF_VAR_backend_region
+    - name: project
+      default: agilestacks
+      env: TF_VAR_backend_gcp_project
+
+outputs:
+  - name: dns.domain
+    brief: Cluster domain
+    fromTfVar: base_domain
+  - name: docker.registry
+    brief: Docker repository of k8s-gke GCP project
+    fromTfVar: gcr_repository
+  - name: cloud.bucket
+    brief: GCP bucket used as file storage for current cluster
+    fromTfVar: gcp_bucket
+  - name: kubernetes.api.caCert
+    fromTfVar: api_ca_crt
+  - name: kubernetes.api.clientCert
+    fromTfVar: api_client_crt
+  - name: kubernetes.api.clientKey
+    fromTfVar: api_client_key
+  - name: kubernetes.oidc_issuer_fqdn
+    value: auth.${dns.name}.${dns.baseDomain}
