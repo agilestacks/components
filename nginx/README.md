@@ -1,7 +1,7 @@
 # Nginx ingress Hub Component
 
 This directory contains a Hub component and helm chart to deploy a Nginx ingress controller.
-[nginx-ingress](https://github.com/kubernetes/ingress/tree/master/controllers/nginx) is an Ingress controller that uses ConfigMap to store the nginx configuration.
+[nginx-ingress](https://github.com/kubernetes/ingress-nginx) is an Ingress controller that uses ConfigMap to store the nginx configuration.
 
 To use, add the `kubernetes.io/ingress.class: nginx` annotation to your Ingress resources.
 
