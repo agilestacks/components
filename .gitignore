@@ -66,3 +66,4 @@ wowza/ingress.yaml
 wowza/secret.yaml
 wowza/service.yaml
 nginx/values.yaml
+cloudformation/cloudformation.yaml

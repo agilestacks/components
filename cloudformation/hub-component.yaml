@@ -1,0 +1,28 @@
+---
+version: 1
+kind: component
+meta:
+  name: cloudformation
+  brief: AWS CloudFormation example
+  source:
+    dir: ../../components/cloudformation
+
+requires:
+  - aws
+
+parameters:
+  - name: dns.name
+    env: NAME
+  - name: cloud.region
+
+outputs:
+  - name: component.cloudformation.s3bucket.name
+    brief: S3 bucket name
+    fromTfVar: s3_bucket_name
+  - name: component.cloudformation.s3bucket.region
+    brief: S3 bucket region
+    value: ${cloud.region}
+
+templates:
+  files:
+    - "*.template"
