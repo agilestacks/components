@@ -8,7 +8,7 @@ export AWS_DEFAULT_REGION ?= us-east-2
 aws := aws
 
 deploy:
-	$(eval OUT = $(shell mktemp -t cloudformation-$(NAME)))
+	$(eval OUT = $(shell mktemp))
 	$(aws) cloudformation create-stack --stack-name $(NAME) \
 		--template-body file://cloudformation.yaml \
 		--parameters ParameterKey=BucketDescription,ParameterValue=$(NAME)
