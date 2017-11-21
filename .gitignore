@@ -61,3 +61,7 @@ efk/es-svc.yaml
 efk/namespace.yaml
 spinnaker/.hub
 wowza/namespace.yaml
+wowza/deployment.yaml
+wowza/ingress.yaml
+wowza/secret.yaml
+wowza/service.yaml
