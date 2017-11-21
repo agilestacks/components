@@ -10,7 +10,7 @@ meta:
 requires:
   - kubernetes
 provides:
-  - ingress
+  - nginxIngress
 
 parameters:
   - name: dns.domain
@@ -20,14 +20,14 @@ parameters:
   - name: kubernetes.oidc_issuer_fqdn
     kind: user
     env: OIDC_ISSUER_FQDN
-  - name: component.ingress
+  - name: component.nginxIngress
     parameters:
     - name:    name
       default: nginx
       env:     COMPONENT_NAME
     - name:    version
       brief:   nginx-ingress version
-      default: "0.9.0-beta.11"
+      default: "0.9.0-beta.15"
     - name:    image.repository
       default: gcr.io/google_containers/nginx-ingress-controller
     - name:    image.pullPolicy
@@ -35,14 +35,14 @@ parameters:
     - name:    replicaCount
       default: 1
     - name:    urlPrefix
-      default: www
+      default: svc
       env:     URL_PREFIX
     - name:    namespace
       default: nginx-ingress
       env:     NAMESPACE
 
 outputs:
-- name: component.ingress.fqdn
+- name: component.nginxIngress.fqdn
   brief: FQDN of ingress
   fromTfVar: ingress_fqdn
 
