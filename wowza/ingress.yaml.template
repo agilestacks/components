@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${component.wowza.name}
+  namespace: ${component.wowza.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   wowza
+spec:
+  rules:
+  - host: wowza.${component.wowza.ingress.urlPrefix}.${component.ingress.urlPrefix}.${dns.domain}
+    http:
+      paths:
+      - path: /enginemanager
+        backend:
+          serviceName: ${component.wowza.name}
+          servicePort: 8088
+
+

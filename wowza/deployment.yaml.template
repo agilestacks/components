@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: ${component.wowza.name}
+  namespace: ${component.wowza.namespace}
+  labels:
+    provider: agilestacks.com
+    project: wowza
+    component: ${component.wowza.name}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: ${component.wowza.name}
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        component: ${component.wowza.name}
+    spec:
+      containers:
+      - name: ${component.wowza.name}
+        image: wowzamedia/wowza-streaming-engine-linux:4.7.1
+        command: ["/sbin/entrypoint.sh"]
+        imagePullPolicy: Always
+        env:
+          - name: WSE_MGR_USER
+            valueFrom:
+              secretKeyRef:
+                name: wowza
+                key: user
+          - name: WSE_MGR_PASS
+            valueFrom:
+              secretKeyRef:
+                name: wowza
+                key: pass
+          - name: WSE_LIC
+            value: ${component.wowza.license}
+          - name: WSE_IP_PARAM
+            value: svc.${dns.domain}
+        ports:
+        - name: rtmp
+          containerPort: 1935
+          protocol: TCP
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: manager
+          containerPort: 8088
+          protocol: TCP
+        resources: {}
+status: {}
