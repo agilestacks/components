@@ -1,0 +1,26 @@
+---
+version: 1
+kind: component
+meta:
+  name: tiller
+  brief: Helm's Tiller - cluster side
+  source:
+    dir: ../../components/tiller
+
+requires:
+  - kubernetes
+  - helm
+provides:
+  - tiller
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.tiller.namespace
+    value: kube-system
+    env: NAMESPACE
+
+outputs:
+  - name: component.tiller.namespace
+    brief: Tiller's Kubernetes namespace
+    value: ${component.tiller.namespace}
