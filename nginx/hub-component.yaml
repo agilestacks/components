@@ -13,17 +13,16 @@ provides:
   - nginxIngress
 
 parameters:
+  - name: component.wowza.namespace
+  - name: component.wowza.name
   - name: dns.domain
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
-  - name: kubernetes.oidc_issuer_fqdn
-    kind: user
-    env: OIDC_ISSUER_FQDN
   - name: component.nginxIngress
     parameters:
     - name:    name
-      default: nginx
+      default: nginxIngress
       env:     COMPONENT_NAME
     - name:    version
       brief:   nginx-ingress version
