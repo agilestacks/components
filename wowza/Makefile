@@ -10,10 +10,17 @@ export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-name
 
 deploy:
 	$(kubectl) apply -f namespace.yaml
-
+	$(kubectl) apply -f secret.yaml
+	$(kubectl) apply -f deployment.yaml
+	$(kubectl) apply -f service.yaml
+	$(kubectl) apply -f ingress.yaml
 
 .PHONY: deploy
 
 undeploy:
+	$(kubectl) delete -f ingress.yaml
+	$(kubectl) delete -f deployment.yaml
+	$(kubectl) delete -f service.yaml
+	$(kubectl) delete -f secret.yaml
 
 .PHONY: undeploy

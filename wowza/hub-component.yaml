@@ -15,6 +15,7 @@ provides:
 
 parameters:
   - name: component.ingress.ssoUrlPrefix
+  - name: component.ingress.urlPrefix
   - name: dns.domain
     brief: DNS domain
     kind: tech
@@ -30,6 +31,8 @@ parameters:
       env:     NAMESPACE
     - name:    ingress.urlPrefix
       default:  streaming
+    - name:    license
+      default: ET1E4-jQYfa-DRDEy-KExpf-C9TdU-ADKE8-9wWWdNmWCxEQ
 
 templates:
   files:
@@ -38,4 +41,5 @@ templates:
 outputs:
   - name: component.wowza.url
     brief: Wowza URL
-    value: http://wowza.${component.wowza.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+    value: http://wowza.${component.wowza.ingress.urlPrefix}.${component.ingress.urlPrefix}.${dns.domain}/enginemanager
+
