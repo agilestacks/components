@@ -4,7 +4,7 @@ ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name {{dns.domain}} --max-
 ELB=""
 echo "Waiting for Load Balancer"
 for i in {1..30}; do
-  ELB=$(kubectl --namespace="{{component.ingress.namespace}}" describe svc {{component.ingress.name}}-nginx-ingress-controller | grep Ingress | awk '{print $3}')
+  ELB=$(kubectl --namespace="{{component.nginxIngress.namespace}}" describe svc {{component.nginxIngress.name}}-nginx-ingress-controller | grep Ingress | awk '{print $3}')
   if [ ! -z "${ELB}" ]; then
     break
   fi
@@ -12,14 +12,14 @@ for i in {1..30}; do
   sleep 3;
 done
 
-echo "Create {{component.ingress.urlPrefix}}.{{dns.domain}} and {{kubernetes.oidc_issuer_fqdn}} CNAMEs for ${ELB}"
+echo "Create {{component.nginxIngress.urlPrefix}}.{{dns.domain}} CNAME for ${ELB}"
 cat << EOF > ${DIR}/upsert.json
 {
-  "Comment": "Nginx ingress",
+  "Comment": "Nginx nginxIngress",
   "Changes": [{
     "Action": "UPSERT",
     "ResourceRecordSet": {
-      "Name": "{{component.ingress.urlPrefix}}.{{dns.domain}}",
+      "Name": "{{component.nginxIngress.urlPrefix}}.{{dns.domain}}",
       "Type": "CNAME",
       "TTL": 30,
       "ResourceRecords": [{
@@ -29,18 +29,7 @@ cat << EOF > ${DIR}/upsert.json
   }, {
     "Action": "UPSERT",
     "ResourceRecordSet": {
-      "Name": "*.{{component.ingress.urlPrefix}}.{{dns.domain}}",
-      "Type": "CNAME",
-      "TTL": 30,
-      "ResourceRecords": [{
-        "Value": "${ELB}"
-      }]
-    }
-  },
-   {
-    "Action": "UPSERT",
-    "ResourceRecordSet": {
-      "Name": "{{kubernetes.oidc_issuer_fqdn}}",
+      "Name": "*.{{component.nginxIngress.urlPrefix}}.{{dns.domain}}",
       "Type": "CNAME",
       "TTL": 30,
       "ResourceRecords": [{
