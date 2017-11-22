@@ -8,7 +8,7 @@ export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 
-deploy: clean init fetch wait install output
+deploy: clean init fetch install output
 .PHONY: deploy
 
 init:
