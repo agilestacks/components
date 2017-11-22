@@ -7,9 +7,9 @@ export COMPONENT_NAME ?= gitlab-ce
 export DOMAIN_NAME    ?= default
 export kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-export kind                ?= aws
+export kind           ?= aws
 
-deploy: clean init fetch wait install output
+deploy: clean init fetch install output
 	bash -e ./deploy-$(kind).sh
 	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
@@ -18,17 +18,6 @@ init:
 	@mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
 	@mkdir -p charts
-
-wait:
-	@for i in $$(seq 1 60); do \
-		if $(helm) version; then \
-			exit 0; \
-		fi; \
-		echo "Waiting for Tiller pod is up and running ($$i)..."; \
-		sleep 10; \
-	done; \
-	echo "Timeout waiting for Tiller" \
-	exit 1
 
 fetch:
 	$(helm) fetch \
@@ -46,21 +35,20 @@ install:
 	@cp configmap.yaml    charts/gitlab-ce/templates/
 	@cp requirements.yaml charts/gitlab-ce/
 	@rm charts/gitlab-ce/requirements.lock
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
-	$(helm) install charts/gitlab-ce \
-		--name $(COMPONENT_NAME) \
-		--namespace $(NAMESPACE) \
-		--replace \
-		--values values.yaml
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+		$(helm) install charts/gitlab-ce \
+			--name $(COMPONENT_NAME) \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--values values.yaml
 endif
 
 .PHONY: install
 
 undeploy: init
 	bash -e ./deploy-$(kind).sh
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
-	$(helm) delete $(COMPONENT_NAME)
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 
 output:
