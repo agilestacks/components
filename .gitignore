@@ -27,6 +27,7 @@ upsert.json
 traefik/charts
 traefik/values.yaml
 nginxing/charts
+nginxing/values.yaml
 sysdig/charts
 sysdig/values.yaml
 vault/init.txt
