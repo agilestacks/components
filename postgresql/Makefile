@@ -7,25 +7,13 @@ export DOMAIN_NAME         ?= default
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy: clean init fetch wait install output
-	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
+deploy: clean init fetch install output
 .PHONY: deploy
 
 init:
 	@mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
 	@mkdir -p charts
-
-wait:
-	@for i in $$(seq 1 60); do \
-		if $(helm) version; then \
-			exit 0; \
-		fi; \
-		echo "Waiting for Tiller pod is up and running ($$i)..."; \
-		sleep 10; \
-	done; \
-	echo "Timeout waiting for Tiller" \
-	exit 1
 
 fetch:
 	$(helm) fetch \
