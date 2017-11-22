@@ -3,16 +3,18 @@ version: 1
 kind: component
 meta:
   name: linkerd
-  brief: Linkerd service mesh from Bayonet 
+  brief: Linkerd service mesh from Bayonet
   source:
       dir: ../../components/linkerd
 
 requires:
   - kubernetes
+  - helm
+  - tiller
 
 parameters:
   - name: component.linkerd
-    parameters: 
+    parameters:
     - name: namespace
       default: ingress
       env: NAMESPACE
