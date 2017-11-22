@@ -16,7 +16,7 @@ init:
 
 install:
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
-		@$(helm) install . \
+		$(helm) install . \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--replace \
