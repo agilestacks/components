@@ -21,7 +21,6 @@ install:
 			--namespace $(NAMESPACE) \
 			--replace \
 			--values values.yaml
-endif
 .PHONY: install
 
 undeploy: init
