@@ -9,9 +9,10 @@ meta:
 
 requires:
   - kubernetes
+  - helm
+  - tiller
 provides:
   - vault
-
 
 parameters:
   - name: dns.domain

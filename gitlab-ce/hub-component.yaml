@@ -7,6 +7,10 @@ meta:
   source:
       dir: ../../components/gitlab
 
+requires:
+  - kubernetes
+  - helm
+  - tiller
 provides:
   - gitlab
 
