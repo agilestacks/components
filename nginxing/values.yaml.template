@@ -258,9 +258,5 @@ tcp:
 # UDP service key:value pairs
 # Ref: https://github.com/kubernetes/contrib/tree/master/ingress/controllers/nginx/examples/udp
 ##
-udp:
-  6970: "${component.wowza.namespace}/${component.wowza.namespace}:6970"
-  6971: "${component.wowza.namespace}/${component.wowza.namespace}:6971"
-  6972: "${component.wowza.namespace}/${component.wowza.namespace}:6972"
-  6973: "${component.wowza.namespace}/${component.wowza.namespace}:6973"
+udp: {}
   # 53: "kube-system/kube-dns:53"
