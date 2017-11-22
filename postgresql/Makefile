@@ -37,20 +37,18 @@ fetch:
 install:
 	$(kubectl) apply -f namespace.yaml
 	$(kubectl) apply -f aws-storage-class.yaml
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
-	$(helm) install charts/postgresql \
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+		$(helm) install charts/postgresql \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--replace \
 			--values values.yaml
-endif
 .PHONY: install
 
 undeploy: init
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
-	$(helm) delete $(COMPONENT_NAME)
-	$(kubectl) delete -f aws-storage-class.yaml | true
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	-$(kubectl) delete -f aws-storage-class.yaml
 .PHONY: undeploy
 
 clean:

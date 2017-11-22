@@ -16,23 +16,12 @@ HELM_CHART=stable/redis
 VALUES_FILE=values.yaml
 endif
 
-deploy: clean init fetch wait install
+deploy: clean init fetch install
 
 init:
 	mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
 	@mkdir -p tmp
-
-wait:
-	@for i in $$(seq 1 60); do \
-		if $(helm) version; then \
-			exit 0; \
-		fi; \
-		echo "Waiting for Tiller pod is up and running ($$i)..."; \
-		sleep 10; \
-	done; \
-	echo "Timeout waiting for Tiller" \
-	exit 1
 
 fetch:
 	$(helm) fetch \
@@ -41,23 +30,23 @@ fetch:
 .PHONY: fetch
 
 install:
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
-	$(kubectl) create namespace $(NAMESPACE) || true
+	$(kubectl) apply -f namespace.yaml
 	$(kubectl) apply -f storage-class.yaml
-	$(helm) install charts/$(notdir $(HELM_CHART)) \
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \
 			--name-template $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--replace \
 			--wait \
 			--values $(VALUES_FILE)
-endif
 .PHONY: install
 
 undeploy: init
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
-	$(helm) delete $(COMPONENT_NAME) --purge
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	-$(kubectl) delete -f storage-class.yaml
+	-$(kubectl) delete -f namespace.yaml
 .PHONY: undeploy
 
 clean:

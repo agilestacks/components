@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   	 ?= sysdig
+export NAMESPACE    	   ?= sysdig
 export COMPONENT_NAME      ?= sysdig
 export DOMAIN_NAME         ?= default
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
@@ -16,17 +16,6 @@ init:
 	@$(helm) init --client-only --upgrade
 	@mkdir -p charts
 
-wait:
-	@for i in $$(seq 1 60); do \
-		if $(helm) version; then \
-			exit 0; \
-		fi; \
-		echo "Waiting for Tiller pod is up and running ($$i)..."; \
-		sleep 10; \
-	done; \
-	echo "Timeout waiting for Tiller" \
-	exit 1
-
 fetch:
 	$(helm) fetch \
 		--destination charts \
@@ -34,20 +23,18 @@ fetch:
 .PHONY: fetch
 
 install:
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
-	$(helm) install charts/sysdig \
-		--name $(COMPONENT_NAME) \
-		--namespace $(NAMESPACE) \
-		--replace \
-		--wait \
-		--values values.yaml
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+		$(helm) install charts/sysdig \
+			--name $(COMPONENT_NAME) \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values values.yaml
 .PHONY: install
 
 undeploy: init
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
-	$(helm) delete --purge $(COMPONENT_NAME)
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 
 clean:

@@ -8,7 +8,7 @@ export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export generator		   ?= ./grafana-gen/bin/grafana_dashboards_generate.sh --namespace "$(NAMESPACE)"
 
-deploy: clean init wait install_operator install_prom install_alertmanager install_kube_prom install_grafana output
+deploy: clean init install_operator install_prom install_alertmanager install_kube_prom install_grafana output
 .PHONY: deploy
 
 init:
@@ -16,91 +16,69 @@ init:
 	@mkdir -p grafana-gen/output
 	@$(helm) init --client-only --upgrade
 
-
-wait:
-	@for i in $$(seq 1 60); do \
-		if $(helm) version; then \
-			exit 0; \
-		fi; \
-		echo "Waiting for Tiller pod is up and running ($$i)..."; \
-		sleep 10; \
-	done; \
-	echo "Timeout waiting for Tiller" \
-	exit 1
-
 install_operator:
-ifeq ($(findstring $(COMPONENT_NAME)-operator, $(shell $(helm) list -q | xargs)),)
-	$(helm) install charts/prometheus-operator \
-		--name $(COMPONENT_NAME)-operator \
-		--namespace $(NAMESPACE) \
-		--replace \
-		--wait \
-		--values values-operator.yaml
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-operator$$' || \
+		$(helm) install charts/prometheus-operator \
+			--name $(COMPONENT_NAME)-operator \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values values-operator.yaml
 .PHONY: install_operator
 
 install_kube_prom:
-ifeq ($(findstring $(COMPONENT_NAME)-kube-prom, $(shell $(helm) list -q | xargs)),)
-	$(helm) install charts/kube-prometheus \
-		--name $(COMPONENT_NAME)-kube-prom \
-		--namespace $(NAMESPACE) \
-		--replace \
-		--wait \
-		--values values-kube-prometheus.yaml
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-kube-prom$$' || \
+		$(helm) install charts/kube-prometheus \
+			--name $(COMPONENT_NAME)-kube-prom \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values values-kube-prometheus.yaml
 .PHONY: install_kube_prom
 
 install_alertmanager:
-ifeq ($(findstring $(COMPONENT_NAME)-alertmanager, $(shell $(helm) list -q | xargs)),)
-	$(helm) install charts/alertmanager \
-		--name $(COMPONENT_NAME)-alertmanager \
-		--namespace $(NAMESPACE) \
-		--replace \
-		--wait \
-		--values values-alertmanager.yaml
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-alertmanager$$' || \
+		$(helm) install charts/alertmanager \
+			--name $(COMPONENT_NAME)-alertmanager \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values values-alertmanager.yaml
 .PHONY: install_alertmanager
 
 install_grafana:
-ifeq ($(findstring $(COMPONENT_NAME)-grafana, $(shell $(helm) list -q | xargs)),)
-	$(generator) -s 1000000 -o grafana-gen/output/dashboards-configmap.yaml \
-				-i grafana-gen/templates/grafana-dashboards --apply-configmap --apply-type create
-	$(helm) install charts/grafana \
-		--name $(COMPONENT_NAME)-grafana \
-		--namespace $(NAMESPACE) \
-		--replace \
-		--wait \
-		--values values-grafana.yaml
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-grafana$$' || \
+		$(generator) -s 1000000 -o grafana-gen/output/dashboards-configmap.yaml \
+					-i grafana-gen/templates/grafana-dashboards --apply-configmap --apply-type create && \
+		$(helm) install charts/grafana \
+			--name $(COMPONENT_NAME)-grafana \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values values-grafana.yaml
 .PHONY: install_grafana
 
 install_prom:
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
-	$(helm) install charts/prometheus \
-		--name $(COMPONENT_NAME) \
-		--namespace $(NAMESPACE) \
-		--replace \
-		--wait \
-		--values values-prometheus.yaml
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+		$(helm) install charts/prometheus \
+			--name $(COMPONENT_NAME) \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values values-prometheus.yaml
 .PHONY: install_prom
 
 undeploy: init clean
-ifeq ($(findstring $(COMPONENT_NAME)-grafana, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-grafana)
-	$(helm) delete --purge $(COMPONENT_NAME)-grafana
-endif
-ifeq ($(findstring $(COMPONENT_NAME)-kube-prom, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-kube-prom)
-	$(helm) delete --purge $(COMPONENT_NAME)-kube-prom
-endif
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
-	$(helm) delete --purge $(COMPONENT_NAME)
-endif
-ifeq ($(findstring $(COMPONENT_NAME)-alertmanager, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-alertmanager)
-	$(helm) delete --purge $(COMPONENT_NAME)-alertmanager
-endif
-ifeq ($(findstring $(COMPONENT_NAME)-operator, $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME)-operator)
-	$(helm) delete --purge $(COMPONENT_NAME)-operator
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-grafana$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME)-grafana || exit 0
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-kube-prom$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME)-kube-prom || exit 0
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME))-alertmanager$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME))-alertmanager || exit 0
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-operator$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME)-operator || exit 0
 
 	$(kubectl) get --namespace $(NAMESPACE) cm/grafana-dashboards-0 -o=yaml|$(kubectl) delete -f - || true
 	$(kubectl) get --namespace $(NAMESPACE) jobs/$(COMPONENT_NAME)-operator-$(COMPONENT_NAME)-operator-get-crd -o=yaml|$(kubectl) delete -f - || true

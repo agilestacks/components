@@ -19,7 +19,7 @@ export VAULT_SKIP_VERIFY   ?= true
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
 
 # deploy: enable output
-deploy: clean init wait install sleep connect enable unseal disconnect output
+deploy: clean init install sleep connect enable unseal disconnect output
 .PHONY: deploy
 
 sleep:
@@ -33,15 +33,13 @@ init:
 	@$(helm) init --client-only --upgrade
 
 install:
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),)
-	$(helm) install . \
-		--name $(COMPONENT_NAME) \
-		--namespace $(NAMESPACE) \
-		--replace \
-		--wait \
-		--values values.yaml
-endif
-
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+		$(helm) install . \
+			--name $(COMPONENT_NAME) \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values values.yaml
 
 enable:
 	@if [ `curl -sS $(VAULT_ADDR)/v1/sys/health | jq -rM .initialized` == "false" ]; then \
@@ -54,30 +52,25 @@ enable:
 	fi;
 .PHONY: enable
 
-
 unseal:
 	@for i in $$(seq 1 $(SECRET_THRESHOLD)); do \
 		vault unseal `cat $(UNSEAL_FILE) | jq -Mr .keys[$$i]`; \
 	done;
 .PHONY: unseal
 
-
 seal: auth
 	vault seal
 .PHONY: seal
 
-
 undeploy: init disconnect
-ifeq ($(findstring $(COMPONENT_NAME), $(shell $(helm) list -q | xargs)),$(COMPONENT_NAME))
-	$(helm) delete --purge $(COMPONENT_NAME)
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	# rm -f $(UNSEAL_FILE)
 .PHONY: undeploy
 
 auth:
 	@vault auth $(shell cat $(UNSEAL_FILE) | jq -rM .root_token )
 .PHONY: auth
-
 
 connect:
 	@$(MAKE) disconnect
@@ -97,12 +90,10 @@ connect:
 	exit 1
 .PHONY: connect
 
-
 disconnect:
 	@echo Drop connection to vault pod
 	@kill $(shell ps aux | grep -E "kubectl*|port-forward*|$(VAULT_LOCAL_PORT):$(VAULT_PORT)" | grep -v grep | awk '{print $$2}' | xargs) | true
 .PHONY: disconnect
-
 
 clean:
 	@rm -rf $(HELM_HOME) | true
@@ -117,14 +108,3 @@ output:
 	@echo
 	@echo Vault has been installed and initialized successfully.
 .PHONY: output
-
-wait:
-	@for i in $$(seq 1 60); do \
-		if $(helm) version; then \
-			exit 0; \
-		fi; \
-		echo "Waiting for Tiller pod is up and running ($$i)..."; \
-		sleep 10; \
-	done; \
-	echo "Timeout waiting for Tiller"; \
-	exit 1
