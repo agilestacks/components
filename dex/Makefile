@@ -14,7 +14,10 @@ deploy-test:
 	@echo Dex deployed
 .PHONY: deploy-test
 
-deploy:
+deploy: deploy-kube output
+.PHONY: deploy
+
+deploy-kube:
 	sh ./gencert.sh
 	$(kubectl) apply -f namespace.yaml
 	$(kubectl) create secret tls dex-ingress-tls-secret -n $(NAMESPACE) --cert=ssl/cert.pem --key=ssl/key.pem | true
@@ -29,9 +32,7 @@ deploy:
 	$(kubectl) create secret tls oauth-ingress-tls-secret -n $(NAMESPACE) --cert=ssl/cert.pem --key=ssl/key.pem | true
 	$(kubectl) apply -f dex-operator-configmap.yaml
 	$(kubectl) apply -f dex-operator.yaml
-
-	$(MAKE) output
-.PHONY: deploy
+.PHONY: deploy-kube
 
 output:
 	@echo Outputs:
