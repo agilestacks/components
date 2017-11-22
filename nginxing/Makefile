@@ -2,7 +2,7 @@
 
 export HELM_HOME           ?= $(shell pwd)/.helm
 export NAMESPACE    	   ?= nginx-ingress
-export COMPONENT_NAME      ?= nginxIngress
+export COMPONENT_NAME      ?= nginxing
 export DOMAIN_NAME         ?= default
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"

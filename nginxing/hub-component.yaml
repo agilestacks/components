@@ -2,15 +2,15 @@
 version: 1
 kind: component
 meta:
-  name: nginx
+  name: nginxing
   brief: Nginx ingress Controller
   source:
-      dir: ../../components/nginx
+      dir: ../../components/nginxing
 
 requires:
   - kubernetes
 provides:
-  - nginxIngress
+  - nginxing
 
 parameters:
   - name: component.wowza.namespace
@@ -19,10 +19,10 @@ parameters:
     brief: DNS domain
     kind: tech
     env: DOMAIN_NAME
-  - name: component.nginxIngress
+  - name: component.nginxing
     parameters:
     - name:    name
-      default: nginxIngress
+      default: nginxing
       env:     COMPONENT_NAME
     - name:    version
       brief:   nginx-ingress version
@@ -41,7 +41,7 @@ parameters:
       env:     NAMESPACE
 
 outputs:
-- name: component.nginxIngress.fqdn
+- name: component.nginxing.fqdn
   brief: FQDN of ingress
   fromTfVar: ingress_fqdn
 
