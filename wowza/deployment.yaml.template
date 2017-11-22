@@ -44,9 +44,6 @@ spec:
         - name: rtmp
           containerPort: 1935
           protocol: TCP
-        - name: http
-          containerPort: 80
-          protocol: TCP
         - name: manager
           containerPort: 8088
           protocol: TCP
