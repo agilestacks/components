@@ -26,7 +26,7 @@ undeploy-aws.sh
 upsert.json
 traefik/charts
 traefik/values.yaml
-nginx/charts
+nginxing/charts
 sysdig/charts
 sysdig/values.yaml
 vault/init.txt
