@@ -9,7 +9,7 @@ export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-name
 export kind                ?= aws
 
 deploy: clean init fetch install output
-	sh ./deploy-$(kind).sh
+	bash -e ./deploy-$(kind).sh
 .PHONY: deploy
 
 init:
@@ -34,7 +34,7 @@ install:
 .PHONY: install
 
 undeploy: init
-	sh ./undeploy-$(kind).sh
+	bash -e ./undeploy-$(kind).sh
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
