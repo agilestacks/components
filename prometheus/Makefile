@@ -75,8 +75,8 @@ undeploy: init clean
 		$(helm) delete --purge $(COMPONENT_NAME)-kube-prom || exit 0
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME))-alertmanager$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME))-alertmanager || exit 0
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-alertmanager$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME)-alertmanager || exit 0
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-operator$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME)-operator || exit 0
 
