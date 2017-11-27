@@ -109,6 +109,8 @@ spec:
               name: {{ template "gitlab-ce.fullname" . }}
               key: redis-password
         ports:
+        - name: registry
+          containerPort: 4567
         - name: ssh
           containerPort: 22
         - name: http

@@ -10,13 +10,16 @@ metadata:
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.acmArn }}
-    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https,registry"
 spec:
   type: {{ .Values.serviceType }}
   ports:
   - name: ssh
     port: {{ .Values.sshPort | int }}
     targetPort: ssh
+  - name: registry
+    port: {{ .Values.registryPort | int }}
+    targetPort: registry
   - name: http
     port: {{ .Values.httpPort | int }}
     targetPort: http
