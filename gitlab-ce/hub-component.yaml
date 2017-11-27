@@ -7,10 +7,6 @@ meta:
   source:
       dir: ../../components/gitlab
 
-requires:
-  - kubernetes
-  - helm
-  - tiller
 provides:
   - gitlab
 
@@ -29,36 +25,17 @@ parameters:
     - name: url
   - name: component.gitlab
     parameters:
-    - name: sub
-    - name: saml.id
-      default: saml
-    - name: saml.name
-      default: "Gitlab Okta App"
-    - name: saml.usernameAttr
-      default: name
-    - name: saml.emailAttr
-      default: email
-    - name: saml.groupsAttr
-      default: groups
-    - name: okta.baseURL
-      kind: user
-    - name: okta.apiKey
-      kind: user
-    - name: okta.groups
-      default: ASI.Admin
+    - name: acm_certificate.arn
+      env: ACM_CERTIFICATE_ARN
     - name:    name
       default: gitlab
       env:     COMPONENT_NAME
     - name:    namespace
       default: gitlab
       env:     NAMESPACE
-    - name:    gitUrlPrefix
-      default: git
-    - name:    dbHost
-      default: ""
     - name:    dbName
       default: gitlab
-    - name:    dbNser
+    - name:    dbUser
       default: gitlab
     - name:    dbPassword
       default: gitlabsekret

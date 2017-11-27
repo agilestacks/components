@@ -25,7 +25,7 @@ data:
         issuer: ${component.dex.okta.issuer}
         clientID: ${component.dex.okta.clientId}
         clientSecret: ${component.dex.okta.clientSecret}
-        redirectURI: http://auth.${dns.domain}/callback
+        redirectURI: https://auth.${dns.domain}/callback
     oauth2:
       skipApprovalScreen: true
     staticClients:
@@ -33,6 +33,10 @@ data:
       redirectURIs: []
       name: 'Agilestacks Control plane'
       secret: FlAYFMJHIj-W5Nm3yCbYow
+    - id: gitlab-oidc-client
+      redirectURIs: ['https://git.${dns.domain}/users/auth/ssoagilestacks/callback']
+      name: 'Gitlab'
+      secret: CHANGEMETOARANDOMLYGENERATEDSTRING
     - id: agilestacks-kubectl
       public: true
       trustedPeers:
