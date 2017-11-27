@@ -9,19 +9,17 @@ meta:
 
 parameters:
 - name: dns.domain
-  default: stacks.delivery
-  env: DOMAIN_NAME
-- name: dns.domain
-  default: stacks.delivery
   env: DOMAIN_NAME
 - name: component.acm.additionalNames
-  default: 
   env: ADDITIONAL_NAMES
+- name: component.acm.deleteCert
+  env: DELETE_CERTIFICATE
+  default: false
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
 outputs:
-- name: component.cdn.certificate.arn
+- name: component.acm.certificate_arn
   brief: ACM Certificate ARN
   fromTfVar: certificate_arn
 
