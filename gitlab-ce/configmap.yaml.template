@@ -23,6 +23,12 @@ data:
     root_pass = ENV['GITLAB_ROOT_PASSWORD'];
     gitlab_rails['initial_root_password'] = root_pass unless root_pass.to_s == '';
     postgresql['enable'] = false;
+    registry_external_url 'https://git.${dns.domain}:4567';
+    registry_nginx['listen_port'] = 4567
+    registry_nginx['listen_https'] = false
+    registry_nginx['proxy_set_headers'] = {
+    	"X-Forwarded-Proto" => "https"
+    }
     gitlab_rails['db_host'] = ENV['DB_HOSTNAME'];
     gitlab_rails['db_password'] = ENV['DB_PASSWORD'];
     gitlab_rails['db_username'] = ENV['DB_USER'];

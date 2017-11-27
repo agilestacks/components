@@ -47,6 +47,7 @@ ingress:
 sshPort: 22
 httpPort: 80
 httpsPort: 443
+registryPort: 4567
 
 ## Configure resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
