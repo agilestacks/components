@@ -70,3 +70,4 @@ nginx/values.yaml
 cloudformation/cloudformation.yaml
 acm/.venv
 *.log
+generated.tf
