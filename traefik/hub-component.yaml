@@ -62,7 +62,7 @@ outputs:
   fromTfVar: intress_protocol
 
 templates:
-  files: ["values.yaml.template"]
+  files: ["values.yaml.template", "values-acm.yaml.template"]
   extra:
   - kind: mustache
     files: ["deploy-aws.sh.template", "undeploy-aws.sh.template"]
