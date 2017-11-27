@@ -113,8 +113,6 @@ spec:
           containerPort: 22
         - name: http
           containerPort: 80
-        - name: https
-          containerPort: 443
         livenessProbe:
           httpGet:
             path: /help

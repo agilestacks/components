@@ -1,7 +1,10 @@
 ## GitLab CE image
 ## ref: https://hub.docker.com/r/gitlab/gitlab-ce/tags/
 ##
-image: gitlab/gitlab-ce:9.5.8-ce.0
+# image: gitlab/gitlab-ce:9.5.8-ce.0
+
+## from https://github.com/rrichardson/gitlab-ce-oidc
+image: eigenrick/gitlab-ce-dex:10.1.1-ce.0
 
 ## Specify a imagePullPolicy
 ## 'Always' if imageTag is 'latest', else set to 'IfNotPresent'
@@ -12,7 +15,7 @@ image: gitlab/gitlab-ce:9.5.8-ce.0
 ## The URL (with protocol) that your users will use to reach the install.
 ## ref: https://docs.gitlab.com/omnibus/settings/configuration.html#configuring-the-external-url-for-gitlab
 ##
-externalUrl: ${component.ingress.protocol}://${component.gitlab.gitUrlPrefix}.${dns.domain}
+externalUrl: ${component.ingress.protocol}://git.${dns.domain}
 
 ## Change the initial default admin password if set. If not set, you'll be
 ## able to set it when you first visit your install.
@@ -23,6 +26,8 @@ gitlabRootPassword: "gitlab4tw"
 ## ref: http://kubernetes.io/docs/user-guide/services/#publishing-services---service-types
 ##
 serviceType: LoadBalancer
+
+acmArn: ${component.gitlab.acm_certificate.arn}
 
 ## Ingress configuration options
 ##
@@ -96,20 +101,12 @@ postgresql:
   persistence:
     size: 10Gi
 
-
-## Configure the gitlab spceific database
+## Configure the gitlab specific database
 gitlab:
   database: ${component.gitlab.database}
   databaseUser: ${component.gitlab.dbUser}
   databasePassword: ${component.gitlab.dbPassword}
-  databaseHost: ${component.gitlab.dbHost}
-
-## configure the SAML specific login details
-saml:
-  serviceUrl: ${component.ingress.protocol}://${component.gitlab.gitUrlPrefix}.${dns.domain}/users/auth/saml/callback
-  certFingerprint: #SAML_CERT_FINGERPRINT#
-  targetUrl: #SAML_TARGET_URL#
-  issuer: ${component.gitlab.gitUrlPrefix}.${dns.domain}
+  databaseHost: ${component.postgresql.url} 
 
 ## Configuration values for the redis dependency.
 ## ref: https://github.com/kubernetes/charts/blob/master/stable/redis/README.md

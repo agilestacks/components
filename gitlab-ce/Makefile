@@ -3,7 +3,7 @@
 
 export HELM_HOME      ?= $(shell pwd)/.helm
 export NAMESPACE	  ?= gitlab
-export COMPONENT_NAME ?= gitlab-ce
+export COMPONENT_NAME ?= gitlab
 export DOMAIN_NAME    ?= default
 export kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
@@ -28,10 +28,9 @@ fetch:
 install:
 	# we don't use helm's postgres, we use our own component
 	rm -rf charts/gitlab-ce/charts/postgresql
-	sh ./okta-app.sh -c create
-	sh ./replace.sh
 	@cp secrets.yaml      charts/gitlab-ce/templates/
 	@cp deployment.yaml   charts/gitlab-ce/templates/
+	@cp svc.yaml          charts/gitlab-ce/templates/
 	@cp configmap.yaml    charts/gitlab-ce/templates/
 	@cp requirements.yaml charts/gitlab-ce/
 	@rm charts/gitlab-ce/requirements.lock
@@ -41,19 +40,18 @@ install:
 			--namespace $(NAMESPACE) \
 			--replace \
 			--values values.yaml
-endif
 
 .PHONY: install
 
 undeploy: init
-	bash -e ./deploy-$(kind).sh
+	bash -e ./undeploy-$(kind).sh
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 
 output:
 	@echo Outputs:
-	@echo git_fqdn=$(GIT_URL_PREFIX).$(DOMAIN_NAME)
+	@echo git_fqdn=git.$(DOMAIN_NAME)
 	@echo
 
 clean:

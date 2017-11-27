@@ -15,6 +15,11 @@ data:
   ##
   gitlab_omnibus_config: |
     external_url ENV['EXTERNAL_URL'];
+    nginx['listen_port'] = 80
+    nginx['listen_https'] = false
+    nginx['proxy_set_headers'] = {
+      "X-Forwarded-Proto" => "https"
+    }
     root_pass = ENV['GITLAB_ROOT_PASSWORD'];
     gitlab_rails['initial_root_password'] = root_pass unless root_pass.to_s == '';
     postgresql['enable'] = false;
@@ -34,19 +39,50 @@ data:
     gitlab_rails['uploads_directory'] = '/gitlab-data/uploads';
     gitlab_ci['builds_directory'] = '/gitlab-data/builds';
     gitlab_rails['omniauth_enabled'] = true
-    gitlab_rails['omniauth_allow_single_sign_on'] = ['saml'];
-    gitlab_rails['omniauth_block_auto_created_users'] = false;
-    gitlab_rails['omniauth_auto_link_saml_user'] = true;
-    gitlab_rails['omniauth_auto_sign_in_with_provider'] = 'saml'
+
+    # Must match the args.name (!) of our configured omniauth provider:
+    gitlab_rails['omniauth_allow_single_sign_on'] = ['ssoagilestacks']
+
+    # By default, third-party authentication results in a newly created
+    # user which needs to be unblocked by an admin. Disable this
+    # additional safety mechanism and directly create users:
+    gitlab_rails['omniauth_block_auto_created_users'] = false
+
     gitlab_rails['omniauth_providers'] = [
-    {
-      name: 'saml',
-      args: {
-               assertion_consumer_service_url: '{{ .Values.saml.serviceUrl }}',
-               idp_cert_fingerprint: '{{ .Values.saml.certFingerprint }}',
-               idp_sso_target_url: '{{ .Values.saml.targetUrl }}',
-               issuer: '{{ .Values.saml.issuer }}',
-               name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
-             },
-      label: 'Gitlab Okta App'
-    } ];
+      {
+        name: 'openid_connect',  # identifies the omniauth gem to use
+        label: 'OIDC',
+        args: {
+          # The name shows up in the GitLab UI in title-case, i.e. “AgilestacksSSO”,
+          # and must match the name in client_options.redirect_uri below
+          # and omniauth_allow_single_sign_on above.
+          #
+          # NOTE that if you change the name after users have already
+          # signed up through the provider, you will need to update the
+          # “identities” PostgreSQL table accordingly:
+          # echo "UPDATE identities SET provider = 'newdex' WHERE \
+          #   provider = 'ssoagilestacks';" | gitlab-psql gitlabhq_production
+          'name': 'ssoagilestacks',
+
+          # Scope must contain “email”.
+          'scope': ['openid', 'profile', 'email'],
+
+          # Discover all endpoints from the issuer, specifically from
+          # https://dex.example.net:5554/dex/.well-known/openid-configuration
+          'discovery': true,
+
+          # Must match the issuer configured in dex:
+          # Note that http:// URLs did not work in my tests; use https://
+          'issuer': '${component.ingress.protocol}://${kubernetes.oidc_issuer_fqdn}',
+
+          'client_options': {
+            # identifier, secret and redirect_uri must match a
+            # configured client in dex.
+            'identifier':   'gitlab-oidc-client',
+      	    'secret': 'CHANGEMETOARANDOMLYGENERATEDSTRING',
+            'redirect_uri': 'https://git.${dns.domain}/users/auth/ssoagilestacks/callback'
+          }
+        }
+      }
+    ]
+

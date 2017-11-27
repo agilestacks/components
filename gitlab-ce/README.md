@@ -7,7 +7,7 @@ This component dependes on the Agilestacks `postgres` component.
 
 ## Configuration
 
-Parameters : 
+#### Parameters : 
 * name:    name default: gitlab
 * name:    namespace default: gitlab
 * name:    dbHost default: "" ## IMPORTANT if this is set, it will point gitlab to an external host instead of the local PG
@@ -16,9 +16,8 @@ Parameters :
 * name:    database default: gitlab
 * name:    volume default: 8Gi
 * name:    port default: 80
-* name:    saml_provider_url default: https://dev-458481.oktapreview.com/app/generic-saml/exkbff0f7nb3y4CcU0h7/saml2
-* name:    saml_issuer_id default: exkbff0f7nb3y4CcU0h7
-* name:    saml_idp_cert env:   <Okta self-signed cert for dev account 458481>
+
+#### Required External Parameters : 
 
 This component leverages the admin user/pass from `postgres` in order to create it's own gitlab specific user and password. 
 
@@ -30,6 +29,17 @@ It leverages several parameters defined for `postgres` including :
 * component.postgresql.url
 
 If the `url` is not supplied,  it will guess the url by synthesizing the postgres service name and namespace. 
+
+This also leverages traefk-acm and the kubernetes OCDC Issuer (Dex) 
+
+* name: component.ingress.fqdn
+* name: component.ingress.ssoUrlPrefix
+* name: component.ingress.protocol
+* name: kubernetes.oidc_issuer_fqdn
+
+* This also currently needs to register its own ELB for the `git` subdomain. So it also requires. 
+
+* name: component.gitlab.acm_certificate.arn - this is retrieved by default from ACM_CERTIFICATE_ARN
 
 
 # GitLab Community Edition

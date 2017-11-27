@@ -12,25 +12,25 @@ for i in {1..30}; do
   sleep 3;
 done
 
-echo "Check if {{component.gitlab.gitUrlPrefix}}.{{dns.domain}} exists"
+echo "Check if git.{{dns.domain}} exists"
 record=$(
     aws route53 list-resource-record-sets --hosted-zone-id "${ZONE_ID}" --start-record-name "{{dns.domain}}." --start-record-type "CNAME" \
-    | jq -Mc ".ResourceRecordSets[] | select(.Name == \"{{component.gitlab.gitUrlPrefix}}.{{dns.domain}}\")" \
+    | jq -Mc ".ResourceRecordSets[] | select(.Name == \"git.{{dns.domain}}\")" \
 )
 
 if [ ! -z "${record}" ]; then
-  echo "Record {{component.gitlab.gitUrlPrefix}}.{{dns.domain}} already exists \n Skip DNS UPSERT"
+  echo "Record git.{{dns.domain}} already exists \n Skip DNS UPSERT"
   exit 0
 fi
 
-echo "Create {{component.gitlab.gitUrlPrefix}}.{{dns.domain}} CNAME for ${ELB}"
+echo "Create git.{{dns.domain}} CNAME for ${ELB}"
 cat << EOF > ${DIR}/upsert.json
 {
   "Comment": "Gitlab SSH ELB",
   "Changes": [{
     "Action": "UPSERT",
     "ResourceRecordSet": {
-      "Name": "{{component.gitlab.gitUrlPrefix}}.{{dns.domain}}",
+      "Name": "git.{{dns.domain}}",
       "Type": "CNAME",
       "TTL": 30,
       "ResourceRecords": [{
