@@ -135,6 +135,13 @@ spec:
           periodSeconds: 30
           successThreshold: 1
           failureThreshold: 20
+        resources:
+          limits:
+            cpu: "2"
+            memory: 3Gi
+          requests:
+            cpu: "1"
+            memory: 2Gi
         volumeMounts:
         - name: gitlab-etc
           mountPath: /etc/gitlab
