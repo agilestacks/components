@@ -1,0 +1,63 @@
+{
+  "type": "object",
+  "properties": {
+    "Certificate": {
+      "type": "object",
+      "required": true,
+      "properties": {
+        "CertificateArn": {
+          "required": true,
+          "type": "string"
+        },
+        "DomainName": {
+          "required": true,
+          "type": "string"
+        },
+        "DomainValidationOptions": {
+          "type": "array",
+          "required": true,
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "DomainName": {
+                "required": true,
+                "type": "string"
+              },
+              "ResourceRecord": {
+                "type": "object",
+                "required": true,
+                "properties": {
+                  "Name": {
+                    "required": true,
+                    "type": "string"
+                  },
+                  "Type": {
+                    "required": true,
+                    "type": "string"
+                  },
+                  "Value": {
+                    "required": true,
+                    "type": "string"
+                  }
+                }
+              },
+              "ValidationMethod": {
+                "required": true,
+                "type": "string"
+              },
+              "ValidationStatus": {
+                "required": true,
+                "type": "string"
+              }
+            }
+          }
+        },
+        "Status": {
+          "required": true,
+          "type": "string"
+        }
+      }
+    }
+  }
+}
