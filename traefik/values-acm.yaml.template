@@ -1,0 +1,80 @@
+# Default values for Traefik
+image: traefik
+imageTag: 1.4.1
+serviceType: LoadBalancer
+replicas: 1
+cpuRequest: 100m
+memoryRequest: 20Mi
+cpuLimit: 100m
+memoryLimit: 30Mi
+nodeSelector: {}
+  #key: value
+tolerations: []
+  #- key: "key"
+  #operator: "Equal|Exists"
+  #value: "value"
+  #effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+ssl:
+  enabled: ${component.ingress.ssl.enabled}
+  enforced: true
+acme:
+  enabled: false
+  email: admin@example.com
+  staging: true
+  persistence:
+    enabled: true
+    storageClass: default
+    accessMode: ReadWriteOnce
+    size: 1Gi
+dashboard:
+  enabled: ${component.ingress.dashboard}
+  domain: ${component.ingress.urlPrefix}.${dns.domain}
+  ingress:
+    labels:
+      provider:  agilestacks.com
+      project:   ingress
+      component: traefik-dashboard
+    annotations:
+      agilestacks.com/stack-component: Traefik
+#  auth:
+#    basic:
+#     ${component.ingress.user}: ${component.ingress.password}
+service:
+  labels:
+    provider:  agilestacks.com
+    project:   ingress
+    component: traefik
+    kubernetes.io/name: Traefik
+    kubernetes.io/cluster-service: "true"
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "${component.acm.certificate_arn}"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+    fabric8.io/app-menu: development
+    api.service.kubernetes.io/path: ${component.ingress.urlPrefix}.${dns.domain}
+gzip:
+  enabled: false
+accessLogs:
+  enabled: false
+  ## Path to the access logs file. If not provided, Traefik defaults it to stdout.
+  # filePath: ""
+  format: common  # choices are: common, json
+# Kubernetes ingress filters
+#kubernetes:
+#  namespaces:
+#  - default
+#  labelSelector:
+metrics:
+  prometheus:
+    enabled: false
+    buckets: 0.1,0.3,1.2,5
+  datadog:
+    enabled: false
+#    address: "localhost:8125"
+#    pushInterval: 30s
+  statsd:
+    enabled: false
+#    address: "localhost:8125"
+#    pushInterval: 30s
+rbac:
+  enabled: false

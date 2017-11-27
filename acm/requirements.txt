@@ -1,0 +1,9 @@
+boto3
+Flask
+docopt
+python-terraform
+jinja2>=2.6
+jsonschema
+simplejson<2.1.0
+#bson
+#pymongo

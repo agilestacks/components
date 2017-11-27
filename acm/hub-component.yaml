@@ -1,0 +1,29 @@
+---
+version: 1
+kind: component
+meta:
+  name: acm
+  brief: AWS Certificate Manager component to produce valid SSL certificates
+  source:
+    dir: ../../agilestacks-components/acm
+
+parameters:
+- name: dns.domain
+  default: stacks.delivery
+  env: DOMAIN_NAME
+- name: dns.domain
+  default: stacks.delivery
+  env: DOMAIN_NAME
+- name: component.acm.additionalNames
+  default: 
+  env: ADDITIONAL_NAMES
+- name: cloud.region
+  kind: user
+  env: AWS_DEFAULT_REGION
+outputs:
+- name: component.cdn.certificate.arn
+  brief: ACM Certificate ARN
+  fromTfVar: certificate_arn
+
+templates:
+  files: ["*.template"]

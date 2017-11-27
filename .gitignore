@@ -68,3 +68,5 @@ wowza/secret.yaml
 wowza/service.yaml
 nginx/values.yaml
 cloudformation/cloudformation.yaml
+acm/.venv
+*.log
