@@ -55,7 +55,7 @@ outputs:
   brief: FQDN of ingress
   fromTfVar: ingress_fqdn
 - name: component.ingress.protocol
-  value: ${component.ingress.protocol}
+  fromTfVar: intress_protocol
 - name: component.ingress.ssoUrlPrefix
   value: ${component.ingress.ssoUrlPrefix}
 - name: component.ingress.http
