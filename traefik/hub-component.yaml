@@ -47,7 +47,7 @@ parameters:
     - name:    ssl.enabled
       default: "false"
   - name: component.acm.certificate_arn
-    default: 
+    default: undefined
     env: ACM_CERTIFICATE_ARN
 
 outputs:

@@ -7,9 +7,9 @@ export DOMAIN_NAME         ?= default
 export CLOUD_KIND          ?= aws
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-export ACM_CERTIFICATE_ARN ?= 
+export ACM_CERTIFICATE_ARN ?= undefined
 
-ifeq ($(ACM_CERTIFICATE_ARN),)
+ifeq ($(ACM_CERTIFICATE_ARN),undefined)
 	VALUES_FILE=values.yaml
 	PROTOCOL=http
 else
