@@ -7,7 +7,7 @@ export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-1
 export TF_LOG             ?= info
 export TF_LOG_PATH        ?= $(shell pwd)/.terraform/$(DOMAIN_NAME)/terraform.log
-export DELETE_CERTIFICATE ?= false
+export ACM_DELETE_CERTIFICATE ?= false
 
 TF_OPTS        ?= -no-color
 TF_UPDATE      ?= -update
@@ -52,7 +52,7 @@ undeploy: init
 	@cd .terraform/$(DOMAIN_NAME) && \
 	$(terraform) plan $(TF_OPTS) -destroy -refresh=true -module-depth=-1 -out=terraform.tfplan
 	$(MAKE) apply
-ifeq ($(DELETE_CERTIFICATE),true)
+ifeq ($(ACM_DELETE_CERTIFICATE),true)
 	$(python) main.py delete $(DOMAIN_NAME)
 endif
 	rm -f generated.tf

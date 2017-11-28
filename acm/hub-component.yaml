@@ -13,7 +13,7 @@ parameters:
 - name: component.acm.additionalNames
   env: ADDITIONAL_NAMES
 - name: component.acm.deleteCert
-  env: DELETE_CERTIFICATE
+  env: ACM_DELETE_CERTIFICATE
   default: false
 - name: cloud.region
   kind: user
