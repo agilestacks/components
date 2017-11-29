@@ -21,7 +21,7 @@ parameters:
     env: COMPONENT_NAME
   - name:    database
     env: TF_VAR_database_name
-  - name:    username
+  - name:    user
     default: postgres
     env: TF_VAR_database_username
   - name:    password
