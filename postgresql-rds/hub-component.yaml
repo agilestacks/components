@@ -39,6 +39,3 @@ outputs:
   fromTfVar: port
 - name: component.postgresql.user
   fromTfVar: username
-
-templates:
-  files: ["*.template"]
