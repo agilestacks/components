@@ -10,7 +10,7 @@ spec:
     matchLabels:
       provider:  agilestacks.com
       project:   postgresql
-      instance:  "${component.instance}"
+      instance:  "${component.name}"
       storage:   local
   accessModes:
   - ReadWriteOnce
