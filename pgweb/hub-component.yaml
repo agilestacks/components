@@ -27,7 +27,7 @@ parameters:
       default: pgweb
       env: COMPONENT_NAME
     - name: ingress.urlPrefix
-      value: ${component.instance}
+      value: ${component.name}
     - name: ingress.path
       value: /
   - name: component.postgresql
