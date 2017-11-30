@@ -75,6 +75,7 @@ auth:
 connect:
 	@$(MAKE) disconnect
 	$(eval VAULT_POD=$(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}))
+ifneq($(VAULT_POD),)
 	@echo Start proxy to pod/$(VAULT_POD)
 	nohup $(kubectl) port-forward $(VAULT_POD) $(VAULT_LOCAL_PORT):$(VAULT_PORT) &
 	@sleep 2
@@ -88,6 +89,10 @@ connect:
 	done; \
 	echo "Timeout for pod/$(VAULT_POD)"; \
 	exit 1
+else
+	echo "ERROR: Cannot find running vault in the cluster"
+	exit 1
+endif 
 .PHONY: connect
 
 disconnect:
