@@ -13,4 +13,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/nfs/postgresql/${component.postgresql.namespace}/${component.instance}"
+    path: "/mnt/nfs/postgresql/${component.postgresql.namespace}/${component.name}"
