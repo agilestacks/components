@@ -25,7 +25,7 @@ data:
         issuer: ${component.dex.okta.issuer}
         clientID: ${component.dex.okta.clientId}
         clientSecret: ${component.dex.okta.clientSecret}
-        redirectURI: https://auth.${dns.domain}/callback
+        redirectURI: http://auth.${dns.domain}/callback
     oauth2:
       skipApprovalScreen: true
     staticClients:
