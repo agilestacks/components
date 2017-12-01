@@ -2,7 +2,7 @@
 
 export HELM_HOME           ?= $(shell pwd)/.helm
 export NAMESPACE    	   ?= vault
-export COMPONENT_NAME      ?= vault-service
+export COMPONENT_NAME      ?= vault
 export DOMAIN_NAME         ?= default
 export INGRESS_ENABLED	   ?= false
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
