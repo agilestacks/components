@@ -75,7 +75,7 @@ auth:
 connect:
 	@$(MAKE) disconnect
 	$(eval VAULT_POD=$(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}))
-ifeq ($(CC),gcc)
+ifeq ($(VAULT_POD),)
 	echo "ERROR: Cannot find running vault in the cluster"
 	exit 1
 else 
