@@ -18,6 +18,8 @@ terraform      := terraform
 
 deploy: venv install cert init plan apply output
 
+# deploy: init plan
+
 venv:
 	virtualenv .venv
 	. .venv/bin/activate
@@ -34,22 +36,22 @@ init:
  		. .terraform/$(DOMAIN_NAME)
 
 get:
-	@cd .terraform/$(DOMAIN_NAME) && \
+	cd .terraform/$(DOMAIN_NAME) && \
 		$(terraform) get $(TF_UPDATE)
 .PHONY: get
 
 plan:
-	@cd .terraform/$(DOMAIN_NAME) && \
+	cd .terraform/$(DOMAIN_NAME) && \
 	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=terraform.tfplan
 .PHONY: plan
 
 apply:
-	@cd .terraform/$(DOMAIN_NAME) && \
+	cd .terraform/$(DOMAIN_NAME) && \
 	$(terraform) apply $(TF_OPTS) -Xshadow=false terraform.tfplan
 .PHONY: apply
 
 undeploy: init
-	@cd .terraform/$(DOMAIN_NAME) && \
+	cd .terraform/$(DOMAIN_NAME) && \
 	$(terraform) plan $(TF_OPTS) -destroy -refresh=true -module-depth=-1 -out=terraform.tfplan
 	$(MAKE) apply
 ifeq ($(ACM_DELETE_CERTIFICATE),true)
