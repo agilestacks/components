@@ -72,13 +72,22 @@ auth:
 	@vault auth $(shell cat $(UNSEAL_FILE) | jq -rM .root_token )
 .PHONY: auth
 
+define assert_empty =
+	@echo "Checking $(1) if empty"
+ifeq ($(1),)
+	@echo "$(2)"
+	@exit 1
+endif
+endef
+
 connect:
 	@$(MAKE) disconnect
+	@echo "$(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}"
 	$(eval VAULT_POD=$(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}))
-ifeq ($(VAULT_POD),)
-	echo "ERROR: Cannot find running vault in the cluster"
-	exit 1
-else 
+	@echo POD=$(VAULT_POD)
+
+	$(eval $(call assert_empty,$(VAULT_POD),"Cannot find vault pod in the cluster"))
+
 	@echo Start proxy to pod/$(VAULT_POD)
 	nohup $(kubectl) port-forward $(VAULT_POD) $(VAULT_LOCAL_PORT):$(VAULT_PORT) &
 	@sleep 2
@@ -92,7 +101,6 @@ else
 	done; \
 	echo "Timeout for pod/$(VAULT_POD)"; \
 	exit 1
-endif 
 .PHONY: connect
 
 disconnect:
