@@ -3,28 +3,25 @@ version: 1
 kind: component
 meta:
   name: postgresql-rds
-  brief: Creates RDS instance with terraform
+  brief: PostgreSQL RDS instance with Terraform
   source:
-    dir: ../postgresql-rds
+    dir: ../../components/postgresql-rds
 
 parameters:
 - name: cloud.vpc.id
   env:  TF_VAR_vpc_id
 - name: component.postgresql
   parameters:
-  - name:    name
-    brief:   Database instance name
-    default: postgresql
-    env: TF_VAR_name
-  - name: service
+  - name: name
+    brief: Database instance name
     default: postgresql
     env: COMPONENT_NAME
-  - name:    database
+  - name: database
     env: TF_VAR_database_name
-  - name:    user
+  - name: user
     default: postgres
     env: TF_VAR_database_username
-  - name:    password
+  - name: password
     env: TF_VAR_database_password
   - name: rds.instanceType
     default: db.t2.micro

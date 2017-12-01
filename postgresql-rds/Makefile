@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := deploy
 
-export TF_VAR_name ?= dev
+export COMPONENT_NAME     ?= $(notdir $(abspath .))
+export TF_VAR_name        := $(COMPONENT_NAME)
 export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-2
 export TF_VAR_base_domain ?= stacks.delivery
@@ -14,8 +15,6 @@ export terraform          ?= terraform
 export TF_VAR_backend_bucket ?= terraform.agilestacks.com
 export TF_VAR_backend_region ?= us-east-1
 export TF_VAR_stack_components ?= '["traefik", "jenkins"]'
-
-export COMPONENT_NAME     ?= $(notdir $(abspath .))
 
 deploy: init plan apply
 
