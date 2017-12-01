@@ -23,7 +23,7 @@ parameters:
   - name: component.vault
     parameters:
     - name:    name
-      default: vault-service
+      default: vault
       env:     COMPONENT_NAME
     - name:    version
       brief:   vault version
