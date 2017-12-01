@@ -15,6 +15,10 @@ parameters:
 - name: component.acm.deleteCert
   env: ACM_DELETE_CERTIFICATE
   default: false
+- name: terraform.bucket.name
+  env: BACKEND_BUCKET
+- name: terraform.bucket.region
+  env: BACKEND_REGION
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
