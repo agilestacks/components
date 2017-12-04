@@ -14,3 +14,13 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- $name := default .Chart.Name .Values.nameOverride -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{- define "etcd-backup-operator.fullname" -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- printf "%s-%s" .Release.Name "etcd-backup-operator" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "etcd-restore-operator.fullname" -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- printf "%s-%s" .Release.Name "etcd-restore-operator" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}

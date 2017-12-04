@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   	 ?= etcd-cluster
+export NAMESPACE    	   ?= etcd-cluster
 export COMPONENT_NAME      ?= etcd-cluster
 export DOMAIN_NAME         ?= default
 export CLUSTER_ENABLED	   ?= false
@@ -9,7 +9,15 @@ export BACKUP_ENABLED	   ?= false
 export RESTORE_ENABLED	   ?= false
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+export AWS_SECRET_NAME     ?= aws
 
+# for restore verb
+export NEW_CLUSTER_NAME      ?= new-etcd-cluster
+export NEW_CLUSTER_SIZE      ?= 5
+export NEW_CLUSTER_VERSION   ?= 3.2.10
+export NEW_CLUSTER_BASEIMAGE ?= gcr.io/etcd-development/etcd
+export BACKUP_TO_RESTORE     ?= files.dev-rk.kubernetes.delivery/backup/etcd/etcd-cluster/20171201172909/v1/etcd-cluster/etcd-cluster/3.2.7_0000000000000001_etcd.backup
+export TS       	         ?= $(shell date +"%Y%m%d%H%M%S")
 
 deploy: clean init install enable output
 .PHONY: deploy
@@ -29,6 +37,17 @@ wait_crd:
 	done; \
 	echo "Timeout waiting for customresourcedefinitions to be deployed" \
 	exit 1
+
+backup:
+	@./bin/templater.sh ./backup/EtcdBackup.yaml.template | \
+	$(kubectl) create -f - && \
+	(sleep 3; $(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o json | jq .status)
+.PHONY: backup
+
+restore:
+	./bin/templater.sh ./restore/EtcdRestore.yaml.template |\
+	$(kubectl) create -f -
+.PHONY: restore
 
 install:
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
