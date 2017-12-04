@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := deploy
 
-export COMPONENT_NAME     ?= $(notdir $(abspath .))
+export COMPONENT_NAME     ?= postgres-rds
 export TF_VAR_name        := $(COMPONENT_NAME)
 export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-2
@@ -23,10 +23,10 @@ init:
 	yes yes | $(terraform) init -get=true $(TF_OPTS) -force-copy  \
 		-backend=true -input=false \
 		-backend-config="bucket=$(TF_VAR_backend_bucket)" \
-		-backend-config="region=$(TF_VAR_backend_region)" \
-		-backend-config="key=$(COMPONENT_NAME)/$(TF_VAR_name).$(TF_VAR_base_domain)/terraform.tfstate" \
-		-backend-config="profile=$(AWS_PROFILE)" \
-		. .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)
+ 		-backend-config="region=$(TF_VAR_backend_region)" \
+ 		-backend-config="key=postgres-rds/$(TF_VAR_name).$(TF_VAR_base_domain)/terraform.tfstate" \
+ 		-backend-config="profile=$(AWS_PROFILE)" \
+ 		. .terraform/$(TF_VAR_name).$(TF_VAR_base_domain)
 .PHONY: init
 
 get:
@@ -44,12 +44,24 @@ apply:
 		$(terraform) apply $(TF_OPTS) -Xshadow=false terraform.tfplan
 .PHONY: apply
 
+<<<<<<< Updated upstream
 undeploy: import
 	cd .terraform/$(TF_VAR_name).$(TF_VAR_base_domain) && \
 		$(terraform) plan $(TF_OPTS) -destroy -refresh=true -module-depth=-1 -out=terraform.tfplan
+=======
+undeploy:
+	@cd .terraform/$(TF_VAR_name).$(TF_VAR_base_domain) && \
+	$(terraform) plan $(TF_OPTS) -destroy -refresh=true -module-depth=-1 -out=terraform.tfplan
+>>>>>>> Stashed changes
 	$(MAKE) apply
 .PHONY: undeploy
 
 import: init
+<<<<<<< Updated upstream
 	-terraform import aws_db_instance.postgres $(TF_VAR_name)
 .PHONY: import
+=======
+	@cd .terraform/$(TF_VAR_name).$(TF_VAR_base_domain) && \
+	terraform import aws_db_instance.postgres $(TF_VAR_name) || true
+.PHONY: import
+>>>>>>> Stashed changes
