@@ -1,0 +1,15 @@
+apiVersion: "etcd.database.coreos.com/v1beta2"
+kind: "EtcdRestore"
+metadata:
+  # An EtcdCluster with the same name will be created!
+  name: {{NEW_CLUSTER_NAME}}
+spec:
+  clusterSpec:
+    size: {{NEW_CLUSTER_SIZE}}
+    version: {{NEW_CLUSTER_VERSION}}
+    baseImage: {{NEW_CLUSTER_BASEIMAGE}}
+  s3:
+    # The format of "path" must be: "<s3-bucket-name>/<path-to-backup-file>"
+    # e.g: "etcd-snapshot-bucket/v1/default/example-etcd-cluster/3.2.10_0000000000000001_etcd.backup"
+    path: {{BACKUP_TO_RESTORE}}
+    awsSecret: {{AWS_SECRET_NAME}}

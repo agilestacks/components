@@ -16,7 +16,23 @@ Not enabling cluster, the ThirdPartResource must be installed before you can cre
   / # etcdctl --endpoints http://{{ .Values.cluster.name }}-client:2379 get foo
   OK
   (ctrl-D to exit)
-4. Optional
+
+4. Backup etcd cluster
+  make backup
+
+5. List existing backups
+  kubectl get EtcdBackup --namespace {{ .Release.Namespace }}
+
+5. Restore etcd cluster from backup
+  # set following ENVVARS
+  # export NEW_CLUSTER_NAME=new-etcd-cluster
+  # export NEW_CLUSTER_SIZE=5
+  # export NEW_CLUSTER_VERSION=3.2.10
+  # export NEW_CLUSTER_BASEIMAGE=gcr.io/etcd-development/etcd
+  # export BACKUP_TO_RESTORE = <s3_bucket>/<full_path_down_to_backup_file_including>
+  make restore
+
+6. Optional
   Check the etcd-operator logs
   export POD=$(kubectl get pods -l app={{ template "etcd-operator.fullname" . }} --namespace {{ .Release.Namespace }} --output name)
   kubectl logs $POD --namespace={{ .Release.Namespace }}
