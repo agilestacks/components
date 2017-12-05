@@ -40,6 +40,10 @@ parameters:
   brief: NFS server for NFS volumes
 
 outputs:
+- name:  component.jenkins.serviceaccount.user
+  value: ${component.jenkins.serviceaccount.user}
+- name:  component.jenkins.serviceaccount.password
+  value: ${component.jenkins.serviceaccount.password}  
 - name:  component.jenkins.internal.host
   value: jenkins.${component.jenkins.namespace}.svc.cluster.local
 - name:  component.jenkins.internal.port
