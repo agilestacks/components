@@ -13,9 +13,13 @@ parameters:
 - name: component.postgresql
   parameters:
   - name: name
-    brief: Database instance name
-    default: postgresql
+    brief: Component name
+    default: postgresql-rds
     env: COMPONENT_NAME
+  - name: rds.name
+    brief: RDS database instance name
+    default: postgresql
+    env: TF_VAR_rds_name
   - name: database
     env: TF_VAR_database_name
   - name: user
