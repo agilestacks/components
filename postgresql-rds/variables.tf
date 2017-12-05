@@ -20,7 +20,7 @@ variable "database_identifier" {
   default = ""
 }
 
-variable "name" {}
+variable "rds_name" {}
 
 variable "database_name" {
   default = "postgres"
