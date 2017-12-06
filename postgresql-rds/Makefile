@@ -54,5 +54,6 @@ undeploy: import
 
 import: init
 	-cd .terraform/$(TF_VAR_rds_name).$(TF_VAR_name).$(TF_VAR_base_domain) && \
-		terraform import aws_db_instance.postgres $(TF_VAR_rds_name)
+		terraform import aws_db_instance.postgresql $(TF_VAR_rds_name)
 .PHONY: import
+
