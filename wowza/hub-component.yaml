@@ -43,6 +43,5 @@ outputs:
     brief: Wowza URL
     value: http://wowza.${component.wowza.ingress.urlPrefix}.${component.ingress.urlPrefix}.${dns.domain}/enginemanager
   - name: component.wowza.name
-    value: ${component.wowza.name}
   - name: component.wowza.namespace
-    value: ${component.wowza.namespace}
+
