@@ -21,6 +21,7 @@ parameters:
     default: postgresql
     env: TF_VAR_rds_name
   - name: database
+    default: agilestacks
     env: TF_VAR_database_name
   - name: user
     default: postgres
