@@ -1,4 +1,4 @@
-terraform {
+sterraform {
   required_version = ">= 0.9.3"
   backend "s3" {}
 }
@@ -36,19 +36,21 @@ resource "aws_security_group" "default" {
       cidr_blocks = ["${data.aws_vpc.selected.cidr_block}"]
   }
 
-  ingress {
-      from_port   = "${var.database_port}"
-      to_port     = "${var.database_port}"
-      protocol    = "UDP"
-      cidr_blocks = ["${data.aws_vpc.selected.cidr_block}"]
-  }
+  # Note: Postgres only need TCP
+  # ingress {
+  #     from_port   = "${var.database_port}"
+  #     to_port     = "${var.database_port}"
+  #     protocol    = "UDP"
+  #     cidr_blocks = ["${data.aws_vpc.selected.cidr_block}"]
+  # }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  # Note: Postgres should not go outside by itself
+  # egress {
+  #   from_port   = 0
+  #   to_port     = 0
+  #   protocol    = "-1"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
 }
 
 resource "aws_db_instance" "postgresql" {
@@ -74,6 +76,8 @@ resource "aws_db_instance" "postgresql" {
   db_subnet_group_name       = "${aws_db_subnet_group.all.name}"
   parameter_group_name       = "${var.parameter_group}"
   storage_encrypted          = "${var.storage_encrypted}"
+
+  snapshot_identifier        = "${var.snapshot_identifier}"
 
   tags {
     Name        = "${var.rds_name}-rds"
