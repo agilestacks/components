@@ -1,4 +1,4 @@
-sterraform {
+terraform {
   required_version = ">= 0.9.3"
   backend "s3" {}
 }
