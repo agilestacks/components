@@ -69,7 +69,7 @@ undeploy: init disconnect
 .PHONY: undeploy
 
 auth:
-	@vault auth $(shell cat $(UNSEAL_FILE) | jq -rM .root_token )
+	vault auth $(shell cat $(UNSEAL_FILE) | jq -rM .root_token)
 .PHONY: auth
 
 define assert_empty =
@@ -89,7 +89,7 @@ connect:
 	$(eval $(call assert_empty,$(VAULT_POD),"Cannot find vault pod in the cluster"))
 
 	@echo Start proxy to pod/$(VAULT_POD)
-	nohup $(kubectl) port-forward $(VAULT_POD) $(VAULT_LOCAL_PORT):$(VAULT_PORT) &
+	$(kubectl) port-forward $(VAULT_POD) $(VAULT_LOCAL_PORT):$(VAULT_PORT) >/dev/null 2>&1 &
 	@sleep 2
 	@echo Connecting to vault at $(VAULT_ADDR)
 	@for i in $$(seq 1 60); do \
