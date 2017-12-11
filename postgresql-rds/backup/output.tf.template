@@ -1,0 +1,11 @@
+output "db_snapshot_arn" {
+  value = "${aws_db_snapshot.postgresql-{{TS}}.id}"
+}
+
+output "source_db_snapshot_identifier" {
+  value = "${aws_db_snapshot.postgresql-{{TS}}.source_db_snapshot_identifier}"
+}
+
+output "status" {
+  value = "${aws_db_snapshot.postgresql-{{TS}}.status}"
+}
