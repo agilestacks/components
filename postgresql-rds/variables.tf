@@ -79,25 +79,30 @@ variable "parameter_group" {
   default = "default.postgres9.6"
 }
 
-variable "alarm_cpu_threshold" {
-  default = "85"
-}
+# variable "alarm_cpu_threshold" {
+#   default = "85"
+# }
 
-variable "alarm_disk_queue_threshold" {
-  default = "10"
-}
+# variable "alarm_disk_queue_threshold" {
+#   default = "10"
+# }
 
-variable "alarm_free_disk_threshold" {
-  # 500MB
-  default = "500000000"
-}
+# variable "alarm_free_disk_threshold" {
+#   # 500MB
+#   default = "500000000"
+# }
 
-variable "alarm_free_memory_threshold" {
-  # 128MB
-  default = "128000000"
-}
+# variable "alarm_free_memory_threshold" {
+#   # 128MB
+#   default = "128000000"
+# }
 
-variable "alarm_actions" {
-  type    = "list"
-  default = []
+# variable "alarm_actions" {
+#   type    = "list"
+#   default = []
+# }
+
+variable "snapshot_identifier" {
+  description = "Specify snapshot ID to restore DB from it, or leave empty for fresh DB instance."
+  default = ""
 }
