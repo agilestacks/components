@@ -50,15 +50,15 @@ apply:
 .PHONY: apply
 
 backup:
-    cd backup && \
-        rm terraform.* &&\
-        mkdir -p ./.terraform &&\
-        rm -rf ./.terraform/* ./backup.tf ./output.tf &&\
-        templater.sh ./backup.tf.template > ./backup.tf &&\
-        templater.sh ./output.tf.template > ./output.tf &&\
-        $(terraform) init $(TF_OPTS) && \
-        $(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=terraform.tfplan && \
-        $(terraform) apply $(TF_OPTS) -Xshadow=false terraform.tfplan
+	cd backup && \
+		rm terraform.* && \
+		mkdir -p ./.terraform && \
+		rm -rf ./.terraform/* ./backup.tf ./output.tf && \
+		templater.sh ./backup.tf.template > ./backup.tf && \
+		templater.sh ./output.tf.template > ./output.tf && \
+		$(terraform) init $(TF_OPTS) && \
+		$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=terraform.tfplan && \
+		$(terraform) apply $(TF_OPTS) -Xshadow=false terraform.tfplan
 .PHONY: backup
 
 undeploy: import
