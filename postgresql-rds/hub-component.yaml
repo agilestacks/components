@@ -17,8 +17,9 @@ parameters:
     default: postgresql-rds
     env: COMPONENT_NAME
   - name: rds.name
+    kind: user
     brief: RDS database instance name
-    default: postgresql
+    default: ${dns.name}
     env: TF_VAR_rds_name
   - name: database
     default: agilestacks
