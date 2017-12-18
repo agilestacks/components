@@ -45,8 +45,6 @@ install:
 undeploy: init
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	-$(kubectl) delete -f storage-class.yaml
-	-$(kubectl) delete -f namespace.yaml
 .PHONY: undeploy
 
 clean:
