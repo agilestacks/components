@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: redis
-  brief: Redis component
+  brief: Redis in-memory data structure store
   source:
       dir: ../../components/linkerd
 
@@ -13,6 +13,8 @@ requires:
   - tiller
 
 parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
   - name: component.redis
     parameters:
     - name: volume.enabled
@@ -69,22 +71,18 @@ parameters:
         default: 100m
       - name: sentinel.limits.memory
         default: 200Mi
-  - name: dns.domain
-    brief: DNS domain
-    kind: tech
-    env: DOMAIN_NAME
   - name: docker.registry
     brief: DNS domain
     kind: tech
     env: DOCKER_REGISTRY
 
 outputs:
-- name: component.redis.host
-  value: ${component.redis.name}-redis.${component.redis.namespace}.svc.cluster.local
-- name: component.redis.port
-  value: "6379"
-- name: component.redis.url
-  value: redis://${component.redis.name}-redis.${component.redis.namespace}.svc.cluster.local:6379
+  - name: component.redis.host
+    value: ${component.redis.name}-redis.${component.redis.namespace}.svc.cluster.local
+  - name: component.redis.port
+    value: "6379"
+  - name: component.redis.url
+    value: redis://${component.redis.name}-redis.${component.redis.namespace}.svc.cluster.local:6379
 
 templates:
   files:
