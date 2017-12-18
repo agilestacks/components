@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: ${component.wowza.name}
-        image: wowzamedia/wowza-streaming-engine-linux:4.7.1
+        image: ${component.wowza.image}:${component.wowza.version}
         command: ["/sbin/entrypoint.sh"]
         imagePullPolicy: Always
         env:

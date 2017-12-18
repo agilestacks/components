@@ -33,6 +33,10 @@ parameters:
       default:  streaming
     - name:    license
       default: ET1E4-jQYfa-DRDEy-KExpf-C9TdU-ADKE8-9wWWdNmWCxEQ
+    - name:    image
+      default: wowzamedia/wowza-streaming-engine-linux
+    - name:    version
+      default: 4.7.3
 
 templates:
   files:
