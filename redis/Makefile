@@ -16,7 +16,8 @@ HELM_CHART=stable/redis
 VALUES_FILE=values.yaml
 endif
 
-deploy: clean init fetch install
+deploy: clean init fetch install output
+.PHONY: deploy
 
 init:
 	mkdir -p $(HELM_HOME)
@@ -41,6 +42,12 @@ install:
 			--wait \
 			--values $(VALUES_FILE)
 .PHONY: install
+
+output:
+	@echo
+	@echo Outputs:
+	@echo password = $(shell $(kubectl) get secret $(COMPONENT_NAME)-redis -o jsonpath='{.data.redis-password}' | base64 --decode)
+.PHONY: outputs
 
 undeploy: init
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
