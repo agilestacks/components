@@ -79,6 +79,8 @@ outputs:
     value: "6379"
   - name: component.redis.url
     value: redis://${component.redis.name}-redis.${component.redis.namespace}.svc.cluster.local:6379
+  - name: component.redis.password
+    fromTfVar: password
 
 templates:
   files:
