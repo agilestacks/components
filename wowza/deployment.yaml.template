@@ -47,5 +47,8 @@ spec:
         - name: manager
           containerPort: 8088
           protocol: TCP
+        - name: restapi
+          containerPort: 8087
+          protocol: TCP
         resources: {}
 status: {}
