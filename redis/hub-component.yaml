@@ -71,10 +71,6 @@ parameters:
         default: 100m
       - name: sentinel.limits.memory
         default: 200Mi
-  - name: docker.registry
-    brief: DNS domain
-    kind: tech
-    env: DOCKER_REGISTRY
 
 outputs:
   - name: component.redis.host
