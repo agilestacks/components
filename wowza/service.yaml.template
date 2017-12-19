@@ -15,4 +15,6 @@ spec:
   - name: manager
     protocol: TCP
     port: 8088
-
+  - name: restapi
+    protocol: TCP
+    port: 8087
