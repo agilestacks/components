@@ -24,10 +24,6 @@ spec:
       containers:
       - name: ${component.kubernetes-dashboard.name}
         image: gcr.io/google_containers/kubernetes-dashboard-amd64:${component.kubernetes-dashboard.version}
-        resources:
-          limits:
-            cpu: 100m
-            memory: 50Mi
         ports:
         - containerPort: 9090
         livenessProbe:
