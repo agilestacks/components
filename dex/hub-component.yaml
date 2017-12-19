@@ -33,13 +33,10 @@ parameters:
   - name: component.dex.saml.groupsAttr
     default: groups
   - name: component.dex.okta.issuer
-    fromEnv: DEX_OKTA_APP_ISSUER
     default: https://dev-458481.oktapreview.com
   - name: component.dex.okta.clientId
-    fromEnv: DEX_OKTA_APP_CLIENT_ID
     default: unknown
   - name: component.dex.okta.clientSecret
-    fromEnv: DEX_OKTA_APP_CLIENT_SECRET
     default: unknown
   - name: cloud.region
     kind: user
