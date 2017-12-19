@@ -15,7 +15,7 @@ spec:
         backend:
           serviceName: ${component.wowza.name}
           servicePort: 8088
-      - path: /v2
+      - path: /api
         backend:
           serviceName: ${component.wowza.name}
           servicePort: 8087
