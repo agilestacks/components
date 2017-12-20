@@ -72,12 +72,9 @@ auth:
 	vault auth $(shell cat $(UNSEAL_FILE) | jq -rM .root_token)
 .PHONY: auth
 
-define assert_empty =
+define assert_empty
 	@echo "Checking $(1) if empty"
-ifeq ($(1),)
-	@echo "$(2)"
-	@exit 1
-endif
+	[[ -z "$(1)" ]] && exit -1
 endef
 
 connect:
@@ -86,7 +83,7 @@ connect:
 	$(eval VAULT_POD=$(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}))
 	@echo POD=$(VAULT_POD)
 
-	$(eval $(call assert_empty,$(VAULT_POD),"Cannot find vault pod in the cluster"))
+	$(call assert_empty,$(VAULT_POD))
 
 	@echo Start proxy to pod/$(VAULT_POD)
 	$(kubectl) port-forward $(VAULT_POD) $(VAULT_LOCAL_PORT):$(VAULT_PORT) >/dev/null 2>&1 &
