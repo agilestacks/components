@@ -40,6 +40,13 @@ spec:
             value: ${component.wowza.license}
           - name: WSE_IP_PARAM
             value: svc.${dns.domain}
+        volumeMounts:
+        - mountPath: /usr/local/WowzaStreamingEngine/conf/Server.xml
+          name: configs
+          subPath: serverxml
+        - mountPath: /usr/local/WowzaStreamingEngine/conf/log4j.properties
+          name: configs
+          subPath: log4j
         ports:
         - name: rtmp
           containerPort: 1935
@@ -50,5 +57,8 @@ spec:
         - name: restapi
           containerPort: 8087
           protocol: TCP
-        resources: {}
-status: {}
+      volumes:
+      - name: configs
+        configMap:
+          name: configs
+

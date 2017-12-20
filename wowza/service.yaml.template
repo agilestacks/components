@@ -4,10 +4,10 @@ metadata:
   name: ${component.wowza.name}
   namespace: ${component.wowza.namespace}
   labels:
-    component: wowza
+    component: ${component.wowza.name}
 spec:
   selector:
-    component: wowza
+    component: ${component.wowza.name}
   ports:
   - name: rtmp
     protocol: TCP
