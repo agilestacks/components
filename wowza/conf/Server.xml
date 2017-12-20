@@ -9,7 +9,7 @@ nywhere.</Description>
 			<IPAddress>*</IPAddress>
 			<Port>8087</Port>
 			<!-- none, basic, digest, remotehttp, digestfile -->
-			<AuthenticationMethod>none</AuthenticationMethod>
+			<AuthenticationMethod>digest</AuthenticationMethod>
 			<DiagnosticURLEnable>true</DiagnosticURLEnable>
 			<SSLConfig>
 				<Enable>false</Enable>
