@@ -74,7 +74,7 @@ auth:
 
 define assert_empty
 	@echo "Checking $(1) if empty"
-	[[ -z "$(1)" ]] && exit -1
+	[[ -z "$(1)" ]] && exit -1 || echo
 endef
 
 connect:
