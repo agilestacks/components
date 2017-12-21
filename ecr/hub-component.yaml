@@ -16,20 +16,12 @@ parameters:
 - name: component.ecr
   parameters:
   - name:    name
-    default: ecr
-    env:     COMPONENT_NAME
-  - name:    image_name
-    env:     TF_VAR_image_name
+    env:     TF_VAR_name
   env:   TF_VAR_name
 - name:  dns.domain
   brief: DNS domain
   kind: tech
   env:  DOMAIN_NAME
-- name: component.postgresql
-  parameters:
-  - name:    name
-    default: postgresql
-    env:     COMPONENT_NAME
 - name: terraform.bucket
   parameters:
   - name: name
