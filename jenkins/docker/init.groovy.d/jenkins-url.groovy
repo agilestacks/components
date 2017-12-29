@@ -13,3 +13,5 @@ jlc.setUrl( url )
 jlc.setAdminAddress(email) 
 log.info("Override Jenkins URL to $url")
 jlc.save()
+
+Jenkins.instance.rootUrl = url
