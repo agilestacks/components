@@ -42,3 +42,7 @@ parameters:
 templates:
   files:
     - "*.template"
+
+outputs:
+  - name: component.pgweb.url
+    value: http://${component.pgweb.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
