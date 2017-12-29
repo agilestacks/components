@@ -1,0 +1,179 @@
+hub:
+  image: "${component.selenium.image}"
+  tag: "${component.selenium.version}"
+  pullPolicy: "IfNotPresent"
+  port: ${component.selenium.port}
+  readinessTimeout: 1
+  javaOpts: "-Xmx400m"
+
+  resources:
+    limits:
+      cpu: "${component.selenium.cpu}"
+      memory: "${component.selenium.ram}"
+
+  serviceType: "ClusterIP"
+  serviceSessionAffinity: "None"
+
+  ## ref: https://seleniumhq.github.io/docs/grid.html#step_1_start_the_hub
+  # gridNewSessionWaitTimeout: -1
+  # gridJettyMaxThreads: -1
+  ## In milliseconds
+  # gridNodePolling: 5000
+  ## In milliseconds
+  # gridCleanUpCycle: 5000
+  ## In milliseconds
+  # gridTimeout: 30000
+  ## In milliseconds
+  # gridBrowserTimeout: 0
+  # gridMaxSession: 5
+  ## In milliseconds
+  # gridUnregisterIfStillDownAfer: 30000
+  # timeZone: UTC
+
+chrome:
+  enabled: ${component.selenium.chrome.enabled}
+  image: ${component.selenium.chrome.image}
+  tag: "${component.selenium.chrome.version}"
+  pullPolicy: "IfNotPresent"
+  replicas: ${component.selenium.chrome.replicas}
+  javaOpts: "${component.selenium.chrome.javaOpts}"
+  volumes:
+    ## https://github.com/kubernetes/kubernetes/pull/34928#issuecomment-277952723
+    ## http://stackoverflow.com/questions/39852716/chrome-driver-throwing-org-openqa-selenium-remote-sessionnotfoundexception-whe
+    ## Chrome wants more than 64mb of shared memory. Docker/k8s default to 64mb.
+    - name: dshm
+      emptyDir:
+        medium: Memory
+  volumeMounts:
+    - mountPath: /dev/shm
+      name: dshm
+  resources:
+    limits:
+      cpu: "${component.selenium.chrome.cpu}"
+      memory: "${component.selenium.chrome.ram}"
+
+  ## Characteristics of the browser window
+  screenWidth: ${component.selenium.chrome.screen.width}
+  screenHeight: ${component.selenium.chrome.screen.height}
+  # screenDepth: 24
+  # display: :10
+
+  ## Selenium node options
+  # chromeVersion:
+  # nodeMaxInstances: 1
+  # nodeMaxSession: 1
+  ## In milliseconds
+  # nodeRegisterCycle: 5000
+  # nodePort: 5555
+  # timeZone: UTC
+
+chromeDebug:
+  enabled: ${component.selenium.chromeDebug.enabled}
+  image: ${component.selenium.chromeDebug.image}
+  tag: "${component.selenium.chromeDebug.version}"
+  pullPolicy: "IfNotPresent"
+  replicas: ${component.selenium.chromeDebug.replicas}
+  javaOpts: "${component.selenium.chromeDebug.javaOpts}"
+  volumes:
+    ## https://github.com/kubernetes/kubernetes/pull/34928#issuecomment-277952723
+    ## http://stackoverflow.com/questions/39852716/chrome-driver-throwing-org-openqa-selenium-remote-sessionnotfoundexception-whe
+    ## Chrome wants more than 64mb of shared memory. Docker/k8s default to 64mb.
+    - name: dshm
+      emptyDir:
+        medium: Memory
+  volumeMounts:
+    - mountPath: /dev/shm
+      name: dshm
+  resources:
+    limits:
+      cpu: "${component.selenium.chromeDebug.cpu}"
+      memory: "${component.selenium.chromeDebug.ram}"
+
+  ## Characteristics of the browser window
+  screenWidth: ${component.selenium.chromeDebug.screen.width}
+  screenHeight: ${component.selenium.chromeDebug.screen.height}
+  # screenDepth: 24
+  # display: :10
+
+  ## Selenium node options
+  # chromeVersion:
+  # nodeMaxInstances: 1
+  # nodeMaxSession: 1
+  ## In milliseconds
+  # nodeRegisterCycle: 5000
+  # nodePort: 5555
+  # timeZone: UTC
+
+firefox:
+  enabled: ${component.selenium.firefox.enabled}
+  image: ${component.selenium.firefox.image}
+  tag: "${component.selenium.firefox.version}"
+  pullPolicy: "IfNotPresent"
+  replicas: ${component.selenium.firefox.replicas}
+  javaOpts: "${component.selenium.firefox.javaOpts}"
+  volumes:
+    ## https://github.com/kubernetes/kubernetes/pull/34928#issuecomment-277952723
+    ## http://stackoverflow.com/questions/39852716/chrome-driver-throwing-org-openqa-selenium-remote-sessionnotfoundexception-whe
+    ## Chrome wants more than 64mb of shared memory. Docker/k8s default to 64mb.
+    - name: dshm
+      emptyDir:
+        medium: Memory
+  volumeMounts:
+    - mountPath: /dev/shm
+      name: dshm
+  resources:
+    limits:
+      cpu: "${component.selenium.firefox.cpu}"
+      memory: "${component.selenium.firefox.ram}"
+
+  ## Characteristics of the browser window
+  screenWidth: ${component.selenium.firefox.screen.width}
+  screenHeight: ${component.selenium.firefox.screen.height}
+  # screenDepth: 24
+  # display: :10
+
+  ## Selenium node options
+  # chromeVersion:
+  # nodeMaxInstances: 1
+  # nodeMaxSession: 1
+  ## In milliseconds
+  # nodeRegisterCycle: 5000
+  # nodePort: 5555
+  # timeZone: UTC
+
+firefoxDebug:
+  enabled: ${component.selenium.firefoxDebug.enabled}
+  image: ${component.selenium.firefoxDebug.image}
+  tag: "${component.selenium.firefoxDebug.version}"
+  pullPolicy: "IfNotPresent"
+  replicas: ${component.selenium.firefoxDebug.replicas}
+  javaOpts: "${component.selenium.firefoxDebug.javaOpts}"
+  volumes:
+    ## https://github.com/kubernetes/kubernetes/pull/34928#issuecomment-277952723
+    ## http://stackoverflow.com/questions/39852716/chrome-driver-throwing-org-openqa-selenium-remote-sessionnotfoundexception-whe
+    ## Chrome wants more than 64mb of shared memory. Docker/k8s default to 64mb.
+    - name: dshm
+      emptyDir:
+        medium: Memory
+  volumeMounts:
+    - mountPath: /dev/shm
+      name: dshm
+  resources:
+    limits:
+      cpu: "${component.selenium.firefoxDebug.cpu}"
+      memory: "${component.selenium.firefoxDebug.ram}"
+
+  ## Characteristics of the browser window
+  screenWidth: ${component.selenium.firefoxDebug.screen.width}
+  screenHeight: ${component.selenium.firefoxDebug.screen.height}
+  # screenDepth: 24
+  # display: :10
+
+  ## Selenium node options
+  # chromeVersion:
+  # nodeMaxInstances: 1
+  # nodeMaxSession: 1
+  ## In milliseconds
+  # nodeRegisterCycle: 5000
+  # nodePort: 5555
+  # timeZone: UTC
