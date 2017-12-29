@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:2.78-alpine
+FROM jenkins/jenkins:lts-alpine
 MAINTAINER Antons Kranga <anton@agilestacks.com>
 
 ENV JENKINS_SLAVE_AGENT_PORT  50000
