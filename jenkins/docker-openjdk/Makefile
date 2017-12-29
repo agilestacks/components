@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := build
 
 REGISTRY   := docker.io
-VERSION    := 9-jdk-slim
+VERSION    := 8-jdk-slim
 IMAGE      := agilestacks/openjdk
 CONTAINER  := java
 BUILD_OPTS := --no-cache --force-rm
