@@ -73,3 +73,6 @@ acm/.venv
 generated.tf
 values-acm.yaml
 errored.tfstate
+values.yaml
+selenium/charts
+ingress.yaml
