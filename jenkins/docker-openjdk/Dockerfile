@@ -1,4 +1,4 @@
-FROM openjdk:9-jdk-slim
+FROM openjdk:8-jdk-slim
 MAINTAINER Antons Kranga <anton@agilestacks.com>
 
 RUN apt-get update && \
