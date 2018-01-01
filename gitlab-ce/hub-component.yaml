@@ -2,13 +2,13 @@
 version: 1
 kind: component
 meta:
-  name: gitlab
-  brief: gitlab
+  name: gitlab-ce
+  brief: gitlab-ce
   source:
-      dir: ../../components/gitlab
+      dir: ../../components/gitlab-ce
 
 provides:
-  - gitlab
+  - gitlab-ce
 
 parameters:
   - name: component.ingress.fqdn
@@ -23,12 +23,12 @@ parameters:
     - name: user
     - name: password
     - name: url
-  - name: component.gitlab
+  - name: component.gitlab-ce
     parameters:
     - name: acm_certificate.arn
       env: ACM_CERTIFICATE_ARN
     - name:    name
-      default: gitlab
+      default: gitlab-ce
       env:     COMPONENT_NAME
     - name:    namespace
       default: gitlab
@@ -47,7 +47,7 @@ parameters:
       default: 80
 
 outputs:
-- name: component.gitlab.git_fqdn
+- name: component.gitlab-ce.git_fqdn
   brief: FQDN of ingress
   fromTfVar: git_fqdn
 
