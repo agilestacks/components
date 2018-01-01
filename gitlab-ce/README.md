@@ -8,7 +8,7 @@ This component dependes on the Agilestacks `postgres` component.
 ## Configuration
 
 #### Parameters : 
-* name:    name default: gitlab
+* name:    name default: gitlab-ce
 * name:    namespace default: gitlab
 * name:    dbHost default: "" ## IMPORTANT if this is set, it will point gitlab to an external host instead of the local PG
 * name:    dbName default: gitlab
@@ -39,7 +39,7 @@ This also leverages traefk-acm and the kubernetes OCDC Issuer (Dex)
 
 * This also currently needs to register its own ELB for the `git` subdomain. So it also requires. 
 
-* name: component.gitlab.acm_certificate.arn - this is retrieved by default from ACM_CERTIFICATE_ARN
+* name: component.gitlab-ce.acm_certificate.arn - this is retrieved by default from ACM_CERTIFICATE_ARN
 
 
 # GitLab Community Edition
