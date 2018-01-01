@@ -27,7 +27,7 @@ gitlabRootPassword: "gitlab4tw"
 ##
 serviceType: LoadBalancer
 
-acmArn: ${component.gitlab.acm_certificate.arn}
+acmArn: ${component.gitlab-ce.acm_certificate.arn}
 
 ## Ingress configuration options
 ##
@@ -40,7 +40,7 @@ ingress:
       # - secretName: gitlab.cluster.local
       #   hosts:
       #     - gitlab.cluster.local
-  url: ${component.gitlab.name}.${component.ingress.fqdn}
+  url: ${component.gitlab-ce.name}.${component.ingress.fqdn}
 
 ## Configure external service ports
 ## ref: http://kubernetes.io/docs/user-guide/services/
@@ -104,9 +104,9 @@ postgresql:
 
 ## Configure the gitlab specific database
 gitlab:
-  database: ${component.gitlab.database}
-  databaseUser: ${component.gitlab.dbUser}
-  databasePassword: ${component.gitlab.dbPassword}
+  database: ${component.gitlab-ce.database}
+  databaseUser: ${component.gitlab-ce.dbUser}
+  databasePassword: ${component.gitlab-ce.dbPassword}
   databaseHost: ${component.postgresql.url} 
 
 ## Configuration values for the redis dependency.
