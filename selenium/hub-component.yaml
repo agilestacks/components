@@ -125,6 +125,8 @@ parameters:
         value: 512Mi
 
 outputs:
+  - name: component.selenium.serviceName
+    value: ${component.selenium.name}-selenium
   - name: component.selenium.host
     value: ${component.selenium.name}-selenium.${component.selenium.namespace}.svc.cluster.local
   - name: component.selenium.port
