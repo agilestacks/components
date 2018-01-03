@@ -15,10 +15,10 @@ provides:
 parameters:
 - name: component.ecr
   parameters:
-  - name:    name
-    env:     TF_VAR_name
-  env:   TF_VAR_name
-- name:  dns.domain
+  - name: name
+    default: ecr
+    env: COMPONENT_NAME
+- name: dns.domain
   brief: DNS domain
   kind: tech
   env:  DOMAIN_NAME
