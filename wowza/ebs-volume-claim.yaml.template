@@ -1,0 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: wowza-data
+  labels:
+    provider:  agilestacks.com
+    project:   wowza
+    qualifier: data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: ebs-gp2-wowza
+  resources:
+    requests:
+      storage: 20Gi

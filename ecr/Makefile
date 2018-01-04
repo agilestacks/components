@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 export COMPONENT_NAME     ?= ecr
-export TF_VAR_name        ?= default
+export TF_VAR_name        := $(COMPONENT_NAME)
 export DOMAIN_NAME        ?= dev.stacks.delivery
 export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-2

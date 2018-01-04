@@ -10,6 +10,8 @@ export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-name
 
 deploy:
 	$(kubectl) apply -f namespace.yaml
+	$(kubectl) apply -f storage-class.yaml
+	$(kubectl) apply -f ebs-volume-claim.yaml
 	$(kubectl) apply -f secret.yaml
 	$(kubectl) create configmap configs --from-file=serverxml=conf/Server.xml \
 				--from-file=log4j=conf/log4j.properties
@@ -25,5 +27,7 @@ undeploy:
 	$(kubectl) delete configmap configs
 	$(kubectl) delete -f service.yaml
 	$(kubectl) delete -f secret.yaml
+	$(kubectl) delete -f ebs-volume-claim.yaml
+	$(kubectl) delete -f storage-class.yaml
 
 .PHONY: undeploy

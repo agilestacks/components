@@ -47,6 +47,8 @@ spec:
         - mountPath: /usr/local/WowzaStreamingEngine/conf/log4j.properties
           name: configs
           subPath: log4j
+        - mountPath: /usr/local/dvr
+          name: wowza-data
         ports:
         - name: rtmp
           containerPort: 1935
@@ -57,8 +59,18 @@ spec:
         - name: restapi
           containerPort: 8087
           protocol: TCP
+      initContainers:
+      - name: chown-volume
+        image: alpine:3.7
+        command: ['/bin/ash', '-c', 'chown -R 1000:1000 /usr/local/dvr']
+        volumeMounts:
+        - name: wowza-data
+          mountPath: /usr/local/dvr
       volumes:
       - name: configs
         configMap:
           name: configs
+      - name: wowza-data
+        persistentVolumeClaim:
+          claimName: wowza-data
 
