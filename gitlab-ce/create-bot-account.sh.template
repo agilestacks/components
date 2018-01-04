@@ -1,0 +1,10 @@
+#!/bin/bash -e
+
+TOKEN=$(curl https://git.{{dns.domain}}/api/v3/session --data 'login=root&password={{component.gitlab-ce.root-password}}' | jq -Mr .private_token)
+
+BOT_PASSWORD=water1234
+BOT_NAME=gitbot
+
+curl https://git.{{dns.domain}}/api/v4/users --data "username=${BOT_NAME}&email=${BOT_NAME}@{{dns.domain}}&password=${BOT_PASSWORD}&private_token=${TOKEN}&name=testbot&admin=true"
+
+

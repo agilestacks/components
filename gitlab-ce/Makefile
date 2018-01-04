@@ -5,12 +5,14 @@ export HELM_HOME      ?= $(shell pwd)/.helm
 export NAMESPACE	  ?= gitlab
 export COMPONENT_NAME ?= gitlab
 export DOMAIN_NAME    ?= default
+export GITBOT_PASSORD ?= water1234 # TODO, randomly generate this
 export kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export kind           ?= aws
 
 deploy: clean init fetch install output
 	bash -e ./deploy-$(kind).sh
+	bash -e ./create-bot-account.sh
 	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
 
@@ -52,6 +54,7 @@ undeploy: init
 output:
 	@echo Outputs:
 	@echo git_fqdn=git.$(DOMAIN_NAME)
+	@echo gitbot_password=$(GITBOT_PASSWORD)
 	@echo
 
 clean:
