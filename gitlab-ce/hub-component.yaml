@@ -11,9 +11,13 @@ provides:
   - gitlab-ce
 
 parameters:
-  - name: component.ingress.fqdn
   - name: component.ingress.ssoUrlPrefix
+    value: auth
   - name: component.ingress.protocol
+    value: https
+  - name: component.ingress.fqdn
+    value: app.${dns.domain}
+    env: INGRESS_FQDN
   - name: kubernetes.oidc_issuer_fqdn
   - name: dns.domain
     env: DOMAIN_NAME
@@ -30,6 +34,8 @@ parameters:
     - name:    name
       default: gitlab-ce
       env:     COMPONENT_NAME
+    - name:    root-password
+      default: gitlab4tw
     - name:    namespace
       default: gitlab
       env:     NAMESPACE
@@ -50,7 +56,9 @@ outputs:
 - name: component.gitlab-ce.git_fqdn
   brief: FQDN of ingress
   fromTfVar: git_fqdn
-
+- name: component.gitlab-ce.gitbot-password
+  brief: Password for the gitbot gitlab robot account
+  fromTfVar: gitbot_password
 templates:
   files:
     - "*.yaml.template"
