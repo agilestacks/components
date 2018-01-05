@@ -61,7 +61,7 @@ outputs:
 - name: component.ingress.http
   fromTfVar: intress_protocol
 - name: component.ingress.dashboard.url
-  value: http://${component.ingress.ssoUrlPrefix}.${dns.domain}/dashboard
+  value: http://${component.ingress.ssoUrlPrefix}.${dns.domain}/dashboard/
 
 templates:
   files: ["values.yaml.template", "values-acm.yaml.template"]
