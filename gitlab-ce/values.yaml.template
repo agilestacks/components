@@ -20,7 +20,10 @@ externalUrl: ${component.ingress.protocol}://git.${dns.domain}
 ## Change the initial default admin password if set. If not set, you'll be
 ## able to set it when you first visit your install.
 ##
-gitlabRootPassword: ${component.gitlab-ce.root-password}
+
+#gitlabRootPassword: component.gitlab-ce.root-password
+
+gitlabRootPassword: "#GITLAB_ROOT_PASSWORD#"
 
 ## For minikube, set this to NodePort, elsewhere use LoadBalancer
 ## ref: http://kubernetes.io/docs/user-guide/services/#publishing-services---service-types

@@ -35,8 +35,6 @@ parameters:
     - name:    name
       default: gitlab-ce
       env:     COMPONENT_NAME
-    - name:    root-password
-      default: gitlab4tw
     - name:    namespace
       default: gitlab
       env:     NAMESPACE
@@ -57,9 +55,15 @@ outputs:
 - name: component.gitlab-ce.git_fqdn
   brief: FQDN of ingress
   fromTfVar: git_fqdn
-- name: component.gitlab-ce.gitbot-password
-  brief: Password for the gitbot gitlab robot account
+- name: component.gitlab-ce.robbot-password
+  brief: Password for the gitlab robot account
   fromTfVar: gitbot_password
+- name: component.gitlab-ce.root-password
+  brief: Password for the root gitlab account
+  fromTfVar: root_password
+- name: component.gitlab-ce.robbot-username
+  brief: Password for the gitlab robot account
+  fromTfVar: gitbot_username
 templates:
   files:
     - "*.yaml.template"
