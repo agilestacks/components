@@ -4,7 +4,7 @@ ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name {{dns.domain}} --max-
 ELB=""
 echo "Waiting for Load Balancer"
 for i in {1..30}; do
-  ELB=$(kubectl --namespace="{{component.gitlab-ce.namespace}}" describe svc gitlab-gitlab-ce | grep Ingress | awk '{print $3}')
+  ELB=$(kubectl --namespace="{{component.gitlab-ce.namespace}}" describe svc gitlab-ce-gitlab-ce | grep Ingress | awk '{print $3}')
   if [ ! -z "${ELB}" ]; then
     break
   fi
@@ -54,3 +54,6 @@ for i in $(seq 1 60); do
   test "${_status}" == "INSYNC" && break
   sleep 3
 done
+
+
+./create-bot-account.sh ${ELB}

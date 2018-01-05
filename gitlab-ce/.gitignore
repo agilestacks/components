@@ -3,3 +3,4 @@ configmap.yaml
 values.yaml
 okta-app.sh
 okta/
+create-bot-account.sh
