@@ -27,7 +27,9 @@ do
    sleep 1
 done
 
-IP=$(host $ELB | cut -d' ' -f 4 | head -n1)
+# resolve ip address on alpine
+IP=$(ping -q -c 1 -t 1  $ELB 2> /dev/null | grep PING | sed -e "s/).*//" | sed -e "s/.*(//" | head -n1)
+echo $ELB resolved to $IP
 
 TOKEN=
 while [ -z "$TOKEN" ]
@@ -44,5 +46,3 @@ if [ $TOKEN == "null" ]; then
 fi
 
 curl_host "git.{{dns.domain}}" "https://${IP}/api/v4/users" --data "username=${BOT_NAME}&email=${BOT_NAME}@{{dns.domain}}&password=${GITBOT_PASSWORD}&private_token=${TOKEN}&name=testbot&admin=true"
-
-
