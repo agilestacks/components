@@ -59,4 +59,4 @@ else
   echo There\'s no DNS update needed
 fi
 
-./create-bot-account.sh ${ELB}
+/bin/bash ./create-bot-account.sh ${ELB}
