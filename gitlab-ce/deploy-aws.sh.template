@@ -8,7 +8,7 @@ for i in {1..30}; do
   if [ ! -z "${ELB}" ]; then
     break
   fi
-  echo "retry..."
+  echo "retry ${i}..."
   sleep 3;
 done
 
@@ -46,14 +46,17 @@ CHANGE_ID=$(
     | jq  -Mr '.ChangeInfo.Id'
 )
 
-for i in $(seq 1 60); do
-  _status=$(
-    aws route53 get-change --id ${CHANGE_ID} | jq  -Mr '.ChangeInfo.Status'
-  )
-  echo "Wait to propagate DNS record: ${_status}"
-  test "${_status}" == "INSYNC" && break
-  sleep 3
-done
-
+if [ -n "${CHANGE_ID}" ]; then
+  for i in $(seq 1 60); do
+    _status=$(
+      aws route53 get-change --id ${CHANGE_ID} | jq  -Mr '.ChangeInfo.Status'
+    )
+    echo "Wait to propagate DNS record: ${_status}"
+    test "${_status}" == "INSYNC" && break
+    sleep 3
+  done
+else
+  echo There\'s no DNS update needed
+fi
 
 ./create-bot-account.sh ${ELB}
