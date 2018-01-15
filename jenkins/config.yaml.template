@@ -1,22 +1,6 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: jenkins-config
-  namespace: ${component.jenkins.namespace}
-data:
-  cloud.json: |-
-    {
-      "cluster_id": "${dns.domain}",
-      "aws_region": "${cloud.region}",
-      "domain_name": "${dns.domain}",
-      "docker_registry": "${docker.registry}",
-      "jenkins_ingress": "${component.jenkins.namespace}.app.${dns.domain}",
-      "jenkins_extternal_url": "http://${component.jenkins.namespace}.app.${dns.domain}"
-    }
----
-kind: ConfigMap
-apiVersion: v1
-metadata:
   name: cluster-info
   namespace: ${component.jenkins.namespace}
   labels:
@@ -27,7 +11,6 @@ data:
   CLUSTER_ID: ${dns.domain}
   AWS_REGION: ${cloud.region}
   DOMAIN_NAME: ${dns.domain}
-  DOCKER_REGISTRY: ${docker.registry}
   JENKINS_HOST: ${component.jenkins.namespace}.${component.ingress.fqdn}
   JENKINS_URL: http://${component.jenkins.namespace}.${component.ingress.fqdn}
   INGRESS_FQDN: ${component.ingress.fqdn}

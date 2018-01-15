@@ -1,3 +1,4 @@
+  - name: component.ingress.protocol
 ---
 version: 1
 kind: component
@@ -11,7 +12,11 @@ requires:
   - kubernetes
 
 parameters:
-- name: component.ingress.fqdn
+- name: component.ingress
+  parameters:
+  - name: fqdn
+  - name: protocol
+    default: http
 - name: component.jenkins
   parameters:
   - name: namespace
@@ -49,7 +54,7 @@ outputs:
 - name:  component.jenkins.internal.port
   value: 8080
 - name:  component.jenkins.internal.url
-  value: http://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
+  value: ${component.ingress.protocol}://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
 - name:  component.jenkins.fqdn
   value: ${component.jenkins.namespace}.${component.ingress.fqdn}
 
