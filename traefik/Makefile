@@ -56,6 +56,6 @@ output:
 	@echo Outputs:
 	@echo ingress_fqdn=$(URL_PREFIX).$(DOMAIN_NAME)
 	@echo sso_ingress_fqdn=$(SSO_URL_PREFIX).$(DOMAIN_NAME)
-	@echo intress_protocol=$(PROTOCOL)
+	@echo ingress_protocol=$(PROTOCOL)
 	@echo
 .PHONY: output
