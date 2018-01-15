@@ -54,12 +54,15 @@ outputs:
 - name: component.ingress.fqdn
   brief: FQDN of ingress
   fromTfVar: ingress_fqdn
+- name: component.ingress.ssoFqdn
+  brief: FQDN of ingress protected by SSO
+  fromTfVar: sso_ingress_fqdn
 - name: component.ingress.protocol
-  fromTfVar: intress_protocol
+  fromTfVar: ingress_protocol
+- name: component.ingress.http
+  fromTfVar: ingress_protocol
 - name: component.ingress.ssoUrlPrefix
   value: ${component.ingress.ssoUrlPrefix}
-- name: component.ingress.http
-  fromTfVar: intress_protocol
 - name: component.ingress.dashboard.url
   value: http://${component.ingress.ssoUrlPrefix}.${dns.domain}/dashboard/
 
