@@ -94,8 +94,8 @@
           # - name: groovy-configs-dir
           #   mountPath: /usr/share/jenkins/ref/init.groovy.d/
           #   readOnly: true
-          - name: jenkins-config
-            mountPath: /usr/share/jenkins/ref/config.d
+          # - name: jenkins-config
+          #   mountPath: /usr/share/jenkins/ref/config.d
           readinessProbe:
             httpGet:
               path: /login
@@ -123,9 +123,9 @@
           # - name: plugins-dir
           #   hostPath:
           #     path: /etc/jenkins/plugins
-          - name: jenkins-config
-            configMap:
-              name: jenkins-config
+          # - name: jenkins-config
+          #   configMap:
+          #     name: jenkins-config
           # - name: jenkins-init-bin
           #   configMap:
           #     name: jenkins-init-bin
