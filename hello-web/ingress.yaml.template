@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hello
+  namespace: kube-system
+  labels:
+    provider: agilestacks.com
+    project: hello
+  annotations:
+    agilestacks.com/stack-component: Hello
+spec:
+  rules:
+  - host: world.${component.ingress.fqdn}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: hello-web-${dns.name}
+          servicePort: 8080
