@@ -1,4 +1,3 @@
-  - name: component.ingress.protocol
 ---
 version: 1
 kind: component
