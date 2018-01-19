@@ -80,7 +80,7 @@ outputs:
   - name: component.redis.url
     value: redis://${component.redis.name}-redis.${component.redis.namespace}.svc.cluster.local:6379
   - name: component.redis.password
-    fromTfVar: password
+    fromTfVar: password/base64
 
 templates:
   files:
