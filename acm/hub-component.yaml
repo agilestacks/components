@@ -5,7 +5,7 @@ meta:
   name: acm
   brief: AWS Certificate Manager component to produce valid SSL certificates
   source:
-    dir: ../../agilestacks-components/acm
+    dir: ../../components/acm
 
 parameters:
 - name: dns.domain
@@ -26,6 +26,3 @@ outputs:
 - name: component.acm.certificate_arn
   brief: ACM Certificate ARN
   fromTfVar: certificate_arn
-
-templates:
-  files: ["*.template"]
