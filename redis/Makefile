@@ -46,7 +46,7 @@ install:
 output:
 	@echo
 	@echo Outputs:
-	@echo password = $(shell $(kubectl) get secret $(COMPONENT_NAME)-redis -o jsonpath='{.data.redis-password}')
+	@echo password=$(shell $(kubectl) get secret $(COMPONENT_NAME)-redis -o jsonpath='{.data.redis-password}')
 .PHONY: outputs
 
 undeploy: init
