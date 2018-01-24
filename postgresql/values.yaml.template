@@ -19,7 +19,7 @@ persistence:
   ##
   storageClass: ${component.postgresql.storageClass}
   accessMode: ReadWriteOnce
-  size: 8Gi
+  size: ${component.postgresql.volumeSize}
   subPath: "postgresql-db"
 
 metrics:

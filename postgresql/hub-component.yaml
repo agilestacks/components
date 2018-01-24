@@ -30,7 +30,9 @@ parameters:
     - name:    user
     - name:    password
     - name:    database
-    - name:    volume
+    - name:    volumeType
+      default: gp2
+    - name:    volumeSize
       default: 8Gi
     - name:    storageClass
       default: aws-ebs-gp2
