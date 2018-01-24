@@ -37,9 +37,6 @@ parameters:
 - name: dns.domain
   brief: DNS domain
   env: DOMAIN_NAME
-- name: docker.registry
-  brief: DNS domain
-  env: DOCKER_REGISTRY
 - name: nfs.server
   brief: NFS server for NFS volumes
 
