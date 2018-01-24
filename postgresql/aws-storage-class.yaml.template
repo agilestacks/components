@@ -4,4 +4,4 @@ metadata:
   name: ${component.postgresql.storageClass}
 provisioner: kubernetes.io/aws-ebs
 parameters:
-  type: gp2
+  type: ${component.postgresql.volumeType}
