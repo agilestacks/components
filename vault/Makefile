@@ -102,7 +102,7 @@ connect:
 
 disconnect:
 	@echo Drop connection to vault pod
-	-@ps aux | grep -E "kubectl*|port-forward*|$(VAULT_LOCAL_PORT):$(VAULT_PORT)" | grep -v grep | awk '{print $$2}' | xargs kill
+	-@ps aux | grep -E "kubectl.*port-forward.*$(VAULT_LOCAL_PORT):$(VAULT_PORT)" | grep -v grep | awk '{print $$2}' | xargs kill
 .PHONY: disconnect
 
 clean:
