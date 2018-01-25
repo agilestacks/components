@@ -31,6 +31,9 @@ parameters:
     default: robot
   - name: serviceaccount.password
     default: supersecret
+  - name: wait.timeout
+    default: 120
+    env: TIMEOUT
 - name: cloud.region
   kind: user
   env: AWS_REGION
