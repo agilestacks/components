@@ -17,6 +17,7 @@ provides:
 
 parameters:
   - name: component.ingress.fqdn
+  - name: component.ingress.ssoUrlPrefix
   - name: dns.domain
     brief: DNS domain
     kind: tech
