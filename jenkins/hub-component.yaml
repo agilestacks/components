@@ -20,7 +20,7 @@ parameters:
   parameters:
   - name: namespace
     default: jenkins
-    env: JENKINS_NAMESPACE
+    env: NAMESPACE
   - name: image
     default: docker.io/agilestacks/jenkins:2.78
   - name: admin.user

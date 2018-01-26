@@ -1,11 +1,11 @@
 .DEFAULT_GOAL := deploy
 
-export DOMAIN_NAME        ?= default
-export JENKINS_NAMESPACE  ?= jenkins
-export VOLUME_TYPE        ?= hostpath
-export TIMEOUT            ?= 120
+export DOMAIN_NAME ?= default
+export NAMESPACE   ?= jenkins
+export VOLUME_TYPE ?= hostpath
+export TIMEOUT     ?= 120
 
-export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(JENKINS_NAMESPACE)"
+export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 build:
 	cd docker && $(MAKE) build
@@ -23,14 +23,14 @@ deploy-test:
 .PHONY: deploy-test
 
 deploy:
-	# $(kubectl) apply -f namespace.yaml
-	# $(kubectl) apply -f secrets.yaml
-	# $(kubectl) apply -f config.yaml
-	# $(kubectl) apply -f volume-$(VOLUME_TYPE).yaml
-	# $(kubectl) apply -f volume-claims.yaml
-	# $(kubectl) apply -f service.yaml
-	# $(kubectl) apply -f ingress.yaml
-	# $(kubectl) apply -f deployment.yaml
+	$(kubectl) apply -f namespace.yaml
+	$(kubectl) apply -f secrets.yaml
+	$(kubectl) apply -f config.yaml
+	$(kubectl) apply -f volume-$(VOLUME_TYPE).yaml
+	$(kubectl) apply -f volume-claims.yaml
+	$(kubectl) apply -f service.yaml
+	$(kubectl) apply -f ingress.yaml
+	$(kubectl) apply -f deployment.yaml
 
 	$(MAKE) wait output
 .PHONY: deploy
