@@ -3,7 +3,7 @@
 export DOMAIN_NAME ?= default
 export NAMESPACE   ?= jenkins
 export VOLUME_TYPE ?= hostpath
-export TIMEOUT     ?= 120
+export TIMEOUT     ?= 300
 
 export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
@@ -41,13 +41,13 @@ output:
 .PHONY: output
 
 undeploy:
-	$(kubectl) delete -f deployment.yaml | true
-	$(kubectl) delete -f ingress.yaml | true
-	$(kubectl) delete -f volume-claims.yaml | true
-	$(kubectl) delete -f service.yaml | true
-	$(kubectl) delete -f secrets.yaml | true
-	$(kubectl) delete -f config.yaml | true
-	$(kubectl) delete -f volume-$(VOLUME_TYPE).yaml | true
+	-$(kubectl) delete -f deployment.yaml
+	-$(kubectl) delete -f ingress.yaml
+	-$(kubectl) delete -f volume-claims.yaml
+	-$(kubectl) delete -f service.yaml
+	-$(kubectl) delete -f secrets.yaml
+	-$(kubectl) delete -f config.yaml
+	-$(kubectl) delete -f volume-$(VOLUME_TYPE).yaml
 .PHONY: undeploy
 
 wait:
