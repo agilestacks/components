@@ -8,6 +8,7 @@ export AWS_DEFAULT_REGION ?= us-east-1
 export TF_LOG             ?= info
 export TF_LOG_PATH        ?= $(shell pwd)/.terraform/$(DOMAIN_NAME)/terraform.log
 export ACM_DELETE_CERTIFICATE ?= false
+export TIMEOUT            ?= 1200
 
 TF_OPTS        ?= -no-color
 TF_UPDATE      ?= -update
@@ -16,7 +17,7 @@ BACKEND_REGION ?= us-east-1
 python         := . .venv/bin/activate && python
 terraform      := terraform
 
-deploy: venv install cert init plan apply output
+deploy: venv install cert init plan apply wait output
 
 # deploy: init plan
 
@@ -84,3 +85,6 @@ clean:
 	rm -rf .venv
 	rm -rf cd .terraform/$(DOMAIN_NAME)
 	rm -f generated.tf
+
+wait: venv
+	$(python) main.py wait $(DOMAIN_NAME) --timeout 1200
