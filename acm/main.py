@@ -5,6 +5,7 @@ Usage:
   main.py request <domain> [<additional_names>]... 
   main.py gen     <domain> --zone <domain> [--standalone] [--save-to <filename>]
   main.py arn     <domain>
+  main.py wait    <domain> [--timeout <sec>] [--status <status>]...
   main.py delete  <domain>
 
 Options:
@@ -14,6 +15,8 @@ Options:
   --standalone         Generate header for terraform to make it as standalone script
   --zone <domain>      Domain name that corresponds to the hosted zone where DNS records shall be created
   --save-to <filename> To save generated terraform otherwise it will be printed to stdout
+  --timeout <sec>      Timeout in seconds to wait for certificate (default 900)
+  --status <status>    Break wait loop and exit when certificate will become in this status (can be multiple; default ISSUED) 
 """
 
 __author__ = "Antons Kranga"
@@ -77,7 +80,7 @@ def cert_by_domain(domain):
 
 def render_terraform(cert, zone_domain, standalone=False):
   domains = cert.get('Certificate', {}).get('DomainValidationOptions', [])
-  pattern = '(\.)?' + zone_domain.replace('.', '\.') + '$'
+  pattern = '(\.)?' + zone_domain.replace('.', '\.') + '(\.)?$'
   cnames = [
     { 
       'name':   re.sub(pattern, '', dom['ResourceRecord']['Name']),
@@ -85,7 +88,6 @@ def render_terraform(cert, zone_domain, standalone=False):
       'type':   dom['ResourceRecord']['Type']
     } for dom in domains
   ]
-  print pattern
   log.info('DNS records for cert approve: %s', cnames)
   template = Template(terraform)
   return template.render(
@@ -144,15 +146,17 @@ def valid(msg, schema):
 
 if __name__ == "__main__":
   args = docopt(__doc__, version='ACM Controller 1.0')
-  log.info('Arguments: %s', args)
-  cert = cert_by_domain( args['<domain>'] )
+  domain = args['<domain>']
+  cert = cert_by_domain( domain )
+  if cert:
+    arn  = cert['Certificate']['CertificateArn']
   # print json.dumps(cert, sort_keys=True, indent=4, separators=(',', ': '), default=json_util.default)
 
   if args['request']:
     if not cert:
-      cert = request_certificate( args['<domain>'], args['<additional_names>'] )
+      cert = request_certificate( domain, args['<additional_names>'] )
     else:
-      log.warn("Certificate for %s already requested, see details %s", args['<domain>'], cert)
+      log.warn("Certificate for %s already requested, see details %s", domain, cert)
  
   elif args['gen']:    
     if cert != None:
@@ -170,11 +174,29 @@ if __name__ == "__main__":
       log.debug('Deleted certificate: %s', resp)
       print 'Done!'
     else:
-      log.warn("Certificate for %s has not been found", args['<domain>'])
+      log.warn("Certificate for %s has not been found", domain)
 
   elif args['arn']:
     if cert != None:
       print cert['Certificate']['CertificateArn']
     else:
-      raise Exception('Cannot find ACM certificate for: {}'.format(args['<domain>']))
+      raise Exception('Cannot find ACM certificate for: {}'.format(domain))
+  elif args['wait']:
+    if cert!= None:
+      timeout = time.time() + int( args.get('<timeout>', 900) )
+      desired = args.get('<status>', [])
+      if not desired:
+        desired = ['ISSUED']
 
+      print 'Wait {} until in status {}'.format(arn, desired)
+      while (time.time() < timeout ):
+        cert = cert_by_domain( domain )
+        status = cert.get('Certificate', {}).get('Status', None)
+        if status in desired:
+          print 'Done!'
+          exit(0)
+        time.sleep(10)
+        print "Certertificate is {}, {} sec, retry...".format(status, int(timeout - time.time()) )
+      raise Exception('Timed out waiting {} to become in status {}'.format(arn, desired))
+    else:
+      raise Exception('Cannot find ACM certificate for: {}'.format(domain))
