@@ -32,7 +32,7 @@ parameters:
   - name: serviceaccount.password
     default: supersecret
   - name: wait.timeout
-    default: 120
+    default: 300
     env: TIMEOUT
 - name: cloud.region
   kind: user
