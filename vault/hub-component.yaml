@@ -35,7 +35,7 @@ parameters:
       env:     COMPONENT_NAME
     - name:    version
       brief:   vault version
-      default: 0.8.3
+      default: 0.9.0
     - name:    image.repository
       default: vault
     - name:    image.pullPolicy
