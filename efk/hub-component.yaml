@@ -30,6 +30,8 @@ parameters:
       env:     NAMESPACE
     - name:    ingress.urlPrefix
       default:  logs
+    - name:    ingress.kibanaUrlPrefix
+      default: kibana
 
 templates:
   files:
