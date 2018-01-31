@@ -28,7 +28,7 @@ acme:
     size: 1Gi
 dashboard:
   enabled: ${component.ingress.dashboard}
-  domain: ${component.ingress.urlPrefix}.${dns.domain}
+  domain: ${component.ingress.ssoUrlPrefix}.${dns.domain}
   ingress:
     labels:
       provider:  agilestacks.com
