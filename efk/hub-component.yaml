@@ -15,6 +15,7 @@ provides:
 
 parameters:
   - name: component.ingress.ssoUrlPrefix
+  - name: component.ingress.protocol
   - name: dns.domain
     brief: DNS domain
     kind: tech
@@ -40,4 +41,4 @@ templates:
 outputs:
   - name: component.efk.url
     brief: Kibana Dashboard
-    value: http://kibana.${component.efk.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+    value: ${component.ingress.protocol}://${component.efk.ingress.kibanaUrlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
