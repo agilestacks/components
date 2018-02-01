@@ -69,8 +69,7 @@ cert:
 	$(python) main.py request $(DOMAIN_NAME) $(ADDITIONAL_NAMES) 
 	$(python) main.py gen $(DOMAIN_NAME) \
 		--standalone \
-		--save-to generated.tf \
-		--zone $(ZONE_DOMAIN)
+		--save-to generated.tf
 
 test:
 	python test_main.py
