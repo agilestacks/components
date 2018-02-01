@@ -3,7 +3,7 @@
 
 Usage:
   main.py request <domain> [<additional_names>]... 
-  main.py gen     <domain> --zone <domain> [--standalone] [--save-to <filename>]
+  main.py gen     <domain> [--standalone] [--save-to <filename>]
   main.py arn     <domain>
   main.py wait    <domain> [--timeout <sec>] [--status <status>]...
   main.py delete  <domain>
@@ -13,7 +13,6 @@ Options:
   <domain>             Domain name associated to ACM certificate
   <additional_names>   Alternative domain names associated to ACM certificate (each must be approved separately)
   --standalone         Generate header for terraform to make it as standalone script
-  --zone <domain>      Domain name that corresponds to the hosted zone where DNS records shall be created
   --save-to <filename> To save generated terraform otherwise it will be printed to stdout
   --timeout <sec>      Timeout in seconds to wait for certificate (default 900)
   --status <status>    Break wait loop and exit when certificate will become in this status (can be multiple; default ISSUED) 
@@ -24,7 +23,7 @@ __copyright__ = "Copyright 2017, Agile Stacks Inc."
 __email__ = "anton@agilestacks.com"
 
 terraform = '''#
-# Generated for ACM certificate: {{ domain }}
+# Generated for {{ cert_arn }}
 #
 {% if standalone: %}
 terraform {
@@ -35,18 +34,15 @@ terraform {
 provider "aws" {}
 
 {% endif %}
-data "aws_route53_zone" "{{ snake }}" {
-  name  = "{{ domain }}"
-}
 
-{% for i,cname in items %}
+{% for i,item in items %}
 module "dns_{{ i }}" {
   source        = "github.com/agilestacks/terraform-modules//r53"
-  name          = "{{ cname['name'] }}"
-  type          = "{{ cname['type'] }}"
-  r53_zone_id   = "${data.aws_route53_zone.{{ snake }}.zone_id}"
-  r53_domain    = "${data.aws_route53_zone.{{ snake }}.name}"
-  records       = ["{{ cname['record'] }}"]
+  name          = "{{ item['name'] }}"
+  type          = "{{ item['type'] }}"
+  r53_zone_id   = "{{ item['zone_id'] }}"
+  r53_domain    = "{{ item['zone_name'] }}"
+  records       = ["{{ item['record'] }}"]
   ttl           = "300"
 }
 
@@ -67,7 +63,7 @@ with open('acm-schema.json', 'r') as f:
 
 session = boto3.Session()
 client  = session.client('acm')
-
+r53     = session.client('route53')
 
 def cert_by_domain(domain):
   response = client.list_certificates(
@@ -78,23 +74,30 @@ def cert_by_domain(domain):
   return cert_by_arn(arns[0]) if arns else None
 
 
-def render_terraform(cert, zone_domain, standalone=False):
+def render_terraform(cert, standalone=False):
   domains = cert.get('Certificate', {}).get('DomainValidationOptions', [])
-  pattern = '(\.)?' + zone_domain.replace('.', '\.') + '(\.)?$'
-  cnames = [
-    { 
-      'name':   re.sub(pattern, '', dom['ResourceRecord']['Name']),
-      'record': dom['ResourceRecord']['Value'],
-      'type':   dom['ResourceRecord']['Type']
-    } for dom in domains
-  ]
-  log.info('DNS records for cert approve: %s', cnames)
+  items = []
+  for cert_alt_name in domains:
+    cert_rec  = cert_alt_name['ResourceRecord']
+    zone      = most_narrow_hosted_zone( cert_rec['Name'] )
+    zone_name = zone['Name']
+    pattern   = '(\.)?' + zone_name.replace('.', '\.') + '(\.)?$'
+    domain    = cert_rec['Name'] if cert_rec['Name'][-1] == '.' else cert_rec['Name'] + '.'
+
+    items.append({ 
+      'name':      re.sub(pattern, '', domain),
+      'record':    cert_rec['Value'],
+      'type':      cert_rec['Type'],
+      'zone_id':   zone['Id'].split('/')[-1],
+      'zone_name': zone_name
+    })
+  
+  log.info('DNS records for cert approve: %s', items)
   template = Template(terraform)
   return template.render(
-      domain=zone_domain,
-      items=enumerate( cnames ),
+      items=enumerate( items ),
       standalone=standalone,
-      snake=re.sub(r'[\.-]', '_', zone_domain)
+      cert_arn=cert.get('Certificate', {}).get('CertificateArn')
     )
 
 def cert_by_arn(arn):
@@ -136,6 +139,17 @@ def delete_certificate(cert):
     CertificateArn=cert['Certificate']['CertificateArn']
   )
 
+def most_narrow_hosted_zone(name):
+  parts = list(filter(None, name.split('.') ))
+  size = len(parts)
+  for i in range( size ):
+    domain = '.'.join( parts[i:size] ) + '.'
+    zones = r53.list_hosted_zones_by_name(DNSName=domain, MaxItems='1')['HostedZones']
+    zdomain = zones[0].get('Name', '') if zones else ''
+    if zdomain and zdomain in domain:
+      return zones[0]
+  raise Exception('Cannot find hosted zone that corresponds to {}'.format(name))
+
 ## does json schema validation
 def valid(msg, schema):
   try:
@@ -160,7 +174,7 @@ if __name__ == "__main__":
  
   elif args['gen']:    
     if cert != None:
-      tf = render_terraform( cert, args['--zone'], args['--standalone'])
+      tf = render_terraform( cert, args['--standalone'])
       if args['--save-to']:
         with open(args['--save-to'], "w") as f:
           f.write(tf)
