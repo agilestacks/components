@@ -7,7 +7,7 @@ export DOMAIN_NAME         ?= default
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy: clean init fetch install output
+deploy: clean init fetch install
 .PHONY: deploy
 
 init:
@@ -42,10 +42,3 @@ undeploy: init
 clean:
 	@rm -rf $(HELM_HOME)
 	@rm -rf charts
-
-output:
-	@echo Outputs:
-	@echo database_url=$(COMPONENT_NAME)-postgresql.$(NAMESPACE).svc.cluster.local
-	@echo
-	@echo PostgreSQL has been installed successfully
-.PHONY: output

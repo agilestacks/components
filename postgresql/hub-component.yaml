@@ -47,8 +47,8 @@ outputs:
 - name: component.postgresql.user
   value: ${component.postgresql.user}
 - name: component.postgresql.url
-  brief: PostgreSQL URL
-  fromTfVar: database_url
+  brief: Deprecated, use component.postgresql.host
+  value: ${component.postgresql.name}-postgresql.${component.postgresql.namespace}.svc.cluster.local
 
 templates:
   files:
