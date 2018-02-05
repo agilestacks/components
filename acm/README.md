@@ -16,3 +16,14 @@ For precise syntax instructions follow `main.py -h` or read `Makefile`
 2. Run `main.py gen <domain_name> ...` to generate terraform scrit
 3. Apply terraform script
 
+## Automation Hub
+
+Python control script has been incapsulated with `Makefile` `deploy` and `undeploy` verbs.
+* `deploy`: It creates a new ACM instance, generates validation records for Route 53 (detects most narrow Route 53 hosted zone) in your cloud account and then run terrafor mscripts
+* `Undeploy`: Deletes Route53 validation records however leaves `ACM` certificate intact (To respect AWS limit: Number of ACM certificates during last 365 days). This behaviour can be customized with:
+```yaml
+parameters:
+- name: component.acm.deleteCert
+  value: true
+```
+
