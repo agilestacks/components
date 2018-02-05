@@ -32,7 +32,7 @@ parameters:
       value: /
   - name: component.postgresql
     parameters:
-    - name: url
+    - name: host
     - name: user
     - name: password
     - name: port
