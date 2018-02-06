@@ -35,8 +35,6 @@ parameters:
 
 outputs:
 - name: component.postgresql.host
-  fromTfVar: endpoint
-- name: component.postgresql.url
   fromTfVar: hostname
 - name: component.postgresql.port
   fromTfVar: port
