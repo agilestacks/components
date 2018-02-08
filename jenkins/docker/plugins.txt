@@ -1,4 +1,5 @@
-kubernetes:1.1.2
+kubernetes:1.2
+kubernetes-credentials:0.3.0
 ace-editor:1.1
 oic-auth:1.0
 allure-jenkins-plugin:2.25.1
@@ -98,7 +99,6 @@ pipeline-stage-view:2.9
 plain-credentials:1.4
 pubsub-light:1.12
 ruby-runtime:0.12
-saml:1.0.4
 scm-api:2.2.6
 script-security:1.39
 slack:2.3
