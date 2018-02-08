@@ -15,6 +15,7 @@ import com.cloudbees.plugins.credentials.common.*
 import com.cloudbees.plugins.credentials.domains.*
 import com.cloudbees.plugins.credentials.impl.*
 
+def DOCKER_ARGS = '--host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay'
 
 def jenk     = Jenkins.instance
 def k8sHost  = System.getenv('KUBERNETES_SERVICE_HOST')
@@ -84,7 +85,7 @@ kctl.ttyEnabled      = true
 kctl.alwaysPullImage = true
 
 def dind             = new ContainerTemplate('dind', 'docker.io/docker:dind')
-dind.command         = 'dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay'
+dind.command         = 'dockerd ${DOCKER_ARGS}'
 dind.ttyEnabled      = true
 dind.privileged      = true
 dind.alwaysPullImage = true
@@ -92,11 +93,12 @@ dind.alwaysPullImage = true
 def pod1         = new PodTemplate()
 pod1.name        = 'default'
 pod1.label       = pod1.name
+pod1.namespace   = client.namespace
 pod1.annotations = [
   new PodAnnotation("provider", "agilestacks.com"),
   new PodAnnotation("project",  "jenkins"),
   new PodAnnotation("qualifier", "pod"),
-  new PodAnnotation("type", "node")
+  new PodAnnotation("type", "jenkins-node")
 ]
 pod1.volumes          = [
   new EmptyDirVolume('/home/jenkins', false),
@@ -108,21 +110,24 @@ pod1.containers  = [ jnlp ]
 
 def pod2         = new PodTemplate()
 pod2.name        = 'toolbox'
+pod2.label       = pod2.name
+pod2.namespace   = client.namespace
 pod2.envVars     = [
   new KeyValueEnvVar('BACKEND_BUCKET_NAME', configVars.BACKEND_BUCKET_NAME),
   new KeyValueEnvVar('BACKEND_BUCKET_REGION', configVars.BACKEND_BUCKET_REGION),
   new KeyValueEnvVar('BASE_DOMAIN', configVars.BASE_DOMAIN),
-  new KeyValueEnvVar('DNS_NAME', configVars.DNS_NAME)
+  new KeyValueEnvVar('DNS_NAME', configVars.DNS_NAME),
+  new KeyValueEnvVar('DOCKER_DAEMON_ARGS', "-D ${DOCKER_ARGS}")
 ]
-pod2.label       = pod2.name
 pod2.containers  = [ toolbox ]
 pod2.volumes          = [
   new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
 ]
 
 def pod3         = new PodTemplate()
-pod3.name        = 'agilestacks'
+pod3.name        = 'allInOne'
 pod3.label       = pod3.name
+pod2.namespace   = client.namespace
 pod3.containers  = [ kctl, dind ]
 pod3.volumes          = [
   new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
