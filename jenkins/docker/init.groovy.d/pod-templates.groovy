@@ -32,9 +32,10 @@ if (k8sCreds == null) {
 
 def configVars = [
   BACKEND_BUCKET_NAME:   'unset',
-  BACKEND_BUCKET_REGION: 'us.east-1',
+  BACKEND_BUCKET_REGION: 'us-east-1',
   BASE_DOMAIN:           'superhub.io',
-  DNS_NAME:              'unset'
+  DNS_NAME:              'unset',
+  AWS_REGION:            'us-east-1'
 ]
 
 def client = new DefaultKubernetesClient(new ConfigBuilder().build())
@@ -78,6 +79,12 @@ toolbox.command         = 'cat'
 toolbox.ttyEnabled      = true
 toolbox.privileged      = true
 toolbox.alwaysPullImage = true
+toolbox.envVars         = [ new ContainerEnvVar('BACKEND_BUCKET_NAME', configVars.BACKEND_BUCKET_NAME),
+                            new ContainerEnvVar('BACKEND_BUCKET_REGION', configVars.BACKEND_BUCKET_REGION),
+                            new ContainerEnvVar('BASE_DOMAIN', configVars.BASE_DOMAIN),
+                            new ContainerEnvVar('DNS_NAME', configVars.DNS_NAME),
+                            new ContainerEnvVar('DOCKER_DAEMON_ARGS', "-D ${DOCKER_ARGS}"),
+                            new ContainerEnvVar('AWS_REGION', configVars.AWS_REGION) ]
 
 def kctl             = new ContainerTemplate('kubectl', 'docker.io/agilestacks/kubectl:1.6.1')
 kctl.command         = 'cat'
@@ -100,7 +107,7 @@ pod1.annotations = [
   new PodAnnotation("qualifier", "pod"),
   new PodAnnotation("type", "jenkins-node")
 ]
-pod1.volumes          = [
+pod1.volumes = [
   new EmptyDirVolume('/home/jenkins', false),
   new PersistentVolumeClaim('/home/jenkins/workspace', 'workspace-volume', false),
   new EmptyDirVolume('/var/lib/docker', false)
@@ -112,31 +119,25 @@ def pod2         = new PodTemplate()
 pod2.name        = 'toolbox'
 pod2.label       = pod2.name
 pod2.namespace   = client.namespace
-pod2.envVars     = [
-  new KeyValueEnvVar('BACKEND_BUCKET_NAME', configVars.BACKEND_BUCKET_NAME),
-  new KeyValueEnvVar('BACKEND_BUCKET_REGION', configVars.BACKEND_BUCKET_REGION),
-  new KeyValueEnvVar('BASE_DOMAIN', configVars.BASE_DOMAIN),
-  new KeyValueEnvVar('DNS_NAME', configVars.DNS_NAME),
-  new KeyValueEnvVar('DOCKER_DAEMON_ARGS', "-D ${DOCKER_ARGS}")
-]
+pod2.inheritFrom = pod1.name
 pod2.containers  = [ toolbox ]
-pod2.volumes          = [
+pod2.volumes     = [
   new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
 ]
 
 def pod3         = new PodTemplate()
 pod3.name        = 'allInOne'
 pod3.label       = pod3.name
-pod2.namespace   = client.namespace
+pod3.namespace   = client.namespace
+pod3.inheritFrom = pod1.name
 pod3.containers  = [ kctl, dind ]
-pod3.volumes          = [
+pod3.volumes     = [
   new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
 ]
 
-def pod1and2 = PodTemplateUtils.combine(pod1, pod2)
-def pod1and2and3 = PodTemplateUtils.combine(pod1and2, pod3)
+def pod2and3 = PodTemplateUtils.combine(pod2, pod3)
 
-kube.templates  = [ pod1, pod1and2, pod1and2and3]
+kube.templates  = [ pod1, pod2, pod2and3 ]
 
 jenk.clouds << kube
 jenk.save()
