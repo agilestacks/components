@@ -1,5 +1,6 @@
 #!/usr/bin/env groovy
 
+import java.util.logging.Logger
 import jenkins.*
 import jenkins.model.*
 import hudson.*
@@ -17,7 +18,15 @@ import com.cloudbees.plugins.credentials.impl.*
 
 def DOCKER_ARGS = '--host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay'
 
+def log = Logger.getLogger(this.class.name)
 def jenk     = Jenkins.instance
+
+if ( jenk.clouds.find { it.name == 'kubernetes' } ) {
+  log.warning 'It appears "kubernetes" cloud already configured'
+  log.info 'Doing nothing...'
+  return
+}
+
 def k8sHost  = System.getenv('KUBERNETES_SERVICE_HOST')
 def k8sPort  = System.getenv('KUBERNETES_SERVICE_PORT') ?: '443'
 def creds    = jenk.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0]
@@ -25,8 +34,9 @@ def k8sCreds = creds.credentials.find {it instanceof TokenProducer}
 if (k8sCreds == null) {
   k8sCreds  = new ServiceAccountCredential(
     CredentialsScope.GLOBAL,
-    'default',
-    'Default service account for Kubrnetes')
+    'thiscluster',
+    'Default service account for Kubrnetes'
+  )
   creds.store.addCredentials(Domain.global(), k8sCreds)
 }
 
@@ -64,7 +74,7 @@ kube.namespace     = namespaceFile.exists() ? namespaceFile.text : "default"
 kube.credentialsId = k8sCreds.id
 kube.jenkinsUrl    = "${jenkPort == '443' ? 'https' : 'http'}://${jenkHost}:${jenkPort}/"
 kube.jenkinsTunnel = "${jenkHost}:${jenkJnlp}"
-kube.defaultsProviderTemplate = 'agilestacks'
+kube.defaultsProviderTemplate = 'default'
 
 // def container        = new ContainerTemplate('jnlp', 'jenkinsci/jnlp-slave:alpine')
 def jnlp             = new ContainerTemplate('jnlp', 'docker.io/agilestacks/jenkins-slave:2.46.1-1')
@@ -74,7 +84,7 @@ jnlp.ttyEnabled      = false
 jnlp.privileged      = false
 jnlp.alwaysPullImage = true
 
-def toolbox             = new ContainerTemplate('jnlp', 'docker.io/agilestacks/toolbox:stable')
+def toolbox             = new ContainerTemplate('toolbox', 'docker.io/agilestacks/toolbox:stable')
 toolbox.command         = 'cat'
 toolbox.ttyEnabled      = true
 toolbox.privileged      = true
@@ -108,11 +118,9 @@ pod1.annotations = [
   new PodAnnotation("type", "jenkins-node")
 ]
 pod1.volumes = [
-  new EmptyDirVolume('/home/jenkins', false),
+  // new EmptyDirVolume('/home/jenkins', false),
   new PersistentVolumeClaim('/home/jenkins/workspace', 'workspace-volume', false),
-  new EmptyDirVolume('/var/lib/docker', false)
 ]
-
 pod1.containers  = [ jnlp ]
 
 def pod2         = new PodTemplate()
@@ -122,22 +130,29 @@ pod2.namespace   = client.namespace
 pod2.inheritFrom = pod1.name
 pod2.containers  = [ toolbox ]
 pod2.volumes     = [
-  new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
+  // new EmptyDirVolume('/home/jenkins', false),
+  new PersistentVolumeClaim('/home/jenkins/workspace', 'workspace-volume', false),
+  new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock"),
+  new EmptyDirVolume('/var/lib/docker', false),
 ]
 
 def pod3         = new PodTemplate()
-pod3.name        = 'allInOne'
+pod3.name        = 'agilestacks'
 pod3.label       = pod3.name
 pod3.namespace   = client.namespace
 pod3.inheritFrom = pod1.name
 pod3.containers  = [ kctl, dind ]
 pod3.volumes     = [
-  new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
+  // new EmptyDirVolume('/home/jenkins', false),
+  new PersistentVolumeClaim('/home/jenkins/workspace', 'workspace-volume', false),
+  new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock"),
+  new EmptyDirVolume('/var/lib/docker', false),
 ]
-
 def pod2and3 = PodTemplateUtils.combine(pod2, pod3)
-
 kube.templates  = [ pod1, pod2, pod2and3 ]
+
+// kube.templates = [pod1, pod2]
 
 jenk.clouds << kube
 jenk.save()
+log.info '"kubernetes" cloud has been configured successfully'
