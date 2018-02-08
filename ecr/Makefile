@@ -43,6 +43,7 @@ plan:
 apply:
 	cd .terraform/$(DOMAIN_NAME) && \
 		$(terraform) apply $(TF_OPTS) -Xshadow=false terraform.tfplan
+	@echo
 .PHONY: apply
 
 undeploy: init
