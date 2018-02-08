@@ -5,13 +5,16 @@ import jenkins.model.*
 import hudson.*
 import hudson.model.*
 import org.csanchez.jenkins.plugins.kubernetes.*
+import org.csanchez.jenkins.plugins.kubernetes.model.*
 import org.csanchez.jenkins.plugins.kubernetes.volumes.*
 import org.csanchez.jenkins.plugins.kubernetes.volumes.workspace.*
+import io.fabric8.kubernetes.client.*
 
 import com.cloudbees.plugins.credentials.*
 import com.cloudbees.plugins.credentials.common.*
 import com.cloudbees.plugins.credentials.domains.*
 import com.cloudbees.plugins.credentials.impl.*
+
 
 def jenk     = Jenkins.instance
 def k8sHost  = System.getenv('KUBERNETES_SERVICE_HOST')
@@ -24,6 +27,27 @@ if (k8sCreds == null) {
     'default',
     'Default service account for Kubrnetes')
   creds.store.addCredentials(Domain.global(), k8sCreds)
+}
+
+def configVars = [
+  BACKEND_BUCKET_NAME:   'unset',
+  BACKEND_BUCKET_REGION: 'us.east-1',
+  BASE_DOMAIN:           'superhub.io',
+  DNS_NAME:              'unset'
+]
+
+def client = new DefaultKubernetesClient(new ConfigBuilder().build())
+if (client.masterUrl && client.namespace) {
+  client.
+    configMaps().
+    withLabels([
+      'project': 'jenkins',
+      'qualifier': 'env-config'
+    ]).
+    list().
+    items.each {
+      configVars.putAll( it.data ?: [:] )
+    }
 }
 
 def jenkHost  = System.getenv('JENKINS_SERVICE_HOST')
@@ -40,25 +64,6 @@ kube.jenkinsUrl    = "${jenkPort == '443' ? 'https' : 'http'}://${jenkHost}:${je
 kube.jenkinsTunnel = "${jenkHost}:${jenkJnlp}"
 kube.defaultsProviderTemplate = 'agilestacks'
 
-def pod         = new PodTemplate()
-pod.name        = 'agilestacks'
-pod.label       = 'agilestacks'
-pod.annotations = [
-  new PodAnnotation("provider", "agilestacks.com"),
-  new PodAnnotation("project",  "jenkins"),
-  new PodAnnotation("qualifier", "pod"),
-  new PodAnnotation("type", "node")
-]
-// pod.customWorkspaceVolumeEnabled = true
-// pod.workspaceVolume  = new PersistentVolumeClaimWorkspaceVolume('workspace-volume', false)
-pod.volumes          = [
-  new EmptyDirVolume('/home/jenkins', false),
-  new PersistentVolumeClaim('/home/jenkins/workspace', 'workspace-volume', false),
-  // new PersistentVolumeClaim('/home/jenkins/secrets', 'secrets-volume', true),
-  // new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
-  new EmptyDirVolume('/var/lib/docker', false)
-]
-
 // def container        = new ContainerTemplate('jnlp', 'jenkinsci/jnlp-slave:alpine')
 def jnlp             = new ContainerTemplate('jnlp', 'docker.io/agilestacks/jenkins-slave:2.46.1-1')
 jnlp.command         = ''
@@ -67,18 +72,66 @@ jnlp.ttyEnabled      = false
 jnlp.privileged      = false
 jnlp.alwaysPullImage = true
 
+def toolbox             = new ContainerTemplate('jnlp', 'docker.io/agilestacks/toolbox:stable')
+toolbox.command         = 'cat'
+toolbox.ttyEnabled      = true
+toolbox.privileged      = true
+toolbox.alwaysPullImage = true
+
+def kctl             = new ContainerTemplate('kubectl', 'docker.io/agilestacks/kubectl:1.6.1')
+kctl.command         = 'cat'
+kctl.ttyEnabled      = true
+kctl.alwaysPullImage = true
+
 def dind             = new ContainerTemplate('dind', 'docker.io/docker:dind')
 dind.command         = 'dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay'
 dind.ttyEnabled      = true
 dind.privileged      = true
 dind.alwaysPullImage = true
 
-def kctl             = new ContainerTemplate('kubectl', 'docker.io/agilestacks/kubectl:1.6.1')
-kctl.command         = 'cat'
-kctl.ttyEnabled      = true
+def pod1         = new PodTemplate()
+pod1.name        = 'default'
+pod1.label       = pod1.name
+pod1.annotations = [
+  new PodAnnotation("provider", "agilestacks.com"),
+  new PodAnnotation("project",  "jenkins"),
+  new PodAnnotation("qualifier", "pod"),
+  new PodAnnotation("type", "node")
+]
+pod1.volumes          = [
+  new EmptyDirVolume('/home/jenkins', false),
+  new PersistentVolumeClaim('/home/jenkins/workspace', 'workspace-volume', false),
+  new EmptyDirVolume('/var/lib/docker', false)
+]
 
-pod.containers  = [ jnlp, dind, kctl ]
-kube.templates  = [ pod ]
+pod1.containers  = [ jnlp ]
+
+def pod2         = new PodTemplate()
+pod2.name        = 'toolbox'
+pod2.envVars     = [
+  new KeyValueEnvVar('BACKEND_BUCKET_NAME', configVars.BACKEND_BUCKET_NAME),
+  new KeyValueEnvVar('BACKEND_BUCKET_REGION', configVars.BACKEND_BUCKET_REGION),
+  new KeyValueEnvVar('BASE_DOMAIN', configVars.BASE_DOMAIN),
+  new KeyValueEnvVar('DNS_NAME', configVars.DNS_NAME)
+]
+pod2.label       = pod2.name
+pod2.containers  = [ toolbox ]
+pod2.volumes          = [
+  new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
+]
+
+def pod3         = new PodTemplate()
+pod3.name        = 'agilestacks'
+pod3.label       = pod3.name
+pod3.containers  = [ kctl, dind ]
+pod3.volumes          = [
+  new HostPathVolume("/var/run/docker.sock", "/var/run/docker.sock")
+]
+
+def pod1and2 = PodTemplateUtils.combine(pod1, pod2)
+def pod1and2and3 = PodTemplateUtils.combine(pod1and2, pod3)
+
+kube.templates  = [ pod1, pod1and2, pod1and2and3]
 
 jenk.clouds << kube
 jenk.save()

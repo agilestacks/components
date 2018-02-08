@@ -11,6 +11,8 @@ requires:
   - kubernetes
 
 parameters:
+- name: terraform.bucket.name
+- name: terraform.bucket.region
 - name: component.ingress
   parameters:
   - name: fqdn
@@ -37,6 +39,8 @@ parameters:
 - name: cloud.region
   kind: user
   env: AWS_REGION
+- name: dns.name
+- name: dns.baseDomain
 - name: dns.domain
   brief: DNS domain
   env: DOMAIN_NAME
@@ -47,7 +51,7 @@ outputs:
 - name:  component.jenkins.serviceaccount.user
   value: ${component.jenkins.serviceaccount.user}
 - name:  component.jenkins.serviceaccount.password
-  value: ${component.jenkins.serviceaccount.password}  
+  value: ${component.jenkins.serviceaccount.password}
 - name:  component.jenkins.internal.host
   value: jenkins.${component.jenkins.namespace}.svc.cluster.local
 - name:  component.jenkins.internal.port

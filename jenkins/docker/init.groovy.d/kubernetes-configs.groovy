@@ -19,16 +19,17 @@ if (envVarsNodePropertyList == null || envVarsNodePropertyList.empty) {
   envVars = envVarsNodePropertyList[0]
 }
 
-def kubernetes = new DefaultKubernetesClient(new ConfigBuilder().build())
-kubernetes.
-  configMaps().
-  withLabels([
-    'project': 'jenkins',
-    'qualifier': 'env-config'
-  ]).
-  list().
-  items.each {
-    envVars.putAll( it.data ?: [] )
-  }
-
+def client = new DefaultKubernetesClient(new ConfigBuilder().build())
+if (client.masterUrl && client.namespace) {
+  client.
+    configMaps().
+    withLabels([
+      'project': 'jenkins',
+      'qualifier': 'env-config'
+    ]).
+    list().
+    items.each {
+      envVars.putAll( it.data ?: [] )
+    }
+}
 jenk.save()
