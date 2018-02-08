@@ -21,7 +21,7 @@ deploy: init import plan apply
 init:
 	@mkdir -p .terraform/$(DOMAIN_NAME)
 	@rm -rf .terraform/$(DOMAIN_NAME)/*
-	$(terraform) init -get=true $(TF_OPTS) -force-copy  \
+	$(terraform) init -get=true $(TF_OPTS) -force-copy \
 		-backend=true -input=false \
 		-backend-config="bucket=$(BACKEND_BUCKET)" \
 		-backend-config="region=$(BACKEND_REGION)" \
@@ -53,6 +53,6 @@ undeploy: init
 
 import:
 	-cd .terraform/$(DOMAIN_NAME) && \
-	$(terraform) import $(TF_OPTS) module.ecr.aws_ecr_repository.main $(TF_VAR_name) \
-	2>/dev/null
+		$(terraform) import $(TF_OPTS) module.ecr.aws_ecr_repository.main $(TF_VAR_name) \
+		2>/dev/null
 .PHONY: import
