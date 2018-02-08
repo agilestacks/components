@@ -2,7 +2,7 @@
 
 dirname   := $(notdir $(abspath ..))
 registry  ?= docker.io
-version   ?= 2.89.2
+version   ?= 2.89.3
 image     ?= $(registry)/agilestacks/$(dirname):$(version)
 container ?= jenkins
 UC_DISABLED ?= true
