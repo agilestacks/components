@@ -13,8 +13,12 @@ def newLibs = (new File(sharedLibsHome).
     println "Register shared library: ${dir.name}@master from ${dir.path}"
     def scm = new FSSCM(dir.path, false, false, null)
     def lib = new LibraryConfiguration(dir.name, new SCMRetriever(scm))
+    if (dir == 'default') {
+      lib.implicit = true
+    } else {
+      lib.implicit = false      
+    }
     lib.defaultVersion = 'master'
-    lib.implicit = false
     lib.allowVersionOverride = true
     lib
   }

@@ -15,4 +15,7 @@ data:
   JENKINS_URL: http://${component.jenkins.namespace}.${component.ingress.fqdn}
   INGRESS_FQDN: ${component.ingress.fqdn}
   JENKINS_NAMESPACE: ${component.jenkins.namespace}
-
+  BACKEND_BUCKET_NAME=${terraform.bucket.name}
+  BACKEND_BUCKET_REGION=${terraform.bucket.region}
+  BASE_DOMAIN=${dns.baseDomain}
+  DNS_NAME=${dns.name}
