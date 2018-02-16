@@ -18,12 +18,11 @@ export VAULT_SKIP_VERIFY   ?= true
 
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
 
-# deploy: enable output
 deploy: clean init install sleep connect enable unseal disconnect output
 .PHONY: deploy
 
 sleep:
-	@echo Waiting for Vault pod
+	@echo Waiting 30sec for Vault pod
 	@sleep 30
 .PHONY: sleep
 
@@ -42,7 +41,7 @@ install:
 			--values values.yaml
 
 enable:
-	@if [ `curl -sS $(VAULT_ADDR)/v1/sys/health | jq -rM .initialized` == "false" ]; then \
+	if test "`curl -sS $(VAULT_ADDR)/v1/sys/health | jq -rM .initialized`" != "true"; then \
 		echo "Initialize vault"; \
 		curl \
 	  		-sS \
@@ -72,18 +71,15 @@ auth:
 	vault auth $(shell cat $(UNSEAL_FILE) | jq -rM .root_token)
 .PHONY: auth
 
-define assert_empty
-	@echo "Checking $(1) if empty"
-	[[ -z "$(1)" ]] && exit -1 || echo
-endef
-
-connect:
-	@$(MAKE) disconnect
-	@echo "$(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}"
+connect: disconnect
+	@echo Searching for Vault pod
+	@$(kubectl) get pods
 	$(eval VAULT_POD=$(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}))
-	@echo POD=$(VAULT_POD)
-
-	$(call assert_empty,$(VAULT_POD))
+	@if test -z "$(VAULT_POD)"; then \
+		echo Cannot find Vault pod; \
+		exit 1; \
+	fi
+	@echo Vault pod is $(VAULT_POD)
 
 	@echo Start proxy to pod/$(VAULT_POD)
 	$(kubectl) port-forward $(VAULT_POD) $(VAULT_LOCAL_PORT):$(VAULT_PORT) >/dev/null 2>&1 &
@@ -101,7 +97,7 @@ connect:
 .PHONY: connect
 
 disconnect:
-	@echo Drop connection to vault pod
+	@echo Drop connection to Vault pod
 	-@ps aux | grep -E "kubectl.*port-forward.*$(VAULT_LOCAL_PORT):$(VAULT_PORT)" | grep -v grep | awk '{print $$2}' | xargs kill
 .PHONY: disconnect
 
