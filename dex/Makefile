@@ -23,6 +23,8 @@ deploy-kube:
 	$(kubectl) create secret tls dex-ingress-tls-secret -n $(NAMESPACE) --cert=ssl/cert.pem --key=ssl/key.pem | true
 	$(kubectl) apply -f grpc-client-secret.yaml
 	$(kubectl) apply -f grpc-server-secret.yaml
+	$(kubectl) apply -f dex-rbac.yaml
+	$(kubectl) apply -f operator-rbac.yaml
 	$(kubectl) apply -f configmap.yaml
 	$(kubectl) apply -f deployment.yaml
 	$(kubectl) apply -f service.yaml
@@ -47,6 +49,8 @@ undeploy:
 	$(kubectl) delete -f service.yaml | true
 	$(kubectl) delete -f service-api.yaml | true
 	$(kubectl) delete -f deployment.yaml | true
+	$(kubectl) delete -f dex-rbac.yaml | true
+	$(kubectl) delete -f operator-rbac.yaml | true
 	$(kubectl) delete -f grpc-client-secret.yaml | true
 	$(kubectl) delete -f grpc-server-secret.yaml | true
 	$(kubectl) delete secret tls dex-ingress-tls-secret -n $(NAMESPACE) | true

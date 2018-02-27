@@ -18,7 +18,8 @@ else
 endif
 
 deploy: clean init fetch install output
-	bash -e ./deploy-$(CLOUD_KIND).sh
+	bash -e ./deploy-private-dns-$(CLOUD_KIND).sh
+	bash -e ./deploy-public-dns-$(CLOUD_KIND).sh
 .PHONY: deploy
 
 init:
@@ -43,7 +44,8 @@ install:
 .PHONY: install
 
 undeploy: init
-	bash -e ./undeploy-$(CLOUD_KIND).sh
+	bash -e ./undeploy-private-dns-$(CLOUD_KIND).sh
+	bash -e ./undeploy-public-dns-$(CLOUD_KIND).sh
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy

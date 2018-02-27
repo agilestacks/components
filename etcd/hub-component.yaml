@@ -26,7 +26,7 @@ parameters:
       env:     COMPONENT_NAME
     - name:    version
       brief:   etcd-operator version
-      default: v0.7.0
+      default: v0.9.0
     - name:    namespace
       brief: Kubernetes namespace to install into
       default: etcd-cluster
@@ -39,7 +39,7 @@ parameters:
       default: 3
     - name:    cluster.version
       brief:   etcd version
-      default: v3.2.7
+      default: v3.2.16
     - name:    backup.enabled
       brief:   Enable backups
       default: false

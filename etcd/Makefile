@@ -13,9 +13,9 @@ export AWS_SECRET_NAME     ?= aws
 
 # for restore verb
 export NEW_CLUSTER_NAME      ?= new-etcd-cluster
-export NEW_CLUSTER_SIZE      ?= 5
-export NEW_CLUSTER_VERSION   ?= 3.2.10
-export NEW_CLUSTER_BASEIMAGE ?= gcr.io/etcd-development/etcd
+export NEW_CLUSTER_SIZE      ?= 3
+export NEW_CLUSTER_VERSION   ?= 3.2.16
+export NEW_CLUSTER_BASEIMAGE ?= quay.io/coreos/etcd
 export BACKUP_TO_RESTORE     ?= files.dev-rk.kubernetes.delivery/backup/etcd/etcd-cluster/20171201172909/v1/etcd-cluster/etcd-cluster/3.2.7_0000000000000001_etcd.backup
 export TS       	         ?= $(shell date +"%Y%m%d%H%M%S")
 
@@ -61,9 +61,9 @@ install:
 
 enable: wait_crd
 	$(helm) upgrade \
-		--set cluster.enabled=${CLUSTER_ENABLED} \
-		--set cluster.backup.enabled=${BACKUP_ENABLED} \
-		--set cluster.restore.enabled=${RESTORE_ENABLED} \
+		--set customResources.createEtcdClusterCRD=${CLUSTER_ENABLED} \
+		--set customResources.createBackupCRD=${BACKUP_ENABLED} \
+		--set customResources.createRestoreCRD=${RESTORE_ENABLED} \
 		--values values.yaml \
 		--namespace $(NAMESPACE) \
 		--wait \
@@ -82,9 +82,8 @@ clean:
 	@rm -rf charts
 
 output:
-	# https://github.com/coreos/etcd-operator/pull/1341
 	@echo Outputs:
-	@echo etcd_url=http://$(COMPONENT_NAME)-client.$(NAMESPACE).svc.cluster.local:2379
+	@echo etcd_url=http://$(COMPONENT_NAME)-client.$(NAMESPACE).svc:2379
 	@echo
 	@echo etcd has been installed successfully.
 .PHONY: output

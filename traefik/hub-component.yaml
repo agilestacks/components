@@ -68,4 +68,4 @@ templates:
   files: ["values.yaml.template", "values-acm.yaml.template"]
   extra:
   - kind: mustache
-    files: ["deploy-aws.sh.template", "undeploy-aws.sh.template"]
+    files: ["deploy-public-dns-aws.sh.template", deploy-private-dns-aws.sh.template, "undeploy-public-dns-aws.sh.template", "undeploy-private-dns-aws.sh.template"]

@@ -1,0 +1,54 @@
+{
+  "Comment": "Traefik ingress",
+  "Changes": [{
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "app.oleg24.kubernetes.delivery",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "a957e56b41bc411e891bd0ea3e6543a8-2030413104.us-east-1.elb.amazonaws.com"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "*.app.oleg24.kubernetes.delivery",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "a957e56b41bc411e891bd0ea3e6543a8-2030413104.us-east-1.elb.amazonaws.com"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "apps.oleg24.kubernetes.delivery",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "a957e56b41bc411e891bd0ea3e6543a8-2030413104.us-east-1.elb.amazonaws.com"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "*.apps.oleg24.kubernetes.delivery",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "a957e56b41bc411e891bd0ea3e6543a8-2030413104.us-east-1.elb.amazonaws.com"
+      }]
+    }
+  }, {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "auth.oleg24.kubernetes.delivery",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "a957e56b41bc411e891bd0ea3e6543a8-2030413104.us-east-1.elb.amazonaws.com"
+      }]
+    }
+  }]
+}
