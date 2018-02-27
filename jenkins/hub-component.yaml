@@ -5,26 +5,26 @@ meta:
   name: jenkins
   brief: Jenkins CI Server
   source:
-    dir: ../../components/jenkins
+    dir: components/jenkins
 
 requires:
   - kubernetes
 
 parameters:
-- name: terraform.bucket.name
-- name: terraform.bucket.region
 - name: component.ingress
   parameters:
   - name: fqdn
   - name: protocol
     default: http
+  - name: ssoUrlPrefix
+    default: swww
 - name: component.jenkins
   parameters:
   - name: namespace
     default: jenkins
     env: NAMESPACE
   - name: image
-    default: docker.io/agilestacks/jenkins:2.89.3
+    default: docker.io/agilestacks/jenkins:2.89.6
   - name: admin.user
     default: admin
   - name: admin.password
@@ -36,11 +36,13 @@ parameters:
   - name: wait.timeout
     default: 300
     env: TIMEOUT
+  - name: initGroovy.gitRepo
+    default: https://github.com/agilestacks/jenkins.git
+  - name: initGroovy.subPath
+    default: init.groovy.d
 - name: cloud.region
   kind: user
   env: AWS_REGION
-- name: dns.name
-- name: dns.baseDomain
 - name: dns.domain
   brief: DNS domain
   env: DOMAIN_NAME
@@ -57,9 +59,9 @@ outputs:
 - name:  component.jenkins.internal.port
   value: 8080
 - name:  component.jenkins.internal.url
-  value: http://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
+  value: ${component.ingress.protocol}://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
 - name:  component.jenkins.fqdn
-  value: ${component.jenkins.namespace}.${component.ingress.fqdn}
+  value: ${component.jenkins.namespace}.${component.ingress.ssoUrlPrefix}.${dns.domain}
 
 templates:
   files:

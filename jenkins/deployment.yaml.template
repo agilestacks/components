@@ -22,14 +22,41 @@
       spec:
         securityContext:
           runAsUser: 0
-        # initContainers:
-        # - name: config-exporter
-        #   image: ${component.jenkins.image}
-        #   imagePullPolicy: Always
-        #   command: ["sh", "/var/jenkins_home/bin/export.sh"]
-        #   volumeMounts:
-        #   - name: plugins-dir
-        #     mountPath: /jenkins_plugins
+        initContainers:
+        - name: config-exporter-1
+          image: ${component.jenkins.image}
+          imagePullPolicy: Always
+          env:
+          - name: SRC_DIR
+            value: /usr/share/jenkins/ref/init.groovy.d
+          - name: DEST_DIR
+            value: /opt/init.groovy.d
+          command: ["sh", "/opt/bin/export-dir-fs.sh"]
+          volumeMounts:
+          - name: init-scripts
+            mountPath: /opt/bin
+          - name: init-groovy-scripts
+            mountPath: /opt/init.groovy.d
+
+        - name: config-exporter-2
+          image: alpine/git
+          imagePullPolicy: Always
+          env:
+          - name: GIT_REMOTE
+            value: https://github.com/agilestacks/jenkins.git
+          - name: BRANCH
+            value: master
+          - name: SUBPATH
+            value: init.groovy.d
+          - name: DEST_DIR
+            value: /opt/init.groovy.d
+          command: ["sh", "/opt/bin/export-dir-scm.sh"]
+          volumeMounts:
+          - name: init-scripts
+            mountPath: /opt/bin
+          - name: init-groovy-scripts
+            mountPath: /opt/init.groovy.d
+
         #   - name: groovy-configs-dir
         #     mountPath: /jenkins_groovy
         #   - name: script-approval-dir
@@ -56,20 +83,20 @@
             value: ${cloud.region}
           - name:  ROOT_DOMAIN_NAME
             value: ${dns.name}
-          - name:  ADMIN_USER
-            value: ${component.jenkins.admin.user}
-          - name:  ADMIN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: jenkins-secrets
-                key:  ${component.jenkins.admin.user}
-          - name:  SERVICE_ACCOUNT_USER
-            value: ${component.jenkins.serviceaccount.user}
-          - name:  SERVICE_ACCOUNT_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: jenkins-secrets
-                key:  ${component.jenkins.serviceaccount.user}
+          # - name:  ADMIN_USER
+          #   value: ${component.jenkins.admin.user}
+          # - name:  ADMIN_PASSWORD
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: jenkins-secrets
+          #       key:  ${component.jenkins.admin.user}
+          # - name:  SERVICE_ACCOUNT_USER
+          #   value: ${component.jenkins.serviceaccount.user}
+          # - name:  SERVICE_ACCOUNT_PASSWORD
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: jenkins-secrets
+          #       key:  ${component.jenkins.serviceaccount.user}
           ports:
           - name: http
             containerPort: 8080
@@ -82,20 +109,8 @@
           - name: jobs-volume
             mountPath: /var/jenkins_home/jobs
             readOnly: false
-          # - name: secrets-dir
-          #   mountPath: /usr/share/jenkins/ref/secrets/
-          #   readOnly: true
-          # - name: script-approval-dir
-          #   mountPath: /usr/share/jenkins/ref/approval.d/
-          #   readOnly: true
-          # - name: plugins-dir
-          #   mountPath: /usr/share/jenkins/ref/plugins/
-          #   readOnly: false
-          # - name: groovy-configs-dir
-          #   mountPath: /usr/share/jenkins/ref/init.groovy.d/
-          #   readOnly: true
-          # - name: jenkins-config
-          #   mountPath: /usr/share/jenkins/ref/config.d
+          - name: init-groovy-scripts
+            mountPath: /usr/share/jenkins/ref/init.groovy.d
           readinessProbe:
             httpGet:
               path: /login
@@ -114,18 +129,9 @@
           - name: jobs-volume
             persistentVolumeClaim:
               claimName: jobs-volume
-          # - name: script-approval-dir
-          #   hostPath:
-          #     path: /etc/jenkins/approval.d
-          # - name: groovy-configs-dir
-          #   hostPath:
-          #     path: /etc/jenkins/init.groovy.d
-          # - name: plugins-dir
-          #   hostPath:
-          #     path: /etc/jenkins/plugins
-          # - name: jenkins-config
-          #   configMap:
-          #     name: jenkins-config
-          # - name: jenkins-init-bin
-          #   configMap:
-          #     name: jenkins-init-bin
+          - name: init-scripts
+            configMap:
+              name: init-scripts
+          - name: init-groovy-scripts
+            emptyDir: {}
+
