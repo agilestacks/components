@@ -11,11 +11,8 @@ data:
   CLUSTER_ID: ${dns.domain}
   AWS_REGION: ${cloud.region}
   DOMAIN_NAME: ${dns.domain}
-  JENKINS_HOST: ${component.jenkins.namespace}.${component.ingress.fqdn}
-  JENKINS_URL: http://${component.jenkins.namespace}.${component.ingress.fqdn}
+  JENKINS_HOST: ${component.jenkins.namespace}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  JENKINS_URL: ${component.ingress.protocol}://${component.jenkins.namespace}.${component.ingress.ssoUrlPrefix}.${dns.domain}
   INGRESS_FQDN: ${component.ingress.fqdn}
+  INGRESS_SSO_FQDN: ${component.jenkins.namespace}.${component.ingress.ssoUrlPrefix}.${dns.domain}
   JENKINS_NAMESPACE: ${component.jenkins.namespace}
-  BACKEND_BUCKET_NAME: ${terraform.bucket.name}
-  BACKEND_BUCKET_REGION: ${terraform.bucket.region}
-  BASE_DOMAIN: ${dns.baseDomain}
-  DNS_NAME: ${dns.name}

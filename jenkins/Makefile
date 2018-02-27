@@ -7,13 +7,6 @@ export TIMEOUT     ?= 300
 
 export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
-build:
-	cd docker && $(MAKE) build
-.PHONY: build
-
-push:
-	cd docker && $(MAKE) push
-.PHONY: build
 
 deploy-test:
 	@echo $(kubectl)
@@ -24,6 +17,9 @@ deploy-test:
 
 deploy:
 	$(kubectl) apply -f namespace.yaml
+
+	-$(kubectl) create configmap init-scripts --from-file=bin/
+
 	$(kubectl) apply -f secrets.yaml
 	$(kubectl) apply -f config.yaml
 	$(kubectl) apply -f volume-$(VOLUME_TYPE).yaml
@@ -48,6 +44,7 @@ undeploy:
 	-$(kubectl) delete -f secrets.yaml
 	-$(kubectl) delete -f config.yaml
 	-$(kubectl) delete -f volume-$(VOLUME_TYPE).yaml
+	-$(kubectl) delete configmap init-scripts
 .PHONY: undeploy
 
 wait:
@@ -63,3 +60,15 @@ wait:
 	done; \
 	echo "Timeout waiting for Jenkins"; \
 	exit 1
+
+
+init-test:
+	docker run \
+		--rm -it \
+		--env PATH=/opt/init/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+		-v $(realpath $(shell pwd))/bin:/opt/init/bin \
+		-w /opt/init \
+		--entrypoint=sh \
+		alpine/git
+#		docker.io/agilestacks/jenkins:2.89.3
+.PHONY: init-test
