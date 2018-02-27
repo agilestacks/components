@@ -12,19 +12,19 @@ for i in {1..30}; do
   sleep 3;
 done
 
-echo "Check if {{component.ingress.urlPrefix}}.{{dns.domain}} exists"
+echo "Check if {{component.ingress.urlPrefix}}.{{dns.domain}} exists in public DNS zone."
 record=$(
     aws route53 list-resource-record-sets --hosted-zone-id "${ZONE_ID}" --start-record-name "{{dns.domain}}." --start-record-type "CNAME" \
     | jq -Mc ".ResourceRecordSets[] | select(.Name == \"{{component.ingress.urlPrefix}}.{{dns.domain}}\")" \
 )
 
 if [ ! -z "${record}" ]; then
-  echo "Record {{component.ingress.urlPrefix}}.{{dns.domain}} already exists \n Skip DNS UPSERT"
+  echo "Record {{component.ingress.urlPrefix}}.{{dns.domain}} already exists in public DNS zone \n Skip DNS UPSERT"
   exit 0
 fi
 
-echo "Create {{component.ingress.urlPrefix}}.{{dns.domain}}, {{component.ingress.ssoUrlPrefix}}.{{dns.domain}} and {{kubernetes.oidc_issuer_fqdn}} CNAMEs for ${ELB}"
-cat << EOF > ${DIR}/upsert.json
+echo "Create {{component.ingress.urlPrefix}}.{{dns.domain}}, {{component.ingress.ssoUrlPrefix}}.{{dns.domain}} and {{kubernetes.oidc_issuer_fqdn}} CNAMEs for ${ELB} in public DNS zone."
+cat << EOF > ${DIR}/upsert-public.json
 {
   "Comment": "Traefik ingress",
   "Changes": [{
@@ -82,7 +82,7 @@ cat << EOF > ${DIR}/upsert.json
 EOF
 
 CHANGE_ID=$(
-  aws route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch=file://${DIR}/upsert.json  \
+  aws route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch=file://${DIR}/upsert-public.json  \
     | jq  -Mr '.ChangeInfo.Id'
 )
 

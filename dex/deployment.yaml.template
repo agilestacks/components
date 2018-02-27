@@ -25,6 +25,7 @@ spec:
         project:   dex
         component: dex
     spec:
+      serviceAccountName: dex
       volumes:
       - name: config
         configMap:
@@ -64,6 +65,12 @@ spec:
           limits:
             cpu: 100m
             memory: 50Mi
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534

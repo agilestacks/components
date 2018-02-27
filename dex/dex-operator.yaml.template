@@ -34,3 +34,10 @@ spec:
           items:
           - key: .dex-operator.yaml
             path: .dex-operator.yaml
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      serviceAccountName: dex-operator

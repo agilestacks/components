@@ -18,8 +18,8 @@ subjectAltName = @alt_names
 DNS.1 = auth.{{dns.domain}}
 EOF
 
-aws --region={{terraform.bucket.region}} s3 cp s3://{{terraform.bucket.name}}/stack-k8s-aws/{{dns.name}}/ca-key.pem ssl/ca-key.pem
-aws --region={{terraform.bucket.region}} s3 cp s3://{{terraform.bucket.name}}/stack-k8s-aws/{{dns.name}}/ca.pem ssl/ca.pem
+cp ../../stack-k8s-aws/.terraform/{{dns.domain}}/generated/tls/ca.key ssl/ca-key.pem
+cp ../../stack-k8s-aws/.terraform/{{dns.domain}}/generated/tls/ca.crt ssl/ca.pem
 
 openssl genrsa -out ssl/key.pem 2048
 openssl req -new -key ssl/key.pem -out ssl/csr.pem -subj "/CN=kube-ca" -config ssl/req.cnf
