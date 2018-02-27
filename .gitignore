@@ -23,7 +23,9 @@ etcd/charts
 etcd/values.yaml
 deploy-aws.sh
 undeploy-aws.sh
+upsert-private.json
 upsert.json
+upsert-public.json
 traefik/charts
 traefik/values.yaml
 nginxing/charts
