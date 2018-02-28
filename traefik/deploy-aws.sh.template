@@ -4,7 +4,7 @@ ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name {{dns.domain}} --max-
 ELB=""
 echo "Waiting for Load Balancer"
 for i in {1..30}; do
-  ELB=$(kubectl --namespace="{{component.ingress.namespace}}" describe service {{component.ingress.name}}-traefik | grep Ingress | awk '{print $3}')
+  ELB=$(kubectl --namespace="{{component.ingress.namespace}}" describe service traefik | grep Ingress | awk '{print $3}')
   if [ ! -z "${ELB}" ]; then
     break
   fi
