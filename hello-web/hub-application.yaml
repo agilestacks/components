@@ -1,0 +1,30 @@
+---
+version: 1
+kind: application
+meta:
+  name: hello-web:1
+  brief: Hello Web
+  source:
+    git:
+      remote: git@github.com:agilestacks/components.git
+      subDir: hello-web
+      localDir: ../../components
+
+requires:
+  - kubernetes
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+outputs:
+  - name: component.hello-web.ui
+    brief: Web UI address
+    value: http://world.${component.ingress.fqdn}
+
+templates:
+  files:
+    - "*.template"
