@@ -16,7 +16,7 @@ parameters:
   - name: component.ingress.ssoUrlPrefix
   - name: component.postgresql.namespace
     brief: Kubernetes namespace to install into
-    default: default
+    value: default
     env: NAMESPACE
   - name: dns.domain
     brief: DNS domain
@@ -24,7 +24,7 @@ parameters:
   - name: component.pgweb
     parameters:
     - name: name
-      default: pgweb
+      value: pgweb
       env: COMPONENT_NAME
     - name: ingress.urlPrefix
       value: ${component.name}
@@ -36,7 +36,7 @@ parameters:
     - name: user
     - name: password
     - name: port
-      default: "5432"
+      value: "5432"
     - name: database
 
 templates:
