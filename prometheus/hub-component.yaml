@@ -35,7 +35,7 @@ parameters:
       brief:   Prometheus version
       default: v1.7.1
     - name:    rbac.enabled
-      default:  false
+      default:  true
     - name:    ingress.enabled
       default:  true
     - name:    ingress.urlPrefix
