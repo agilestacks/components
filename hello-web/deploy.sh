@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh -xe
 
 echo Deploying Hello Web on \`$NAME\` stack in \`$DOMAIN_NAME\` domain
 
