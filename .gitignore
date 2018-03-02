@@ -51,7 +51,8 @@ prometheus/grafana-gen/output
 kube-dashboard/deployment.yaml
 kube-dashboard/ingress.yaml
 kube-dashboard/service.yaml
-kube-dashboard/rbac.yaml
+kube-dashboard/rbac-view-all.yaml
+kube-dashboard/rbac-minimal.yaml
 kube-dashboard/serviceaccount.yaml
 spinnaker/ingress.yaml
 spinnaker/.hub/anton9.base.devops.delivery/ecr-pass.txt
