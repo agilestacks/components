@@ -30,7 +30,7 @@ parameters:
       env:     NAMESPACE
     - name:    version
       brief:   Kubernetes Dashboard version
-      default: v1.6.3
+      default: v1.8.3
     - name:    ingress.urlPrefix
       default:  kubernetes
     - name:    ingress.path
