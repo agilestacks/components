@@ -9,7 +9,9 @@ export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-name
 
 
 deploy:
-	$(kubectl) apply --namespace $(NAMESPACE) -f replicationcontroller.yaml
+	$(kubectl) apply --namespace $(NAMESPACE) -f serviceaccount.yaml
+	$(kubectl) apply --namespace $(NAMESPACE) -f rbac.yaml
+	$(kubectl) apply --namespace $(NAMESPACE) -f deployment.yaml
 	$(kubectl) apply --namespace $(NAMESPACE) -f service.yaml
 	$(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
@@ -17,5 +19,7 @@ deploy:
 undeploy:
 	$(kubectl) delete --namespace $(NAMESPACE) -f ingress.yaml | true
 	$(kubectl) delete --namespace $(NAMESPACE) -f service.yaml | true
-	$(kubectl) delete --namespace $(NAMESPACE) -f replicationcontroller.yaml | true
+	$(kubectl) delete --namespace $(NAMESPACE) -f deployment.yaml | true
+	$(kubectl) delete --namespace $(NAMESPACE) -f rbac.yaml | true
+	$(kubectl) delete --namespace $(NAMESPACE) -f serviceaccount.yaml | true
 .PHONY: undeploy
