@@ -24,7 +24,7 @@ data "kubernetes_service" "traefik" {
 }
 
 resource "aws_route53_record" "dns_auth_int" {
-  zone_id = "${data.aws_route53_zone.int_zone_id}"
+  zone_id = "${data.aws_route53_zone.int_zone.zone_id}"
   name    = "${var.auth_url_prefix}"
   type    = "CNAME"
   ttl     = "300"
@@ -36,7 +36,7 @@ resource "aws_route53_record" "dns_auth_int" {
 }
 
 resource "aws_route53_record" "dns_auth_ext" {
-  zone_id = "${data.aws_route53_zone.ext_zone_id}"
+  zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
   name    = "${var.auth_url_prefix}"
   type    = "CNAME"
   ttl     = "300"
@@ -48,7 +48,7 @@ resource "aws_route53_record" "dns_auth_ext" {
 }
 
 resource "aws_route53_record" "dns_app1" {
-  zone_id = "${data.aws_route53_zone.ext_zone_id}"
+  zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
   name    = "${var.url_prefix}"
   type    = "CNAME"
   ttl     = "300"
@@ -60,7 +60,7 @@ resource "aws_route53_record" "dns_app1" {
 }
 
 resource "aws_route53_record" "dns_app2" {
-  zone_id = "${data.aws_route53_zone.ext_zone_id}"
+  zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
   name    = "*.${var.url_prefix}"
   type    = "CNAME"
   ttl     = "300"
@@ -72,7 +72,7 @@ resource "aws_route53_record" "dns_app2" {
 }
 
 resource "aws_route53_record" "dns_apps1" {
-  zone_id = "${data.aws_route53_zone.ext_zone_id}"
+  zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
   name    = "${var.sso_url_prefix}"
   type    = "CNAME"
   ttl     = "300"
@@ -84,7 +84,7 @@ resource "aws_route53_record" "dns_apps1" {
 }
 
 resource "aws_route53_record" "dns_apps2" {
-  zone_id = "${data.aws_route53_zone.ext_zone_id}"
+  zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
   name    = "*.${var.sso_url_prefix}"
   type    = "CNAME"
   ttl     = "300"

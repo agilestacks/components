@@ -147,9 +147,7 @@ dashboard:
       component: traefik-dashboard
     annotations:
       agilestacks.com/stack-component: Traefik
-#  auth:
-#    basic:
-#     ${component.ingress.user}: ${component.ingress.password}
+
   statistics:
     ## Number of recent errors to show in the ‘Health’ tab
     # recentErrors:
