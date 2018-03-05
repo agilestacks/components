@@ -1,0 +1,97 @@
+terraform {
+  required_version = ">= 0.11.0"
+  backend "s3" {}
+}
+
+provider "aws" {}
+
+provider "kubernetes" {}
+
+data "aws_route53_zone" "ext_zone" {
+  name  = "${var.domain_name}"
+}
+
+data "aws_route53_zone" "int_zone" {
+  name  = "${var.domain_name}"
+  private_zone = true
+}
+
+data "kubernetes_service" "traefik" {
+  metadata {
+    name      = "${var.component}"
+    namespace = "${var.namespace}"
+  }
+}
+
+resource "aws_route53_record" "dns_auth_int" {
+  zone_id = "${data.aws_route53_zone.int_zone_id}"
+  name    = "${var.auth_url_prefix}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
+
+  lifecycle {
+    ignore_changes = ["records", "ttl"]
+  }
+}
+
+resource "aws_route53_record" "dns_auth_ext" {
+  zone_id = "${data.aws_route53_zone.ext_zone_id}"
+  name    = "${var.auth_url_prefix}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
+
+  lifecycle {
+    ignore_changes = ["records", "ttl"]
+  }
+}
+
+resource "aws_route53_record" "dns_app1" {
+  zone_id = "${data.aws_route53_zone.ext_zone_id}"
+  name    = "${var.url_prefix}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
+
+  lifecycle {
+    ignore_changes = ["records", "ttl"]
+  }
+}
+
+resource "aws_route53_record" "dns_app2" {
+  zone_id = "${data.aws_route53_zone.ext_zone_id}"
+  name    = "*.${var.url_prefix}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
+
+  lifecycle {
+    ignore_changes = ["records", "ttl"]
+  }
+}
+
+resource "aws_route53_record" "dns_apps1" {
+  zone_id = "${data.aws_route53_zone.ext_zone_id}"
+  name    = "${var.sso_url_prefix}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
+
+  lifecycle {
+    ignore_changes = ["records", "ttl"]
+  }
+}
+
+resource "aws_route53_record" "dns_apps2" {
+  zone_id = "${data.aws_route53_zone.ext_zone_id}"
+  name    = "*.${var.sso_url_prefix}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
+
+  lifecycle {
+    ignore_changes = ["records", "ttl"]
+  }
+}
+
