@@ -1,9 +1,9 @@
 output "ingress_fqdn" {
-  value = "${module.dns_app1.fqdn}"
+  value = "${aws_route53_record.dns_app1.fqdn}"
 }
 
 output "sso_ingress_fqdn" {
-  value = "${module.dns_apps1.fqdn}"
+  value = "${aws_route53_record.dns_apps1.fqdn}"
 }
 
 output "elb_domain" {
