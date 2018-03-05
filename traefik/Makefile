@@ -1,13 +1,18 @@
 .DEFAULT_GOAL := deploy
 
 export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   ?= ingress
-export COMPONENT_NAME      ?= traefik
-export DOMAIN_NAME         ?= default
-export CLOUD_KIND          ?= aws
-export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-export ACM_CERTIFICATE_ARN ?= undefined
+export TF_VAR_namespace    ?= ingress
+export TF_VAR_component    ?= toolbox
+export TF_VAR_domain_name  ?= default
+
+CLOUD_KIND ?= aws
+ACM_CERTIFICATE_ARN ?= undefined
+CHART_VERSION ?= 1.14.2
+CHART ?= stable/traefik
+STATE_BUCKET ?= terraform.agilestacks.com
+STATE_REGION ?= us-east-1
+helm ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
+terraform ?= terraform
 
 ifeq ($(ACM_CERTIFICATE_ARN),undefined)
 	VALUES_FILE=values.yaml
@@ -17,47 +22,67 @@ else
 	PROTOCOL=https
 endif
 
-deploy: clean init fetch install output
-	bash -e ./deploy-private-dns-$(CLOUD_KIND).sh
-	bash -e ./deploy-public-dns-$(CLOUD_KIND).sh
+deploy: clean init fetch install get plan apply output
 .PHONY: deploy
 
 init:
 	@mkdir -p $(HELM_HOME)
-	$(helm) init --client-only --upgrade
+	$(helm) init --client-only --upgrade --wait
 	@mkdir -p charts
+	@mkdir -p .terraform
+	$(terraform) init -get=true $(TF_CMD_OPTS) -force-copy  \
+		-backend=true -input=false \
+		-backend-config="bucket=$(STATE_BUCKET)" \
+		-backend-config="region=$(STATE_REGION)" \
+		-backend-config="key=$(TF_VAR_component)/$(TF_VAR_domain_name)/terraform.tfstate" \
+		-backend-config="profile=$(AWS_PROFILE)"
 
 fetch:
 	$(helm) fetch \
 		--destination charts \
-		--untar stable/traefik
+		--untar $(CHART) \
+		--version $(CHART_VERSION)
 .PHONY: fetch
 
 install:
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
-		$(helm) install charts/traefik \
-			--name $(COMPONENT_NAME) \
-			--namespace $(NAMESPACE) \
+	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
+		$(helm) install charts/$(notdir $(CHART)) \
+			--name $(TF_VAR_component) \
+			--namespace $(TF_VAR_namespace) \
 			--replace \
 			--wait \
-			--values $(VALUES_FILE)
+			--values $(VALUES_FILE) \
+			--version $(CHART_VERSION)
 .PHONY: install
 
+get:
+	$(terraform) get $(TF_UPDATE)
+.PHONY: get
+
+plan:
+	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/$(TF_VAR_domain_name).tfplan
+..PHONY: plan
+
+apply:
+	$(terraform) apply $(TF_OPTS) -Xshadow=false .terraform/$(TF_VAR_domain_name).tfplan
+.PHONY: apply
+
 undeploy: init
-	bash -e ./undeploy-private-dns-$(CLOUD_KIND).sh
-	bash -e ./undeploy-public-dns-$(CLOUD_KIND).sh
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	$(MAKE) plan TF_OPTS="$(TF_OPTS) -destroy"
+	# roll forward on error for undeploy
+	-$(MAKE) apply
+
+	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' && \
+		$(helm) delete --purge $(TF_VAR_component) || exit 0
 .PHONY: undeploy
 
 clean:
-	@rm -rf $(HELM_HOME)
-	@rm -rf charts
+	rm -rf $(HELM_HOME)
+	rm -rf charts
+	rm -rf .terraform/modules
+	rm -rf .terraform/plugins
 
 output:
-	@echo Outputs:
-	@echo ingress_fqdn=$(URL_PREFIX).$(DOMAIN_NAME)
-	@echo sso_ingress_fqdn=$(SSO_URL_PREFIX).$(DOMAIN_NAME)
 	@echo ingress_protocol=$(PROTOCOL)
-	@echo
+	$(terraform) output
 .PHONY: output
