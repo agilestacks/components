@@ -3,9 +3,13 @@ terraform {
   backend "s3" {}
 }
 
-provider "aws" {}
+provider "aws" {
+  version = "1.10.0"
+}
 
-provider "kubernetes" {}
+provider "kubernetes" {
+  version = "1.0.1"
+}
 
 data "aws_route53_zone" "ext_zone" {
   name  = "${var.domain_name}"
