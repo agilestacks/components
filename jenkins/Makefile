@@ -2,11 +2,10 @@
 
 export DOMAIN_NAME ?= default
 export NAMESPACE   ?= jenkins
-export VOLUME_TYPE ?= hostpath
-export TIMEOUT     ?= 300
 
-export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-
+VOLUME_TYPE ?= hostpath
+TIMEOUT     ?= 300
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy-test:
 	@echo $(kubectl)
@@ -28,13 +27,8 @@ deploy:
 	$(kubectl) apply -f ingress.yaml
 	$(kubectl) apply -f deployment.yaml
 
-	$(MAKE) wait output
+	$(MAKE) wait
 .PHONY: deploy
-
-output:
-	@echo Outputs:
-	@echo password = secret
-.PHONY: output
 
 undeploy:
 	-$(kubectl) delete -f deployment.yaml
@@ -50,15 +44,17 @@ undeploy:
 wait:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
 	$(eval get_pod=$(kubectl) get pods -l 'project=jenkins,qualifier=master' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}')
+	@printf "Waiting for Jenkins pod is up and running "
 
 	@while [ `date +%s` -le "$(timeout)" ]; do \
 		if [[ `$(get_pod)` ]]; then \
+			echo " done"; \
 			exit 0; \
 		fi; \
-		echo "Waiting for Jenkins pod is up and running $$(echo "$(timeout) - `date +%s`" | bc) sec..."; \
-		sleep 1; \
+		printf "."; \
+		sleep 8; \
 	done; \
-	echo "Timeout waiting for Jenkins"; \
+	echo " ERROR timeout $(TIMEOUT)sec"; \
 	exit 1
 
 
