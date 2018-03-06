@@ -1,0 +1,8 @@
+---
+version: 1
+kind: component
+meta:
+  name: hygieia
+  brief: hygieia
+  source:
+      dir: ../../components/hygieia
