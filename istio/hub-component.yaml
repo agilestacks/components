@@ -1,0 +1,8 @@
+---
+version: 1
+kind: component
+meta:
+  name: istio
+  brief: istio
+  source:
+      dir: ../../components/istio
