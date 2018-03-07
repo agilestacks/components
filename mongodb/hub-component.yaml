@@ -1,0 +1,56 @@
+---
+  version: 1
+  kind: component
+  meta:
+    name: mongodb
+    brief: MongoDB
+    source:
+      dir: ../../components/mongodb
+  
+  requires:
+    - kubernetes
+    - helm
+    - tiller
+  provides:
+    - mongodb
+  
+  parameters:
+    - name: dns.domain
+      brief: DNS domain
+      kind: tech
+      env: DOMAIN_NAME
+    - name: component.mongodb
+      parameters:
+      - name:    name
+        default: mongodb
+        env:     COMPONENT_NAME
+      - name:    namespace
+        default: mongodb
+        env:     NAMESPACE
+      - name:    user
+      - name:    password
+      - name:    database
+      - name:    volumeType
+        default: gp2
+      - name:    volumeSize
+        default: 8Gi
+      - name:    storageClass
+        default: aws-ebs-gp2
+      - name:    port
+        default: 27017
+  
+  outputs:
+  - name: component.mongodb.host
+    value: ${component.mongodb.name}-mongodb.${component.mongodb.namespace}.svc.cluster.local
+  - name: component.mongodb.port
+    value: ${component.mongodb.port}
+  - name: component.mongodb.user
+    value: ${component.mongodb.user}
+  - name: component.mongodb.url
+    brief: Deprecated, use component.mongodb.host
+    value: ${component.mongodb.name}-mongodb.${component.mongodb.namespace}.svc.cluster.local
+  
+  templates:
+    files:
+      - "*.template"
+  
