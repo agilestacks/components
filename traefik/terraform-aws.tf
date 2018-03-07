@@ -9,6 +9,8 @@ provider "aws" {
 
 provider "kubernetes" {
   version = "1.0.1"
+  config_context_auth_info = "admin@${var.domain_name}"
+  config_context_cluster   = "${var.domain_name}"
 }
 
 data "aws_route53_zone" "ext_zone" {
