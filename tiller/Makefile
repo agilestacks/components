@@ -9,7 +9,7 @@ deploy: init wait
 .PHONY: deploy
 
 init:
-	$(helm) init --upgrade
+	$(helm) init --upgrade --service-account tiller
 .PHONY: init
 
 undeploy:
