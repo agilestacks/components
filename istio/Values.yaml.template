@@ -1,0 +1,262 @@
+rbac:
+  install: false
+  apiVersion: v1beta1
+
+istio:
+  install: false
+  release: ${component.istio.version}
+
+auth:
+  enabled: ${component.istio.auth.enabled}
+
+initializer:
+  customConfigMap: false
+  enabled: false
+  policy: enabled
+
+  deployment:
+    name: initializer
+    image: docker.io/istio/sidecar_initializer
+    initImage: docker.io/istio/proxy_init
+    proxyImage: docker.io/istio/proxy
+    imagePullPolicy: IfNotPresent
+    replicas: ${component.istio.initializer.replicas}
+    annotations:
+      sidecar.istio.io/inject: "false"
+    nodeSelector: {}
+    resources: {}
+    #  limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+## Mixer configuration
+mixer:
+  customConfigMap: false
+
+  service:
+    type: ClusterIP
+    annotations: {}
+    externalTcpPort: 9091
+    externalHttpHeathPort: 9093
+    externalStatsdPromPort: 9102
+    externalStatsdUdpPort: 9125
+    externalConfigApiPort: 9094
+    externalPrometheusPort: 42422
+
+  deployment:
+    name: mixer
+    image: docker.io/istio/mixer
+    imagePullPolicy: IfNotPresent
+    replicas: ${component.istio.mixer.replicas}
+    annotations:
+      sidecar.istio.io/inject: "false"
+    nodeSelector: {}
+    resources: {}
+    #  limits:
+    #    cpu: 100m
+    #    memory: 128Mi
+    #  requests:
+    #    cpu: 100m
+    #    memory: 128Mi
+
+## Pilot configuration
+pilot:
+  name: pilot
+  customConfigMap: false
+
+  service:
+    type: ClusterIP
+    externalHttpDiscovery: 8080
+    externalAdmissionWebhookServer: 443
+
+  deployment:
+    replicas: ${component.istio.pilot.replicas}
+    annotations:
+      sidecar.istio.io/inject: "false"
+    nodeSelector: {}
+
+    discovery:
+      name: discovery
+      image: docker.io/istio/pilot
+      imagePullPolicy: IfNotPresent
+      resources: {}
+      #  limits:
+      #    cpu: 100m
+      #    memory: 128Mi
+      #  requests:
+      #    cpu: 100m
+      #    memory: 128Mi
+
+## Ingress configuration
+ingress:
+
+  service:
+    type: ClusterIP
+    externalHttpPort: 80
+    externalHttpsPort: 443
+
+  deployment:
+    name: ingress
+    annotations:
+      sidecar.istio.io/inject: "false"
+    image: docker.io/istio/proxy_debug
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    nodeSelector: {}
+    resources:
+    #  limits:
+    #    cpu: 100m
+    #    memory: 128Mi
+    #  requests:
+    #    cpu: 100m
+    #    memory: 128Mi
+
+## Engress configuration
+egress:
+
+  service:
+    type: ClusterIP
+    externalHttpPort: 80
+
+  deployment:
+    name: egress
+    annotations:
+      sidecar.istio.io/inject: "false"
+    image: docker.io/istio/proxy_debug
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    nodeSelector: {}
+    resources: {}
+    #  limits:
+    #    cpu: 100m
+    #    memory: 128Mi
+    #  requests:
+    #    cpu: 100m
+    #    memory: 128Mi
+
+## CA configuration
+## Only installed if auth.enabled
+ca:
+
+  deployment:
+    name: ca
+    annotations:
+      sidecar.istio.io/inject: "false"
+    image: docker.io/istio/istio-ca
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    nodeSelector: {}
+    resources: {}
+    #  limits:
+    #    cpu: 100m
+    #    memory: 128Mi
+    #  requests:
+    #    cpu: 100m
+    #    memory: 128Mi
+
+## Addons configuration
+## Each addon may be disabled
+addons:
+
+  zipkin:
+
+    enabled: ${component.istio.zipkin.enabled}
+
+    service:
+      type: NodePort
+      externalPort: 9411
+
+    deployment:
+      name: zipkin
+      annotations:
+        sidecar.istio.io/inject: "false"
+      image: docker.io/openzipkin/zipkin
+      imageTag: latest
+      imagePullPolicy: IfNotPresent
+      replicas: 1
+      nodeSelector: {}
+      resources: {}
+      #  limits:
+      #    cpu: 100m
+      #    memory: 128Mi
+      #  requests:
+      #    cpu: 100m
+      #    memory: 128Mi
+
+  prometheus:
+
+    enabled: ${component.prometheus.istio.enabled}
+
+    service:
+      type: NodePort
+      externalPort: 9090
+      annotations:
+        prometheus.io/scrape: 'true'
+
+    deployment:
+      name: prometheus
+      annotations:
+        sidecar.istio.io/inject: "false"
+      image: quay.io/coreos/prometheus
+      imageTag: v1.1.1
+      imagePullPolicy: IfNotPresent
+      replicas: 1
+      nodeSelector: {}
+      resources: {}
+      #  limits:
+      #    cpu: 100m
+      #    memory: 128Mi
+      #  requests:
+      #    cpu: 100m
+      #    memory: 128Mi
+
+  grafana:
+
+    enabled: ${component.istio.grafana.enabled}
+
+    service:
+      type: NodePort
+      externalPort: 3000
+
+    deployment:
+      name: grafana
+      annotations:
+        sidecar.istio.io/inject: "false"
+      image: docker.io/istio/grafana
+      imagePullPolicy: IfNotPresent
+      replicas: 1
+      nodeSelector: {}
+      resources: {}
+      #  limits:
+      #    cpu: 100m
+      #    memory: 128Mi
+      #  requests:
+      #    cpu: 100m
+      #    memory: 128Mi
+
+  servicegraph:
+
+    enabled: ${component.istio.servicegraph.enabled}
+
+    service:
+      type: NodePort
+      externalPort: 8088
+
+    deployment:
+      name: servicegraph
+      annotations:
+        sidecar.istio.io/inject: "false"
+      image: docker.io/istio/servicegraph
+      imagePullPolicy: IfNotPresent
+      replicas: 1
+      nodeSelector: {}
+      resources: {}
+      #  limits:
+      #    cpu: 100m
+      #    memory: 128Mi
+      #  requests:
+      #    cpu: 100m
+      #    memory: 128Mi
