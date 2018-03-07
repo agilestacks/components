@@ -3,6 +3,51 @@ version: 1
 kind: component
 meta:
   name: istio
-  brief: istio
+  brief: Kubernetes centric service mesh
   source:
       dir: ../../components/istio
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+
+parameters:
+  - name: component.istio
+    parameters:
+    - name: namespace
+      default: ingress
+      env: NAMESPACE
+    - name: version
+      default: 0.2.12
+    - name: initializer.replicas
+      value: 1
+    - name: mixer.replicas
+      value: 1
+    - name: pilot.replicas
+      value: 1
+    - name: auth.enabled
+      value: true
+    - name: zipkin.enabled
+      value: false
+    - name: prometheus.enabled
+      value: false
+    - name: graphana.enabled
+      value: false
+    - name: servicegraph.enabled
+      value: true
+  - name: cloud.region
+    kind: user
+    env: AWS_REGION
+  - name: dns.domain
+    brief: DNS domain
+    kind: tech
+    env: DOMAIN_NAME
+  - name: docker.registry
+    brief: DNS domain
+    kind: tech
+    env: DOCKER_REGISTRY
+
+templates:
+  files:
+    - "*.template"
