@@ -1,0 +1,46 @@
+# refere for details
+# https://github.com/kubernetes/charts/tree/master/stable/mongodb
+
+image: bitnami/mongodb
+imageTag: 3.6
+
+# imagePullPolicy: IfNotPresent # Always for latest tag
+# mongodbRootPassword	
+
+mongodbUsername: ${component.mongodb.user}
+mongodbPassword: ${component.mongodb.password}
+mongodbDatabase: ${component.mongodb.database}
+
+
+persistence:
+  enabled: true
+  # existingClaim:
+  
+  ## database data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner if it's exists  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  storageClass: ${component.mongodb.storageClass}
+  accessMode: ReadWriteOnce
+  size: ${component.mongodb.volumeSize}
+  subPath: "mongodb-db"
+    
+# serviceType: ClusterIP
+# nodeSelector: {}
+
+# livenessProbe: 
+#   initialDelaySeconds: 30
+#   periodSeconds: 10
+#   timeoutSeconds: 5
+#   successThreshold: 1
+#   failureThreshold: 6
+  
+# readinessProbe:
+#   initialDelaySeconds: 5
+#   periodSeconds: 10
+#   timeoutSeconds: 5
+#   successThreshold: 1
+#   failureThreshold: 6
