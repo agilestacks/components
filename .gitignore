@@ -79,3 +79,6 @@ errored.tfstate
 values.yaml
 selenium/charts
 ingress.yaml
+terraform.tfplan
+terraform.tfstate
+terraform.tfstate.backup
