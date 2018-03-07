@@ -70,6 +70,11 @@ spec:
         volumeMounts:
         - name: es-data
           mountPath: /usr/share/elasticsearch/data
+      - name: sysctl-fix
+        image: alpine:3.6
+        command: ["/sbin/sysctl", "-w", "vm.max_map_count=262144"]
+        securityContext:
+          privileged: true
       volumes:
       - name: es-config
         configMap:

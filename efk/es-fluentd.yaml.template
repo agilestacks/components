@@ -14,6 +14,7 @@ spec:
         project: logs
         qualifier: fluentd
     spec:
+      serviceAccountName: fluentd
       containers:
       - name: fluentd
         image: agilestacks/fluentd

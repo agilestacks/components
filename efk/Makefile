@@ -18,6 +18,7 @@ deploy:
 	$(kubectl) create --namespace $(NAMESPACE) configmap fluentd-config --from-file=fluent.conf
 	$(kubectl) create --namespace $(NAMESPACE) configmap cerebro-config --from-file=cerebro.conf
 
+	$(kubectl) apply --namespace $(NAMESPACE) -f es-fluentd-rbac.yaml
 	$(kubectl) apply --namespace $(NAMESPACE) -f es-storage-class.yaml
 	$(kubectl) apply --namespace $(NAMESPACE) -f es-ebs-volume-claim.yaml
 	$(kubectl) apply --namespace $(NAMESPACE) -f es-env.yaml
@@ -45,4 +46,5 @@ undeploy:
 	$(kubectl) delete --namespace $(NAMESPACE) -f es-master.yaml
 	$(kubectl) delete --namespace $(NAMESPACE) -f es-ebs-volume-claim.yaml
 	$(kubectl) delete --namespace $(NAMESPACE) -f es-storage-class.yaml
+	$(kubectl) delete --namespace $(NAMESPACE) -f es-fluentd-rbac.yaml
 .PHONY: undeploy
