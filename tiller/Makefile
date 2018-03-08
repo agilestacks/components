@@ -9,11 +9,13 @@ deploy: init wait
 .PHONY: deploy
 
 init:
+	$(kubectl) apply -f tiller-rbac.yaml
 	$(helm) init --upgrade --service-account tiller
 .PHONY: init
 
 undeploy:
 	$(helm) reset --force
+	$(kubectl) delete -f tiller-rbac.yaml | true
 .PHONY: undeploy
 
 wait:
