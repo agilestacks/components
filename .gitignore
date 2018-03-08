@@ -77,6 +77,7 @@ wowza/storage-class.yaml
 wowza/ebs-drivers-volume-claim.yaml
 wowza/ebs-wowza-volume-claim.yaml
 nginx/values.yaml
+tiller/tiller-rbac.yaml
 cloudformation/cloudformation.yaml
 acm/.venv
 *.log
