@@ -4,7 +4,7 @@ metadata:
   name: fluentd
   namespace: ${component.efk.namespace}
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: fluentd
@@ -19,7 +19,7 @@ rules:
   - "watch"
   - "list"
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: fluentd
