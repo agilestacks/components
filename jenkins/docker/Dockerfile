@@ -15,7 +15,7 @@ ENV JENKINS_SECRETS_HOME     '/usr/share/jenkins/ref/secrets'
 ENV REF                      '/usr/share/jenkins/ref/plugins'
 ENV SCRIPT_APPROVAL_DIR      '/usr/share/jenkins/ref/approval.d'
 ENV CONFIG_DIR               '/usr/share/jenkins/ref/config.d'
-ENV SHARED_LIBS              '/usr/share/jenkins/ref'
+ENV SHARED_LIBS              '/usr/share/jenkins/ref/libs'
 
 VOLUME ${JENKINS_SECRETS_HOME}
 

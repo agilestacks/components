@@ -59,7 +59,7 @@ outputs:
 - name:  component.jenkins.internal.port
   value: 8080
 - name:  component.jenkins.internal.url
-  value: ${component.ingress.protocol}://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
+  value: http://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
 - name:  component.jenkins.fqdn
   value: ${component.jenkins.namespace}.${component.ingress.ssoUrlPrefix}.${dns.domain}
 
