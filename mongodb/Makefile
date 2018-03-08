@@ -19,7 +19,7 @@ fetch:
 	$(helm) fetch \
 		--destination charts \
 		--untar stable/mongodb \
-		#--version latest
+		--version 0.4.27
 .PHONY: fetch
 
 install:
