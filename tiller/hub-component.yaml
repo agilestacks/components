@@ -24,3 +24,7 @@ outputs:
   - name: component.tiller.namespace
     brief: Tiller's Kubernetes namespace
     value: ${component.tiller.namespace}
+
+templates:
+  files:
+    - "*.template"
