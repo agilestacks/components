@@ -5,7 +5,7 @@ export DOMAIN_NAME  ?= default
 export kubectl      ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm         ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="$(NAMESPACE)"
 
-deploy: init wait
+deploy: wait_rbac init wait
 .PHONY: deploy
 
 init:
@@ -29,3 +29,14 @@ wait:
 	echo "Timeout waiting for Tiller" \
 	exit 1
 .PHONY: wait
+
+wait_rbac:
+	@for i in $$(seq 1 60); do \
+		if $(kubectl) get sa ; then \
+			exit 0; \
+		fi; \
+		echo "Waiting for admin RBAC roles to be created ($$i)..."; \
+		sleep 10; \
+	done; \
+	echo "Timeout waiting for admin RBAC roles to be deployed" \
+	exit 1

@@ -8,8 +8,7 @@ export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export kind                ?= aws
 
-deploy: clean init fetch install output
-	bash -e ./deploy-$(kind).sh
+deploy: clean init fetch install deploy_dns output
 .PHONY: deploy
 
 init:
@@ -32,6 +31,11 @@ install:
 			--wait \
 			--values values.yaml
 .PHONY: install
+
+deploy_dns:
+	bash -e ./deploy-$(kind).sh
+.PHONY: deploy_dns
+
 
 undeploy: init
 	bash -e ./undeploy-$(kind).sh

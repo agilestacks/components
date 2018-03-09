@@ -3,7 +3,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name {{dns.domain}} --max-items 1 | jq -Mr .HostedZones[0].Id | sed -e 's/\/hostedzone\///')
 ELB=""
 echo "Waiting for Load Balancer"
-for i in {1..30}; do
+kubectl --namespace="{{component.nginxing.namespace}}" get svc
+for i in {1..120}; do
+  echo $i
   ELB=$(kubectl --namespace="{{component.nginxing.namespace}}" describe svc {{component.nginxing.name}}-nginx-ingress-controller | grep Ingress | awk '{print $3}')
   if [ ! -z "${ELB}" ]; then
     break

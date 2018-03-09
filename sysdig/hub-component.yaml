@@ -30,7 +30,7 @@ parameters:
       default: sysdig
       env:     NAMESPACE
     - name: rbac.install
-      default: false
+      default: true
     - name: license
       default: "83c6bb73-95b4-44f1-9729-bfbf7d1726db"
     - name: agentTags
