@@ -36,7 +36,7 @@ parameters:
     - name:    image
       default: wowzamedia/wowza-streaming-engine-linux
     - name:    version
-      default: 4.7.3
+      default: 4.7.4
 
 templates:
   files:
