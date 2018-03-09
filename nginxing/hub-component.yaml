@@ -28,9 +28,9 @@ parameters:
       env:     COMPONENT_NAME
     - name:    version
       brief:   nginx-ingress version
-      default: "0.10.2"
+      default: "0.11.0"
     - name:    image.repository
-      default: gcr.io/google_containers/nginx-ingress-controller
+      default: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
     - name:    image.pullPolicy
       default: IfNotPresent
     - name:    replicaCount
