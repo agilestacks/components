@@ -1,36 +1,41 @@
 .DEFAULT_GOAL := deploy
 
 export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   ?= mongodb
-export COMPONENT_NAME      ?= mongodb
-export DOMAIN_NAME         ?= default
-export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+
+NAMESPACE      ?= mongodb
+COMPONENT_NAME ?= mongodb
+DOMAIN_NAME    ?= default
+kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+CHART 		   ?= charts/mongodb
+CHART_VERSION  ?= 0.4.27
 
 deploy: clean init fetch install
 .PHONY: deploy
 
 init:
 	@mkdir -p $(HELM_HOME)
-	@$(helm) init --client-only --upgrade
+	@$(helm) init --client-only --upgrade --wait
 	@mkdir -p charts
 
 fetch:
 	$(helm) fetch \
 		--destination charts \
 		--untar stable/mongodb \
-		--version 0.4.27
+		--version $(CHART_VERSION)
 .PHONY: fetch
 
 install:
-	$(kubectl) apply -f namespace.yaml
+	-$(kubectl) create namespace $(mongodb)
 	$(kubectl) apply -f aws-storage-class.yaml
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
-		$(helm) install charts/mongodb \
+		$(helm) install $(CHART) \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
+			--version $(CHART_VERSION) \
 			--replace \
-			--values values.yaml
+			--values values.yaml \
+			--wait
 .PHONY: install
 
 undeploy: init
