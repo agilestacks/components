@@ -24,6 +24,8 @@ RUN /workspace/mvnw \
         -pl '!UI,!UI-tests' \
         -Dmaven.test.skip=true  \
         clean install package
+RUN mkdir -p dist && \
+    find /workspace -name target -exec echo cp -f {}/*.jar dist \; | sh -
 
 ### Run
 FROM openjdk:8-alpine
@@ -31,31 +33,16 @@ MAINTAINER Antons Kranga <anton@agilestacks.com>
 
 ARG TINI_VERSION="0.16.1"
 
-ADD https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-static-amd64 /usr/local/bin/tini
-RUN chmod +x /usr/local/bin/*
+ENV PATH "$PATH:/hygieia/bin"
 
-COPY --from=builder /workspace /hygieia
+ADD https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini-static-amd64 /usr/local/bin/tini
+RUN chmod +x /usr/local/bin/* && \
+    mkdir -p /hygieia/conf
+
+# COPY --from=builder /workspace /hygieia
 COPY --from=builder /workspace/db /hygieia/db
-COPY --from=builder /workspace/api/target/*.jar /hygieia/lib
-COPY --from=builder /workspace/api-audit/target/*.jar /hygieia/lib
-COPY --from=builder /workspace/collectors/build/jenkins-codequality/target/*.jar /hygieia/lib
-COPY --from=builder /workspace/collectors/build/jenkins-cucumber/target/*.ja /hygieia/collectors
-COPY --from=builder /workspace/ecollectors/build/jenkins/target/*.jar /hygieia/collectors
-COPY --from=builder /workspace/collectors/build/sonar/target/*.jar /hygieia/collectors
-COPY --from=builder /workspace/collectors/cloud/aws/target/*.jar /hygieia/collectors
-COPY --from=builder /workspace/collectors/deploy/udeploy/target/*.jar /hygieia/collectors
-COPY --from=builder /workspace/collectors/deploy/xldeploy/target/*.jar . /hygieia/collectors
-COPY --from=builder /workspace/collectors/build/jenkins-codequality/target/jenkins-codequality-*.jar . /app/collectors
-COPY --from=builder /workspace/collectors/feature/gitlab/target/*.jar . /hygieia/collectors
-COPY --from=builder /workspace/collectors/feature/versionone/target/*.jar . /hygieia/collectors
-COPY --from=builder /workspace/collectors/library-policy/nexus-iq-collector/target/*.jar . /hygieia/collectors
-COPY --from=builder /workspace/collectors/misc/chat-opsr/target/*.jar . /hygieia/collectors
-COPY --from=builder /workspace/collectors/scm/github/target/*.jar . /hygieia/collectors
-COPY --from=builder /workspace/collectors/scm/github-graphql/target/*.jar . /hygieia/collectors
-COPY --from=builder /workspace/collectors/scm/gitlab/target/*.jar . /hygieia/collectors
-COPY --from=builder /workspace/core/target/*.jar . /hygieia/collectors
-COPY --from=builder /workspace/hygieia-jenkins-plugin/target/hygieia-publisher.hpi . /hygieia/jenkins
-COPY --from=builder /workspce/api/docker/api-properties-builder.sh /hygieia
+COPY --from=builder /workspace/dist /hygieia/lib
+COPY --from=builder /workspace/api/docker/api-properties-builder.sh /hygieia/bin
 
 VOLUME ["/hygieia/logs"]
 

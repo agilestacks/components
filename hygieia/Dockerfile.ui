@@ -1,0 +1,26 @@
+### Checkout
+FROM alpine/git:latest as scm
+MAINTAINER Antons Kranga <anton@agilestacks.com>
+WORKDIR /workspace
+RUN git init && \
+    git remote add -f origin https://github.com/capitalone/Hygieia.git && \
+    git config core.sparseCheckout true && \
+    # echo "cli/src" >> .git/info/sparse-checkout && \
+    # echo "cli/Makefile" >> .git/info/sparse-checkout && \
+    # echo "cli/nodocker.make" >> .git/info/sparse-checkout && \
+    git pull --depth=1 origin master
+
+#### UI
+FROM node:8.9
+MAINTAINER Antons Kranga <anton@agilestacks.com>
+COPY --from=scm /workspace/UI /app
+WORKDIR /app
+RUN echo '{ "allow_root": true }' > /root/.bowerrc
+RUN npm install -g bower && \
+    npm install -h gulp && \
+    npm install && \
+    bower install
+
+EXPOSE   3000
+
+ENTRYPOINT "/usr/local/bin/gulp serve"
