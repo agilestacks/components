@@ -15,17 +15,21 @@ provides:
   - nginxing
 
 parameters:
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+  - name: dns.domain
+    env: TF_VAR_domain_name
+  - name: cloud.kind
+    env: CLOUD_KIND
   - name: component.wowza.namespace
   - name: component.wowza.name
-  - name: dns.domain
-    brief: DNS domain
-    kind: tech
-    env: DOMAIN_NAME
   - name: component.nginxing
     parameters:
     - name:    name
       default: nginxing
-      env:     COMPONENT_NAME
+      env:     TF_VAR_component
     - name:    version
       brief:   nginx-ingress version
       default: "0.11.0"
@@ -37,10 +41,20 @@ parameters:
       default: 1
     - name:    urlPrefix
       default: svc
-      env:     URL_PREFIX
+      env:     TF_VAR_url_prefix
     - name:    namespace
       default: nginx-ingress
-      env:     NAMESPACE
+      env:     TF_VAR_namespace
+    - name:    chart
+      value:   stable/nginx-ingress
+      env:     CHART
+    - name:    chart.version
+      value:   0.11.1
+      env:     CHART_VERSION
+    - name:    bin.terraform
+      value:   terraform-v0.11
+      env:     terraform
+
 
 outputs:
 - name: component.nginxing.fqdn
@@ -48,8 +62,4 @@ outputs:
   fromTfVar: ingress_fqdn
 
 templates:
-  extra:
-  - kind: mustache
-    files: ["deploy-aws.sh.template", "undeploy-aws.sh.template"]
-  - kind: curly
-    files: ["values.yaml.template"]
+  files: ["values.yaml.template"]
