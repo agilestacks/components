@@ -21,13 +21,7 @@ config.yaml
 namespace.yaml
 etcd/charts
 etcd/values.yaml
-deploy-private-dns-aws.sh
-deploy-public-dns-aws.sh
-undeploy-private-dns-aws.sh
-undeploy-public-dns-aws.sh
-upsert-private.json
 upsert.json
-upsert-public.json
 traefik/charts
 traefik/values.yaml
 nginxing/charts
