@@ -2,7 +2,7 @@
 """Registers new ACM certificate and generates terraform for DNS approval
 
 Usage:
-  main.py request <domain> [<additional_names>]... 
+  main.py request <domain> [<additional_names>]...
   main.py gen     <domain> [--standalone] [--save-to <filename>]
   main.py arn     <domain>
   main.py wait    <domain> [--timeout <sec>] [--status <status>]...
@@ -15,7 +15,7 @@ Options:
   --standalone         Generate header for terraform to make it as standalone script
   --save-to <filename> To save generated terraform otherwise it will be printed to stdout
   --timeout <sec>      Timeout in seconds to wait for certificate (default 900)
-  --status <status>    Break wait loop and exit when certificate will become in this status (can be multiple; default ISSUED) 
+  --status <status>    Break wait loop and exit when certificate will become in this status (can be multiple; default ISSUED)
 """
 
 __author__ = "Antons Kranga"
@@ -84,14 +84,14 @@ def render_terraform(cert, standalone=False):
     pattern   = '(\.)?' + zone_name.replace('.', '\.') + '(\.)?$'
     domain    = cert_rec['Name'] if cert_rec['Name'][-1] == '.' else cert_rec['Name'] + '.'
 
-    items.append({ 
+    items.append({
       'name':      re.sub(pattern, '', domain),
       'record':    cert_rec['Value'],
       'type':      cert_rec['Type'],
       'zone_id':   zone['Id'].split('/')[-1],
       'zone_name': zone_name
     })
-  
+
   log.info('DNS records for cert approve: %s', items)
   template = Template(terraform)
   return template.render(
@@ -123,7 +123,7 @@ def request_certificate(domain, additional_names=[]):
     )
   cert = wait_to_propogate( response['CertificateArn'] )
   return cert
-  
+
 # wait until certificate will conform to json schema
 def wait_to_propogate(arn):
   for _ in range(60):
@@ -144,10 +144,15 @@ def most_narrow_hosted_zone(name):
   size = len(parts)
   for i in range( size ):
     domain = '.'.join( parts[i:size] ) + '.'
-    zones = r53.list_hosted_zones_by_name(DNSName=domain, MaxItems='1')['HostedZones']
-    zdomain = zones[0].get('Name', '') if zones else ''
-    if zdomain and zdomain in domain:
-      return zones[0]
+    zones = r53.list_hosted_zones_by_name(DNSName=domain, MaxItems='2')['HostedZones']
+    if zones[0].get('Config').get('PrivateZone'):
+      zdomain = zones[1].get('Name', '') if zones else ''
+      if zdomain and zdomain in domain:
+        return zones[1]
+    else:
+      zdomain = zones[0].get('Name', '') if zones else ''
+      if zdomain and zdomain in domain:
+        return zones[0]
   raise Exception('Cannot find hosted zone that corresponds to {}'.format(name))
 
 ## does json schema validation
@@ -171,8 +176,8 @@ if __name__ == "__main__":
       cert = request_certificate( domain, args['<additional_names>'] )
     else:
       log.warn("Certificate for %s already requested, see details %s", domain, cert)
- 
-  elif args['gen']:    
+
+  elif args['gen']:
     if cert != None:
       tf = render_terraform( cert, args['--standalone'])
       if args['--save-to']:
