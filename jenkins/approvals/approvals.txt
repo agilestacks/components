@@ -1,0 +1,3 @@
+staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods dropRight java.lang.Object[] int
+staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[] groovy.lang.Range
+staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods take java.lang.Object[] int
