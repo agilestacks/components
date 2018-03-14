@@ -15,9 +15,11 @@ deploy-test:
 .PHONY: deploy-test
 
 deploy:
-	$(kubectl) apply -f namespace.yaml
-
+	-$(kubectl) create namespace $(NAMESPACE)
 	-$(kubectl) create configmap init-scripts --from-file=bin/
+	-$(kubectl) create configmap script-approvals --from-file=approvals/
+	-$(kubectl) label --overwrite configmap/init-scripts provider=agilestacks.com project=jenkins qualifier=init-scripts
+	-$(kubectl) label --overwrite configmap/script-approvals provider=agilestacks.com project=jenkins qualifier=script-approvals
 
 	$(kubectl) apply -f secrets.yaml
 	$(kubectl) apply -f config.yaml
@@ -38,6 +40,7 @@ undeploy:
 	-$(kubectl) delete -f secrets.yaml
 	-$(kubectl) delete -f config.yaml
 	-$(kubectl) delete -f volume-$(VOLUME_TYPE).yaml
+	-$(kubectl) delete configmap script-approvals
 	-$(kubectl) delete configmap init-scripts
 .PHONY: undeploy
 
