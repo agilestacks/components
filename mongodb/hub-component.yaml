@@ -49,6 +49,8 @@
         env:     CHART_VERSION
 
   outputs:
+  - name: component.mongodb.namespace
+    value: ${component.mongodb.namespace}
   - name: component.mongodb.host
     value: ${component.mongodb.name}-mongodb.${component.mongodb.namespace}.svc.cluster.local
   - name: component.mongodb.port
