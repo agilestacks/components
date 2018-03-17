@@ -174,7 +174,6 @@ service:
     kubernetes.io/name: Traefik
     kubernetes.io/cluster-service: "true"
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
     api.service.kubernetes.io/path: ${component.ingress.urlPrefix}.${dns.domain}
 gzip:
   enabled: false
