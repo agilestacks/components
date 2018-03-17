@@ -1,6 +1,6 @@
 ## Default values for Traefik
 image: traefik
-imageTag: 1.5.3
+imageTag: 1.5.4
 ## can switch the service type to NodePort if required
 serviceType: LoadBalancer
 loadBalancerIP:
@@ -175,6 +175,7 @@ service:
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "${component.acm.certificate_arn}"
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
     fabric8.io/app-menu: development
     api.service.kubernetes.io/path: ${component.ingress.urlPrefix}.${dns.domain}
 gzip:
