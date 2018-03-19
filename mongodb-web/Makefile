@@ -9,6 +9,8 @@ kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy:
 	-$(kubectl) create namespace $(NAMESPACE)
+	$(kubectl) apply -f service.yaml
+	$(kubectl) apply -f ingress.yaml
 	$(kubectl) apply -f deployment.yaml
 
 	$(MAKE) wait
@@ -31,5 +33,7 @@ wait:
 	exit 1
 
 undeploy:
+	-$(kubectl) delete -f ingress.yaml
+	-$(kubectl) delete -f service.yaml
 	-$(kubectl) delete -f deployment.yaml
 .PHONY: undeploy
