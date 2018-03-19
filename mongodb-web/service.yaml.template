@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-dashboard
+  namespace: ${component.mongodb.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   mongodb-dashboard
+    component: mongodb-web
+    kubernetes.io/name: MongoDB-Web-Client
+    kubernetes.io/cluster-service: "true"
+spec:
+  ports:
+  - name: http
+    port: ${component.mongodb-web.port}
+  selector:
+    provider:  agilestacks.com
+    component: mongodb-web
