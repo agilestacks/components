@@ -1,5 +1,6 @@
 
 # Source
+# See https://github.com/mrvautin/adminMongo for details
 FROM node:8.9 as source
 ARG VERSION=0.0.23
 MAINTAINER Artem Kudla <artem@agilestacks.com>
