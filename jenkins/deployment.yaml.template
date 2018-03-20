@@ -68,11 +68,8 @@
           image: ${component.jenkins.image}
           resources:
             requests:
-              memory: "2Gi"
-              cpu: "300m"
-            limits:
-              memory: "3Gi"
-              cpu: "600m"
+              memory: "256Mi"
+              cpu: "200m"
           imagePullPolicy: Always
           env:
           - name:  JENKINS_URL
