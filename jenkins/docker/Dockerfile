@@ -24,6 +24,7 @@ USER root
 RUN mkdir -p $SHARED_LIBS
 
 ADD https://raw.githubusercontent.com/agilestacks/jenkins/master/plugins/plugins.txt  ${REF}/plugins.txt
+ADD https://raw.githubusercontent.com/agilestacks/jenkins/master/plugins/extras.txt   ${REF}/extras.txt
 
 # COPY init.groovy.d/*.groovy    /usr/share/jenkins/ref/init.groovy.d/
 COPY etc/disable-wizard        /usr/share/jenkins/ref/jenkins.install.InstallUtil.lastExecVersion

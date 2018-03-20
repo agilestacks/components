@@ -1,3 +1,5 @@
+staticMethod java.util.logging.Logger getLogger java.lang.String
 staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods dropRight java.lang.Object[] int
 staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[] groovy.lang.Range
+staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[] java.util.Collection
 staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods take java.lang.Object[] int
