@@ -102,7 +102,7 @@ resource "aws_route53_record" "dns_auth_int" {
   }
 }
 
-resource "aws_route53_record" "dns_app1_ext" {
+resource "aws_route53_record" "dns_app1_int" {
   zone_id = "${data.aws_route53_zone.int_zone.zone_id}"
   name    = "${var.url_prefix}"
   type    = "CNAME"
@@ -114,7 +114,7 @@ resource "aws_route53_record" "dns_app1_ext" {
   }
 }
 
-resource "aws_route53_record" "dns_app2_ext" {
+resource "aws_route53_record" "dns_app2_int" {
   zone_id = "${data.aws_route53_zone.int_zone.zone_id}"
   name    = "*.${var.url_prefix}"
   type    = "CNAME"
@@ -126,7 +126,7 @@ resource "aws_route53_record" "dns_app2_ext" {
   }
 }
 
-resource "aws_route53_record" "dns_apps1_ext" {
+resource "aws_route53_record" "dns_apps1_int" {
   zone_id = "${data.aws_route53_zone.int_zone.zone_id}"
   name    = "${var.sso_url_prefix}"
   type    = "CNAME"
@@ -138,7 +138,7 @@ resource "aws_route53_record" "dns_apps1_ext" {
   }
 }
 
-resource "aws_route53_record" "dns_apps2_ext" {
+resource "aws_route53_record" "dns_apps2_int" {
   zone_id = "${data.aws_route53_zone.int_zone.zone_id}"
   name    = "*.${var.sso_url_prefix}"
   type    = "CNAME"
