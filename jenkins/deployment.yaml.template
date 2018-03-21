@@ -20,6 +20,7 @@
           project:   jenkins
           qualifier: master
       spec:
+        serviceAccountName: jenkins
         securityContext:
           runAsUser: 0
         initContainers:
