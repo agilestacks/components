@@ -1,9 +1,11 @@
 terraform {
   required_version = ">= 0.11.0"
-  backend "s3" {}
+  backend          "s3"             {}
 }
 
-provider "aws" {}
+provider "aws" {
+  version = "1.10.0"
+}
 
 variable "name" {
   type = "string"
