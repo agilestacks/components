@@ -16,20 +16,23 @@ parameters:
 - name: component.ecr
   parameters:
   - name: name
-    default: ecr
+    value: ecr
     env: COMPONENT_NAME
 - name: dns.domain
   brief: DNS domain
   kind: tech
   env:  DOMAIN_NAME
+- name: bin.terraform
+  value: terraform-v0.11
+  env: terraform
 - name: terraform.bucket
   parameters:
   - name: name
-    default: terraform.agilestacks.com
-    env: BACKEND_BUCKET
+    value: terraform.agilestacks.com
+    env: STATE_BUCKET
   - name: region
-    default: us-east-1
-    env: BACKEND_REGION
+    value: us-east-1
+    env: STATE_REGION
 
 outputs:
 - name: component.ecr.image
