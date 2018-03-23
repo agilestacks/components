@@ -1,6 +1,6 @@
 terraform {
-  required_version = ">= 0.11.0"
-  backend "s3" {}
+  required_version = ">= 0.11.3"
+  backend          "s3"             {}
 }
 
 provider "aws" {
@@ -8,13 +8,13 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  version = "1.0.1"
+  version                  = "1.0.1"
   config_context_auth_info = "admin@${var.domain_name}"
   config_context_cluster   = "${var.domain_name}"
 }
 
 data "aws_route53_zone" "ext_zone" {
-  name  = "${var.domain_name}"
+  name = "${var.domain_name}"
 }
 
 data "kubernetes_service" "nginxing" {
@@ -47,4 +47,3 @@ resource "aws_route53_record" "dns_url_wildcard" {
     ignore_changes = ["records", "ttl"]
   }
 }
-
