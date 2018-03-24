@@ -45,10 +45,10 @@
               value: ${component.mongodb-web.connectionName}
             - name: DB_HOST
               value: ${component.mongodb.host}
-#            - name: DB_USERNAME
-#              value: ${component.mongodb.user}
-#            - name: DB_PASSWORD
-#              value: '${component.mongodb.password}'
+            - name: DB_USERNAME
+              value: ${component.mongodb.user}
+            - name: DB_PASSWORD
+              value: '${component.mongodb.password}'
             - name: DB_PORT
               value: '${component.mongodb.port}'
             - name: DB_NAME
