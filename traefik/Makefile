@@ -30,7 +30,8 @@ init:
 	$(helm) init --client-only --upgrade --wait
 	@mkdir -p charts
 	@mkdir -p .terraform
-	$(terraform) init -get=true $(TF_CMD_OPTS) -force-copy  \
+	$(terraform) init $(TF_CMD_OPTS) \
+		-get=true -reconfigure -force-copy  \
 		-backend=true -input=false \
 		-backend-config="bucket=$(STATE_BUCKET)" \
 		-backend-config="region=$(STATE_REGION)" \
@@ -60,11 +61,11 @@ get:
 .PHONY: get
 
 plan:
-	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/$(TF_VAR_domain_name).tfplan
+	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan
 ..PHONY: plan
 
 apply:
-	$(terraform) apply $(TF_OPTS) -Xshadow=false .terraform/$(TF_VAR_domain_name).tfplan
+	$(terraform) apply $(TF_OPTS) -Xshadow=false .terraform/terraform.tfplan
 .PHONY: apply
 
 undeploy: init
