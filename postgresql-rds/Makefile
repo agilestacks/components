@@ -14,8 +14,8 @@ export TF_UPDATE          	 ?= -update
 
 export terraform          	 ?= terraform
 
-export TF_VAR_backend_bucket ?= terraform.agilestacks.com
-export TF_VAR_backend_region ?= us-east-1
+export STATE_BUCKET ?= terraform.agilestacks.com
+export STATE_REGION ?= us-east-1
 
 # export TF_VAR_snapshot_identifier ?= postgresql-2017-12-06-12-19
 export TS                    ?= $(shell date +"%Y-%m-%d-%H-%M")
@@ -27,8 +27,8 @@ init:
 	@rm -rf .terraform/$(TF_VAR_rds_name).$(TF_VAR_name).$(TF_VAR_base_domain)/*
 	yes yes | $(terraform) init -get=true $(TF_OPTS) -force-copy  \
 		-backend=true -input=false \
-		-backend-config="bucket=$(TF_VAR_backend_bucket)" \
-		-backend-config="region=$(TF_VAR_backend_region)" \
+		-backend-config="bucket=$(STATE_BUCKET)" \
+		-backend-config="region=$(STATE_REGION)" \
 		-backend-config="key=$(COMPONENT_NAME)/$(TF_VAR_rds_name).$(TF_VAR_name).$(TF_VAR_base_domain)/terraform.tfstate" \
 		-backend-config="profile=$(AWS_PROFILE)" \
 		. .terraform/$(TF_VAR_rds_name).$(TF_VAR_name).$(TF_VAR_base_domain)

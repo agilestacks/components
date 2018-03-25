@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 export DOMAIN_NAME        ?= dev.kubernetes.delivery
-export ADDITIONAL_NAMES   ?= 
+export ADDITIONAL_NAMES   ?=
 export ZONE_DOMAIN        ?= $(DOMAIN_NAME)
 export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-1
@@ -12,8 +12,8 @@ export TIMEOUT            ?= 1200
 
 TF_OPTS        ?= -no-color
 TF_UPDATE      ?= -update
-BACKEND_BUCKET ?= terraform.agilestacks.com
-BACKEND_REGION ?= us-east-1
+STATE_BUCKET ?= terraform.agilestacks.com
+STATE_REGION ?= us-east-1
 python         := . .venv/bin/activate && python
 terraform      := terraform
 
@@ -30,8 +30,8 @@ init:
 	@rm -rf .terraform/$(DOMAIN_NAME)/*
 	yes yes | $(terraform) init -get=true $(TF_CMD_OPTS) -force-copy  \
 		-backend=true -input=false \
-		-backend-config="bucket=$(BACKEND_BUCKET)" \
- 		-backend-config="region=$(BACKEND_REGION)" \
+		-backend-config="bucket=$(STATE_BUCKET)" \
+ 		-backend-config="region=$(STATE_REGION)" \
  		-backend-config="key=acm/$(DOMAIN_NAME)/terraform.tfstate" \
  		-backend-config="profile=$(AWS_PROFILE)" \
  		. .terraform/$(DOMAIN_NAME)
@@ -66,7 +66,7 @@ install: venv
 	. .venv/bin/activate && pip install -r requirements.txt --upgrade
 
 cert:
-	$(python) main.py request $(DOMAIN_NAME) $(ADDITIONAL_NAMES) 
+	$(python) main.py request $(DOMAIN_NAME) $(ADDITIONAL_NAMES)
 	$(python) main.py gen $(DOMAIN_NAME) \
 		--standalone \
 		--save-to generated.tf
