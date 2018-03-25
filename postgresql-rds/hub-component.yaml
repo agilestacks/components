@@ -32,6 +32,10 @@ parameters:
   - name: rds.instanceType
     default: db.t2.micro
     env: TF_VAR_instance_type
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.region
+  env: STATE_REGION
 
 outputs:
 - name: component.postgresql.host

@@ -19,9 +19,9 @@ parameters:
   env: TIMEOUT
   default: 1200
 - name: terraform.bucket.name
-  env: BACKEND_BUCKET
+  env: STATE_BUCKET
 - name: terraform.bucket.region
-  env: BACKEND_REGION
+  env: STATE_REGION
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
