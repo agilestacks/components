@@ -14,23 +14,23 @@ parameters:
   parameters:
   - name: name
     brief: Component name
-    default: postgresql-rds
+    value: postgresql-rds
     env: COMPONENT_NAME
   - name: rds.name
     kind: user
     brief: RDS database instance name
-    default: ${dns.name}
+    value: ${dns.name}
     env: TF_VAR_rds_name
   - name: database
-    default: agilestacks
+    value: agilestacks
     env: TF_VAR_database_name
   - name: user
-    default: postgres
+    value: postgres
     env: TF_VAR_database_username
   - name: password
     env: TF_VAR_database_password
   - name: rds.instanceType
-    default: db.t2.micro
+    value: db.t2.micro
     env: TF_VAR_instance_type
   - name: rds.snapshot
     empty: allow
