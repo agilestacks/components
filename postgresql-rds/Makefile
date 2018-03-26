@@ -17,9 +17,6 @@ export terraform          	 ?= terraform
 export STATE_BUCKET ?= terraform.agilestacks.com
 export STATE_REGION ?= us-east-1
 
-# export TF_VAR_snapshot_identifier ?= postgresql-2017-12-06-12-19
-export TS                    ?= $(shell date +"%Y-%m-%d-%H-%M")
-
 deploy: init plan apply
 
 init:
