@@ -51,14 +51,17 @@ apply:
 
 backup:
 	cd backup && \
-		rm terraform.* && \
 		mkdir -p ./.terraform && \
-		rm -rf ./.terraform/* ./backup.tf ./output.tf && \
-		templater.sh ./backup.tf.template > ./backup.tf && \
-		templater.sh ./output.tf.template > ./output.tf && \
 		$(terraform) init $(TF_OPTS) && \
-		$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=terraform.tfplan && \
-		$(terraform) apply $(TF_OPTS) -Xshadow=false terraform.tfplan
+		$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 \
+			-state=.terraform/$(TF_VAR_rds_name).$(TF_VAR_name).$(TF_VAR_base_domain).tfstate \
+			-out=.terraform/$(TF_VAR_rds_name).$(TF_VAR_name).$(TF_VAR_base_domain).tfplan && \
+		$(terraform) apply $(TF_OPTS) -Xshadow=false \
+			-state-out=.terraform/$(TF_VAR_rds_name).$(TF_VAR_name).$(TF_VAR_base_domain).tfstate \
+			.terraform/$(TF_VAR_rds_name).$(TF_VAR_name).$(TF_VAR_base_domain).tfplan
+	@echo Outputs:
+	@echo kind = postgresql-rds
+	@echo
 .PHONY: backup
 
 undeploy: import
