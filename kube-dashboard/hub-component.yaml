@@ -16,8 +16,6 @@ provides:
 parameters:
   - name: component.ingress.ssoUrlPrefix
   - name: dns.domain
-    brief: DNS domain
-    kind: tech
     env: DOMAIN_NAME
   - name: component.kubernetes-dashboard
     parameters:
