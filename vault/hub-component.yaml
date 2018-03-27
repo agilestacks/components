@@ -28,6 +28,7 @@ parameters:
     kind: tech
     env: DOMAIN_NAME
   - name: component.ingress.fqdn
+  - name: component.etcd.url
   - name: component.vault
     parameters:
     - name:    name
@@ -68,10 +69,6 @@ parameters:
     - name: seal.threshold
       default: "3"
       env:     SECRET_THRESHOLD
-  - name: component.etcd
-    parameters:
-      - name: name
-      - name: namespace
 
 outputs:
 - name: component.vault.url
