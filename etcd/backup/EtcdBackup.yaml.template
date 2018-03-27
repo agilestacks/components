@@ -3,7 +3,7 @@ kind: "EtcdBackup"
 metadata:
   name: {{COMPONENT_NAME}}-{{TS}}
 spec:
-  etcdEndpoints: "http://{{COMPONENT_NAME}}-client:2379"
+  etcdEndpoints: ["http://{{COMPONENT_NAME}}-client:2379"]
   storageType: S3
   s3:
     # The format of "path" must be: "<s3-bucket-name>/<path-to-backup-file>"
