@@ -21,6 +21,7 @@ config.yaml
 namespace.yaml
 etcd/charts
 etcd/values.yaml
+etcd/secret-config
 upsert.json
 traefik/charts
 traefik/values.yaml

@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := deploy
 
+export AWS_DEFAULT_REGION  ?= us-east-2
 export HELM_HOME           ?= $(shell pwd)/.helm
 export NAMESPACE    	   ?= etcd-cluster
 export COMPONENT_NAME      ?= etcd-cluster
@@ -10,7 +11,7 @@ export BACKUP_ENABLED      ?= false
 export RESTORE_ENABLED     ?= false
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-export AWS_SECRET_NAME     ?= aws
+export AWS_SECRET_NAME     ?= awsetcd
 
 # for restore verb
 export NEW_CLUSTER_NAME      ?= new-etcd-cluster
@@ -18,7 +19,7 @@ export NEW_CLUSTER_SIZE      ?= 3
 export NEW_CLUSTER_VERSION   ?= 3.2.16
 export NEW_CLUSTER_BASEIMAGE ?= quay.io/coreos/etcd
 export BACKUP_TO_RESTORE     ?= files.dev-rk.kubernetes.delivery/backup/etcd/etcd-cluster/20171201172909/v1/etcd-cluster/etcd-cluster/3.2.7_0000000000000001_etcd.backup
-export TS       	         ?= $(shell date +"%Y%m%d%H%M%S")
+export TS       	         ?= $(shell date +"%Y-%m-%d-%H-%M-%S")
 
 deploy: clean init install enable
 .PHONY: deploy
@@ -41,10 +42,15 @@ wait_crd:
 	exit 1
 .PHONY: wait_crd
 
+# after all Makefile and shell/echo acrobatics I can't make --from-literal to insert newline into config= value
 backup:
-	@./bin/templater.sh ./backup/EtcdBackup.yaml.template | \
-	$(kubectl) create -f - && \
-	(sleep 3; $(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o json | jq .status)
+	#$(HUB) render secret-config.template
+	-$(kubectl) create secret generic $(AWS_SECRET_NAME) --from-file=config=secret-config
+	./bin/templater.sh ./backup/EtcdBackup.yaml.template | $(kubectl) create -f - && \
+		(sleep 5; $(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o yaml)
+	test "$$($(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o json | jq -r .status.succeeded)" = "true"
+	@echo Outputs:
+	@echo component.etcd.snapshot = s3://$$($(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o json | jq -r .spec.s3.path)
 .PHONY: backup
 
 restore:
