@@ -47,7 +47,7 @@ parameters:
     - name: ssl.enabled
       value: false
   - name: component.acm.certificate_arn
-    default: undefined
+    value: undefined
     env: ACM_CERTIFICATE_ARN
   - name: component.traefik
     parameters:
