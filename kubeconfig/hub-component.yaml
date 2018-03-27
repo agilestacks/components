@@ -13,9 +13,9 @@ requires:
 parameters:
   - name: dns.domain
     env: DOMAIN_NAME
-  - name: kubernetes.api.endpoint
-  - name: kubernetes.config
+  - name: kubernetes.api
     parameters:
+    - name: endpoint
     - name: caCert
     - name: clientCert
     - name: clientKey
@@ -23,7 +23,7 @@ parameters:
       value: kube-system
 
 outputs:
-- name: kubernetes.config.kubeconfig
+- name: kubernetes.api.kubeconfig
   fromTfVar: kubeconfig
 
 templates:
