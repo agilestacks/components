@@ -58,6 +58,10 @@ parameters:
     - name:    cluster.maxBackups
       default: 24
 
+outputs:
+  - name: component.etcd.url
+    value: http://${component.etcd.name}-client.${component.etcd.namespace}.svc.cluster.local:2379
+
 templates:
   files:
     - "*.template"

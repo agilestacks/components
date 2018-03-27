@@ -19,7 +19,7 @@ export NEW_CLUSTER_BASEIMAGE ?= quay.io/coreos/etcd
 export BACKUP_TO_RESTORE     ?= files.dev-rk.kubernetes.delivery/backup/etcd/etcd-cluster/20171201172909/v1/etcd-cluster/etcd-cluster/3.2.7_0000000000000001_etcd.backup
 export TS       	         ?= $(shell date +"%Y%m%d%H%M%S")
 
-deploy: clean init install enable output
+deploy: clean init install enable
 .PHONY: deploy
 
 init:
@@ -80,11 +80,3 @@ undeploy: init
 clean:
 	@rm -rf $(HELM_HOME)
 	@rm -rf charts
-
-output:
-	@echo Outputs:
-	@echo etcd_url=http://$(COMPONENT_NAME)-client.$(NAMESPACE).svc:2379
-	@echo
-	@echo etcd has been installed successfully.
-.PHONY: output
-
