@@ -110,7 +110,6 @@ output:
 	@echo root_token=$(shell cat $(UNSEAL_FILE) | jq -rM .root_token )
 	@echo vault_url=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:$(VAULT_PORT)
 	@cat $(UNSEAL_FILE) | jq -Mr '.keys | to_entries | map("unseal_key_" + (.key+1|tostring) + "=" + .value) | .[]'
-	@echo component_dir=$(shell pwd)
 	@echo
 	@echo Vault has been installed and initialized successfully.
 .PHONY: output
