@@ -26,6 +26,7 @@ deploy: clean init install enable
 init:
 	@mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
+.PHONY: init
 
 wait_crd:
 	@for i in $$(seq 1 60); do \
@@ -38,6 +39,7 @@ wait_crd:
 	done; \
 	echo "Timeout waiting for customresourcedefinitions to be deployed" \
 	exit 1
+.PHONY: wait_crd
 
 backup:
 	@./bin/templater.sh ./backup/EtcdBackup.yaml.template | \
@@ -81,3 +83,4 @@ undeploy: init
 clean:
 	@rm -rf $(HELM_HOME)
 	@rm -rf charts
+.PHONY: clean
