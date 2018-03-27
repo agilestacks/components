@@ -8,5 +8,5 @@ spec:
   s3:
     # The format of "path" must be: "<s3-bucket-name>/<path-to-backup-file>"
     # e.g: "mybucket/etcd.backup"
-    path: files.{{DOMAIN_NAME}}/backup/etcd/{{COMPONENT_NAME}}/{{TS}}
+    path: {{CLOUD_BUCKET}}/backup/etcd/{{COMPONENT_NAME}}/{{TS}}
     awsSecret: {{AWS_SECRET_NAME}}
