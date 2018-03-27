@@ -29,44 +29,44 @@ parameters:
   - name: component.etcd.url
   - name: component.vault
     parameters:
-    - name:    name
-      default: vault
-      env:     COMPONENT_NAME
-    - name:    version
-      brief:   vault version
-      default: 0.9.0
-    - name:    image.repository
-      default: vault
-    - name:    image.pullPolicy
-      default: IfNotPresent
-    - name:    replicaCount
-      default: 1
-    - name:    resources.limits.memory
-      default: "128Mi"
-    - name:    namespace
+    - name:  name
+      value: vault
+      env:   COMPONENT_NAME
+    - name:  version
+      brief: Vault version
+      value: 0.9.0
+    - name:  image.repository
+      value: vault
+    - name:  image.pullPolicy
+      value: IfNotPresent
+    - name:  replicaCount
+      value: 1
+    - name:  resources.limits.memory
+      value: "128Mi"
+    - name:  namespace
       brief: Kubernetes namespace to install into
-      default: vault
-      env:     NAMESPACE
-    - name: port
+      value: vault
+      env:   NAMESPACE
+    - name:  port
       brief: Port to listen on
-      default: 8200
-      env: VAULT_PORT
-    - name: ingress.enabled
+      value: 8200
+      env:   VAULT_PORT
+    - name:  ingress.enabled
       brief: Deploy ingress for vault
-      env:     INGRESS_ENABLED
-      default: false
-    - name: ipaddress
-      default: "0.0.0.0"
-    - name: tls.disabled
-      default: 1
-    - name: etcd.api
-      default: "v3"
-    - name: seal.keys
-      default: "5"
-      env:     SECRET_SHARES
-    - name: seal.threshold
-      default: "3"
-      env:     SECRET_THRESHOLD
+      env:   INGRESS_ENABLED
+      value: false
+    - name:  ipaddress
+      value: "0.0.0.0"
+    - name:  tls.disabled
+      value: 1
+    - name:  etcd.api
+      value: "v3"
+    - name:  seal.keys
+      value: "5"
+      env:   SECRET_SHARES
+    - name:  seal.threshold
+      value: "3"
+      env:   SECRET_THRESHOLD
 
 outputs:
 - name: component.vault.url
