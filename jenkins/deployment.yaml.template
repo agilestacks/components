@@ -80,7 +80,7 @@
           - name:  AWS_REGION
             value: ${cloud.region}
           - name:  ROOT_DOMAIN_NAME
-            value: ${dns.name}
+            value: ${dns.domain}
           # - name:  ADMIN_USER
           #   value: ${component.jenkins.admin.user}
           # - name:  ADMIN_PASSWORD
