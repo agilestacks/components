@@ -20,7 +20,7 @@ parameters:
     - name: clientCert
     - name: clientKey
     - name: namespace
-      default: kube-system
+      value: kube-system
 
 outputs:
 - name: kubernetes.config.kubeconfig
