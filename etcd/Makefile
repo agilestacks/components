@@ -5,9 +5,9 @@ export NAMESPACE    	   ?= etcd-cluster
 export COMPONENT_NAME      ?= etcd-cluster
 export DOMAIN_NAME         ?= default
 export CLOUD_BUCKET        ?= files.$(DOMAIN_NAME)
-export CLUSTER_ENABLED	   ?= false
-export BACKUP_ENABLED	   ?= false
-export RESTORE_ENABLED	   ?= false
+export CLUSTER_ENABLED     ?= false
+export BACKUP_ENABLED      ?= false
+export RESTORE_ENABLED     ?= false
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export AWS_SECRET_NAME     ?= aws
