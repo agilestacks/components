@@ -83,8 +83,6 @@ outputs:
   fromTfVar: unseal_key_4
 - name: component.vault.unseal.key5
   fromTfVar: unseal_key_5
-- name: component.vault.source_dir
-  fromTfVar: component_dir
 
 templates:
   files:
