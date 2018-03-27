@@ -3,7 +3,7 @@
 export HELM_HOME           ?= $(shell pwd)/.helm
 export NAMESPACE    	   ?= etcd-cluster
 export COMPONENT_NAME      ?= etcd-cluster
-export DOMAIN_NAME         ?= default
+export DOMAIN_NAME         ?= kubernetes.delivery
 export CLOUD_BUCKET        ?= files.$(DOMAIN_NAME)
 export CLUSTER_ENABLED     ?= false
 export BACKUP_ENABLED      ?= false
