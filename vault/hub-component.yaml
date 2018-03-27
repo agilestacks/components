@@ -24,8 +24,6 @@ lifecycle:
 
 parameters:
   - name: dns.domain
-    brief: DNS domain
-    kind: tech
     env: DOMAIN_NAME
   - name: component.ingress.fqdn
   - name: component.etcd.url
