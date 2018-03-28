@@ -19,14 +19,16 @@ undeploy:
 .PHONY: undeploy
 
 wait:
+	echo "Waiting for Tiller pod is up and running "; \
 	@for i in $$(seq 1 60); do \
 		if $(helm) version; then \
+			printf ' Done\n'
 			exit 0; \
 		fi; \
-		echo "Waiting for Tiller pod is up and running ($$i)..."; \
+		printf '.'; \
 		sleep 10; \
 	done; \
-	echo "Timeout waiting for Tiller" \
+	printf "Timeout after 60 retries \n" \
 	exit 1
 .PHONY: wait
 
