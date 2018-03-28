@@ -2,10 +2,9 @@
 
 export DOMAIN_NAME ?= default
 
-deploy:
+deploy: output
 	mkdir -p result
 	mv -f kubeconfig result/kubeconfig.$(DOMAIN_NAME)
-	$(MAKE) output
 
 undeploy:
 	-rm -f result/kubeconfig.$(DOMAIN_NAME)
