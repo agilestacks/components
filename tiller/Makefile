@@ -19,25 +19,25 @@ undeploy:
 .PHONY: undeploy
 
 wait:
-	echo "Waiting for Tiller pod is up and running "; \
 	@for i in $$(seq 1 60); do \
 		if $(helm) version; then \
-			printf ' Done\n'
+			echo " done" \
 			exit 0; \
 		fi; \
-		printf '.'; \
+		printf "."; \
 		sleep 10; \
 	done; \
-	printf "Timeout after 60 retries \n" \
+	echo "Timeout waiting for Tiller" \
 	exit 1
 .PHONY: wait
 
 wait_rbac:
 	@for i in $$(seq 1 60); do \
 		if $(kubectl) get sa ; then \
+			echo " done" \
 			exit 0; \
 		fi; \
-		echo "Waiting for admin RBAC roles to be created ($$i)..."; \
+		printf "."; \
 		sleep 10; \
 	done; \
 	echo "Timeout waiting for admin RBAC roles to be deployed" \
