@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: vault
-  brief: Vault a tool for managing secrets
+  brief: Vault is A Tool for Managing Secrets
   source:
     dir: ../../components/vault
 
@@ -34,7 +34,7 @@ parameters:
       env:   COMPONENT_NAME
     - name:  version
       brief: Vault version
-      value: 0.9.0
+      value: 0.9.6
     - name:  image.repository
       value: vault
     - name:  image.pullPolicy
@@ -67,6 +67,8 @@ parameters:
     - name:  seal.threshold
       value: "3"
       env:   SECRET_THRESHOLD
+    - name:  unseal.file
+      empty: allow
 
 outputs:
 - name: component.vault.url

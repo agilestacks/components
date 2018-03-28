@@ -3,8 +3,10 @@
 export HELM_HOME           ?= $(shell pwd)/.helm
 export NAMESPACE    	   ?= vault
 export COMPONENT_NAME      ?= vault
-export DOMAIN_NAME         ?= default
-export INGRESS_ENABLED	   ?= false
+export TF_VAR_name         ?= test
+export TF_VAR_base_domain  ?= kubernetes.delivery
+export DOMAIN_NAME         ?= $(TF_VAR_name).$(TF_VAR_base_domain)
+export INGRESS_ENABLED     ?= false
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export vault               ?= vault
@@ -18,7 +20,7 @@ export VAULT_SKIP_VERIFY   ?= true
 
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
 
-deploy: clean init install sleep connect enable unseal disconnect output
+deploy: clean init install sleep connect enable unseal force-disconnect output
 .PHONY: deploy
 
 sleep:
@@ -48,16 +50,24 @@ enable:
 			-X PUT \
 			-d "{\"secret_shares\":$(SECRET_SHARES), \"secret_threshold\":$(SECRET_THRESHOLD)}" \
 			$(VAULT_ADDR)/v1/sys/init > $(UNSEAL_FILE); \
+	else \
+	    	mv unseal.json $(UNSEAL_FILE); \
 	fi;
 .PHONY: enable
 
+backup:
+	@echo Outputs:
+	@echo component.vault.unseal.file = $$(base64 < $(UNSEAL_FILE))
+	@echo
+.PHONY: backup
+
 unseal:
 	@for i in $$(seq 1 $(SECRET_THRESHOLD)); do \
-		vault unseal `cat $(UNSEAL_FILE) | jq -Mr .keys[$$i]`; \
+		vault operator unseal `cat $(UNSEAL_FILE) | jq -Mr .keys[$$i]`; \
 	done;
 .PHONY: unseal
 
-seal: auth
+seal: login
 	vault seal
 .PHONY: seal
 
@@ -67,9 +77,9 @@ undeploy: init disconnect
 	# rm -f $(UNSEAL_FILE)
 .PHONY: undeploy
 
-auth:
-	vault auth $(shell cat $(UNSEAL_FILE) | jq -rM .root_token)
-.PHONY: auth
+login:
+	vault login $(shell cat $(UNSEAL_FILE) | jq -rM .root_token)
+.PHONY: login
 
 connect: disconnect
 	@echo Searching for Vault pod
@@ -95,6 +105,10 @@ connect: disconnect
 	echo "Timeout for pod/$(VAULT_POD)"; \
 	exit 1
 .PHONY: connect
+
+force-disconnect:
+	-@$(MAKE) disconnect
+.PHONY: force-disconnect
 
 disconnect:
 	@echo Drop connection to Vault pod
