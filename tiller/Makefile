@@ -21,10 +21,9 @@ undeploy:
 wait:
 	@for i in $$(seq 1 60); do \
 		if $(helm) version; then \
-			echo " done" \
 			exit 0; \
 		fi; \
-		printf "."; \
+		echo "Waiting for Tiller pod is up and running ($$i)..."; \
 		sleep 10; \
 	done; \
 	echo "Timeout waiting for Tiller" \
@@ -34,10 +33,9 @@ wait:
 wait_rbac:
 	@for i in $$(seq 1 60); do \
 		if $(kubectl) get sa ; then \
-			echo " done" \
 			exit 0; \
 		fi; \
-		printf "."; \
+		echo "Waiting for admin RBAC roles to be created ($$i)..."; \
 		sleep 10; \
 	done; \
 	echo "Timeout waiting for admin RBAC roles to be deployed" \
