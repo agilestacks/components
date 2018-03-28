@@ -35,7 +35,7 @@ deployments:
 customResources:
   createEtcdClusterCRD: false
   createBackupCRD: false
-  createRestoreCRD: false
+  createRestoreCRD: false # `true` doesn't work
 
 # etcdOperator
 etcdOperator:
@@ -69,7 +69,7 @@ backupOperator:
   spec:
     storageType: S3
     s3:
-      s3Bucket: ${component.etcd.cluster.s3bucket}
+      path: ${cloud.bucket}/backup/etcd/${component.name}/latest
       awsSecret: ${component.etcd.cluster.awssecret}
   ## Node labels for etcd pod assignment
   ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
@@ -94,7 +94,7 @@ restoreOperator:
     s3:
       # The format of "path" must be: "<s3-bucket-name>/<path-to-backup-file>"
       # e.g: "etcd-snapshot-bucket/v1/default/example-etcd-cluster/3.2.10_0000000000000001_etcd.backup"
-      path: ${component.etcd.cluster.s3bucket}
+      path: ${component.etcd.snapshot}
       awsSecret: ${component.etcd.cluster.awssecret}
   ## Node labels for etcd pod assignment
   ## Ref: https://kubernetes.io/docs/user-guide/node-selection/

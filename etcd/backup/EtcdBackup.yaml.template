@@ -7,6 +7,6 @@ spec:
   storageType: S3
   s3:
     # The format of "path" must be: "<s3-bucket-name>/<path-to-backup-file>"
-    # e.g: "mybucket/etcd.backup"
+    # e.g: "mybucket/etcd.backup" -- without s3:// prefix
     path: {{CLOUD_BUCKET}}/backup/etcd/{{COMPONENT_NAME}}/{{TS}}
     awsSecret: {{AWS_SECRET_NAME}}

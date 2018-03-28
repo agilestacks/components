@@ -23,25 +23,27 @@ parameters:
     env:  DOMAIN_NAME
   - name: component.etcd
     parameters:
+    - name:  namespace
+      brief: Kubernetes namespace to install into
+      value: etcd-cluster
+      env:   NAMESPACE
     - name:  name
       value: etcd-cluster
       env:   COMPONENT_NAME
     - name:  version
       brief: etcd-operator version
-      value: v0.9.0
-    - name:  namespace
-      brief: Kubernetes namespace to install into
-      value: etcd-cluster
-      env:   NAMESPACE
+      value: v0.9.1
     - name:  cluster.enabled
       brief: Start etcd cluster
       value: false
       env:   CLUSTER_ENABLED
     - name:  cluster.size
       value: 3
+      env:   ETCD_CLUSTER_SIZE
     - name:  cluster.version
       brief: etcd version
-      value: v3.2.16
+      value: v3.2.17
+      env:   ETCD_VERSION
     - name:  backup.enabled
       brief: Enable backups
       value: false
@@ -50,9 +52,6 @@ parameters:
       brief: Enable restore
       value: false
       env:   RESTORE_ENABLED
-    - name:  cluster.s3bucket
-      brief: Name of the S3 backup bucket
-      value: terraform.agilestacks.com
     - name:  cluster.awssecret
       value: awsetcd
       env:   AWS_SECRET_NAME
@@ -60,6 +59,9 @@ parameters:
       value: 7200
     - name:  cluster.maxBackups
       value: 24
+    - name:  snapshot
+      empty: allow
+      env:   RESTORE_SNAPSHOT
 
 outputs:
   - name: component.etcd.url

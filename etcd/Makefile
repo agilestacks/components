@@ -4,24 +4,29 @@ export AWS_DEFAULT_REGION  ?= us-east-2
 export HELM_HOME           ?= $(shell pwd)/.helm
 export NAMESPACE    	   ?= etcd-cluster
 export COMPONENT_NAME      ?= etcd-cluster
-export DOMAIN_NAME         ?= kubernetes.delivery
+export TF_VAR_name         ?= test
+export TF_VAR_base_domain  ?= kubernetes.delivery
+export DOMAIN_NAME         ?= $(TF_VAR_name).$(TF_VAR_base_domain)
 export CLOUD_BUCKET        ?= files.$(DOMAIN_NAME)
+export ETCD_IMAGE          ?= quay.io/coreos/etcd
+export ETCD_VERSION        ?= 3.2.17
+export ETCD_CLUSTER_SIZE   ?= 3
 export CLUSTER_ENABLED     ?= false
 export BACKUP_ENABLED      ?= false
 export RESTORE_ENABLED     ?= false
-export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export AWS_SECRET_NAME     ?= awsetcd
 
-# for restore verb
-export NEW_CLUSTER_NAME      ?= new-etcd-cluster
-export NEW_CLUSTER_SIZE      ?= 3
-export NEW_CLUSTER_VERSION   ?= 3.2.16
-export NEW_CLUSTER_BASEIMAGE ?= quay.io/coreos/etcd
-export BACKUP_TO_RESTORE     ?= files.dev-rk.kubernetes.delivery/backup/etcd/etcd-cluster/20171201172909/v1/etcd-cluster/etcd-cluster/3.2.7_0000000000000001_etcd.backup
-export TS       	         ?= $(shell date +"%Y-%m-%d-%H-%M-%S")
+export RESTORE_SNAPSHOT    ?= files.$(DOMAIN_NAME)/backup/etcd/$(COMPONENT_NAME)/latest
+export TS       	       ?= $(shell date +"%Y-%m-%d-%H-%M-%S")
 
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+
+ifeq ($(RESTORE_SNAPSHOT),)
 deploy: clean init install enable
+else
+deploy: clean init install enable restore
+endif
 .PHONY: deploy
 
 init:
@@ -43,19 +48,30 @@ wait_crd:
 .PHONY: wait_crd
 
 # after all Makefile and shell/echo acrobatics I can't make --from-literal to insert newline into config= value
-backup:
+awsetcd:
 	#$(HUB) render secret-config.template
 	-$(kubectl) create secret generic $(AWS_SECRET_NAME) --from-file=config=secret-config
+.PHONY: awsetcd
+
+unbackup:
+	-$(kubectl) delete EtcdBackup/$(COMPONENT_NAME)-$(TS)
+.PHONY: unbackup
+
+backup: unbackup awsetcd
 	./bin/templater.sh ./backup/EtcdBackup.yaml.template | $(kubectl) create -f - && \
 		(sleep 5; $(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o yaml)
 	test "$$($(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o json | jq -r .status.succeeded)" = "true"
 	@echo Outputs:
-	@echo component.etcd.snapshot = s3://$$($(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o json | jq -r .spec.s3.path)
+	@echo component.etcd.snapshot = $$($(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o json | jq -r .spec.s3.path)
 .PHONY: backup
 
-restore:
-	./bin/templater.sh ./restore/EtcdRestore.yaml.template |\
-	$(kubectl) create -f -
+unrestore:
+	-$(kubectl) delete EtcdRestore/$(COMPONENT_NAME)
+.PHONY: unrestore
+
+restore: unrestore awsetcd
+	./bin/templater.sh ./restore/EtcdRestore.yaml.template | \
+		$(kubectl) create -f -
 .PHONY: restore
 
 install:
@@ -80,11 +96,21 @@ enable: wait_crd
 		.
 .PHONY: enable
 
-undeploy: init
+uncluster:
+	-$(kubectl) get EtcdClusters/$(COMPONENT_NAME) -o=yaml | $(kubectl) delete -f - && \
+		sleep 5
+.PHONY: uncluster
+
+undeploy: init unrestore uncluster
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	$(kubectl) get --namespace $(NAMESPACE) EtcdClusters/$(COMPONENT_NAME) -o=yaml|$(kubectl) delete -f - || true
 .PHONY: undeploy
+
+connect:
+	$(kubectl) run --rm -ti \
+		--env ETCDCTL_API=3 --env ETCDCTL_ENDPOINTS=http://$(COMPONENT_NAME)-client:2379 \
+		etcd-shell --image $(ETCD_IMAGE) --restart=Never -- /bin/sh
+.PHONY: connect
 
 clean:
 	@rm -rf $(HELM_HOME)
