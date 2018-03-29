@@ -27,6 +27,8 @@ parameters:
     env: DOMAIN_NAME
   - name: component.ingress.fqdn
   - name: component.etcd.url
+    # TODO temporary until etcd component is redeployed everywhere to provide url output
+    value: http://${component.etcd.name}-client.${component.etcd.namespace}.svc.cluster.local:2379
   - name: component.vault
     parameters:
     - name:  name
