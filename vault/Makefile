@@ -49,13 +49,19 @@ enable:
 	  		-sS \
 			-X PUT \
 			-d "{\"secret_shares\":$(SECRET_SHARES), \"secret_threshold\":$(SECRET_THRESHOLD)}" \
-			$(VAULT_ADDR)/v1/sys/init > $(UNSEAL_FILE); \
+			$(VAULT_ADDR)/v1/sys/init | jq '{keys, root_token}' > $(UNSEAL_FILE); \
 	else \
-	    	mv unseal.json $(UNSEAL_FILE); \
+		$(HUB) render restore/unseal-file.json.template; \
+		mv restore/unseal-file.json $(UNSEAL_FILE); \
 	fi;
 .PHONY: enable
 
 backup:
+	if test ! -f $(UNSEAL_FILE) || jq -e 'has("keys")|not' < $(UNSEAL_FILE); then \
+		$(HUB) render restore/unseal-outputs.json.template; \
+		mkdir -p .vault; \
+		mv restore/unseal-outputs.json $(UNSEAL_FILE); \
+	fi;
 	@echo Outputs:
 	@echo component.vault.unseal.file = $$(base64 < $(UNSEAL_FILE))
 	@echo
