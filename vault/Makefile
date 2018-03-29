@@ -58,8 +58,8 @@ enable:
 
 backup:
 	if test ! -f $(UNSEAL_FILE) || jq -e 'has("keys")|not' < $(UNSEAL_FILE); then \
-		$(HUB) render restore/unseal-outputs.json.template; \
-		mkdir -p .vault; \
+		$(HUB) render restore/unseal-outputs.json.template && \
+		mkdir -p .vault && \
 		mv restore/unseal-outputs.json $(UNSEAL_FILE); \
 	fi;
 	@echo Outputs:
