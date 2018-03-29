@@ -12,6 +12,7 @@ jenkins/service.yaml
 jenkins/volume-claims.yaml
 jenkins/volume-hostpath.yaml
 jenkins/volume-nfs.yaml
+jenkins/rbac.yaml
 pgweb/values.yaml
 postgresql/values.yaml
 postgresql/volume-claim.yaml
