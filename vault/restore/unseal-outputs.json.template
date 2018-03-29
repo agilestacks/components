@@ -1,0 +1,10 @@
+{
+  "keys": [
+    "${component.vault.unseal.key1}",
+    "${component.vault.unseal.key2}",
+    "${component.vault.unseal.key3}",
+    "${component.vault.unseal.key4}",
+    "${component.vault.unseal.key5}"
+  ],
+  "root_token": "${component.vault.token.root}"
+}
