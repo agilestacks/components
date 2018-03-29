@@ -3,7 +3,7 @@
 export DOMAIN_NAME ?= default
 export NAMESPACE   ?= jenkins
 
-VOLUME_TYPE ?= hostpath
+VOLUME_TYPE ?= nfs
 TIMEOUT     ?= 300
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
