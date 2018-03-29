@@ -19,7 +19,7 @@ lifecycle:
     - deploy
     - undeploy
     - connect
-    - auth
+    - login
     - disconnect
 
 parameters:
