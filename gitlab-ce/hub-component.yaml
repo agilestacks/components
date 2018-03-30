@@ -18,7 +18,7 @@ parameters:
   - name: component.ingress.fqdn
     value: app.${dns.domain}
     env: INGRESS_FQDN
-  - name: kubernetes.oidc_issuer_fqdn
+  - name: component.dex.issuer
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.postgresql
