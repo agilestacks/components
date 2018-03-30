@@ -15,7 +15,8 @@ requires:
 parameters:
   - name: component.ingress.ssoUrlPrefix
   - name: component.ingress.protocol
-  - name: kubernetes.oidc_issuer_fqdn
+  - name: component.dex.oidcIssuerFqdn
+    value: auth.${dns.domain}
   - name: component.dex.namespace
     brief: Kubernetes namespace to install into
     value: kube-system
