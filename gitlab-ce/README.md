@@ -35,7 +35,7 @@ This also leverages traefk-acm and the kubernetes OCDC Issuer (Dex)
 * name: component.ingress.fqdn
 * name: component.ingress.ssoUrlPrefix
 * name: component.ingress.protocol
-* name: kubernetes.oidc_issuer_fqdn
+* name: component.dex.issuer
 
 * This also currently needs to register its own ELB for the `git` subdomain. So it also requires. 
 

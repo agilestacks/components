@@ -50,6 +50,10 @@ parameters:
     - name: name
     - name: region
 
+outputs:
+  - name: component.dex.issuer
+    value: ${component.ingress.protocol}://${component.dex.oidcIssuerFqdn}
+
 templates:
   files:
     - "*.yaml.template"

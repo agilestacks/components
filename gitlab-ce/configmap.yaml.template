@@ -79,7 +79,7 @@ data:
 
           # Must match the issuer configured in dex:
           # Note that http:// URLs did not work in my tests; use https://
-          'issuer': '${component.ingress.protocol}://${kubernetes.oidc_issuer_fqdn}',
+          'issuer': '${component.dex.issuer}',
 
           'client_options': {
             # identifier, secret and redirect_uri must match a

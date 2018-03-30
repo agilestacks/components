@@ -46,5 +46,3 @@ outputs:
     fromTfVar: api_client_crt
   - name: kubernetes.api.clientKey
     fromTfVar: api_client_key
-  - name: kubernetes.oidc_issuer_fqdn
-    value: auth.${dns.name}.${dns.baseDomain}
