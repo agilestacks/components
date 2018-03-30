@@ -23,7 +23,6 @@ parameters:
     env: TF_VAR_domain_name
   - name: cloud.kind
     env: CLOUD_KIND
-  - name: kubernetes.oidc_issuer_fqdn
   - name: component.ingress
     parameters:
     - name: urlPrefix
