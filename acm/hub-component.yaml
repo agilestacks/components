@@ -14,10 +14,10 @@ parameters:
   env: ADDITIONAL_NAMES
 - name: component.acm.deleteCert
   env: ACM_DELETE_CERTIFICATE
-  default: false
+  value: false
 - name: component.acm.wait.timeout
   env: TIMEOUT
-  default: 1200
+  value: 1200
 - name: terraform.bucket.name
   env: STATE_BUCKET
 - name: terraform.bucket.region

@@ -30,7 +30,7 @@ parameters:
     - name: version
       value: 3.8.1
     - name: namespace
-      default: selenium
+      value: selenium
       env: NAMESPACE
     - name: javaOpts
       value: -Xmx400m
@@ -130,7 +130,6 @@ outputs:
   - name: component.selenium.host
     value: ${component.selenium.name}-selenium.${component.selenium.namespace}.svc.cluster.local
   - name: component.selenium.port
-    value: "${component.selenium.port}"
   - name: component.selenium.url
     value: ${component.ingress.protocol}://${component.selenium.name}.${component.selenium.ingress.url}
 

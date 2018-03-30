@@ -19,7 +19,7 @@ parameters:
     kind: user
     env: AWS_DEFAULT_REGION
   - name: cloud.sshKey
-    default: agilestacks
+    value: agilestacks
     env: AWS_KEYPAIR
   - name: cloud.bucket
     kind: tech
@@ -30,18 +30,18 @@ parameters:
     kind: tech
     env: DOMAIN_NAME
   - name: cloud.role.master
-    default: unknown
+    value: unknown
   - name: component.ingress.fqdn
     value: app.${dns.domain}
     env: INGRESS_FQDN
   - name: component.spinnaker
     parameters:
     - name: name
-      default: spinnaker
+      value: spinnaker
       env: COMPONENT_NAME
     - name: namespace
       brief: Kubernetes namespace to install into
-      default: spinnaker
+      value: spinnaker
       env: NAMESPACE
     - name: ingress
       value: spinnaker.${component.ingress.fqdn}
@@ -50,30 +50,30 @@ parameters:
       value: ${cloud.role.master}
       env: AWS_ASSUME_ROLE
     - name: aws.keypair
-      default: agilestacks
+      value: agilestacks
       env: AWS_KEY_PAIR
     - name: slack.bot_token
-      default: unknown
+      value: unknown
       env: SLACK_TOKEN
     - name: aws.accountName
-      default: aws
+      value: aws
       env: AWS_ACCOUNT_NAME
     - name: kubernetes.accountName
-      default: kubernetes
+      value: kubernetes
       env: K8S_ACCOUNT_NAME
   - name: component.jenkins
     parameters:
     - name: fqdn
-      default: unknown
+      value: unknown
       env: JENKINS_FQDN
     - name: internal.url
-      default: unknown
+      value: unknown
       env: JENKINS_ADDRESS
     - name: serviceaccount.user
-      default: robot
+      value: robot
       env: JENKINS_USER
     - name: serviceaccount.password
-      default: robot
+      value: robot
       env: JENKINS_PASSWORD
 
 outputs:

@@ -19,8 +19,6 @@ parameters:
     value: ecr
     env: COMPONENT_NAME
 - name: dns.domain
-  brief: DNS domain
-  kind: tech
   env:  DOMAIN_NAME
 - name: bin.terraform
   value: terraform-v0.11
@@ -28,10 +26,8 @@ parameters:
 - name: terraform.bucket
   parameters:
   - name: name
-    value: terraform.agilestacks.com
     env: STATE_BUCKET
   - name: region
-    value: us-east-1
     env: STATE_REGION
 
 outputs:

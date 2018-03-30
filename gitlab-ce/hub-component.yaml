@@ -32,24 +32,24 @@ parameters:
     - name: acm_certificate.arn
       value: ${component.acm.certificate_arn}
       env: ACM_CERTIFICATE_ARN
-    - name:    name
-      default: gitlab-ce
-      env:     COMPONENT_NAME
-    - name:    namespace
-      default: gitlab
-      env:     NAMESPACE
-    - name:    dbName
-      default: gitlab
-    - name:    dbUser
-      default: gitlab
-    - name:    dbPassword
-      default: gitlabsekret
-    - name:    database
-      default: gitlab
-    - name:    volume
-      default: 8Gi
-    - name:    port
-      default: 80
+    - name:  name
+      value: gitlab-ce
+      env:   COMPONENT_NAME
+    - name:  namespace
+      value: gitlab
+      env:   NAMESPACE
+    - name:  dbName
+      value: gitlab
+    - name:  dbUser
+      value: gitlab
+    - name:  dbPassword
+      value: gitlabsekret
+    - name:  database
+      value: gitlab
+    - name:  volume
+      value: 8Gi
+    - name:  port
+      value: 80
 
 outputs:
 - name: component.gitlab-ce.git_fqdn

@@ -16,12 +16,12 @@ parameters:
   - name: component.linkerd
     parameters:
     - name: namespace
-      default: ingress
+      value: ingress
       env: NAMESPACE
     - name: image
-      default: buoyantio/linkerd
+      value: buoyantio/linkerd
     - name: version
-      default: 0.9.1
+      value: 0.9.1
   - name: cloud.region
     kind: user
     env: AWS_REGION

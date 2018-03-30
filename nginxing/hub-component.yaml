@@ -27,34 +27,33 @@ parameters:
   - name: component.wowza.name
   - name: component.nginxing
     parameters:
-    - name:    name
-      default: nginxing
-      env:     TF_VAR_component
-    - name:    version
-      brief:   nginx-ingress version
-      default: "0.11.0"
-    - name:    image.repository
-      default: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
-    - name:    image.pullPolicy
-      default: IfNotPresent
-    - name:    replicaCount
-      default: 1
-    - name:    urlPrefix
-      default: svc
-      env:     TF_VAR_url_prefix
-    - name:    namespace
-      default: nginx-ingress
-      env:     TF_VAR_namespace
-    - name:    chart
-      value:   stable/nginx-ingress
-      env:     CHART
-    - name:    chart.version
-      value:   0.11.1
-      env:     CHART_VERSION
-    - name:    bin.terraform
-      value:   terraform-v0.11
-      env:     terraform
-
+    - name:  name
+      value: nginxing
+      env:   TF_VAR_component
+    - name:  version
+      brief: nginx-ingress version
+      value: "0.11.0"
+    - name:  image.repository
+      value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
+    - name:  image.pullPolicy
+      value: IfNotPresent
+    - name:  replicaCount
+      value: 1
+    - name:  urlPrefix
+      value: svc
+      env:   TF_VAR_url_prefix
+    - name:  namespace
+      value: nginx-ingress
+      env:   TF_VAR_namespace
+    - name:  chart
+      value: stable/nginx-ingress
+      env:   CHART
+    - name:  chart.version
+      value: 0.11.1
+      env:   CHART_VERSION
+    - name:  bin.terraform
+      value: terraform-v0.11
+      env:   terraform
 
 outputs:
 - name: component.nginxing.fqdn

@@ -17,7 +17,6 @@
       brief: Kubernetes namespace to install into
       env: NAMESPACE
     - name: dns.domain
-      brief: DNS domain
       env: DOMAIN_NAME
     - name: component.mongodb-web
       parameters:
@@ -29,21 +28,21 @@
       - name: ingress.path
         value: /
       - name: image
-        default: agilestacks/mongodb-dashboard
+        value: agilestacks/mongodb-dashboard
       - name: port
-        default: 80
+        value: 80
       - name: host
-        default: 0.0.0.0
+        value: 0.0.0.0
       - name: password
         empty: allow
       - name: locale
-        default: en
+        value: en
       - name: basePath
         empty: allow
       - name: monitoring
-        default: 'on'
+        value: 'on'
       - name: connectionName
-        default: database
+        value: database
     - name: component.mongodb
       parameters:
       - name: host

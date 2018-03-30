@@ -17,26 +17,24 @@ parameters:
   - name: component.ingress.ssoUrlPrefix
   - name: component.ingress.urlPrefix
   - name: dns.domain
-    brief: DNS domain
-    kind: tech
     env: DOMAIN_NAME
   - name: component.wowza
     parameters:
-    - name:    name
-      default: wowza
-      env:     COMPONENT_NAME
-    - name:    namespace
-      brief:   Kubernetes namespace to install into
-      default: wowza
-      env:     NAMESPACE
-    - name:    ingress.urlPrefix
-      default:  streaming
-    - name:    license
-      default: ET1E4-jQYfa-DRDEy-KExpf-C9TdU-ADKE8-9wWWdNmWCxEQ
-    - name:    image
-      default: wowzamedia/wowza-streaming-engine-linux
-    - name:    version
-      default: 4.7.4
+    - name:  name
+      value: wowza
+      env:   COMPONENT_NAME
+    - name:  namespace
+      brief: Kubernetes namespace to install into
+      value: wowza
+      env:   NAMESPACE
+    - name:  ingress.urlPrefix
+      value: streaming
+    - name:  license
+      value: ET1E4-jQYfa-DRDEy-KExpf-C9TdU-ADKE8-9wWWdNmWCxEQ
+    - name:  image
+      value: wowzamedia/wowza-streaming-engine-linux
+    - name:  version
+      value: 4.7.4
 
 templates:
   files:
