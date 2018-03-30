@@ -19,58 +19,58 @@ parameters:
     parameters:
     - name: volume.enabled
       brief: true if persistence enabled
-      default: "true"
+      value: "true"
     - name: volume.storageClass
-      default: "ebs-gp2"
+      value: "ebs-gp2"
     - name: volume.size
-      default: 8Gi
+      value: 8Gi
     - name: usePassword
-      default: "false"
+      value: "false"
     - name: password
-      default: " "
+      value: " "
     - name: namespace
       env: NAMESPACE
-      default: redis
+      value: redis
     - name: name
       env: COMPONENT_NAME
-      default: redis
+      value: redis
     - name: image
-      default: bitnami/redis:4.0.2-r1
+      value: bitnami/redis:4.0.2-r1
     - name: requests.memory
-      default: 256Mi
+      value: 256Mi
     - name: requests.cpu
-      default: 100m
+      value: 100m
     - name: ha
       parameters:
       - name: enabled
-        default: "false"
+        value: "false"
         env: HA_ENABLED
       - name: image
-        default: gcr.io/google_containers/redis:v1
+        value: gcr.io/google_containers/redis:v1
       - name: master
-        default: 1
+        value: 1
       - name: slave
-        default: 1
+        value: 1
       - name: sentinel
-        default: 3
+        value: 3
       - name: master.requests.memory
-        default: 200Mi
+        value: 200Mi
       - name: master.requests.cpu
-        default: 100m
+        value: 100m
       - name: master.limits.memory
-        default: 700Mi
+        value: 700Mi
       - name: slave.requests.memory
-        default: 200Mi
+        value: 200Mi
       - name: slave.requests.cpu
-        default: 100m
+        value: 100m
       - name: slave.limits.memory
-        default: 200Mi
+        value: 200Mi
       - name: sentinel.requests.memory
-        default: 200Mi
+        value: 200Mi
       - name: sentinel.requests.cpu
-        default: 100m
+        value: 100m
       - name: sentinel.limits.memory
-        default: 200Mi
+        value: 200Mi
 
 outputs:
   - name: component.redis.host

@@ -15,36 +15,35 @@ parameters:
   parameters:
   - name: fqdn
   - name: protocol
-    default: http
+    value: http
   - name: ssoUrlPrefix
-    default: swww
+    value: swww
 - name: component.jenkins
   parameters:
   - name: namespace
-    default: jenkins
+    value: jenkins
     env: NAMESPACE
   - name: image
-    default: docker.io/agilestacks/jenkins:2.89.6
+    value: docker.io/agilestacks/jenkins:2.89.6
   - name: admin.user
-    default: admin
+    value: admin
   - name: admin.password
-    default: secret
+    value: secret
   - name: serviceaccount.user
-    default: robot
+    value: robot
   - name: serviceaccount.password
-    default: supersecret
+    value: supersecret
   - name: wait.timeout
-    default: 300
+    value: 300
     env: TIMEOUT
   - name: initGroovy.gitRepo
-    default: https://github.com/agilestacks/jenkins.git
+    value: https://github.com/agilestacks/jenkins.git
   - name: initGroovy.subPath
-    default: init.groovy.d
+    value: init.groovy.d
 - name: cloud.region
   kind: user
   env: AWS_REGION
 - name: dns.domain
-  brief: DNS domain
   env: DOMAIN_NAME
 - name: nfs.server
   brief: NFS server for NFS volumes

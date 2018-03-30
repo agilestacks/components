@@ -18,35 +18,33 @@ parameters:
   - name: kubernetes.oidc_issuer_fqdn
   - name: component.dex.namespace
     brief: Kubernetes namespace to install into
-    default: kube-system
+    value: kube-system
     env: NAMESPACE
   - name: component.dex.image
-    default: agilestacks/dex:v2.9.0
+    value: agilestacks/dex:v2.9.0
   - name: component.dex.saml.id
-    default: saml
+    value: saml
   - name: component.dex.saml.name
-    default: "Okta with SAML"
+    value: "Okta with SAML"
   - name: component.dex.saml.usernameAttr
-    default: name
+    value: name
   - name: component.dex.saml.emailAttr
-    default: email
+    value: email
   - name: component.dex.saml.groupsAttr
-    default: groups
+    value: groups
   - name: component.dex.okta.issuer
-    default: https://dev-458481.oktapreview.com
+    value: https://dev-458481.oktapreview.com
   - name: component.dex.okta.clientId
-    default: unknown
+    value: unknown
   - name: component.dex.okta.clientSecret
-    default: unknown
+    value: unknown
   - name: cloud.region
     kind: user
   - name: dns.domain
     env: DOMAIN_NAME
   - name: dns.name
-    default: default
     env: TF_VAR_name
   - name: terraform.bucket
-    kind: user
     parameters:
     - name: name
     - name: region

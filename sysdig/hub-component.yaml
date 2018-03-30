@@ -14,36 +14,34 @@ provides:
 
 parameters:
   - name: dns.domain
-    brief: DNS domain
-    kind: tech
     env: DOMAIN_NAME
   - name: component.sysdig
     parameters:
-    - name:    name
-      default: sysdig
-      env:     COMPONENT_NAME
-    - name:    version
-      brief:   sysdig agent version
-      default: "latest"
-    - name:    namespace
+    - name:  name
+      value: sysdig
+      env:   COMPONENT_NAME
+    - name:  version
+      brief: sysdig agent version
+      value: "latest"
+    - name:  namespace
       brief: Kubernetes namespace to install into
-      default: sysdig
-      env:     NAMESPACE
-    - name: rbac.install
-      default: true
-    - name: license
-      default: "83c6bb73-95b4-44f1-9729-bfbf7d1726db"
-    - name: agentTags
+      value: sysdig
+      env:   NAMESPACE
+    - name:  rbac.install
+      value: true
+    - name:  license
+      value: "83c6bb73-95b4-44f1-9729-bfbf7d1726db"
+    - name:  agentTags
       brief: Key-value agent tags following the format "key:val,key2:val2"
-      default: " "
-    - name:    resources.limits.memory
-      default: "768Mi"
-    - name:    resources.requests.memory
-      default: "512Mi"
-    - name:    resources.limits.cpu
-      default: "500m"
-    - name:    resources.requests.cpu
-      default: "100m"
+      empty: allow
+    - name:  resources.limits.memory
+      value: "768Mi"
+    - name:  resources.requests.memory
+      value: "512Mi"
+    - name:  resources.limits.cpu
+      value: "500m"
+    - name:  resources.requests.cpu
+      value: "100m"
 
 templates:
   files:

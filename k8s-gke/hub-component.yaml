@@ -24,10 +24,10 @@ parameters:
     - name: name
       env: TF_VAR_backend_bucket
     - name: region
-      default: us-east4
+      value: us-east4
       env: TF_VAR_backend_region
     - name: project
-      default: agilestacks
+      value: agilestacks
       env: TF_VAR_backend_gcp_project
 
 outputs:

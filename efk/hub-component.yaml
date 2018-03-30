@@ -17,22 +17,20 @@ parameters:
   - name: component.ingress.ssoUrlPrefix
   - name: component.ingress.protocol
   - name: dns.domain
-    brief: DNS domain
-    kind: tech
     env: DOMAIN_NAME
   - name: component.efk
     parameters:
-    - name:    name
-      default: efk
-      env:     COMPONENT_NAME
-    - name:    namespace
-      brief:   Kubernetes namespace to install into
-      default: logs
-      env:     NAMESPACE
-    - name:    ingress.urlPrefix
-      default:  logs
-    - name:    ingress.kibanaUrlPrefix
-      default: kibana
+    - name:  name
+      value: efk
+      env:   COMPONENT_NAME
+    - name:  namespace
+      brief: Kubernetes namespace to install into
+      value: logs
+      env:   NAMESPACE
+    - name:  ingress.urlPrefix
+      value: logs
+    - name:  ingress.kibanaUrlPrefix
+      value: kibana
 
 templates:
   files:

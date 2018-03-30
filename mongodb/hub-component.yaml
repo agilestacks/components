@@ -16,54 +16,44 @@
 
   parameters:
     - name: dns.domain
-      brief: DNS domain
-      kind: tech
       env: DOMAIN_NAME
     - name: component.mongodb
       parameters:
-      - name:    name
-        default: mongodb
-        env:     COMPONENT_NAME
-      - name:    namespace
-        default: mongodb
-        env:     NAMESPACE
-      - name:    user
-        value:   mongouser
-      - name:    password
-        value:   b0d41457fcac49689186667dbdfbef5f
-      - name:    database
-        value:   mongodb
-      - name:    volumeType
-        default: gp2
-      - name:    volumeSize
-        default: 8Gi
-      - name:    storageClass
-        default: aws-ebs-gp2
-      - name:    port
-        default: 27017
-      - name:    chart.name
-        value:   charts/mongodb
-        env:     CHART
-      - name:    chart.version
-        value:   0.4.27
-        env:     CHART_VERSION
+      - name:  name
+        value: mongodb
+        env:   COMPONENT_NAME
+      - name:  namespace
+        value: mongodb
+        env:   NAMESPACE
+      - name:  user
+        value: mongouser
+      - name:  password
+        value: b0d41457fcac49689186667dbdfbef5f
+      - name:  database
+        value: mongodb
+      - name:  volumeType
+        value: gp2
+      - name:  volumeSize
+        value: 8Gi
+      - name:  storageClass
+        value: aws-ebs-gp2
+      - name:  port
+        value: 27017
+      - name:  chart.name
+        value: charts/mongodb
+        env:   CHART
+      - name:  chart.version
+        value: 0.4.27
+        env:   CHART_VERSION
 
   outputs:
   - name: component.mongodb.namespace
-    value: ${component.mongodb.namespace}
   - name: component.mongodb.host
     value: ${component.mongodb.name}-mongodb.${component.mongodb.namespace}.svc.cluster.local
   - name: component.mongodb.port
-    value: ${component.mongodb.port}
   - name: component.mongodb.user
-    value: ${component.mongodb.user}
   - name: component.mongodb.password
-    value: ${component.mongodb.password}
   - name: component.mongodb.database
-    value: ${component.mongodb.database}
-  - name: component.mongodb.url
-    brief: Deprecated, use component.mongodb.host
-    value: ${component.mongodb.name}-mongodb.${component.mongodb.namespace}.svc.cluster.local
 
   templates:
     files:

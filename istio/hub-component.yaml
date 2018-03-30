@@ -16,10 +16,10 @@ parameters:
   - name: component.istio
     parameters:
     - name: namespace
-      default: ingress
+      value: ingress
       env: NAMESPACE
     - name: version
-      default: 0.2.12
+      value: 0.2.12
     - name: initializer.replicas
       value: 1
     - name: mixer.replicas
@@ -40,12 +40,9 @@ parameters:
     kind: user
     env: AWS_REGION
   - name: dns.domain
-    brief: DNS domain
-    kind: tech
     env: DOMAIN_NAME
   - name: docker.registry
     brief: DNS domain
-    kind: tech
     env: DOCKER_REGISTRY
 
 templates:

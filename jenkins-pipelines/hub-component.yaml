@@ -14,26 +14,24 @@ parameters:
 - name: component.jenkins
   parameters:
   - name: namespace
-    default: jenkins
+    value: jenkins
     env: NAMESPACE
   - name: serviceaccount.user
     env: JENKINS_USER
   - name: serviceaccount.password
     env: JENKINS_PASSWORD
   - name: internal.port
-    default: 8080
+    value: 8080
     env: JENKINS_PORT
 - name: component.jenkins-pipelines
   parameters:
   - name: pipelines
-    default: asi-demo-nodejs
+    value: asi-demo-nodejs
     env: PIPELINES
 - name: cloud.region
   kind: user
   env: AWS_REGION
 - name: dns.domain
-  brief: DNS domain
-  kind: tech
   env: DOMAIN_NAME
 
 templates:
