@@ -5,7 +5,7 @@ metadata:
   namespace: ${component.dex.namespace}
 data:
   config.yaml: |
-    issuer: ${component.ingress.protocol}://${kubernetes.oidc_issuer_fqdn}
+    issuer: ${component.ingress.protocol}://${component.dex.oidcIssuerFqdn}
     storage:
       type: kubernetes
       config:
@@ -46,6 +46,6 @@ data:
     enablePasswordDB: false
   consoleClientID: agilestacks-console
   consoleSecret: FlAYFMJHIj-W5Nm3yCbYow
-  issuer: '${component.ingress.protocol}://${kubernetes.oidc_issuer_fqdn}'
+  issuer: '${component.ingress.protocol}://${component.dex.oidcIssuerFqdn}'
   kubectlClientID: agilestacks-kubectl
   kubectlSecret: LD8eafPG6-Wcc-a1sSk3XQ
