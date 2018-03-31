@@ -49,7 +49,7 @@ module "dns_{{ i }}" {
 {% endfor %}
 '''
 
-import boto3, os, json, pprint, uuid, re, jsonschema, time
+import boto3, sys, os, json, pprint, uuid, re, jsonschema, time
 # from bson import json_util
 import logging as log
 from docopt  import docopt
@@ -126,12 +126,14 @@ def request_certificate(domain, additional_names=[]):
 
 # wait until certificate will conform to json schema
 def wait_to_propogate(arn):
+  print "Wait for certificate {} to propogate ".format(arn)
   for _ in range(60):
     cert = cert_by_arn(arn)
     if valid(cert, schema):
+      print ' done'
       return cert
     time.sleep(3)
-    print "Wait for certificate {} to propogate".format(arn)
+    sys.stdout.write('.')
   raise Exception('Timed out to propogate ACM DNS records to approve: {}'.format(arn))
 
 def delete_certificate(cert):
@@ -144,15 +146,15 @@ def most_narrow_hosted_zone(name):
   size = len(parts)
   for i in range( size ):
     domain = '.'.join( parts[i:size] ) + '.'
-    zones = r53.list_hosted_zones_by_name(DNSName=domain, MaxItems='2')['HostedZones']
-    if zones[0].get('Config').get('PrivateZone'):
-      zdomain = zones[1].get('Name', '') if zones else ''
-      if zdomain and zdomain in domain:
-        return zones[1]
-    else:
-      zdomain = zones[0].get('Name', '') if zones else ''
-      if zdomain and zdomain in domain:
-        return zones[0]
+    # TODO implement pagination if 100 zones is not enough
+    resp = r53.list_hosted_zones_by_name(DNSName=domain, MaxItems='100')
+
+    for hostedZone in resp.get('HostedZones', []):
+      zname   = hostedZone.get('Name')
+      zpublic = not hostedZone.get('Config', {'PrivateZone': True})['PrivateZone']
+      if zname == domain and zpublic:
+        return hostedZone
+
   raise Exception('Cannot find hosted zone that corresponds to {}'.format(name))
 
 ## does json schema validation
