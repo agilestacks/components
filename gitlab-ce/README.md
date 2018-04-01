@@ -26,7 +26,7 @@ It leverages several parameters defined for `postgres` including :
 * component.postgresql.user
 * component.postgresql.password
 * component.postgresql.database
-* component.postgresql.url
+* component.postgresql.host
 
 If the `url` is not supplied,  it will guess the url by synthesizing the postgres service name and namespace. 
 

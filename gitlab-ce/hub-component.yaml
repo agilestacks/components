@@ -23,10 +23,10 @@ parameters:
     env: DOMAIN_NAME
   - name: component.postgresql
     parameters:
+    - name: host
     - name: database
     - name: user
     - name: password
-    - name: url
   - name: component.gitlab-ce
     parameters:
     - name: acm_certificate.arn
