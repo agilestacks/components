@@ -100,7 +100,7 @@ postgresql:
   postgresUser: ${component.postgresql.user}
   postgresPassword: ${component.postgresql.password}
   postgresDatabase: ${component.postgresql.database}
-  postgresHostname: ${component.postgresql.url}
+  postgresHostname: ${component.postgresql.host}
 
   persistence:
     size: 10Gi
@@ -110,7 +110,7 @@ gitlab:
   database: ${component.gitlab-ce.database}
   databaseUser: ${component.gitlab-ce.dbUser}
   databasePassword: ${component.gitlab-ce.dbPassword}
-  databaseHost: ${component.postgresql.url} 
+  databaseHost: ${component.postgresql.host}
 
 ## Configuration values for the redis dependency.
 ## ref: https://github.com/kubernetes/charts/blob/master/stable/redis/README.md
