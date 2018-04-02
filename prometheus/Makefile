@@ -8,13 +8,17 @@ export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export generator		   ?= ./grafana-gen/bin/grafana_dashboards_generate.sh --namespace "$(NAMESPACE)"
 
-deploy: clean init install_operator install_prom install_alertmanager install_kube_prom install_grafana output
+deploy: clean init namespace install_operator install_prom install_alertmanager install_kube_prom install_grafana output
 .PHONY: deploy
 
 init:
 	@mkdir -p $(HELM_HOME)
 	@mkdir -p grafana-gen/output
 	@$(helm) init --client-only --upgrade
+
+namespace:
+	-$(kubectl) create namespace $(NAMESPACE)
+.PHONY: namespace
 
 install_operator:
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-operator$$' || \
