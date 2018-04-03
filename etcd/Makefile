@@ -63,6 +63,7 @@ backup: unbackup awsetcd
 	test "$$($(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o json | jq -r .status.succeeded)" = "true"
 	@echo Outputs:
 	@echo component.etcd.snapshot = $$($(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o json | jq -r .spec.s3.path)
+	@echo
 .PHONY: backup
 
 unrestore:
