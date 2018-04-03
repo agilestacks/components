@@ -174,7 +174,8 @@ service:
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "${component.acm.certificate_arn}"
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+    # Changed from "http" to default "tcp", to mitigate ELB doesn't supporting websocket on L7 level
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: ""
     fabric8.io/app-menu: development
     api.service.kubernetes.io/path: ${component.ingress.urlPrefix}.${dns.domain}
 gzip:
