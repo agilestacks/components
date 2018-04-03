@@ -22,7 +22,7 @@ rules:
   verbs: ["get","list","watch"]
 - apiGroups: [""]
   resources: ["secrets"]
-  verbs: ["get"]
+  verbs: ["get", "list"]
 - apiGroups: [""]
   resources: ["componentStatuses", "persistentVolumes", "persistentVolumeClaims"]
   verbs: ["get", "list"]
