@@ -1,9 +1,11 @@
 terraform {
   required_version = ">= 0.9.3"
-  backend "s3" {}
+  backend          "s3"             {}
 }
 
-provider "aws" {}
+provider "aws" {
+  version = "1.10.0"
+}
 
 data "aws_vpc" "selected" {
   id = "${var.vpc_id}"
@@ -30,10 +32,10 @@ resource "aws_security_group" "default" {
   }
 
   ingress {
-      from_port   = "${var.database_port}"
-      to_port     = "${var.database_port}"
-      protocol    = "TCP"
-      cidr_blocks = ["${data.aws_vpc.selected.cidr_block}"]
+    from_port   = "${var.database_port}"
+    to_port     = "${var.database_port}"
+    protocol    = "TCP"
+    cidr_blocks = ["${data.aws_vpc.selected.cidr_block}"]
   }
 
   # Note: Postgres only need TCP
@@ -77,10 +79,10 @@ resource "aws_db_instance" "postgresql" {
   parameter_group_name       = "${var.parameter_group}"
   storage_encrypted          = "${var.storage_encrypted}"
 
-  snapshot_identifier        = "${var.snapshot_identifier}"
+  snapshot_identifier = "${var.snapshot_identifier}"
 
   tags {
-    Name        = "${var.rds_name}-rds"
+    Name = "${var.rds_name}-rds"
   }
 }
 
@@ -95,12 +97,15 @@ resource "aws_db_instance" "postgresql" {
 #   statistic           = "Average"
 #   threshold           = "${var.alarm_cpu_threshold}"
 
+
 #   dimensions {
 #     DBInstanceIdentifier = "${aws_db_instance.postgresql.id}"
 #   }
 
+
 #   alarm_actions = ["${var.alarm_actions}"]
 # }
+
 
 # resource "aws_cloudwatch_metric_alarm" "database_disk_queue" {
 #   alarm_name          = "alarm${var.rds_name}DatabaseServerDiskQueueDepth"
@@ -113,12 +118,15 @@ resource "aws_db_instance" "postgresql" {
 #   statistic           = "Average"
 #   threshold           = "${var.alarm_disk_queue_threshold}"
 
+
 #   dimensions {
 #     DBInstanceIdentifier = "${aws_db_instance.postgresql.id}"
 #   }
 
+
 #   alarm_actions = ["${var.alarm_actions}"]
 # }
+
 
 # resource "aws_cloudwatch_metric_alarm" "database_disk_free" {
 #   alarm_name          = "alarm${var.rds_name}DatabaseServerFreeStorageSpace"
@@ -131,12 +139,15 @@ resource "aws_db_instance" "postgresql" {
 #   statistic           = "Average"
 #   threshold           = "${var.alarm_free_disk_threshold}"
 
+
 #   dimensions {
 #     DBInstanceIdentifier = "${aws_db_instance.postgresql.id}"
 #   }
 
+
 #   alarm_actions = ["${var.alarm_actions}"]
 # }
+
 
 # resource "aws_cloudwatch_metric_alarm" "database_memory_free" {
 #   alarm_name          = "alarm${var.rds_name}DatabaseServerFreeableMemory"
@@ -149,9 +160,12 @@ resource "aws_db_instance" "postgresql" {
 #   statistic           = "Average"
 #   threshold           = "${var.alarm_free_memory_threshold}"
 
+
 #   dimensions {
 #     DBInstanceIdentifier = "${aws_db_instance.postgresql.id}"
 #   }
 
+
 #   alarm_actions = ["${var.alarm_actions}"]
 # }
+
