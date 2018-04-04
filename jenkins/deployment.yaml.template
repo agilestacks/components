@@ -103,11 +103,9 @@
           volumeMounts:
           - name: workspace-volume
             mountPath: /var/jenkins_home/workspace
-            subPath:  jenkins/vol-00
             readOnly: false
-          - name: workspace-volume
+          - name: jobs-volume
             mountPath: /var/jenkins_home/jobs
-            subPath:  jenkins/vol-01
             readOnly: false
           - name: init-groovy-scripts
             mountPath: /usr/share/jenkins/ref/init.groovy.d
@@ -126,9 +124,11 @@
           - name: workspace-volume
             persistentVolumeClaim:
               claimName: workspace-volume
+          - name: jobs-volume
+            persistentVolumeClaim:
+              claimName: jobs-volume
           - name: init-scripts
             configMap:
               name: init-scripts
           - name: init-groovy-scripts
             emptyDir: {}
-

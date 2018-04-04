@@ -21,6 +21,10 @@ deploy:
 	-$(kubectl) label --overwrite configmap/init-scripts provider=agilestacks.com project=jenkins qualifier=init-scripts
 	-$(kubectl) label --overwrite configmap/script-approvals provider=agilestacks.com project=jenkins qualifier=script-approvals
 
+ifeq ($(VOLUME_TYPE),nfs)
+	$(kubectl) apply -f job-nfs-mkdirs.yaml
+	- bin/wait_for.sh job nfs-mkdirs
+endif
 	$(kubectl) apply -f secrets.yaml
 	$(kubectl) apply -f config.yaml
 	$(kubectl) apply -f volume-$(VOLUME_TYPE).yaml
@@ -42,6 +46,9 @@ undeploy:
 	-$(kubectl) delete -f secrets.yaml
 	-$(kubectl) delete -f config.yaml
 	-$(kubectl) delete -f volume-$(VOLUME_TYPE).yaml
+ifeq ($(VOLUME_TYPE), nfs)
+	-$(kubectl) delete -f job-nfs-mkdirs.yaml
+endif
 	-$(kubectl) delete configmap script-approvals
 	-$(kubectl) delete configmap init-scripts
 .PHONY: undeploy
