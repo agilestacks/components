@@ -23,7 +23,7 @@ deploy:
 
 ifeq ($(VOLUME_TYPE),nfs)
 	$(kubectl) apply -f job-nfs-mkdirs.yaml
-	- bin/wait_for.sh job nfs-mkdirs
+	- $(SHELL) bin/wait_for.sh job nfs-mkdirs
 endif
 	$(kubectl) apply -f secrets.yaml
 	$(kubectl) apply -f config.yaml
