@@ -58,12 +58,26 @@
           - name: init-groovy-scripts
             mountPath: /opt/init.groovy.d
 
-        #   - name: groovy-configs-dir
-        #     mountPath: /jenkins_groovy
-        #   - name: script-approval-dir
-        #     mountPath: /jenkins_approval
-        #   - name: jenkins-init-bin
-        #     mountPath: /var/jenkins_home/bin
+        - name: config-exporter-3
+          image: alpine/git
+          imagePullPolicy: Always
+          env:
+          - name: GIT_REMOTE
+            value: https://github.com/agilestacks/jenkins.git
+          - name: BRANCH
+            value: master
+          - name: SUBPATH
+            value: grapeConfig.xml
+          - name: DEST_DIR
+            value: /opt/.groovy
+          # command: ["sleep 3600"]
+          command: ["sh", "/opt/bin/export-dir-scm.sh"]
+          volumeMounts:
+          - name: init-scripts
+            mountPath: /opt/bin
+          - name: dot-groovy
+            mountPath: /opt/.groovy
+
         containers:
         - name: jenkins-master
           image: ${component.jenkins.image}
@@ -81,20 +95,7 @@
             value: ${cloud.region}
           - name:  ROOT_DOMAIN_NAME
             value: ${dns.domain}
-          # - name:  ADMIN_USER
-          #   value: ${component.jenkins.admin.user}
-          # - name:  ADMIN_PASSWORD
-          #   valueFrom:
-          #     secretKeyRef:
-          #       name: jenkins-secrets
-          #       key:  ${component.jenkins.admin.user}
-          # - name:  SERVICE_ACCOUNT_USER
-          #   value: ${component.jenkins.serviceaccount.user}
-          # - name:  SERVICE_ACCOUNT_PASSWORD
-          #   valueFrom:
-          #     secretKeyRef:
-          #       name: jenkins-secrets
-          #       key:  ${component.jenkins.serviceaccount.user}
+
           ports:
           - name: http
             containerPort: 8080
@@ -109,6 +110,8 @@
             readOnly: false
           - name: init-groovy-scripts
             mountPath: /usr/share/jenkins/ref/init.groovy.d
+          - name: dot-groovy
+            mountPath: /var/jenkins_home/.groovy
           readinessProbe:
             httpGet:
               path: /login
@@ -131,4 +134,6 @@
             configMap:
               name: init-scripts
           - name: init-groovy-scripts
+            emptyDir: {}
+          - name: dot-groovy
             emptyDir: {}

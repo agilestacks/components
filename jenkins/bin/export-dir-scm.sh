@@ -18,4 +18,8 @@ git remote add -f origin "$GIT_REMOTE"
 git fetch --depth=1 origin "$BRANCH"
 git checkout "origin/$BRANCH" -- "$SUBPATH"
 
-cp -rpv "$GIT_LOCAL/$SUBPATH/." "$DEST_DIR"
+if [ -d "$GIT_LOCAL/$SUBPATH" ]; then
+    cp -rpv "$GIT_LOCAL/$SUBPATH/." "$DEST_DIR"
+else
+    cp -pv "$GIT_LOCAL/$SUBPATH" "$DEST_DIR"
+fi
