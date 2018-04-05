@@ -54,13 +54,14 @@ parameters:
 outputs:
 - name: component.gitlab-ce.git_fqdn
   brief: FQDN of ingress
-  fromTfVar: git_fqdn
-- name: component.gitlab-ce.robbot-password
-  brief: Password for the gitlab robot account
-  fromTfVar: gitbot_password
-- name: component.gitlab-ce.robbot-username
+  value: git.${dns.domain}
+- name: component.gitlab-ce.robot.username
   brief: Password for the gitlab robot account
   fromTfVar: gitbot_username
+- name: component.gitlab-ce.robot.password
+  brief: Password for the gitlab robot account
+  fromTfVar: gitbot_password/base64
+
 templates:
   files:
     - "*.yaml.template"
