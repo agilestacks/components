@@ -75,6 +75,9 @@ undeploy: init
 
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component) || exit 0
+
+	@echo Waiting 180sec for traefik ELB to be destroyed
+	@sleep 180
 .PHONY: undeploy
 
 clean:
