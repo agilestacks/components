@@ -54,10 +54,9 @@ undeploy: init
 
 output:
 	@echo Outputs:
-	@echo git_fqdn=git.$(DOMAIN_NAME)
 	@echo gitbot_password=$(GITBOT_PASSWORD)
 	@echo gitbot_username=gitbot
-	@echo gitlab_root_password=$(shell kubectl -n gitlab get secret gitlab-ce-gitlab-ce -o json | jq -Mr '.data["gitlab-root-password"]' | base64 -D)
+	@echo gitlab_root_password=$(shell kubectl -n gitlab get secret gitlab-ce-gitlab-ce -o json | jq -Mr '.data["gitlab-root-password"]')
 	@echo
 
 clean:
