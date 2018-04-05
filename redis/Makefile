@@ -1,16 +1,19 @@
 .DEFAULT_GOAL := deploy
 
 export HELM_HOME           ?= $(shell pwd)/.helm
-export COMPONENT_NAME      ?= redis
-export NAMESPACE 		   ?= redis
-export DOMAIN_NAME         ?= default
-export kubectl     		   ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm        		   ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-export HA_ENABLED          ?= false
+COMPONENT_NAME   ?= redis
+NAMESPACE 	     ?= redis
+DOMAIN_NAME      ?= default
+HA_ENABLED       ?= false
+CHART_VERSION    ?= 1.1.15
+kubectl          ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm             ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+HA_CHART_VERSION ?= 2.1.1
 
 ifeq ($(HA_ENABLED),true)
 HELM_CHART=stable/redis-ha
 VALUES_FILE=values-ha.yaml
+CHART_VERSION=$(HA_CHART_VERSION)
 else
 HELM_CHART=stable/redis
 VALUES_FILE=values.yaml
@@ -27,11 +30,12 @@ init:
 fetch:
 	$(helm) fetch \
 			--destination charts \
-			--untar $(HELM_CHART)
+			--untar $(HELM_CHART) \
+			--version $(CHART_VERSION)
 .PHONY: fetch
 
 install:
-	$(kubectl) apply -f namespace.yaml
+	- $(kubectl) create namespace $(NAMESPACE)
 	$(kubectl) apply -f storage-class.yaml
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
@@ -40,7 +44,8 @@ install:
 			--namespace $(NAMESPACE) \
 			--replace \
 			--wait \
-			--values $(VALUES_FILE)
+			--values $(VALUES_FILE) \
+			--version $(CHART_VERSION)
 .PHONY: install
 
 output:
