@@ -22,6 +22,8 @@ export TS       	       ?= $(shell date +"%Y-%m-%d-%H-%M-%S")
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
+running_pods := $(kubectl) get pods -l app=etcd -o jsonpath='{range.items[?(@.status.phase=="Running")]}{.kind}{"\n"}{end}'
+
 ifeq ($(RESTORE_SNAPSHOT),)
 deploy: clean init install enable
 else
@@ -47,6 +49,20 @@ wait_crd:
 	exit 1
 .PHONY: wait_crd
 
+wait_pods:
+	@printf "Waiting for cluster pods to be running"; \
+	for i in $$(seq 1 60); do \
+		if [ $$($(running_pods) | wc -l) -eq $(ETCD_CLUSTER_SIZE) ] ; then \
+			printf "\ndone\n"; \
+			exit 0; \
+		fi; \
+		printf "."; \
+		sleep 20; \
+	done; \
+	printf "\nTimeout Error\n" \
+	exit 1
+.PHONY: wait_pods
+
 # after all Makefile and shell/echo acrobatics I can't make --from-literal to insert newline into config= value
 awsetcd:
 	#$(HUB) render secret-config.template
@@ -70,7 +86,7 @@ unrestore:
 	-$(kubectl) delete EtcdRestore/$(COMPONENT_NAME)
 .PHONY: unrestore
 
-restore: unrestore awsetcd
+restore: wait_pods unrestore awsetcd
 	./bin/templater.sh ./restore/EtcdRestore.yaml.template | \
 		$(kubectl) create -f -
 .PHONY: restore
