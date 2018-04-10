@@ -52,3 +52,4 @@ echo gcp_bucket = $BUCKET
 echo api_ca_crt = $caCert
 echo api_client_crt = $clientCert
 echo api_client_key = $clientKey
+echo
