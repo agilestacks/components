@@ -39,8 +39,6 @@ parameters:
     value: unknown
   - name: component.dex.okta.clientSecret
     value: unknown
-  - name: cloud.region
-    kind: user
   - name: dns.domain
     env: DOMAIN_NAME
   - name: dns.name
