@@ -70,7 +70,6 @@ outputs:
 - name: component.ingress.protocol
   fromTfVar: ingress_protocol
 - name: component.ingress.ssoUrlPrefix
-  value: ${component.ingress.ssoUrlPrefix}
 - name: component.ingress.dashboard.url
   value: http://${component.ingress.ssoUrlPrefix}.${dns.domain}/dashboard/
 - name: component.ingress.elb
