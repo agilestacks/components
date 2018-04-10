@@ -75,9 +75,5 @@ outputs:
 - name: component.ingress.elb
   fromTfVar: elb_domain
 
-
 templates:
   files: ["values.yaml.template", "values-acm.yaml.template"]
-  # extra:
-  # - kind: mustache
-  #   files: ["deploy-aws.sh.template", "undeploy-aws.sh.template"]
