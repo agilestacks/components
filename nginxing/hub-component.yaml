@@ -25,6 +25,7 @@ parameters:
     env: CLOUD_KIND
   - name: component.wowza.namespace
   - name: component.wowza.name
+  - name: component.wowza.streamPrefix
   - name: component.nginxing
     parameters:
     - name:  name
@@ -32,7 +33,7 @@ parameters:
       env:   TF_VAR_component
     - name:  version
       brief: nginx-ingress version
-      value: "0.11.0"
+      value: "0.12.0"
     - name:  image.repository
       value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
     - name:  image.pullPolicy
@@ -40,7 +41,7 @@ parameters:
     - name:  replicaCount
       value: 1
     - name:  urlPrefix
-      value: svc
+      value: ${component.wowza.streamPrefix}
       env:   TF_VAR_url_prefix
     - name:  namespace
       value: nginx-ingress
@@ -49,7 +50,7 @@ parameters:
       value: stable/nginx-ingress
       env:   CHART
     - name:  chart.version
-      value: 0.11.1
+      value: 0.13.1
       env:   CHART_VERSION
     - name:  bin.terraform
       value: terraform-v0.11
