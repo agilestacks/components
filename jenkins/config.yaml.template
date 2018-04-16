@@ -16,3 +16,5 @@ data:
   INGRESS_FQDN: ${component.ingress.fqdn}
   INGRESS_SSO_FQDN: ${component.jenkins.namespace}.${component.ingress.ssoUrlPrefix}.${dns.domain}
   JENKINS_NAMESPACE: ${component.jenkins.namespace}
+  STATE_BUCKET: ${terraform.bucket.name}
+  STATE_REGION: ${terraform.bucket.region}
