@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := deploy
 
+export COMPONENT_NAME     ?= acm
 export DOMAIN_NAME        ?= dev.kubernetes.delivery
 export ADDITIONAL_NAMES   ?=
 export ZONE_DOMAIN        ?= $(DOMAIN_NAME)
@@ -32,7 +33,7 @@ init:
 		-backend=true -input=false \
 		-backend-config="bucket=$(STATE_BUCKET)" \
  		-backend-config="region=$(STATE_REGION)" \
- 		-backend-config="key=acm/$(DOMAIN_NAME)/terraform.tfstate" \
+ 		-backend-config="key=$(DOMAIN_NAME)/acm/$(COMPONENT_NAME)/terraform.tfstate" \
  		-backend-config="profile=$(AWS_PROFILE)" \
  		. .terraform/$(DOMAIN_NAME)
 

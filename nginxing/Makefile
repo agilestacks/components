@@ -3,7 +3,7 @@
 export HELM_HOME           ?= $(shell pwd)/.helm
 export TF_VAR_namespace    ?= nginx-ingress
 export TF_VAR_component    ?= nginxing
-export TF_VAR_domain_name  ?= default
+export TF_VAR_domain_name  ?= dev.kubernetes.delivery
 
 CLOUD_KIND ?= aws
 CHART_VERSION ?= 0.11.1
@@ -25,7 +25,7 @@ init:
 		-backend=true -input=false \
 		-backend-config="bucket=$(STATE_BUCKET)" \
 		-backend-config="region=$(STATE_REGION)" \
-		-backend-config="key=$(TF_VAR_component)/$(TF_VAR_domain_name)/terraform.tfstate" \
+		-backend-config="key=$(TF_VAR_domain_name)/nginxing/$(TF_VAR_component)/terraform.tfstate" \
 		-backend-config="profile=$(AWS_PROFILE)"
 
 fetch:

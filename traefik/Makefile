@@ -2,8 +2,8 @@
 
 export HELM_HOME           ?= $(shell pwd)/.helm
 export TF_VAR_namespace    ?= ingress
-export TF_VAR_component    ?= toolbox
-export TF_VAR_domain_name  ?= default
+export TF_VAR_component    ?= traefik
+export TF_VAR_domain_name  ?= dev.kubernetes.delivery
 
 CLOUD_KIND ?= aws
 ACM_CERTIFICATE_ARN ?= undefined
@@ -35,7 +35,7 @@ init:
 		-backend=true -input=false \
 		-backend-config="bucket=$(STATE_BUCKET)" \
 		-backend-config="region=$(STATE_REGION)" \
-		-backend-config="key=$(TF_VAR_component)/$(TF_VAR_domain_name)/terraform.tfstate" \
+		-backend-config="key=$(TF_VAR_domain_name)/traefik/$(TF_VAR_component)/terraform.tfstate" \
 		-backend-config="profile=$(AWS_PROFILE)"
 
 fetch:

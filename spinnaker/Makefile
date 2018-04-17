@@ -13,8 +13,8 @@ export TF_INPUT             := 0
 export TF_OPTS              :=
 export TF_UPDATE            ?= -update
 
-export TF_VAR_backend_bucket ?= terraform.agilestacks.com
-export TF_VAR_backend_region ?= us-east-1
+export STATE_BUCKET ?= terraform.agilestacks.com
+export STATE_REGION ?= us-east-1
 
 COMPONENT_NAME       ?= spinnaker
 SLACK_TOKEN          ?= unknown
@@ -43,9 +43,9 @@ tf_init:
 	@rm -rf .terraform/$(DOMAIN_NAME)/*
 	$(terraform) init -get=true $(TF_CMD_OPTS) -force-copy  \
 		-backend=true -input=false \
-		-backend-config="bucket=$(TF_VAR_backend_bucket)" \
-		-backend-config="region=$(TF_VAR_backend_region)" \
-		-backend-config="key=spinnaker/$(DOMAIN_NAME)/terraform.tfstate" \
+		-backend-config="bucket=$(STATE_BUCKET)" \
+		-backend-config="region=$(STATE_REGION)" \
+		-backend-config="key=$(DOMAIN_NAME)/spinnaker/$(COMPONENT_NAME)/terraform.tfstate" \
 		-backend-config="profile=$(AWS_PROFILE)" \
 		. .terraform/$(DOMAIN_NAME)
 

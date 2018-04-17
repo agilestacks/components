@@ -12,9 +12,9 @@ meta:
 
 parameters:
   - name: terraform.bucket.name
-    env: TF_VAR_backend_bucket
+    env: STATE_BUCKET
   - name: terraform.bucket.region
-    env: TF_VAR_backend_region
+    env: STATE_REGION
   - name: cloud.region
     kind: user
     env: AWS_DEFAULT_REGION
