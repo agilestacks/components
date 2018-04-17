@@ -8,8 +8,10 @@ meta:
     dir: ../../components/postgresql-rds
 
 parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
 - name: cloud.vpc.id
-  env:  TF_VAR_vpc_id
+  env: TF_VAR_vpc_id
 - name: component.postgresql
   parameters:
   - name: name
