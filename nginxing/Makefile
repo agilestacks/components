@@ -35,7 +35,6 @@ fetch:
 		--version $(CHART_VERSION)
 .PHONY: fetch
 
-
 install:
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm) install charts/$(notdir $(CHART)) \

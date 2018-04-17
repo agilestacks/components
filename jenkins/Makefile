@@ -11,6 +11,7 @@ deploy-test:
 	@echo $(kubectl)
 	@echo Outputs:
 	@echo password = secret
+	@echo
 	@echo Jenkins deployed
 .PHONY: deploy-test
 

@@ -11,6 +11,7 @@ deploy-test:
 	@echo Outputs:
 	@echo login = admin@agilestacks.com
 	@echo password = secret
+	@echo
 	@echo Dex deployed
 .PHONY: deploy-test
 
@@ -40,6 +41,7 @@ output:
 	@echo Outputs:
 	@echo login = admin@agilestacks.com
 	@echo password = secret
+	@echo
 .PHONY: output
 
 undeploy:
