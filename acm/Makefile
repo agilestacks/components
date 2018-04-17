@@ -12,8 +12,8 @@ export TIMEOUT            ?= 1200
 
 TF_OPTS        ?= -no-color
 TF_UPDATE      ?= -update
-STATE_BUCKET ?= terraform.agilestacks.com
-STATE_REGION ?= us-east-1
+STATE_BUCKET   ?= terraform.agilestacks.com
+STATE_REGION   ?= us-east-1
 python         := . .venv/bin/activate && python
 terraform      := terraform
 
@@ -60,7 +60,6 @@ ifeq ($(ACM_DELETE_CERTIFICATE),true)
 endif
 	rm -f generated.tf
 .PHONY: deploy
-
 
 install: venv
 	. .venv/bin/activate && pip install -r requirements.txt --upgrade

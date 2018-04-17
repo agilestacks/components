@@ -47,5 +47,5 @@ undeploy: init
 
 import:
 	-$(terraform) import $(TF_OPTS) module.ecr.aws_ecr_repository.main $(TF_VAR_name) \
-	2>/dev/null
+		2>/dev/null
 .PHONY: import

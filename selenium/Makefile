@@ -1,11 +1,11 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME           ?= $(shell pwd)/.helm
-export COMPONENT_NAME      ?= selenium
-export NAMESPACE 		   ?= selenium
-export DOMAIN_NAME         ?= default
-export kubectl     		   ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm        		   ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+export HELM_HOME      ?= $(shell pwd)/.helm
+export COMPONENT_NAME ?= selenium
+export NAMESPACE      ?= selenium
+export DOMAIN_NAME    ?= dev.kubernetes.delivery
+export kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+export helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 HELM_CHART=stable/selenium
 VALUES_FILE=values.yaml

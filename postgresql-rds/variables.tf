@@ -26,7 +26,6 @@ variable "database_name" {
   default = "postgres"
 }
 
-
 variable "database_password" {}
 
 variable "database_username" {
