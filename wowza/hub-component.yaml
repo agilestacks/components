@@ -46,4 +46,5 @@ outputs:
     value: http://wowza.${component.wowza.ingress.urlPrefix}.${component.ingress.urlPrefix}.${dns.domain}/enginemanager
   - name: component.wowza.name
   - name: component.wowza.namespace
+  - name: component.wowza.streamPrefix
 
