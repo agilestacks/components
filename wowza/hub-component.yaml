@@ -29,6 +29,8 @@ parameters:
       env:   NAMESPACE
     - name:  ingress.urlPrefix
       value: streaming
+    - name:  streamPrefix
+      value: svc
     - name:  license
       value: ET1E4-jQYfa-DRDEy-KExpf-C9TdU-ADKE8-9wWWdNmWCxEQ
     - name:  image
