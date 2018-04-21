@@ -78,6 +78,7 @@ test:
 output:
 	@echo Outputs:
 	@echo certificate_arn=$(shell $(python) main.py arn $(DOMAIN_NAME))
+	@echo
 .PHONY: output
 
 clean:
