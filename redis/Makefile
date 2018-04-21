@@ -52,6 +52,7 @@ output:
 	@echo
 	@echo Outputs:
 	@echo password=$(shell $(kubectl) get secret $(COMPONENT_NAME)-redis -o jsonpath='{.data.redis-password}')
+	@echo
 .PHONY: outputs
 
 undeploy: init
