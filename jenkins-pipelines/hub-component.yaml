@@ -11,22 +11,16 @@ requires:
   - kubernetes
 
 parameters:
+- name: component.ecr.image
 - name: component.jenkins
   parameters:
   - name: namespace
     value: jenkins
     env: NAMESPACE
-  - name: serviceaccount.user
-    env: JENKINS_USER
-  - name: serviceaccount.password
-    env: JENKINS_PASSWORD
-  - name: internal.port
-    value: 8080
-    env: JENKINS_PORT
 - name: component.jenkins-pipelines
   parameters:
   - name: pipelines
-    value: asi-demo-nodejs
+    value: asi-demo-nodejs,asi-demo-java
     env: PIPELINES
 - name: cloud.region
   kind: user

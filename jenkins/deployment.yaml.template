@@ -111,7 +111,7 @@
           - name: init-groovy-scripts
             mountPath: /usr/share/jenkins/ref/init.groovy.d
           - name: dot-groovy
-            mountPath: /var/jenkins_home/.groovy
+            mountPath: /root/.groovy
           readinessProbe:
             httpGet:
               path: /login

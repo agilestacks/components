@@ -87,3 +87,5 @@ ingress.yaml
 terraform.tfplan
 terraform.tfstate
 terraform.tfstate.backup
+asi-demo-java.yaml
+asi-demo-nodejs.yaml
