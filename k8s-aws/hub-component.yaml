@@ -12,6 +12,11 @@ requires:
 provides:
   - kubernetes
 
+lifecycle:
+  readyConditions:
+    - dns: ${kubernetes.api.endpoint}
+      url: https://${kubernetes.api.endpoint}/api/v1
+
 parameters:
   - name: dns.domain
     env: DOMAIN_NAME
