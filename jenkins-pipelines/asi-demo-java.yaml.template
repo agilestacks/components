@@ -9,7 +9,7 @@ metadata:
     project: jenkins
     qualifier: pipeline-scm
 data:
-  repositoryUrl: "https://github.com/agilestacks/agile-demo.git"
+  repositoryUrl: "https://github.com/agilestacks/java-pipeline-demo.git"
   branchSpec:  "*/master"
 ---
 kind: ConfigMap
