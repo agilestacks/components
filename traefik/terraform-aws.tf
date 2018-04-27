@@ -13,6 +13,8 @@ provider "kubernetes" {
   config_context_cluster   = "${var.domain_name}"
 }
 
+data "aws_region" "current" {}
+
 data "aws_route53_zone" "ext_zone" {
   name = "${var.domain_name}"
 }
@@ -81,5 +83,19 @@ resource "aws_route53_record" "dns_apps2_ext" {
 
   lifecycle {
     ignore_changes = ["records", "ttl"]
+  }
+}
+
+resource "null_resource" "drop_elb" {
+  provisioner "local-exec" {
+    when = "destroy"
+    on_failure = "continue"
+    command = <<EOF
+aws \
+  --region=${data.aws_region.current.name} \
+  elb delete-load-balancer  \
+  --load-balancer-name="${element(split("-", element(split(".", "${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"), 0)), 0)}"
+EOF
+
   }
 }
