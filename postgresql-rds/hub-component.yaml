@@ -34,6 +34,9 @@ parameters:
   - name: rds.instanceType
     value: db.t2.micro
     env: TF_VAR_instance_type
+  - name: rds.version
+    value: "9.6.8"
+    env: TF_VAR_engine_version
   - name: rds.snapshot
     empty: allow
     env: TF_VAR_snapshot_identifier
