@@ -54,6 +54,7 @@ backup:
 		$(terraform) apply $(TF_OPTS) -Xshadow=false \
 			-state-out=.terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).tfstate \
 			.terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).tfplan
+	@echo
 	@echo Outputs:
 	@echo kind = postgresql-rds
 	@echo
