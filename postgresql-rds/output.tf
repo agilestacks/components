@@ -21,7 +21,3 @@ output "port" {
 output "username" {
   value = "${aws_db_instance.postgresql.username}"
 }
-
-output "endpoint" {
-  value = "${aws_db_instance.postgresql.endpoint}"
-}
