@@ -3,7 +3,7 @@ variable "allocated_storage" {
 }
 
 variable "engine_version" {
-  default = "9.6.2"
+  default = "9.6.8"
 }
 
 variable "instance_type" {
