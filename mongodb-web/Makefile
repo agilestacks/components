@@ -23,13 +23,13 @@ wait:
 
 	@while [ `date +%s` -le "$(timeout)" ]; do \
 		if [[ `$(get_pod)` ]]; then \
-			echo " done"; \
+			printf "\ndone\n"; \
 			exit 0; \
 		fi; \
 		printf "."; \
 		sleep 8; \
 	done; \
-	echo " ERROR timeout $(TIMEOUT)sec"; \
+	printf "\nERROR timeout $(TIMEOUT) sec\n"; \
 	exit 1
 
 undeploy:
