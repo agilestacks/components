@@ -35,7 +35,7 @@
             - name: DB_PORT
               value: '${component.mongodb.port}'
             - name: WAIT_TIMEOUT
-              value: '${component.mongodb.waitTimeout}'
+              value: '${component.mongodb-web.waitTimeout}'
 
         containers:
         - name: mongodb-dashboard
