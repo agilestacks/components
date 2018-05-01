@@ -1,16 +1,19 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME           ?= $(shell pwd)/.helm
+export HELM_HOME		   ?= $(shell pwd)/.helm
 
-NAMESPACE      ?= mongodb
-COMPONENT_NAME ?= mongodb
-DOMAIN_NAME    ?= default
-kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-CHART 		   ?= charts/mongodb
-CHART_VERSION  ?= 0.4.27
+NAMESPACE		?= mongodb
+COMPONENT_NAME	?= mongodb
+DOMAIN_NAME		?= default
+HOST			:= $(COMPONENT_NAME)-mongodb.$(NAMESPACE).svc.cluster.local
+kubectl			?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm			?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+CHART			?= charts/mongodb
+CHART_VERSION	?= 0.4.27
+TIMEOUT			?= 300
 
-deploy: clean init fetch install
+
+deploy: clean init fetch install wait
 .PHONY: deploy
 
 init:
@@ -47,3 +50,20 @@ undeploy: init
 clean:
 	@rm -rf $(HELM_HOME)
 	@rm -rf charts
+
+mongo_pod=$(kubectl) get pods -l app=mongodb-mongodb -o jsonpath="{range .items[*]}{@.metadata.name}{end}"
+wait:
+		$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
+		@printf "Waiting for mongodb port to be served "
+
+		@while [ `date +%s` -le "$(timeout)" ]; do \
+				if $(kubectl) exec -it `$(mongo_pod)` -- mongo --eval "db.help()" "$(HOST):$(PORT)" >& /dev/null; then \
+						printf "\ndone\n"; \
+						exit 0; \
+				fi; \
+				printf "."; \
+				sleep 8; \
+		done; \
+		printf "\nERROR timeout $(TIMEOUT)sec\n"; \
+		exit 1
+.PHONY: wait

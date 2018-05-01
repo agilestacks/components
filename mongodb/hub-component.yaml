@@ -39,6 +39,7 @@
         value: aws-ebs-gp2
       - name:  port
         value: 27017
+        env:   PORT
       - name:  chart.name
         value: charts/mongodb
         env:   CHART
