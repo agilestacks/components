@@ -6,7 +6,9 @@ ENTRYPOINT ["/entrypoint.sh"]
 ENV WAIT_TIMEOUT "300"
 
 # The host IP address or DNS name without the port!
-ENV DB_HOST ""
+ENV HOST ""
 
-# The port of the mongoDB database, if not provided the default 27017 will be used
-ENV DB_PORT ""
+# The port
+ENV PORT ""
+
+ENV PORT_NAME ""

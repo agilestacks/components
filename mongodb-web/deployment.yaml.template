@@ -24,18 +24,21 @@
       spec:
         securityContext:
           runAsUser: 0
-        restartPolicy: Never
         initContainers:
         - name: wait-for-port
           image: ${component.mongodb-web.imageWaitForPort}
           imagePullPolicy: Always
           env:
-            - name: DB_HOST
+            - name: HOST
               value: ${component.mongodb.host}
-            - name: DB_PORT
+            - name: PORT
               value: '${component.mongodb.port}'
+            - name: DEFAULT_PORT
+              value: '27017'
             - name: WAIT_TIMEOUT
               value: '${component.mongodb-web.waitTimeout}'
+            - name: PORT_NAME
+              value: 'mongodb port'
 
         containers:
         - name: mongodb-dashboard
