@@ -35,7 +35,7 @@ parameters:
       env: COMPONENT_NAME
       value: redis
     - name: image
-      value: bitnami/redis:4.0.2-r1
+      value: bitnami/redis:4.0.9
     - name: requests.memory
       value: 256Mi
     - name: requests.cpu
