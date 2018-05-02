@@ -51,13 +51,13 @@ clean:
 	@rm -rf $(HELM_HOME)
 	@rm -rf charts
 
-mongo_pod=$(kubectl) get pods -l app=mongodb-mongodb -o jsonpath="{range .items[*]}{@.metadata.name}{end}"
+mongo_ready_container=$(kubectl) get pods -l app=mongodb-mongodb -o jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}'
 wait:
 		$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
-		@printf "Waiting for mongodb port to be served "
+		@printf "Waiting for mongodb pod to be ready "
 
 		@while [ `date +%s` -le "$(timeout)" ]; do \
-				if $(kubectl) exec -it `$(mongo_pod)` -- mongo --eval "db.help()" "$(HOST):$(PORT)" >& /dev/null; then \
+				if test -n "`mongo_ready_container`"; then \
 						printf "\ndone\n"; \
 						exit 0; \
 				fi; \
