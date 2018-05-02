@@ -30,7 +30,7 @@
       - name: image
         value: agilestacks/mongodb-dashboard
       - name: imageWaitForPort
-        value: agilestacks/mongodb-dashboard-wait-for-port
+        value: agilestacks/wait-for-port
       - name: port
         value: 80
       - name: host
@@ -47,6 +47,7 @@
         value: database
       - name: waitTimeout
         value: 300
+        empty: allow
     - name: component.mongodb
       parameters:
       - name: host

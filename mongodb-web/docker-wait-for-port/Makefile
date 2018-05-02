@@ -4,7 +4,7 @@ docker ?= docker
 
 REGISTRY  ?= docker.io
 VERSION   ?= 0.0.1
-IMAGE     ?= $(REGISTRY)/agilestacks/mongodb-dashboard-wait-for-port
+IMAGE     ?= $(REGISTRY)/agilestacks/wait-for-port
 
 build:
 	$(docker) build . --rm --compress --build-arg VERSION=$(VERSION) -t $(IMAGE):$(VERSION)
