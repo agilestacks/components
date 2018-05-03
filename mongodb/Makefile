@@ -57,7 +57,7 @@ wait:
 		@printf "Waiting for mongodb pod to be ready "
 
 		@while [ `date +%s` -le "$(timeout)" ]; do \
-				if test -n "`mongo_ready_container`"; then \
+				if test -n "`$(mongo_ready_container)`"; then \
 						printf "\ndone\n"; \
 						exit 0; \
 				fi; \
