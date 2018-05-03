@@ -88,7 +88,7 @@
           imagePullPolicy: Always
           env:
           - name:  JENKINS_URL
-            value: ${component.ingress.protocol}://${component.jenkins.namespace}.${component.ingress.fqdn}
+            value: ${component.ingress.protocol}://${component.jenkins.namespace}.${component.ingress.ssoFqdn}
           - name:  JENKINS_PERMISSIVE_MODE
             value: 'true'
           - name:  AWS_REGION
