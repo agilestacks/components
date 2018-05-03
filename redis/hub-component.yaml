@@ -27,7 +27,7 @@ parameters:
     - name: usePassword
       value: "false"
     - name: password
-      value: " "
+      empty: allow
     - name: namespace
       env: NAMESPACE
       value: redis
