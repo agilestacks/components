@@ -1,9 +1,9 @@
 image: "postgres"
 imageTag: "9.6.2"
 
-postgresUser: ${component.postgresql.user}
-postgresPassword: ${component.postgresql.password}
-postgresDatabase: ${component.postgresql.database}
+postgresUser: '${component.postgresql.user}'
+postgresPassword: '${component.postgresql.password}'
+postgresDatabase: '${component.postgresql.database}'
 postgresInitdbArgs:
 
 persistence:

@@ -10,7 +10,7 @@ imagePullPolicy: IfNotPresent
 
 ## Use password authentication
 usePassword: ${component.redis.usePassword}
-redisPassword: ${component.redis.password}
+redisPassword: '${component.redis.password}'
 
 ## Redis command arguments
 ##
