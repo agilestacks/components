@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := build
 
 REGISTRY  ?= docker.io
-VERSION   ?= 2.3.3
+VERSION   ?= custom
 IMAGE     ?= $(REGISTRY)/agilestacks/allure
 CONTAINER ?= allure
 
