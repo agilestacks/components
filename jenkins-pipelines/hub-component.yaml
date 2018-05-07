@@ -12,16 +12,16 @@ requires:
 
 parameters:
 - name: component.ecr.image
-- name: component.jenkins
-  parameters:
-  - name: namespace
-    value: jenkins
-    env: NAMESPACE
+- name: component.jenkins.namespace
+  value: jenkins
+  env: NAMESPACE
 - name: component.jenkins-pipelines
   parameters:
   - name: pipelines
     value: asi-demo-nodejs,asi-demo-java
     env: PIPELINES
+  - name: namespace
+    default: default
 - name: cloud.region
   kind: user
   env: AWS_REGION
