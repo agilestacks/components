@@ -11,6 +11,7 @@ data:
   CLUSTER_ID: ${dns.domain}
   AWS_REGION: ${cloud.region}
   DOMAIN_NAME: ${dns.domain}
+  DEPLOY_ROLE_ARN: ${component.jenkins-iam-role.role_arn}
   JENKINS_HOST: ${component.jenkins.namespace}.${component.ingress.ssoUrlPrefix}.${dns.domain}
   JENKINS_URL: ${component.ingress.protocol}://${component.jenkins.namespace}.${component.ingress.ssoUrlPrefix}.${dns.domain}
   INGRESS_FQDN: ${component.ingress.fqdn}
