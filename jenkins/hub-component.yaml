@@ -42,6 +42,7 @@ parameters:
   - name: initGroovy.subPath
     value: init.groovy.d
 - name: component.jenkins-iam-role.role_arn
+  value: undefined
 - name: cloud.region
   kind: user
   env: AWS_REGION
