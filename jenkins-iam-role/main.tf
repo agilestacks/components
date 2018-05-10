@@ -34,7 +34,8 @@ resource "aws_iam_role_policy" "jenkins" {
         {
             "Effect": "Allow",
             "Action": [
-                "ecs:*"
+                "ecs:*",
+                "s3:*"
             ],
             "Resource": "*"
         }
