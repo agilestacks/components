@@ -1,3 +1,10 @@
+terraform {
+  required_version = ">= 0.9.3"
+  backend "s3" {}
+}
+
+data "aws_caller_identity" "current" {}
+
 resource "aws_iam_role" "jenkins" {
   name = "${var.name}.${var.base_domain}-jenkins_iam_role"
   assume_role_policy = <<EOF
@@ -8,7 +15,7 @@ resource "aws_iam_role" "jenkins" {
       "Sid": "",
       "Effect": "Allow",
       "Principal": {
-        "Service": "ecs.amazonaws.com"
+        "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.worker_role}"
       },
       "Action": "sts:AssumeRole"
     }

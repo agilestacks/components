@@ -7,3 +7,8 @@ variable "base_domain" {
   type = "string"
   description = "common domain name for the stack"
 }
+
+variable "worker_role" {
+  type = "string"
+  description = "worker role name"
+}
