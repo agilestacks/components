@@ -8,10 +8,8 @@ meta:
     dir: ../../components/jenkins/cloud
 
 parameters:
-- name: dns.name
-  env: TF_VAR_name
-- name: dns.baseDomain
-  env: TF_VAR_base_domain
+- name: dns.domain
+  env: TF_VAR_domain_name
 - name: cloud.role.worker
 - name: cloud.region
   kind: user

@@ -6,7 +6,7 @@ terraform {
 data "aws_caller_identity" "current" {}
 
 resource "aws_iam_role" "jenkins" {
-  name = "${var.name}.${var.base_domain}-jenkins_iam_role"
+  name = "${var.domain_name}-jenkins_iam_role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
