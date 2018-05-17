@@ -13,7 +13,7 @@ requires:
   - tiller
 
 parameters:
-  - name: component.ingress.ssoUrlPrefix
+  - name: component.ingress.ssoFqdn
   - name: component.postgresql.namespace
     brief: Kubernetes namespace to install into
     value: default
