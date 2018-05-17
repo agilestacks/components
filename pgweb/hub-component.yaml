@@ -45,4 +45,4 @@ templates:
 
 outputs:
   - name: component.pgweb.url
-    value: http://${component.pgweb.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+    value: http://${component.pgweb.ingress.urlPrefix}.${component.ingress.ssoFqdn}
