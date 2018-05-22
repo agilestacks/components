@@ -49,10 +49,24 @@ install:
 .PHONY: install
 
 output:
-	@echo
-	@echo Outputs:
-	@echo password=$(shell $(kubectl) get secret $(COMPONENT_NAME)-redis -o jsonpath='{.data.redis-password}')
-	@echo
+	@if ! grep '^usePassword: true' values.yaml; then \
+		echo; \
+		echo Outputs:; \
+		echo password=; \
+		echo; \
+		exit 0; \
+	fi; \
+	for i in $$(seq 1 60); do \
+		if password=$$($(kubectl) get secret $(COMPONENT_NAME)-redis -o jsonpath='{.data.redis-password}'); then \
+			echo; \
+			echo Outputs:; \
+			echo password=$$password; \
+			echo; \
+			exit 0; \
+		fi; \
+		sleep 1; \
+	done; \
+	exit 1
 .PHONY: outputs
 
 undeploy: init
