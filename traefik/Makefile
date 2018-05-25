@@ -69,15 +69,12 @@ apply:
 .PHONY: apply
 
 undeploy: init
-	$(MAKE) plan TF_OPTS="$(TF_OPTS) -destroy"
+	- $(MAKE) plan TF_OPTS="$(TF_OPTS) -destroy"
 	# roll forward on error for undeploy
-	-$(MAKE) apply
+	- $(MAKE) apply
 
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component) || exit 0
-
-	@echo Waiting 180sec for traefik ELB to be destroyed
-	@sleep 180
 .PHONY: undeploy
 
 clean:
