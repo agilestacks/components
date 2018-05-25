@@ -89,7 +89,7 @@ resource "aws_route53_record" "dns_apps2_ext" {
 resource "null_resource" "drop_elb" {
   provisioner "local-exec" {
     when = "destroy"
-    on_failure = "fail"
+    on_failure = "continue"
     command = <<EOF
 export AWS_DEFAULT_REGION="${data.aws_region.current.name}"
 ELB_NAME="${element(split("-", element(split(".", "${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"), 0)), 0)}"
