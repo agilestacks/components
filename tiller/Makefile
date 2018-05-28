@@ -20,7 +20,7 @@ undeploy:
 
 wait:
 	@for i in $$(seq 1 60); do \
-		if $(helm) version; then \
+		if $(helm) --tiller-connection-timeout 20 version; then \
 			exit 0; \
 		fi; \
 		echo "Waiting for Tiller pod is up and running ($$i)..."; \
