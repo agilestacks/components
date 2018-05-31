@@ -33,6 +33,7 @@ endif
 	$(kubectl) apply -f service.yaml
 	$(kubectl) apply -f ingress.yaml
 	$(kubectl) apply -f rbac.yaml
+	$(kubectl) apply -f rbac-operator.yaml
 	$(kubectl) apply -f deployment.yaml
 
 	$(MAKE) wait
@@ -40,6 +41,7 @@ endif
 
 undeploy:
 	-$(kubectl) delete -f deployment.yaml
+	-$(kubectl) delete -f rbac-operator.yaml
 	-$(kubectl) delete -f rbac.yaml
 	-$(kubectl) delete -f ingress.yaml
 	-$(kubectl) delete -f volume-claims.yaml
@@ -60,7 +62,7 @@ wait:
 	@printf "Waiting for Jenkins pod is up and running "
 
 	@while [ `date +%s` -le "$(timeout)" ]; do \
-		if [[ `$(get_pod)` ]]; then \
+		if [[ `$(get_pod) | wc -w | xargs` -eq '2' ]]; then \
 			echo " done"; \
 			exit 0; \
 		fi; \
