@@ -94,3 +94,4 @@ Dockerfile.old
 jenkins-iam-role/.terraform
 *.tfplan
 
+rbac-operator.yaml

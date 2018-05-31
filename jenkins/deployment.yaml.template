@@ -79,7 +79,10 @@
             mountPath: /opt/.groovy
 
         containers:
-        - name: jenkins-master
+        - name: operator
+          image: docker.io/agilestacks/jenkins-operator:latest
+          imagePullPolicy: Always
+        - name: jenkins
           image: ${component.jenkins.image}
           resources:
             requests:
@@ -91,6 +94,8 @@
             value: ${component.ingress.protocol}://${component.jenkins.namespace}.${component.ingress.ssoFqdn}
           - name:  JENKINS_PERMISSIVE_MODE
             value: 'true'
+          - name:  JENKINS_OPTS
+            value: -Dgrape.root=/var/jenkins_home/grapes
           - name:  AWS_REGION
             value: ${cloud.region}
           - name:  ROOT_DOMAIN_NAME
@@ -114,6 +119,8 @@
             mountPath: /root/.groovy
           - name: dot-groovy
             mountPath: /var/jenkins_home/.groovy
+          - name: grapes
+            mountPath: /var/jenkins_home/grapes
           readinessProbe:
             httpGet:
               path: /login
@@ -138,4 +145,6 @@
           - name: init-groovy-scripts
             emptyDir: {}
           - name: dot-groovy
+            emptyDir: {}
+          - name: grapes
             emptyDir: {}
