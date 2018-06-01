@@ -1,0 +1,42 @@
+# Default values for kube-spot-termination-notice-handler.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+image:
+  repository: ${component.spot-term-notifier.image.repository}
+  tag: ${component.spot-term-notifier.version}
+  pullPolicy: ${component.spot-term-notifier.image.pullPolicy}
+
+# Poll the metadata every pollInterval seconds for termination events:
+pollInterval: 5
+
+# Send notifications to a Slack webhook URL - replace with your own value and uncomment:
+slackUrl: ${component.spot-term-notifier.slackUrl}
+
+# Set the cluster name to be reported in a Slack message
+clusterName: ${dns.domain}
+
+# Silence logspout by default - set to true to enable logs arriving in logspout
+enableLogspout: false
+
+resources: {}
+# We usually recommend not to specify default resources and to leave this as a conscious
+# choice for the user. This also increases chances charts run on environments with little
+# resources, such as Minikube. If you do want to specify resources, uncomment the following
+# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+# limits:
+#  cpu: 100m
+#  memory: 128Mi
+# requests:
+#  cpu: 100m
+#  memory: 128Mi
+
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: spot-term-notifier
