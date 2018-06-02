@@ -7,14 +7,6 @@ VOLUME_TYPE ?= nfs
 TIMEOUT     ?= 300
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
-deploy-test:
-	@echo $(kubectl)
-	@echo Outputs:
-	@echo password = secret
-	@echo
-	@echo Jenkins deployed
-.PHONY: deploy-test
-
 deploy:
 	-$(kubectl) create namespace $(NAMESPACE)
 	-$(kubectl) create configmap init-scripts --from-file=bin/
@@ -72,15 +64,3 @@ wait:
 	done; \
 	echo " ERROR timeout $(TIMEOUT)sec"; \
 	exit 1
-
-
-init-test:
-	docker run \
-		--rm -it \
-		--env PATH=/opt/init/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-		-v $(realpath $(shell pwd))/bin:/opt/init/bin \
-		-w /opt/init \
-		--entrypoint=sh \
-		alpine/git
-#		docker.io/agilestacks/jenkins:2.89.3
-.PHONY: init-test
