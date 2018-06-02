@@ -4,7 +4,7 @@ export DOMAIN_NAME ?= default
 export NAMESPACE   ?= jenkins
 
 VOLUME_TYPE ?= nfs
-TIMEOUT     ?= 300
+TIMEOUT     ?= 600
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy:
@@ -28,7 +28,7 @@ endif
 	$(kubectl) apply -f rbac-operator.yaml
 	$(kubectl) apply -f deployment.yaml
 
-	$(MAKE) wait
+	$(MAKE) wait_up
 .PHONY: deploy
 
 undeploy:
@@ -46,9 +46,11 @@ ifeq ($(VOLUME_TYPE), nfs)
 endif
 	-$(kubectl) delete configmap script-approvals
 	-$(kubectl) delete configmap init-scripts
+
+	$(MAKE) wait_shutdown
 .PHONY: undeploy
 
-wait:
+wait_up:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
 	$(eval count=$(shell $(kubectl) get pods --no-headers --output=json -l 'project=jenkins,qualifier=master' --output=json | jq -M '.items[0].spec.containers | length'))
 	$(eval get_pod=$(kubectl) get pods --no-headers -l 'project=jenkins,qualifier=master' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}')
@@ -56,6 +58,22 @@ wait:
 
 	@while [ `date +%s` -le "$(timeout)" ]; do \
 		if [[ `$(get_pod) | wc -w | xargs` -eq '$(count)' ]]; then \
+			echo " done"; \
+			exit 0; \
+		fi; \
+		printf "."; \
+		sleep 8; \
+	done; \
+	echo " ERROR timeout $(TIMEOUT)sec"; \
+	exit 1
+
+wait_shutdown:
+	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
+	$(eval get_pod=$(kubectl) get pods --no-headers -l 'project=jenkins,qualifier=master' --output=json)
+	@printf "Waiting for Jenkins pod to terminate"
+
+	@while [ `date +%s` -le "$(timeout)" ]; do \
+		if [[ -z `$(get_pod) | jq -c '.items[].spec.containers'` ]]; then \
 			echo " done"; \
 			exit 0; \
 		fi; \
