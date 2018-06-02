@@ -58,11 +58,12 @@ endif
 
 wait:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
-	$(eval get_pod=$(kubectl) get pods -l 'project=jenkins,qualifier=master' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}')
-	@printf "Waiting for Jenkins pod is up and running "
+	$(eval count=$(shell $(kubectl) get pods --no-headers --output=json -l 'project=jenkins,qualifier=master' --output=json | jq -M '.items[0].spec.containers | length'))
+	$(eval get_pod=$(kubectl) get pods --no-headers -l 'project=jenkins,qualifier=master' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}')
+	@printf "Waiting for Jenkins pod up and running [container count: $(count)]"
 
 	@while [ `date +%s` -le "$(timeout)" ]; do \
-		if [[ `$(get_pod) | wc -w | xargs` -eq '2' ]]; then \
+		if [[ `$(get_pod) | wc -w | xargs` -eq '$(count)' ]]; then \
 			echo " done"; \
 			exit 0; \
 		fi; \
