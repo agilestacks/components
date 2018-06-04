@@ -21,7 +21,7 @@ parameters:
     value: asi-demo-nodejs,asi-demo-java
     env: PIPELINES
   - name: namespace
-    default: default
+    value: default
 - name: cloud.region
   kind: user
   env: AWS_REGION
