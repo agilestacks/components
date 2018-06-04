@@ -89,7 +89,6 @@ terraform.tfstate
 terraform.tfstate.backup
 asi-demo-java.yaml
 asi-demo-nodejs.yaml
-rbac.yaml
 Dockerfile.old
 jenkins-iam-role/.terraform
 *.tfplan
