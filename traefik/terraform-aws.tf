@@ -88,8 +88,9 @@ resource "aws_route53_record" "dns_apps2_ext" {
 
 resource "null_resource" "drop_elb" {
   provisioner "local-exec" {
-    when = "destroy"
+    when       = "destroy"
     on_failure = "continue"
+
     command = <<EOF
 export AWS_DEFAULT_REGION="${data.aws_region.current.name}"
 ELB_NAME="${element(split("-", element(split(".", "${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"), 0)), 0)}"
@@ -118,7 +119,7 @@ for ID in "$SG_IDS"; do
   done;
 
   echo "Delete SG $ID"
-  for n in $(seq 10); do
+  for n in $(seq 18); do
     aws \
       ec2 delete-security-group \
       --group-id="$ID" \
@@ -128,6 +129,5 @@ for ID in "$SG_IDS"; do
   done
 done
 EOF
-
   }
 }
