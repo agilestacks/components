@@ -1,0 +1,51 @@
+---
+version: 1
+kind: component
+meta:
+  name: k8s-eks
+  brief: EKS adapter
+  source:
+    dir: ../../components/k8s-eks
+
+requires:
+  - kubernetes
+provides:
+  - kubernetes
+
+lifecycle:
+  readyConditions:
+    - dns: ${kubernetes.api.endpoint}
+      url: https://${kubernetes.api.endpoint}/api/v1
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: kubernetes.api.endpoint
+  - name: kubernetes.api.namespace
+    value: kube-system
+  - name: kubernetes.api.caCert
+  - name: kubernetes.flavor
+    value: eks
+  - name: kubernetes.eks.cluster
+
+outputs:
+  - name: dns.domain
+  - name: dns.name
+    fromTfVar: dns_name
+  - name: dns.baseDomain
+    fromTfVar: dns_base_domain
+  - name: cloud.bucket
+    value: files.${dns.domain}
+
+  - name: cloud.vpc.id
+    fromTfVar: vpc
+  - name: cloud.vpc.cidr
+    fromTfVar: vpc_cidr_block
+
+  - name: kubernetes.flavor
+  - name: kubernetes.api.endpoint
+  - name: kubernetes.api.caCert
+
+templates:
+  files:
+    - "*.template"
