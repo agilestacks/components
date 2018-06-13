@@ -42,6 +42,8 @@ outputs:
   - name: cloud.vpc.cidr
     fromTfVar: vpc_cidr_block
 
+  - name: kubernetes.flavor
+    value: k8s-aws
   - name: kubernetes.api.endpoint
   - name: kubernetes.api.caCert
   - name: kubernetes.api.clientCert
