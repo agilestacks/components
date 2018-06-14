@@ -3,7 +3,9 @@ terraform {
   backend          "s3"             {}
 }
 
-provider "aws" {}
+provider "aws" {
+  version = "1.23.0"
+}
 
 data "aws_vpc" "selected" {
   id = "${var.vpc_id}"

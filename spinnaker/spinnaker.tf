@@ -1,9 +1,11 @@
 terraform {
   required_version = ">= 0.9.3"
-  backend "s3" {}
+  backend          "s3"             {}
 }
 
-provider "aws" {}
+provider "aws" {
+  version = "1.23.0"
+}
 
 data "aws_caller_identity" "current" {}
 
@@ -14,9 +16,10 @@ data "aws_region" "current" {
 # data "aws_iam_account_alias" "current" {}
 
 resource "aws_iam_role" "spinnaker" {
-    name_prefix = "spinnaker-"
-    path = "/"
-    assume_role_policy = <<EOF
+  name_prefix = "spinnaker-"
+  path        = "/"
+
+  assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -60,10 +63,10 @@ resource "aws_iam_role" "spinnaker" {
 EOF
 }
 
-
 resource "aws_iam_policy" "spinnaker" {
-    name = "${aws_iam_role.spinnaker.name}"
-    policy=<<EOF
+  name = "${aws_iam_role.spinnaker.name}"
+
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -101,5 +104,6 @@ output "role_arn" {
 
 output "account_alias" {
   value = "${data.aws_caller_identity.current.account_id}"
+
   # value = "${coalesce("${data.aws_iam_account_alias.current.account_alias}", "${data.aws_caller_identity.current.account_id}")}"
 }
