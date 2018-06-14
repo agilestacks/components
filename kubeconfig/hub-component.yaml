@@ -21,7 +21,6 @@ parameters:
     - name: clientKey
     - name: namespace
       value: kube-system
-    - name: port
 
 outputs:
 - name: kubernetes.api.kubeconfig
