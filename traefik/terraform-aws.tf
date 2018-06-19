@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  version        = "1.0.1"
+  version        = "1.1.10"
   config_context = "${var.domain_name}"
 }
 
