@@ -21,6 +21,7 @@ parameters:
   - name: dns.domain
     env: DOMAIN_NAME
   - name: kubernetes.api.endpoint
+    env: TF_VAR_api_endpoint
   - name: kubernetes.api.namespace
     value: kube-system
   - name: kubernetes.api.caCert
@@ -35,7 +36,7 @@ outputs:
   - name: dns.baseDomain
     fromTfVar: dns_base_domain
   - name: cloud.bucket
-    value: files.${dns.domain}
+    fromTfVar: s3_bucket
 
   - name: cloud.vpc.id
     fromTfVar: vpc
@@ -45,6 +46,7 @@ outputs:
   - name: kubernetes.flavor
   - name: kubernetes.api.endpoint
   - name: kubernetes.api.caCert
+  - name: kubernetes.eks.cluster
 
 templates:
   files:
