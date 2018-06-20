@@ -59,6 +59,4 @@ outputs:
 templates:
   files:
     - "*.yaml.template"
-  extra:
-  - kind: mustache
-    files: ["*.sh.template"]
+
