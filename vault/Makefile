@@ -42,8 +42,16 @@ install:
 			--wait \
 			--values values.yaml
 .PHONY: install
+
+# If Vault is not initialized then we're in first time deploy - initialize and create fresh unseal file.
+#
+# Otherwise, it might be a restore from backup - etcd is restored, Vault database is initialized but we
+# have no unseal file. Render unseal file from ${component.vault.unseal.file}.
+#
+# If the file is too small - the size of a valid unseal file is usually 445 bytes, then this is not a
+# restore but redeploy. Check there is already valid unseal file. If not, then render it from outputs.
 enable:
-	if test "`curl -sS $(VAULT_ADDR)/v1/sys/health | jq -rM .initialized`" != "true"; then \
+	@if test "`curl -sS $(VAULT_ADDR)/v1/sys/health | jq -rM .initialized`" != "true"; then \
 		echo "Initialize vault"; \
 		curl \
 	  		-sS \
@@ -52,7 +60,19 @@ enable:
 			$(VAULT_ADDR)/v1/sys/init | jq '{keys, root_token}' > $(UNSEAL_FILE); \
 	else \
 		$(HUB) render restore/unseal-file.json.template; \
-		mv restore/unseal-file.json $(UNSEAL_FILE); \
+		if test 400 -le $$(wc -c < restore/unseal-file.json); then \
+			mv restore/unseal-file.json $(UNSEAL_FILE); \
+		else \
+			if test 400 -gt $$(wc -c < $(UNSEAL_FILE)); then \
+				$(HUB) render restore/unseal-outputs.json.template; \
+				if test 400 -le $$(wc -c < restore/unseal-outputs.json); then \
+					mv restore/unseal-outputs.json $(UNSEAL_FILE); \
+				else \
+					echo Vault is initialized but no unseal file is found nor it could be recreated; \
+					exit 1; \
+				fi; \
+			fi; \
+		fi; \
 	fi;
 .PHONY: enable
 
