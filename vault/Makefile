@@ -29,9 +29,9 @@ sleep:
 .PHONY: sleep
 
 init:
-	@mkdir -p .vault
-	@mkdir -p $(HELM_HOME)
+	@mkdir -p .vault $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
+.PHONY: init
 
 install:
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
@@ -41,7 +41,7 @@ install:
 			--replace \
 			--wait \
 			--values values.yaml
-
+.PHONY: install
 enable:
 	if test "`curl -sS $(VAULT_ADDR)/v1/sys/health | jq -rM .initialized`" != "true"; then \
 		echo "Initialize vault"; \
@@ -102,7 +102,7 @@ connect: disconnect
 	@sleep 2
 	@echo Connecting to vault at $(VAULT_ADDR)
 	@for i in $$(seq 1 60); do \
-		if curl -sS $(VAULT_ADDR)/v1/sys/health ; then \
+		if curl -sS $(VAULT_ADDR)/v1/sys/health; then \
 			exit 0; \
 		fi; \
 		echo "Waiting for pod/$(VAULT_POD) to connect ($$i)..."; \
@@ -122,8 +122,8 @@ disconnect:
 .PHONY: disconnect
 
 clean:
-	@rm -rf $(HELM_HOME) | true
-	@rm -rf charts       | true
+	-@rm -rf $(HELM_HOME) charts
+.PHONY: clean
 
 output:
 	@echo Outputs:
