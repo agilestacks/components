@@ -1,0 +1,20 @@
+cluster:
+  name: kubernetes-logging
+
+node:
+  master: true
+  data: true
+
+network.host: 0.0.0.0
+
+discovery:
+  zen:
+    ping.unicast.hosts: elasticsearch-discovery.${component.efk.namespace}.svc.cluster.local
+    minimum_master_nodes: ${component.efk.elastic.quorum}
+
+path:
+  logs: /var/log/
+
+
+bootstrap.memory_lock: false
+

@@ -31,10 +31,21 @@ parameters:
       value: logs
     - name:  ingress.kibanaUrlPrefix
       value: kibana
+    - name:  kibana.version
+      value: 6.3.0
+    - name:  elastic.version
+      value: 6.3.0
+    - name: elastic.masters
+      value: 1
+      # (number of master nodes / 2) + 1
+    - name: elastic.quorum
+      value: 1
+
 
 templates:
   files:
     - "*.template"
+    - "conf/*.template"
 
 outputs:
   - name: component.efk.url
