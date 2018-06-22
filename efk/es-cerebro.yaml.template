@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: cerebro
+  namespace: ${component.efk.namespace}
   labels:
     provider: agilestacks.com
     project: logs
@@ -22,13 +23,14 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: cerebro
+  namespace: ${component.efk.namespace}
   labels:
     provider: agilestacks.com
     project: logs
     qualifier: cerebro
 spec:
   rules:
-  - host: cerebro.${component.efk.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  - host: cerebro.${component.ingress.ssoUrlPrefix}.${dns.domain}
     http:
       paths:
       - path: /
@@ -41,6 +43,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: cerebro
+  namespace: ${component.efk.namespace}
   labels:
     provider: agilestacks.com
     project: logs
@@ -60,7 +63,7 @@ spec:
     spec:
       containers:
       - name: cerebro
-        image: agilestacks/cerebro:0.7.1
+        image: agilestacks/cerebro:0.8.1
         imagePullPolicy: Always
         readinessProbe:
           httpGet:

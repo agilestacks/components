@@ -1,16 +1,16 @@
 .DEFAULT_GOAL := build
 
 DIRNAME := $(notdir $(abspath .))
-IMAGE ?= agilestacks/$(DIRNAME)
-CONTAINER ?= cerebro
-CEREBRO_VERSION ?= 0.8.1
+IMAGE ?= agilestacks/fluentd-elasticsearch
+CONTAINER ?= fluentd-elasticsearch
+FLUENTD_VERSION ?= v1.2.2
 DOCKER_BUILD_OTPS := --no-cache  --force-rm "
 
 deploy: build push
 
 build:
-	docker build --build-arg="CEREBRO_VERSION=$(CEREBRO_VERSION)" $(DOCKER_BUILD_OPTS) \
-		-t $(IMAGE):$(CEREBRO_VERSION) \
+	docker build $(DOCKER_BUILD_OPTS) \
+		-t $(IMAGE):$(FLUENTD_VERSION) \
 		-t $(IMAGE):latest .
 .PHONY: build
 
@@ -23,7 +23,7 @@ attach:
 .PHONY: run
 
 push:
-	docker tag  $(IMAGE):$(CEREBRO_VERSION) $(IMAGE):latest
-	docker push $(IMAGE):$(CEREBRO_VERSION)
+	docker tag  $(IMAGE):$(FLUENTD_VERSION) $(IMAGE):latest
+	docker push $(IMAGE):$(FLUENTD_VERSION)
 	docker push $(IMAGE):latest
 .PHONY: push
