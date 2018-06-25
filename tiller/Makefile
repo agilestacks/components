@@ -20,7 +20,7 @@ undeploy:
 
 wait:
 	@for i in $$(seq 1 18); do \
-		if $(helm) --tiller-connection-timeout 20 version; then \
+		if $(helm) --tiller-connection-timeout 10 version; then \
 			exit 0; \
 		fi; \
 		echo "Waiting for Tiller pod is up and running ($$i)..."; \
@@ -40,3 +40,4 @@ wait_rbac:
 	done; \
 	echo "Timeout waiting for admin RBAC roles to be deployed" \
 	exit 1
+.PHONY: wait_rbac
