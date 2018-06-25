@@ -2,55 +2,55 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 replicaCount: 1
-rbacEnable: true
+
+## If true, create & use RBAC resources resp. Pod Security Policies
+##
+global:
+  rbacEnable: true
+  pspEnable: true
+
 kube_state_metrics:
   image:
     repository: gcr.io/google_containers/kube-state-metrics
-    tag: v1.0.1
+    tag: v1.2.0
     pullPolicy: IfNotPresent
   service:
     name: kube-state-metrics
     type: ClusterIP
     externalPort: 80
     internalPort: 8080
-  resources: {}
 addon_resizer:
+  memory: 130Mi
+  extra_memory: 2Mi
+  cpu: 100m
+  extra_cpu: 1m
   image:
     repository: gcr.io/google_containers/addon-resizer
-    tag: "1.0"
+    tag: "1.7"
     pullPolicy: IfNotPresent
-  resources: {}
-ruleFiles:
-  kube-state.rules: |-
-    # NOTE: These rules were kindly contributed by the SoundCloud engineering team.
+  resources:
+    limits:
+      cpu: 100m
+      memory: 30Mi
+    requests:
+      cpu: 100m
+      memory: 30Mi
 
-    ALERT K8SNodeNotReady
-      IF kube_node_status_condition{condition="Ready", status="true"} == 0
-      FOR 1h
-      LABELS {
-        service = "k8s",
-        severity = "warning",
-      }
-      ANNOTATIONS {
-        summary = "Node status is NotReady",
-        description = "The Kubelet on {{`{{ $labels.node }}`}} has not checked in with the API, or has set itself to NotReady, for more than an hour",
-      }
+# default rules are in templates/kube-state-metrics.rules.yaml
+# prometheusRules: {}
 
-    ALERT K8SManyNodesNotReady
-      IF
-        count by (cluster) (kube_node_status_condition{condition="Ready", status="true"} == 0) > 1
-        AND
-          (
-            count by (cluster) (kube_node_status_condition{condition="Ready", status="true"} == 0)
-          /
-            count by (cluster) (kube_node_status_condition{condition="Ready", status="true"})
-          ) > 0.2
-      FOR 1m
-      LABELS {
-        service = "k8s",
-        severity = "critical",
-      }
-      ANNOTATIONS {
-        summary = "Many K8s nodes are Not Ready",
-        description = "{{`{{ $value }}`}} K8s nodes (more than 10% of cluster {{`{{ $labels.cluster }}`}}) are in the NotReady state.",
-      }
+## Tolerations for use with node taints
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: {}
+  #  - key: "key"
+  #    operator: "Equal"
+  #    value: "value"
+  #    effect: "NoSchedule"
+
+## Custom Labels to be added to ServiceMonitor
+##
+additionalServiceMonitorLabels: {}
+##Custom Labels to be added to Prometheus Rules ConfigMap
+##
+additionalRulesConfigMapLabels: {}

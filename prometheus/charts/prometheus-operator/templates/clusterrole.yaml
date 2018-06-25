@@ -1,13 +1,17 @@
 {{- if .Values.rbacEnable }}
-apiVersion: rbac.authorization.k8s.io/v1
+{{- if .Capabilities.APIVersions.Has "rbac.authorization.k8s.io/v1beta1" }}
+apiVersion: rbac.authorization.k8s.io/v1beta1
+{{- else if .Capabilities.APIVersions.Has "rbac.authorization.k8s.io/v1alpha1" }}
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+{{- end }}
 kind: ClusterRole
 metadata:
   labels:
-    app: {{ template "name" . }}
+    app: {{ template "prometheus-operator.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-  name: {{ template "fullname" . }}
+  name: {{ template "prometheus-operator.fullname" . }}
 rules:
 - apiGroups:
   - extensions
@@ -24,9 +28,13 @@ rules:
 - apiGroups:
   - monitoring.coreos.com
   resources:
+  - alertmanager
   - alertmanagers
+  - prometheus
   - prometheuses
+  - service-monitor
   - servicemonitors
+  - prometheusrules
   verbs:
   - "*"
 - apiGroups:
@@ -55,5 +63,5 @@ rules:
 - apiGroups: [""]
   resources:
   - namespaces
-  verbs: ["list"]
+  verbs: ["list", "watch"]
 {{- end }}
