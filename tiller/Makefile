@@ -19,7 +19,7 @@ undeploy:
 .PHONY: undeploy
 
 wait:
-	@for i in $$(seq 1 60); do \
+	@for i in $$(seq 1 18); do \
 		if $(helm) --tiller-connection-timeout 20 version; then \
 			exit 0; \
 		fi; \
