@@ -7,10 +7,19 @@ metadata:
     heritage: {{ .Release.Service }}
     prometheus: {{ .Release.Name }}
     release: {{ .Release.Name }}
-  name: {{ template "fullname" . }}
+    role: alert-rules
+    {{- if .Values.additionalRulesConfigMapLabels }}
+{{ toYaml .Values.additionalRulesConfigMapLabels | indent 4 }}
+    {{- end }}    
+  name: {{ template "exporter-kube-state.fullname" . }}
 data:
+{{- if .Values.prometheusRules }}
 {{- $root := . }}
-{{- range $key, $val := .Values.ruleFiles }}
+{{- range $key, $val := .Values.prometheusRules }}
   {{ $key }}: |-
-{{ tpl $val $root | indent 4}}
+{{ $val | indent 4}}
 {{- end }}
+{{ else }}
+  kube-state-metrics.rules: |-
+    {{- include "kube-state-metrics.rules.yaml.tpl" . | indent 4}}
+{{ end }}
