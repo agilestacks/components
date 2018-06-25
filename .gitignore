@@ -79,7 +79,8 @@ acm/.venv
 generated.tf
 values-acm.yaml
 errored.tfstate
-values.yaml
+spot-term-notifier/values.yaml
+selenium/values.yaml
 selenium/charts
 selenium/ingress.yaml
 terraform.tfplan
