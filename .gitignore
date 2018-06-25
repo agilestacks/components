@@ -40,11 +40,7 @@ redis/charts
 redis/values.yaml
 redis/values-ha.yaml
 prometheus/values-operator.yaml
-prometheus/values-prometheus.yaml
-prometheus/values-alertmanager.yaml
 prometheus/values-kube-prometheus.yaml
-prometheus/values-grafana.yaml
-prometheus/grafana-gen/output
 kube-dashboard/deployment.yaml
 kube-dashboard/ingress.yaml
 kube-dashboard/service.yaml
@@ -91,5 +87,4 @@ asi-demo-nodejs.yaml
 Dockerfile.old
 jenkins-iam-role/.terraform
 *.tfplan
-
 rbac-operator.yaml
