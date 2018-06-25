@@ -81,7 +81,7 @@ values-acm.yaml
 errored.tfstate
 values.yaml
 selenium/charts
-ingress.yaml
+selenium/ingress.yaml
 terraform.tfplan
 terraform.tfstate
 terraform.tfstate.backup
