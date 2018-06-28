@@ -8,7 +8,7 @@ meta:
     dir: ../../components/k8s-aws
 
 requires:
-  - kubernetes
+  - kubectl
 provides:
   - kubernetes
 
