@@ -89,3 +89,5 @@ jenkins-iam-role/.terraform
 *.tfplan
 rbac-operator.yaml
 kubeflow/kubeflow
+kubeflow/ambassador-ingress.yaml
+kubeflow/jupyterhub-ingress.yaml

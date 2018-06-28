@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${component.kubeflow.ambassador.ingress.name}
+  namespace: ${component.kubeflow.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   kubernetes
+spec:
+  rules:
+  - host: ${component.kubeflow.ambassador.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ${component.kubeflow.ambassador.ingress.service}
+          servicePort: 8877
