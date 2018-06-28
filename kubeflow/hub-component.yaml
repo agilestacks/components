@@ -11,6 +11,7 @@ requires:
   - kubernetes
 
 parameters:
+  - name: component.ingress.ssoUrlPrefix
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.kubeflow
@@ -30,9 +31,33 @@ parameters:
     - name: environment
       value: cloud
       env: KF_ENV
+    - name: ambassador.ingress
+      parameters:
+      - name: name
+        value: ambassador-admin
+      - name: urlPrefix
+        value: ambassador-admin
+      - name: service
+        value: ambassador-admin
+    - name: jupyterhub.ingress
+      parameters:
+      - name: name
+        value: jupyterhub
+      - name: urlPrefix
+        value: jupyterhub
+      - name: service
+        value: tf-hub-lb
 
-#outputs:
+outputs:
+  - name: component.kubeflow.ambassador.url
+    brief: Ambassador Diagnostics
+    value: http://${component.kubeflow.ambassador.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}/ambassador/v0/diag
+  - name: component.kubeflow.jupyterhub.url
+    brief: Jupyter Hub Admin panel
+    value: http://${component.kubeflow.jupyterhub.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
 
-#templates:
-#  files:
-#    - "*.template"
+
+
+templates:
+  files:
+    - "*.template"

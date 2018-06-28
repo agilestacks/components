@@ -30,8 +30,6 @@ configure:
 	-cd $(COMPONENT_NAME) && \
 	ks generate core kubeflow-core --name=kubeflow-core
 	-cd $(COMPONENT_NAME) && \
-	ks generate pytorch-operator pytorch-operator
-	-cd $(COMPONENT_NAME) && \
 	ks param set kubeflow-core reportUsage false
 	-cd $(COMPONENT_NAME) && \
 	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC)
@@ -46,12 +44,16 @@ configure:
 apply:
 	-cd $(COMPONENT_NAME) && \
 	$(ks) apply $(KF_ENV) -c kubeflow-core
+	-$(kubectl) apply --namespace $(NAMESPACE) -f ambassador-ingress.yaml
+	-$(kubectl) apply --namespace $(NAMESPACE) -f jupyterhub-ingress.yaml
 .PHONY: apply
 
 deploy: init install configure apply
 .PHONY: deploy
 
 undeploy:
+	$(kubectl) delete --namespace $(NAMESPACE) -f ambassador-ingress.yaml | true
+	$(kubectl) delete --namespace $(NAMESPACE) -f jupyterhub-ingress.yaml | true
 	cd $(COMPONENT_NAME) && \
 	$(ks) delete $(KF_ENV) -c kubeflow-core
 .PHONY: undeploy
