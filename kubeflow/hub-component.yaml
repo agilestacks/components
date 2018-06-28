@@ -1,0 +1,38 @@
+---
+version: 1
+kind: component
+meta:
+  name: kubeflow
+  brief:
+  source:
+    dir: ../../components/kubeflow
+
+requires:
+  - kubernetes
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.kubeflow
+    parameters:
+    - name:  name
+      value: kubeflow
+      env:   COMPONENT_NAME
+    - name: namespace
+      value: kubeflow
+      env: NAMESPACE
+    - name: version
+      value: v0.1.3
+      env: KUBEFLOW_VERSION
+    - name: apiSpec
+      value: v1.9.8
+      env: K8S_API_SPEC
+    - name: environment
+      value: cloud
+      env: KF_ENV
+
+#outputs:
+
+#templates:
+#  files:
+#    - "*.template"
