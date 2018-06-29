@@ -91,3 +91,4 @@ rbac-operator.yaml
 kubeflow/kubeflow
 kubeflow/ambassador-ingress.yaml
 kubeflow/jupyterhub-ingress.yaml
+kubeflow/argo-ingress.yaml
