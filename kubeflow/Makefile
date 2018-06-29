@@ -9,14 +9,17 @@ export KUBEFLOW_VERSION		?=v0.1.3
 export ARGO_VERSION			?=v2.1.1
 export K8S_API_SPEC			?=v1.9.8
 export KF_ENV				?=cloud
+export GITHUB_TOKEN			?=
 
 
-
+ifneq ($(GITHUB_TOKEN),)
 init:
 	-$(ks) init kubeflow --dir=$(COMPONENT_NAME) --api-spec=version:$(K8S_API_SPEC)
 	-$(kubectl) create namespace $(NAMESPACE)
 .PHONY: init
+endif
 
+ifneq ($(GITHUB_TOKEN),)
 install:
 	-cd $(COMPONENT_NAME) && \
 	ks registry add kubeflow github.com/kubeflow/kubeflow/tree/$(KUBEFLOW_VERSION)/kubeflow
@@ -35,8 +38,27 @@ install:
 	-cd $(COMPONENT_NAME) && \
 	ks pkg install kubeflow/katib@$(KUBEFLOW_VERSION)
 .PHONY: install
+endif
 
 configure:
+ifeq ($(GITHUB_TOKEN),)
+	-cd kubeflow-v0.2.0-rc.1 && \
+	ks generate core kubeflow-core --name=kubeflow-core
+	-cd kubeflow-v0.2.0-rc.1 && \
+	ks generate argo argo --name=argo
+	-cd kubeflow-v0.2.0-rc.1 && \
+	ks param set kubeflow-core reportUsage false
+	-cd kubeflow-v0.2.0-rc.1 && \
+	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC)
+	-cd kubeflow-v0.2.0-rc.1 && \
+	ks env set $(KF_ENV) --namespace=$(NAMESPACE)
+	-cd kubeflow-v0.2.0-rc.1 && \
+	ks param set kubeflow-core cloud aws --env=$(KF_ENV)
+	-cd kubeflow-v0.2.0-rc.1 && \
+	ks param set kubeflow-core reportUsage false --env=$(KF_ENV)
+	-cd kubeflow-v0.2.0-rc.1 && \
+	ks param set argo imageTag $(ARGO_VERSION) --env=$(KF_ENV)
+else
 	-cd $(COMPONENT_NAME) && \
 	ks generate core kubeflow-core --name=kubeflow-core
 	-cd $(COMPONENT_NAME) && \
@@ -53,13 +75,22 @@ configure:
 	ks param set kubeflow-core reportUsage false --env=$(KF_ENV)
 	-cd $(COMPONENT_NAME) && \
 	ks param set argo imageTag $(ARGO_VERSION) --env=$(KF_ENV)
+endif
 .PHONY: configure
 
+
 apply:
+ifeq ($(GITHUB_TOKEN),)
+	-cd kubeflow-v0.2.0-rc.1 && \
+	$(ks) apply $(KF_ENV) -c kubeflow-core
+	-cd kubeflow-v0.2.0-rc.1 && \
+	$(ks) apply $(KF_ENV) -c argo
+else
 	-cd $(COMPONENT_NAME) && \
 	$(ks) apply $(KF_ENV) -c kubeflow-core
 	-cd $(COMPONENT_NAME) && \
 	$(ks) apply $(KF_ENV) -c argo
+endif
 	-$(kubectl) apply --namespace $(NAMESPACE) -f ambassador-ingress.yaml
 	-$(kubectl) apply --namespace $(NAMESPACE) -f jupyterhub-ingress.yaml
 	-$(kubectl) apply --namespace $(NAMESPACE) -f argo-ingress.yaml
@@ -72,7 +103,16 @@ undeploy:
 	$(kubectl) delete --namespace $(NAMESPACE) -f ambassador-ingress.yaml | true
 	$(kubectl) delete --namespace $(NAMESPACE) -f jupyterhub-ingress.yaml | true
 	$(kubectl) delete --namespace $(NAMESPACE) -f argo-ingress.yaml | true
+ifeq ($(GITHUB_TOKEN),)
+	cd kubeflow-v0.2.0-rc.1 && \
+	$(ks) delete $(KF_ENV) -c kubeflow-core
+	-cd kubeflow-v0.2.0-rc.1 && \
+	$(ks) delete $(KF_ENV) -c argo
+else
 	cd $(COMPONENT_NAME) && \
 	$(ks) delete $(KF_ENV) -c kubeflow-core
+	-cd $(COMPONENT_NAME) && \
+	$(ks) delete $(KF_ENV) -c argo
+endif
 .PHONY: undeploy
 

@@ -31,6 +31,10 @@ parameters:
     - name: environment
       value: cloud
       env: KF_ENV
+    - name: githubToken
+      value: a861a1eab9520a5046a369bb7f0ed6277f5b0e88
+      env: GITHUB_TOKEN
+      empty: allow
     - name: ambassador.ingress
       parameters:
       - name: name
