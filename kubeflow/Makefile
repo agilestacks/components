@@ -14,28 +14,28 @@ export GITHUB_TOKEN			?=
 
 ifneq ($(GITHUB_TOKEN),)
 init:
-	-$(ks) init kubeflow --dir=$(COMPONENT_NAME) --api-spec=version:$(K8S_API_SPEC)
+	-$(ks) init kubeflow --dir=kubeflow --api-spec=version:$(K8S_API_SPEC)
 	-$(kubectl) create namespace $(NAMESPACE)
 .PHONY: init
 endif
 
 ifneq ($(GITHUB_TOKEN),)
 install:
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks registry add kubeflow github.com/kubeflow/kubeflow/tree/$(KUBEFLOW_VERSION)/kubeflow
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks pkg install kubeflow/core@$(KUBEFLOW_VERSION)
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks pkg install kubeflow/tf-serving@$(KUBEFLOW_VERSION)
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks pkg install kubeflow/tf-job@$(KUBEFLOW_VERSION)
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks pkg install kubeflow/argo@$(KUBEFLOW_VERSION)
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks pkg install kubeflow/pytorch-job@$(KUBEFLOW_VERSION)
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks pkg install kubeflow/pachyderm@$(KUBEFLOW_VERSION)
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks pkg install kubeflow/katib@$(KUBEFLOW_VERSION)
 .PHONY: install
 endif
@@ -59,21 +59,21 @@ ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-v0.2.0-rc.1 && \
 	ks param set argo imageTag $(ARGO_VERSION) --env=$(KF_ENV)
 else
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks generate core kubeflow-core --name=kubeflow-core
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks generate argo argo --name=argo
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks param set kubeflow-core reportUsage false
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC)
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks env set $(KF_ENV) --namespace=$(NAMESPACE)
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks param set kubeflow-core cloud aws --env=$(KF_ENV)
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks param set kubeflow-core reportUsage false --env=$(KF_ENV)
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	ks param set argo imageTag $(ARGO_VERSION) --env=$(KF_ENV)
 endif
 .PHONY: configure
@@ -86,9 +86,9 @@ ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-v0.2.0-rc.1 && \
 	$(ks) apply $(KF_ENV) -c argo
 else
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	$(ks) apply $(KF_ENV) -c kubeflow-core
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	$(ks) apply $(KF_ENV) -c argo
 endif
 	-$(kubectl) apply --namespace $(NAMESPACE) -f ambassador-ingress.yaml
@@ -109,9 +109,9 @@ ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-v0.2.0-rc.1 && \
 	$(ks) delete $(KF_ENV) -c argo
 else
-	cd $(COMPONENT_NAME) && \
+	cd kubeflow && \
 	$(ks) delete $(KF_ENV) -c kubeflow-core
-	-cd $(COMPONENT_NAME) && \
+	-cd kubeflow && \
 	$(ks) delete $(KF_ENV) -c argo
 endif
 .PHONY: undeploy
