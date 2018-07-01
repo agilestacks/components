@@ -477,16 +477,6 @@
                 command: [
                   "/opt/tensorflow_k8s/dashboard/backend",
                 ],
-                env: [
-                  {
-                    name: "KUBEFLOW_NAMESPACE",
-                    valueFrom: {
-                      fieldRef: {
-                        fieldPath: "metadata.namespace",
-                      },
-                    },
-                  },
-                ],
                 image: image,
                 name: "tf-job-dashboard",
                 ports: [

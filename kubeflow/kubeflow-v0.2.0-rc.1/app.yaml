@@ -10,32 +10,32 @@ kind: ksonnet.io/app
 libraries:
   argo:
     gitVersion:
-      commitSha: 6c2c69b24cc11495d2c694e36291fd76b22712c9
-      refSpec: master
+      commitSha: 3be196cfa1d68d9a33e0674c133ffbbcc3e57d46
+      refSpec: v0.2.0-rc.1
     name: argo
     registry: kubeflow
   core:
     gitVersion:
-      commitSha: 6c2c69b24cc11495d2c694e36291fd76b22712c9
-      refSpec: master
+      commitSha: 3be196cfa1d68d9a33e0674c133ffbbcc3e57d46
+      refSpec: v0.2.0-rc.1
     name: core
     registry: kubeflow
   katib:
     gitVersion:
-      commitSha: 6c2c69b24cc11495d2c694e36291fd76b22712c9
-      refSpec: master
+      commitSha: 3be196cfa1d68d9a33e0674c133ffbbcc3e57d46
+      refSpec: v0.2.0-rc.1
     name: katib
     registry: kubeflow
   pachyderm:
     gitVersion:
-      commitSha: 6c2c69b24cc11495d2c694e36291fd76b22712c9
-      refSpec: master
+      commitSha: 3be196cfa1d68d9a33e0674c133ffbbcc3e57d46
+      refSpec: v0.2.0-rc.1
     name: pachyderm
     registry: kubeflow
   pytorch-job:
     gitVersion:
-      commitSha: 6c2c69b24cc11495d2c694e36291fd76b22712c9
-      refSpec: master
+      commitSha: 3be196cfa1d68d9a33e0674c133ffbbcc3e57d46
+      refSpec: v0.2.0-rc.1
     name: pytorch-job
     registry: kubeflow
   tf-job:
@@ -46,8 +46,8 @@ libraries:
     registry: kubeflow
   tf-serving:
     gitVersion:
-      commitSha: 6c2c69b24cc11495d2c694e36291fd76b22712c9
-      refSpec: master
+      commitSha: 3be196cfa1d68d9a33e0674c133ffbbcc3e57d46
+      refSpec: v0.2.0-rc.1
     name: tf-serving
     registry: kubeflow
 name: kubeflow
