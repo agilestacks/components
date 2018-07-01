@@ -96,3 +96,5 @@ kubeflow/centraldashboard-ingress.yaml
 kubeflow/kubeflow-v0.2.0-rc.1/components/argo.jsonnet
 kubeflow/kubeflow-v0.2.0-rc.1/components/kubeflow-core.jsonnet
 kubeflow/kubeflow-v0.2.0-rc.1/environments/cloud
+kubeflow/kubeflow-v0.2.0-rc.1/app.yaml
+kubeflow/kubeflow-v0.2.0-rc.1/components/params.libsonnet
