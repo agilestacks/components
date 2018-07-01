@@ -115,13 +115,17 @@ undeploy:
 ifeq ($(GITHUB_TOKEN),)
 	cd kubeflow-v0.2.0-rc.1 && \
 	ks delete $(KF_ENV) -c kubeflow-core
-	-cd kubeflow-v0.2.0-rc.1 && \
+	cd kubeflow-v0.2.0-rc.1 && \
 	ks delete $(KF_ENV) -c argo
+	cd kubeflow-v0.2.0-rc.1 && \
+	ks env rm $(KF_ENV)
 else
 	cd kubeflow && \
 	ks delete $(KF_ENV) -c kubeflow-core
-	-cd kubeflow && \
+	cd kubeflow && \
 	ks delete $(KF_ENV) -c argo
+	cd kubeflow && \
+	ks env rm $(KF_ENV)
 endif
 .PHONY: undeploy
 
