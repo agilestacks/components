@@ -12,6 +12,8 @@ requires:
 
 parameters:
   - name: component.ingress.ssoUrlPrefix
+  - name: kubernetes.api.endpoint
+    env: K8S_API_SERVER
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.kubeflow
@@ -32,9 +34,18 @@ parameters:
       value: cloud
       env: KF_ENV
     - name: githubToken
-      value: a861a1eab9520a5046a369bb7f0ed6277f5b0e88
+#      value: a861a1eab9520a5046a369bb7f0ed6277f5b0e88
+      value: ""
       env: GITHUB_TOKEN
       empty: allow
+    - name: ingress
+      parameters:
+      - name: name
+        value: centraldashboard
+      - name: urlPrefix
+        value: kubeflow
+      - name: service
+        value: centraldashboard
     - name: ambassador.ingress
       parameters:
       - name: name
@@ -76,6 +87,9 @@ outputs:
   - name: component.kubeflow.argo.url
     brief: Argo UI
     value: http://${component.kubeflow.argo.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  - name: component.kubeflow.url
+    brief: Kubeflow Dashboard
+    value: http://${component.kubeflow.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
 
 
 

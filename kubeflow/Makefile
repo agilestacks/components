@@ -4,18 +4,21 @@ export NAMESPACE    		?= kubeflow
 export DOMAIN_NAME  		?= default
 export COMPONENT_NAME       ?= kubeflow
 export kubectl      		?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export ks					?= ks --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export KUBEFLOW_VERSION		?=v0.1.3
 export ARGO_VERSION			?=v2.1.1
 export K8S_API_SPEC			?=v1.9.8
+export K8S_API_SERVER		?=
 export KF_ENV				?=cloud
 export GITHUB_TOKEN			?=
 
 
 ifneq ($(GITHUB_TOKEN),)
 init:
-	-$(ks) init kubeflow --dir=kubeflow --api-spec=version:$(K8S_API_SPEC)
 	-$(kubectl) create namespace $(NAMESPACE)
+	-ks init kubeflow --namespace=$(NAMESPACE) --server=https://$(K8S_API_SERVER) --dir=kubeflow --api-spec=version:$(K8S_API_SPEC)
+.PHONY: init
+else
+init:
 .PHONY: init
 endif
 
@@ -38,6 +41,9 @@ install:
 	-cd kubeflow && \
 	ks pkg install kubeflow/katib@$(KUBEFLOW_VERSION)
 .PHONY: install
+else
+install:
+.PHONY: install
 endif
 
 configure:
@@ -49,7 +55,7 @@ ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-v0.2.0-rc.1 && \
 	ks param set kubeflow-core reportUsage false
 	-cd kubeflow-v0.2.0-rc.1 && \
-	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC)
+	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --server=https://$(K8S_API_SERVER)
 	-cd kubeflow-v0.2.0-rc.1 && \
 	ks env set $(KF_ENV) --namespace=$(NAMESPACE)
 	-cd kubeflow-v0.2.0-rc.1 && \
@@ -66,7 +72,7 @@ else
 	-cd kubeflow && \
 	ks param set kubeflow-core reportUsage false
 	-cd kubeflow && \
-	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC)
+	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --server=https://$(K8S_API_SERVER)
 	-cd kubeflow && \
 	ks env set $(KF_ENV) --namespace=$(NAMESPACE)
 	-cd kubeflow && \
@@ -82,37 +88,39 @@ endif
 apply:
 ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-v0.2.0-rc.1 && \
-	$(ks) apply $(KF_ENV) -c kubeflow-core
+	ks apply $(KF_ENV) -c kubeflow-core
 	-cd kubeflow-v0.2.0-rc.1 && \
-	$(ks) apply $(KF_ENV) -c argo
+	ks apply $(KF_ENV) -c argo
 else
 	-cd kubeflow && \
-	$(ks) apply $(KF_ENV) -c kubeflow-core
+	ks apply $(KF_ENV) -c kubeflow-core
 	-cd kubeflow && \
-	$(ks) apply $(KF_ENV) -c argo
+	ks apply $(KF_ENV) -c argo
 endif
-	-$(kubectl) apply --namespace $(NAMESPACE) -f ambassador-ingress.yaml
-	-$(kubectl) apply --namespace $(NAMESPACE) -f jupyterhub-ingress.yaml
-	-$(kubectl) apply --namespace $(NAMESPACE) -f argo-ingress.yaml
+	-$(kubectl) apply -f ambassador-ingress.yaml
+	-$(kubectl) apply -f jupyterhub-ingress.yaml
+	-$(kubectl) apply -f argo-ingress.yaml
+	-$(kubectl) apply -f centraldashboard-ingress.yaml
 .PHONY: apply
 
 deploy: init install configure apply
 .PHONY: deploy
 
 undeploy:
-	$(kubectl) delete --namespace $(NAMESPACE) -f ambassador-ingress.yaml | true
-	$(kubectl) delete --namespace $(NAMESPACE) -f jupyterhub-ingress.yaml | true
-	$(kubectl) delete --namespace $(NAMESPACE) -f argo-ingress.yaml | true
+	$(kubectl) delete -f ambassador-ingress.yaml | true
+	$(kubectl) delete -f jupyterhub-ingress.yaml | true
+	$(kubectl) delete -f argo-ingress.yaml | true
+	$(kubectl) delete -f centraldashboard-ingress.yaml | true
 ifeq ($(GITHUB_TOKEN),)
 	cd kubeflow-v0.2.0-rc.1 && \
-	$(ks) delete $(KF_ENV) -c kubeflow-core
+	ks delete $(KF_ENV) -c kubeflow-core
 	-cd kubeflow-v0.2.0-rc.1 && \
-	$(ks) delete $(KF_ENV) -c argo
+	ks delete $(KF_ENV) -c argo
 else
 	cd kubeflow && \
-	$(ks) delete $(KF_ENV) -c kubeflow-core
+	ks delete $(KF_ENV) -c kubeflow-core
 	-cd kubeflow && \
-	$(ks) delete $(KF_ENV) -c argo
+	ks delete $(KF_ENV) -c argo
 endif
 .PHONY: undeploy
 

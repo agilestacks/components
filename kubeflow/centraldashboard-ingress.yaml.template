@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${component.kubeflow.ingress.name}
+  namespace: ${component.kubeflow.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   kubernetes
+spec:
+  rules:
+  - host: ${component.kubeflow.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ${component.kubeflow.ingress.service}
+          servicePort: 80
