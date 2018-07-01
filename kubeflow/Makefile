@@ -19,6 +19,7 @@ init:
 .PHONY: init
 else
 init:
+	-$(kubectl) create namespace $(NAMESPACE)
 .PHONY: init
 endif
 
