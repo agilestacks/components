@@ -22,7 +22,7 @@ export TS       	       ?= $(shell date +"%Y-%m-%d-%H-%M-%S")
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-running_pods := $(kubectl) get pods -l app=etcd -o jsonpath='{range.items[?(@.status.phase=="Running")]}{.kind}{"\n"}{end}'
+running_pods := $(kubectl) get pods -l app=etcd -o jsonpath='{range.items[?(@.status.containerStatuses[0].ready==true)]}{.kind}{"\n"}{end}'
 
 ifeq ($(RESTORE_SNAPSHOT),)
 deploy: clean init install enable wait_pods
