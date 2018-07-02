@@ -25,7 +25,7 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 running_pods := $(kubectl) get pods -l app=etcd -o jsonpath='{range.items[?(@.status.phase=="Running")]}{.kind}{"\n"}{end}'
 
 ifeq ($(RESTORE_SNAPSHOT),)
-deploy: clean init install enable
+deploy: clean init install enable wait_pods
 else
 deploy: clean init install enable restore
 endif
