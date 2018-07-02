@@ -17,7 +17,7 @@ export RESTORE_ENABLED     ?= false
 export AWS_SECRET_NAME     ?= awsetcd
 
 export RESTORE_SNAPSHOT    ?= files.$(DOMAIN_NAME)/backup/etcd/$(COMPONENT_NAME)/latest
-export TS       	       ?= $(shell date +"%Y-%m-%d-%H-%M-%S")
+export TS       	       := $(shell date +"%Y-%m-%d-%H-%M-%S")
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
