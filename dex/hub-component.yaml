@@ -21,10 +21,6 @@ parameters:
     brief: Kubernetes namespace to install into
     value: kube-system
     env: NAMESPACE
-  - name: component.dex.nodeSelector
-    brief: Kubernetes node selector to restrict Dex pods scheduling to
-    value: |
-      {node-role.kubernetes.io/master: ""}
   - name: component.dex.image
     value: agilestacks/dex:v2.9.0
   - name: component.dex.saml.id

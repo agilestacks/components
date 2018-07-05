@@ -65,11 +65,6 @@ spec:
           limits:
             cpu: 100m
             memory: 50Mi
-      tolerations:
-      - key: "node-role.kubernetes.io/master"
-        operator: "Exists"
-        effect: "NoSchedule"
-      nodeSelector: ${component.dex.nodeSelector}
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
