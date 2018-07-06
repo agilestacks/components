@@ -4,13 +4,26 @@ global:
   rbacEnable: ${component.prometheus.rbac.enabled}
   pspEnable: ${component.prometheus.psp.enabled}
 
+  # Reference to one or more secrets to be used when pulling images
+  imagePullSecrets: []
+  #  - name: "image-pull-secret"
+
 # Select Deployed DNS Solution
 deployCoreDNS: false
 deployKubeDNS: true
-deployKubeEtcd: true
 
-# exporter-node configuration
+deployKubeEtcd: true
+deployKubelets: True
+deployKubeScheduler: True
+deployKubeControllerManager: True
+deployKubeState: True
 deployExporterNode: true
+
+##Custom Labels to be added to Prometheus Rules ConfigMap
+##
+additionalRulesConfigMapLabels: {}
+  # additionalRulesConfigMapLabels:
+  #   team: devops
 
 alertmanager:
   ## Alertmanager configuration directives
@@ -316,6 +329,10 @@ prometheus:
     rbacEnable: ${component.prometheus.rbac.enabled}
     pspEnable: ${component.prometheus.psp.enabled}
 
+    # Reference to one or more secrets to be used when pulling images
+    imagePullSecrets: []
+    #  - name: "image-pull-secret"
+
   ## serviceAccount to use by Prometheus
   ##
   serviceAccount:
@@ -363,6 +380,10 @@ prometheus:
   ## Useful for proxies that rewrite URLs.
   ##
   routePrefix: ${component.prometheus.ingress.path}
+
+  ## Namespaces to be selected for PrometheusRules discovery.
+  ## If unspecified, only the same namespace as the Prometheus object is in is used.
+  ruleNamespaceSelector: {}
 
   ## Rules configmap selector
   ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/design.md
@@ -442,24 +463,7 @@ prometheus:
   ## Service monitors selector
   ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/design.md
   ##
-    serviceMonitorsSelector:
-      matchExpressions:
-      - key: app
-        operator: In
-        values:
-        - alertmanager
-        - exporter-coredns
-        - exporter-kube-controller-manager
-        - exporter-kube-dns
-        - exporter-kube-etcd
-        - exporter-kube-scheduler
-        - exporter-kube-state
-        - exporter-kubelets
-        - exporter-kubernetes
-        - exporter-node
-        - grafana
-        - prometheus
-        - prometheus-operator
+    serviceMonitorsSelector: {}
 
   ## ServiceMonitor CRDs to create & be scraped by the Prometheus instance.
   ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/service-monitor.md
@@ -556,6 +560,9 @@ prometheus:
   #        requests:
   #          storage: 50Gi
   #    selector: {}
+  sidecarsSpec: []
+  # - name: sidecar
+  #   image: registry/name:tag
 
   # default rules are in templates/prometheus.rules.yaml
   # prometheusRules: {}

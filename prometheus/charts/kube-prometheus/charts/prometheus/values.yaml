@@ -42,7 +42,7 @@ additionalRulesConfigMapLabels: {}
 ##
 image:
   repository: quay.io/prometheus/prometheus
-  tag: v2.2.1
+  tag: v2.3.1
 
 ## Labels to be added to the Prometheus
 ##
@@ -103,6 +103,10 @@ global:
   rbacEnable: true
   pspEnable: true
 
+  # Reference to one or more secrets to be used when pulling images
+  imagePullSecrets: []
+  #  - name: "image-pull-secret"
+
 ## serviceAccount to use by Prometheus
 ##
 serviceAccount:
@@ -151,6 +155,9 @@ retention: 24h
 ##
 routePrefix: /
 
+## Namespaces to be selected for PrometheusRules discovery.
+## If unspecified, only the same namespace as the Prometheus object is in is used.
+ruleNamespaceSelector: {}
 ## Rules configmap selector
 ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/design.md
 ##
@@ -348,3 +355,7 @@ additionalAlertManagerConfigs: {}
 #   - "localhost:9093"
 
 serviceMonitorNamespaceSelector: {}
+
+sidecarsSpec: []
+# - name: sidecar
+#   image: registry/name:tag

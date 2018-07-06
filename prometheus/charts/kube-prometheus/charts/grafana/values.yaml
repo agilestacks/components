@@ -24,6 +24,10 @@ global:
   rbacEnable: true
   pspEnable: true
 
+  # Reference to one or more secrets to be used when pulling images
+  imagePullSecrets: []
+  #  - name: "image-pull-secret"
+
 ## Pass extra environment variables to the Grafana container.
 ##
 # extraVars:
@@ -81,7 +85,7 @@ service:
 ##
 image:
   repository: grafana/grafana
-  tag: 5.0.0
+  tag: 5.2.1
 
 grafanaWatcher:
   repository: quay.io/coreos/grafana-watcher
@@ -129,7 +133,7 @@ ingress:
   ## Labels to be added to the Ingress
   ##
   labels: {}
-  
+
   ## Hostnames.
   ## Must be provided if Ingress is enabled.
   ##
