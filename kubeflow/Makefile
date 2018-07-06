@@ -4,7 +4,7 @@ export NAMESPACE    		?= kubeflow
 export DOMAIN_NAME  		?= default
 export COMPONENT_NAME       ?= kubeflow
 export kubectl      		?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export KUBEFLOW_VERSION		?=v0.1.3
+export KUBEFLOW_VERSION		?=v0.2.0
 export ARGO_VERSION			?=v2.1.1
 export K8S_API_SPEC			?=v1.9.8
 export K8S_API_SERVER		?=
@@ -32,8 +32,6 @@ install:
 	-cd kubeflow && \
 	ks pkg install kubeflow/tf-serving@$(KUBEFLOW_VERSION)
 	-cd kubeflow && \
-	ks pkg install kubeflow/tf-job@$(KUBEFLOW_VERSION)
-	-cd kubeflow && \
 	ks pkg install kubeflow/argo@$(KUBEFLOW_VERSION)
 	-cd kubeflow && \
 	ks pkg install kubeflow/pytorch-job@$(KUBEFLOW_VERSION)
@@ -41,6 +39,8 @@ install:
 	ks pkg install kubeflow/pachyderm@$(KUBEFLOW_VERSION)
 	-cd kubeflow && \
 	ks pkg install kubeflow/katib@$(KUBEFLOW_VERSION)
+	-cd kubeflow && \
+	ks pkg install kubeflow/seldon@$(KUBEFLOW_VERSION)
 .PHONY: install
 else
 install:
@@ -49,21 +49,21 @@ endif
 
 configure:
 ifeq ($(GITHUB_TOKEN),)
-	-cd kubeflow-v0.2.0-rc.1 && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks generate core kubeflow-core --name=kubeflow-core
-	-cd kubeflow-v0.2.0-rc.1 && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks generate argo argo --name=argo
-	-cd kubeflow-v0.2.0-rc.1 && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks param set kubeflow-core reportUsage false
-	-cd kubeflow-v0.2.0-rc.1 && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --server=https://$(K8S_API_SERVER)
-	-cd kubeflow-v0.2.0-rc.1 && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks env set $(KF_ENV) --namespace=$(NAMESPACE)
-	-cd kubeflow-v0.2.0-rc.1 && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks param set kubeflow-core cloud aws --env=$(KF_ENV)
-	-cd kubeflow-v0.2.0-rc.1 && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks param set kubeflow-core reportUsage false --env=$(KF_ENV)
-	-cd kubeflow-v0.2.0-rc.1 && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks param set argo imageTag $(ARGO_VERSION) --env=$(KF_ENV)
 else
 	-cd kubeflow && \
@@ -88,9 +88,9 @@ endif
 
 apply:
 ifeq ($(GITHUB_TOKEN),)
-	-cd kubeflow-v0.2.0-rc.1 && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks apply $(KF_ENV) -c kubeflow-core
-	-cd kubeflow-v0.2.0-rc.1 && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks apply $(KF_ENV) -c argo
 else
 	-cd kubeflow && \
@@ -113,11 +113,11 @@ undeploy:
 	$(kubectl) delete -f argo-ingress.yaml | true
 	$(kubectl) delete -f centraldashboard-ingress.yaml | true
 ifeq ($(GITHUB_TOKEN),)
-	cd kubeflow-v0.2.0-rc.1 && \
+	cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks delete $(KF_ENV) -c kubeflow-core
-	cd kubeflow-v0.2.0-rc.1 && \
+	cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks delete $(KF_ENV) -c argo
-	cd kubeflow-v0.2.0-rc.1 && \
+	cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks env rm $(KF_ENV)
 else
 	cd kubeflow && \
