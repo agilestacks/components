@@ -57,7 +57,7 @@ additionalRulesConfigMapLabels: {}
 ##
 image:
   repository: quay.io/prometheus/alertmanager
-  tag: v0.14.0
+  tag: v0.15.0
 
 ## Labels to be added to the Alertmanager
 ##
@@ -175,6 +175,10 @@ service:
 global:
   rbacEnable: true
   pspEnable: true
+
+  # Reference to one or more secrets to be used when pulling images
+  imagePullSecrets: []
+  #  - name: "image-pull-secret"
 
 ## Alertmanager StorageSpec for persistent data
 ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md

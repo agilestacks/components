@@ -1,15 +1,16 @@
 dependencies:
   - name: alertmanager
-    version: 0.1.2
+    version: 0.1.3
     repository: file://charts/alertmanager
 
   - name: prometheus
-    version: 0.0.44
+    version: 0.0.49
     repository: file://charts/prometheus
 
   - name: exporter-kube-controller-manager
     version: 0.1.9
     repository: file://charts/exporter-kube-controller-manager
+    condition: deployKubeControllerManager
 
   - name: exporter-kube-dns
     version: 0.1.7
@@ -22,31 +23,34 @@ dependencies:
     condition: deployCoreDNS
 
   - name: exporter-kube-etcd
-    version: 0.1.13
+    version: 0.1.14
     repository: file://charts/exporter-kube-etcd
     condition: deployKubeEtcd
 
   - name: exporter-kube-scheduler
     version: 0.1.8
     repository: file://charts/exporter-kube-scheduler
+    condition: deployKubeScheduler
 
   - name: exporter-kube-state
-    version: 0.2.3
+    version: 0.2.4
     repository: file://charts/exporter-kube-state
+    condition: deployKubeState
 
   - name: exporter-kubelets
     version: 0.2.10
     repository: file://charts/exporter-kubelets
+    condition: deployKubelets
 
   - name: exporter-kubernetes
     version: 0.1.9
     repository: file://charts/exporter-kubernetes
 
   - name: exporter-node
-    version: 0.3.2
+    version: 0.4.1
     repository: file://charts/exporter-node
     condition: deployExporterNode
 
   - name: grafana
-    version: 0.0.35
+    version: 0.0.36
     repository: file://charts/grafana
