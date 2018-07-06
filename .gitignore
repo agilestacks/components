@@ -93,7 +93,7 @@ kubeflow/ambassador-ingress.yaml
 kubeflow/jupyterhub-ingress.yaml
 kubeflow/argo-ingress.yaml
 kubeflow/centraldashboard-ingress.yaml
-kubeflow/kubeflow-v0.2.0-rc.1/components/argo.jsonnet
-kubeflow/kubeflow-v0.2.0-rc.1/components/kubeflow-core.jsonnet
-kubeflow/kubeflow-v0.2.0-rc.1/environments/cloud
+kubeflow/kubeflow-v0.2.0/components/argo.jsonnet
+kubeflow/kubeflow-v0.2.0/components/kubeflow-core.jsonnet
+kubeflow/kubeflow-v0.2.0/environments/cloud
 jenkins-pipelines/rbac.yaml
