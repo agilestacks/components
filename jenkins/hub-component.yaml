@@ -41,6 +41,8 @@ parameters:
     value: https://github.com/agilestacks/jenkins.git
   - name: initGroovy.subPath
     value: init.groovy.d
+  - name: operator.image
+    value: docker.io/agilestacks/jenkins-operator:latest
 - name: component.jenkins-iam-role.role_arn
   value: undefined
 - name: cloud.region
