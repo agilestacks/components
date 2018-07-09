@@ -4,3 +4,4 @@ staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods dropRight java.lan
 staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[] groovy.lang.Range
 staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[] java.util.Collection
 staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods take java.lang.Object[] int
+field hudson.plugins.git.GitSCMBackwardCompatibility branch
