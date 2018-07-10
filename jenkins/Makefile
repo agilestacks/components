@@ -28,7 +28,7 @@ endif
 	$(kubectl) apply -f rbac-operator.yaml
 	$(kubectl) apply -f deployment.yaml
 
-	$(MAKE) wait_up
+	-$(MAKE) wait_up
 .PHONY: deploy
 
 undeploy:
@@ -47,7 +47,7 @@ endif
 	-$(kubectl) delete configmap script-approvals
 	-$(kubectl) delete configmap init-scripts
 
-	$(MAKE) wait_shutdown
+	-$(MAKE) wait_shutdown
 .PHONY: undeploy
 
 wait_up:
