@@ -2,10 +2,11 @@
 
 export DOMAIN_NAME ?= default
 export NAMESPACE   ?= jenkins
+export KUBECTL_OPTS := --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 VOLUME_TYPE ?= nfs
 TIMEOUT     ?= 600
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+kubectl ?= kubectl $(KUBECTL_OPTS)
 
 deploy:
 	-$(kubectl) create namespace $(NAMESPACE)
@@ -16,7 +17,8 @@ deploy:
 
 ifeq ($(VOLUME_TYPE),nfs)
 	$(kubectl) apply -f job-nfs-mkdirs.yaml
-	- $(SHELL) bin/wait_for.sh job nfs-mkdirs
+	sleep 3
+	- bin/wait_for.sh job nfs-mkdirs
 endif
 	$(kubectl) apply -f secrets.yaml
 	$(kubectl) apply -f config.yaml
