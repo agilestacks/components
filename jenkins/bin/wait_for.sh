@@ -10,7 +10,6 @@ TOP_PID=$$
 KUBECTL_ARGS=""
 WAIT_TIME="${WAIT_TIME:-2}" # seconds
 DEBUG="${DEBUG:-0}"
-KUBECTL_OPTS=${KUBECTL_OPTS:-}
 
 usage() {
 cat <<EOF
@@ -39,7 +38,7 @@ exit 1
 get_pod_state() {
     get_pod_state_name="$1"
     get_pod_state_flags="$2"
-    get_pod_state_output1=$(kubectl $KUBECTL_OPTS get pods "$get_pod_state_name" $get_pod_state_flags $KUBECTL_ARGS -o go-template='{{- if .items -}}
+    get_pod_state_output1=$(kubectl get pods "$get_pod_state_name" $get_pod_state_flags $KUBECTL_ARGS -o go-template='{{- if .items -}}
   {{- if gt (len .items) 0}}
     {{- range .items -}}
       {{- range .status.conditions -}}
@@ -92,7 +91,7 @@ get_pod_state() {
 # example output with 2 services each matching a single pod would be: "falsefalse"
 get_service_state() {
     get_service_state_name="$1"
-    get_service_state_selectors=$(kubectl $KUBECTL_OPTS get service "$get_service_state_name" $KUBECTL_ARGS -ojson 2>&1 | jq -cr 'if . | has("items") then .items[] else . end | [ .spec.selector | to_entries[] | "-l\(.key)=\(.value)" ] | join(",") ')
+    get_service_state_selectors=$(kubectl get service "$get_service_state_name" $KUBECTL_ARGS -ojson 2>&1 | jq -cr 'if . | has("items") then .items[] else . end | [ .spec.selector | to_entries[] | "-l\(.key)=\(.value)" ] | join(",") ')
     get_service_state_states=""
     for get_service_state_selector in $get_service_state_selectors ; do
         get_service_state_selector=$(echo "$get_service_state_selector" | tr ',' ' ')
@@ -106,7 +105,7 @@ get_service_state() {
 # example output with 2 still running jobs would be "0 0"
 # this function considers the line:
 # Pods Statuses:    0 Running / 1 Succeeded / 0 Failed
-# in a 'kubectl $KUBECTL_OPTS describe' job output.
+# in a 'kubectl describe' job output.
 get_job_state() {
     local sed=sed
     if [ "$(uname)" == "Darwin" ]; then
@@ -114,7 +113,7 @@ get_job_state() {
     fi
 
     get_job_state_name="$1"
-    get_job_state_output=$(kubectl $KUBECTL_OPTS describe jobs $get_job_state_name $KUBECTL_ARGS 2>&1)
+    get_job_state_output=$(kubectl describe jobs $get_job_state_name $KUBECTL_ARGS 2>&1)
     if [ $? -ne 0 ]; then
         echo "$get_job_state_output" >&2
         kill -s TERM $TOP_PID
