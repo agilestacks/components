@@ -57,7 +57,7 @@ wait_complete:
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
 		if [ `$(get_job) | jq -M '.status.succeeded or .status.failed'` == 'true' ]; then \
 			echo " done"; \
-			exit 0; \
+			test `$(get_job) | jq -M '.status.succeeded'` -eq "1" && exit 0 || exit 1; \
 		fi; \
 		printf "."; \
 		sleep 2; \
