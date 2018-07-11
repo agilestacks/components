@@ -18,8 +18,7 @@ deploy:
 
 ifeq ($(VOLUME_TYPE),nfs)
 	$(kubectl) apply -f job-nfs-mkdirs.yaml
-	sleep 3
-	- bin/wait_for.sh job nfs-mkdirs $(KUBECTL_ARGS)
+	$(MAKE) wait_complete
 endif
 	$(kubectl) apply -f secrets.yaml
 	$(kubectl) apply -f config.yaml
@@ -50,6 +49,21 @@ endif
 	- $(kubectl) delete configmap init-scripts
 	- $(MAKE) wait_shutdown
 .PHONY: undeploy
+
+wait_complete:
+	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
+	$(eval get_job=$(kubectl) get --output=json -f job-nfs-mkdirs.yaml)
+	@ printf "Waiting for mkdir job finish"
+	@ while [ `date +%s` -le "$(timeout)" ]; do \
+		if [ `$(get_job) | jq -M '.status.succeeded or .status.failed'` == 'true' ]; then \
+			echo " done"; \
+			exit 0; \
+		fi; \
+		printf "."; \
+		sleep 2; \
+	done; \
+	echo " ERROR timeout $(TIMEOUT)sec"; \
+	exit 1
 
 wait_up:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
