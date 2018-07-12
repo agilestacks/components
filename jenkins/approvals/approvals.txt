@@ -5,3 +5,4 @@ staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Ob
 staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[] java.util.Collection
 staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods take java.lang.Object[] int
 field hudson.plugins.git.GitSCMBackwardCompatibility branch
+method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object
