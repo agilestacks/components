@@ -5,8 +5,10 @@ kubectl_run="kubectl --context=$DOMAIN_NAME run --rm -ti k8s-aws-shell --image b
 meta='wget -qO - http://169.254.169.254/latest/meta-data'
 macs="$meta/network/interfaces/macs"
 
-vpc=$($kubectl_run "$macs/\$($macs)vpc-id")
-cdr=$($kubectl_run "$macs/\$($macs)vpc-ipv4-cidr-block")
+vpc=$($kubectl_run "$macs/\$($macs | head -1)vpc-id")
+cidr=$($kubectl_run "$macs/\$($macs | head -1)vpc-ipv4-cidr-block")
+subnet=$($kubectl_run "$macs/\$($macs | head -1)subnet-id")
+sg=$($kubectl_run "$macs/\$($macs | head -1)security-group-ids | head -1")
 
 # ingress_fqdn=$(kubectl --namespace=ingress get svc traefik -o json |jq -r '.metadata.annotations["api.service.kubernetes.io/path"]')
 
@@ -19,5 +21,7 @@ echo Outputs:
 echo dns_name = $name
 echo dns_base_domain = $domain
 echo vpc = $vpc
-echo vpc_cidr_block = $cdr
+echo vpc_cidr_block = $cidr
+echo worker_subnet_id = $subnet
+echo worker_sg_id = $sg
 echo
