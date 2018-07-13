@@ -7,7 +7,7 @@ export COMPONENT_NAME      ?= etcd-cluster
 export TF_VAR_name         ?= test
 export TF_VAR_base_domain  ?= kubernetes.delivery
 export DOMAIN_NAME         ?= $(TF_VAR_name).$(TF_VAR_base_domain)
-export CLOUD_BUCKET        ?= files.$(DOMAIN_NAME)
+export BACKUP_BUCKET       ?= us-east-2
 export ETCD_IMAGE          ?= quay.io/coreos/etcd
 export ETCD_VERSION        ?= 3.2.17
 export ETCD_CLUSTER_SIZE   ?= 3
@@ -16,7 +16,7 @@ export BACKUP_ENABLED      ?= false
 export RESTORE_ENABLED     ?= false
 export AWS_SECRET_NAME     ?= awsetcd
 
-export RESTORE_SNAPSHOT    ?= files.$(DOMAIN_NAME)/backup/etcd/$(COMPONENT_NAME)/latest
+export RESTORE_SNAPSHOT    ?= $(BACKUP_BUCKET)/backup/$(DOMAIN_NAME)/etcd/$(COMPONENT_NAME)/latest
 export TS       	       := $(shell date +"%Y-%m-%d-%H-%M-%S")
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
@@ -74,12 +74,17 @@ unbackup:
 .PHONY: unbackup
 
 backup: unbackup awsetcd
+	$(eval get_crd=$(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS))
 	./bin/templater.sh ./backup/EtcdBackup.yaml.template | $(kubectl) create -f - && \
-		(sleep 5; $(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o yaml)
-	test "$$($(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o json | jq -r .status.succeeded)" = "true"
-	@echo Outputs:
-	@echo component.etcd.snapshot = $$($(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS) -o json | jq -r .spec.s3.path)
-	@echo
+		(sleep 5; $(get_crd) -o yaml)
+	`$(get_crd)
+	$(eval success=$(shell $(get_crd) -o json | jq -r .status.succeeded))
+	$(eval snapshot=$(shell $(get_crd) -o json | jq -r .spec.s3.path))
+
+	test "$(success)" = "true"
+	@ echo Outputs:
+	@ echo component.etcd.snapshot = $(snapshot)
+	@ echo
 .PHONY: backup
 
 unrestore:

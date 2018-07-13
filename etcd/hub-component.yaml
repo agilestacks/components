@@ -17,10 +17,10 @@ provides:
 parameters:
   - name: cloud.region
     env:  AWS_DEFAULT_REGION
-  - name: cloud.bucket
-    env:  CLOUD_BUCKET
   - name: dns.domain
     env:  DOMAIN_NAME
+  - name: terraform.bucket.name
+  - name: terraform.bucket.region
   - name: component.etcd
     parameters:
     - name:  namespace
@@ -44,6 +44,11 @@ parameters:
       brief: etcd version
       value: v3.2.17
       env:   ETCD_VERSION
+    - name:  backup.bucket
+      value: ${terraform.bucket.name}
+      env:   BACKUP_BUCKET
+    - name:  backup.region
+      value: ${terraform.bucket.region}
     - name:  backup.enabled
       brief: Enable backups
       value: false
