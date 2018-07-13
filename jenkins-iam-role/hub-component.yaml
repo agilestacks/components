@@ -10,7 +10,6 @@ meta:
 parameters:
 - name: dns.domain
   env: TF_VAR_domain_name
-- name: cloud.role.worker
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
