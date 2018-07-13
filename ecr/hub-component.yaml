@@ -18,6 +18,8 @@ parameters:
   - name: name
     value: ecr
     env: COMPONENT_NAME
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
 - name: dns.domain
   env:  DOMAIN_NAME
 - name: bin.terraform

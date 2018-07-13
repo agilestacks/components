@@ -35,8 +35,8 @@ parameters:
     - name: record
       value: nfs
       env: TF_VAR_cname_record
-# - name: cloud.availabilityZone
-#   env: TF_VAR_aws_az
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
 - name: dns.domain
   env: DOMAIN_NAME
 - name: bin.terraform
