@@ -31,6 +31,10 @@ variable "api_endpoint" {
   type        = "string"
 }
 
+variable "vpc_id" {
+  type = "string"
+}
+
 # S3
 
 locals {
@@ -63,6 +67,26 @@ resource "aws_route53_record" "parent" {
   type    = "NS"
   ttl     = "60"
   records = ["${aws_route53_zone.main.name_servers}"]
+}
+
+resource "aws_route53_zone" "internal" {
+  name          = "i.${var.name}.${data.aws_route53_zone.base.name}"
+# We can't be sure enableDnsHostnames, enableDnsSupport are set on the EKS VPC created
+# out of our control, but AWS EKS VPC example do have DNS options enabled.
+# Terraform aws_vpc resource:
+# enable_dns_hostnames = true
+# enable_dns_support   = true
+  vpc_id        = "${var.vpc_id}"
+  vpc_region    = "us-east-1" # TODO horrible hack
+  force_destroy = true
+}
+
+resource "aws_route53_record" "internal" {
+  zone_id = "${aws_route53_zone.main.zone_id}"
+  name    = "i"
+  type    = "NS"
+  ttl     = "60"
+  records = ["${aws_route53_zone.internal.name_servers}"]
 }
 
 resource "aws_route53_record" "api" {

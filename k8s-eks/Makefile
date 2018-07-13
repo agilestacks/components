@@ -22,7 +22,7 @@ export TF_VAR_api_endpoint ?= BEEF.yl4.us-east-1.eks.amazonaws.com
 terraform ?= terraform-v0.11
 TFPLAN ?= .terraform/$(COMPONENT_NAME).tfplan
 
-deploy: init plan apply output
+deploy: output init plan apply
 
 init:
 	@mkdir -p .terraform
@@ -39,7 +39,8 @@ get:
 .PHONY: get
 
 plan:
-	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+	$(eval VPC_ID := $(shell grep -E '^vpc =' $(DOMAIN_NAME).log | awk '{print $$3}'))
+	$(terraform) plan -var vpc_id=$(VPC) $(TF_OPTS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
 .PHONY: plan
 
 apply:
@@ -47,12 +48,13 @@ apply:
 .PHONY: apply
 
 output:
+	@./vpc.sh | tee $(DOMAIN_NAME).log
+	@grep -E '^vpc =' $(DOMAIN_NAME).log >/dev/null # make sure `tee` didn't mask an error
 	@echo
 	@echo Outputs:
 	@echo dns_name = $(NAME)
 	@echo dns_base_domain = $(BASE_DOMAIN)
 	@echo
-	@./vpc.sh
 .PHONY: output
 
 undeploy: init
