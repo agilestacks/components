@@ -41,6 +41,10 @@ outputs:
     fromTfVar: vpc
   - name: cloud.vpc.cidr
     fromTfVar: vpc_cidr_block
+  - name: cloud.vpc.worker.subnet.id
+    fromTfVar: worker_subnet_id
+  - name: cloud.vpc.worker.sg.id
+    fromTfVar: worker_sg_id
 
   - name: kubernetes.flavor
     value: k8s-aws
