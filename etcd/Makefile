@@ -77,7 +77,7 @@ backup: unbackup awsetcd
 	$(eval get_crd=$(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS))
 	./bin/templater.sh ./backup/EtcdBackup.yaml.template | $(kubectl) create -f - && \
 		(sleep 5; $(get_crd) -o yaml)
-	`$(get_crd)
+	$(get_crd)
 	$(eval success=$(shell $(get_crd) -o json | jq -r .status.succeeded))
 	$(eval snapshot=$(shell $(get_crd) -o json | jq -r .spec.s3.path))
 
