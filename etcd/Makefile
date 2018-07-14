@@ -74,16 +74,22 @@ unbackup:
 .PHONY: unbackup
 
 backup: unbackup awsetcd
-	$(eval get_crd=$(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS))
-	./bin/templater.sh ./backup/EtcdBackup.yaml.template | $(kubectl) create -f - && \
-		(sleep 5; $(get_crd) -o yaml)
-	$(get_crd)
-	$(eval success=$(shell $(get_crd) -o json | jq -r .status.succeeded))
-	$(eval snapshot=$(shell $(get_crd) -o json | jq -r .spec.s3.path))
+	./bin/templater.sh ./backup/EtcdBackup.yaml.template | $(kubectl) create -f -
+	$(eval get_crd=$(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS)  -o json)
+	@ printf "Waiting for EtcdBackup/$(COMPONENT_NAME)-$(TS)"
+	@ for tick in $$(seq 100); do \
+		if [ ! -z $$($(get_crd) | jq -r '.status.succeeded') ]; then \
+			echo " done"; \
+			break; \
+		fi; \
+		printf "."; \
+		sleep 2; \
+	done;
 
-	test "$(success)" = "true"
+	@ $(get_crd) | jq .
+	@ test "$$( $(get_crd) | jq -r '.status.succeeded' )" = "true"
 	@ echo Outputs:
-	@ echo component.etcd.snapshot = $(snapshot)
+	@ echo component.etcd.snapshot = $$( $(get_crd) | jq -r '.spec.s3.path' )
 	@ echo
 .PHONY: backup
 
