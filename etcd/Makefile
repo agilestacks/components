@@ -78,7 +78,7 @@ backup: unbackup awsetcd
 	$(eval get_crd=$(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS)  -o json)
 	@ printf "Waiting for EtcdBackup/$(COMPONENT_NAME)-$(TS)"
 	@ for tick in $$(seq 100); do \
-		if [ ! -z $$($(get_crd) | jq -r '.status.succeeded') ]; then \
+		if [ $$($(get_crd) | jq -r '.status.succeeded' | xargs) != 'null' ]; then \
 			echo " done"; \
 			break; \
 		fi; \
