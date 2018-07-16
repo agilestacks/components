@@ -40,7 +40,7 @@ get:
 
 plan:
 	$(eval VPC_ID := $(shell grep -E '^vpc =' $(DOMAIN_NAME).log | awk '{print $$3}'))
-	$(terraform) plan -var vpc_id=$(VPC) $(TF_OPTS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+	$(terraform) plan -var vpc_id=$(VPC_ID) $(TF_OPTS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
 .PHONY: plan
 
 apply:
