@@ -10,8 +10,6 @@ cidr=$($kubectl_run "$macs/\$($macs | head -1)vpc-ipv4-cidr-block")
 subnet=$($kubectl_run "$macs/\$($macs | head -1)subnet-id")
 sg=$($kubectl_run "$macs/\$($macs | head -1)security-group-ids | head -1")
 
-# ingress_fqdn=$(kubectl --namespace=ingress get svc traefik -o json |jq -r '.metadata.annotations["api.service.kubernetes.io/path"]')
-
 name=$(echo $DOMAIN_NAME | cut -d. -f1)
 domain=$(echo $DOMAIN_NAME | cut -d. -f2-)
 

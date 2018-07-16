@@ -53,17 +53,6 @@ outputs:
   - name: kubernetes.api.clientCert
   - name: kubernetes.api.clientKey
 
-  # - name: component.ingress.elb
-  #   fromTfVar: elb_domain
-  # - name: component.ingress.protocol
-  #   fromTfVar: ingress_protocol
-  # - name: component.ingress.fqdn
-  #   fromTfVar: ingress_fqdn
-  # - name: component.ingress.ssoFqdn
-  #   fromTfVar: sso_ingress_fqdn
-  # - name: component.ingress.ssoUrlPrefix
-  #   fromTfVar: sso_url_prefix
-
 templates:
   files:
     - "*.template"
