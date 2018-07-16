@@ -107,7 +107,7 @@ endif
 deploy: init install configure apply
 .PHONY: deploy
 
-undeploy:
+undeploy: init install configure
 	$(kubectl) delete -f ambassador-ingress.yaml | true
 	$(kubectl) delete -f jupyterhub-ingress.yaml | true
 	$(kubectl) delete -f argo-ingress.yaml | true
