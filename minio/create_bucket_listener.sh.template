@@ -1,0 +1,21 @@
+#!/bin/bash
+
+POD_NAME=""
+while [ -z "$POD_NAME" ]; do
+    POD_NAME=$(kubectl --context="$DOMAIN_NAME" --namespace="$NAMESPACE" get pods -l "release=minio" -o jsonpath="{.items[0].metadata.name}")
+done
+
+
+MINIO_ARN=""
+while [ -z $MINIO_ARN ]; do
+  sleep 2
+  MINIO_ARN=$(kubectl --context="$DOMAIN_NAME" --namespace="$NAMESPACE" logs $POD_NAME | grep "SQS ARNs" | cut -d' ' -f4);
+done
+
+nohup kubectl port-forward $POD_NAME 9000 --namespace minio &
+sleep 2
+mc config host add minio-local http://localhost:9000 ${component.minio.access-key} ${component.minio.secret-key} S3v4
+mc mb minio-local/${component.minio.event-bucket}
+mc mb minio-local/argo-assets
+mc events add minio-local/sample-data $MINIO_ARN
+
