@@ -1,0 +1,50 @@
+---
+version: 1
+kind: component
+meta:
+  name: minio
+  brief: Kubernetes centric service mesh
+  source:
+      dir: ../../../samsung-component/components/minio
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+
+parameters:
+  - name: component.redis.password
+  - name: component.minio
+    parameters:
+    - name: namespace
+      value: minio
+      env: NAMESPACE
+    - name: version
+      value: 0.2.12
+    - name: access-key
+      value: "AKIAIOSFODNN7EXAMPLE"
+    - name: secret-key
+      value: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+    - name: mode
+      value: standalone
+    - name: port
+      value: 9000
+    - name: storage-class
+      value: aws-ebs-gp2
+    - name: storage-size
+      value: 20Gi
+    - name: event-bucket
+      value: ""
+    - name: redis
+      parameters:
+      - name: enable
+        value: true
+      - name: format
+        value: "access"
+      - name: address
+        value: "redis-redis:6379"
+      - name: key 
+        value: "file-events"
+templates:
+  files:
+    - "*.template"
