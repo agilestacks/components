@@ -77,7 +77,6 @@ resource "aws_route53_zone" "internal" {
 # enable_dns_hostnames = true
 # enable_dns_support   = true
   vpc_id        = "${var.vpc_id}"
-  vpc_region    = "us-east-1" # TODO horrible hack
   force_destroy = true
 }
 

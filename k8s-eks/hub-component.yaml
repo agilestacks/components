@@ -38,6 +38,11 @@ outputs:
   - name: cloud.bucket
     fromTfVar: s3_bucket
 
+  - name: cloud.region
+    fromTfVar: region
+  - name: cloud.availabilityZone
+    fromTfVar: zone
+
   - name: cloud.vpc.id
     fromTfVar: vpc
   - name: cloud.vpc.cidr
