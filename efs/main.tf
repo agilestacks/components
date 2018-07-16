@@ -58,9 +58,17 @@ resource "aws_efs_mount_target" "main" {
   security_groups = ["${split(",", var.sgs)}"]
 }
 
+data "aws_subnet" "mount_target" {
+  id = "${var.subnet}"
+}
+
 locals {
   # https://docs.aws.amazon.com/efs/latest/ug/mounting-fs-mount-cmd-dns-name.html
-  dns = "${aws_efs_file_system.main.id}.efs.${data.aws_region.current.name}.amazonaws.com"
+  # https://docs.aws.amazon.com/efs/latest/ug/troubleshooting-efs-mounting.html#mount-fails-dns-name
+  # dns = "${aws_efs_mount_target.main.dns_name}" # this will wait for mount target? - slower
+  # If there is no mount target in a particular zone, then `fs-...` won't resolve.
+  # Export zone-specific DNS name to everyone.
+  dns = "${data.aws_subnet.mount_target.availability_zone}.${aws_efs_file_system.main.id}.efs.${data.aws_region.current.name}.amazonaws.com"
 }
 
 data "aws_route53_zone" "int_zone" {
