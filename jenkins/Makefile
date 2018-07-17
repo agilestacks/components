@@ -53,11 +53,13 @@ endif
 wait_complete:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
 	$(eval get_job=$(kubectl) get --output=json -f job-nfs-mkdirs.yaml)
-	@ printf "Waiting for mkdir job finish"
+	@ printf "Waiting for job to finish"
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
 		if [ `$(get_job) | jq -M '.status.succeeded or .status.failed'` == 'true' ]; then \
 			echo " done"; \
-			test `$(get_job) | jq -M '.status.succeeded'` -eq "1" && exit 0 || exit 1; \
+			echo "---"; \
+			$(get_job) | jq .;\
+			test `$(get_job) | jq -M '.status.succeeded'` -eq "1" && exit 0; \
 		fi; \
 		printf "."; \
 		sleep 2; \
