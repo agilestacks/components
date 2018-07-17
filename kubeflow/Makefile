@@ -89,7 +89,7 @@ endif
 apply:
 ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks apply $(KF_ENV) -c kubeflow-core
+	ks -vvv apply $(KF_ENV) -c kubeflow-core
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks apply $(KF_ENV) -c argo
 else
@@ -110,7 +110,7 @@ deploy: init install configure apply
 undeploy: init install configure
 ifeq ($(GITHUB_TOKEN),)
 	cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks delete $(KF_ENV) -c kubeflow-core
+	ks -vvv delete $(KF_ENV) -c kubeflow-core
 	cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks delete $(KF_ENV) -c argo
 	cd kubeflow-$(KUBEFLOW_VERSION) && \
