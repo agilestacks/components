@@ -30,15 +30,6 @@ variable "sgs" {
   type = "string"
 }
 
-variable "cname_zone" {
-  type = "string"
-}
-
-variable "cname_record" {
-  type    = "string"
-  default = "nfs"
-}
-
 resource "aws_efs_file_system" "main" {
   # do we really need to replace `.` with `-`?
   # https://docs.aws.amazon.com/efs/latest/ug/API_CreateFileSystem.html#efs-CreateFileSystem-request-CreationToken

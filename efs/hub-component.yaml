@@ -27,14 +27,6 @@ parameters:
   - name: performanceMode
     value: generalPurpose    # maxIO
     env: TF_VAR_performance_mode
-  - name: cname
-    parameters:
-    - name: zone
-      value: i.${dns.domain}
-      env: TF_VAR_cname_zone
-    - name: record
-      value: nfs
-      env: TF_VAR_cname_record
 - name: cloud.region
   env: AWS_DEFAULT_REGION
 - name: dns.domain
