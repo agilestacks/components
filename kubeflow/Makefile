@@ -60,6 +60,8 @@ ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks env set $(KF_ENV) --namespace=$(NAMESPACE)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	ks env set $(KF_ENV) --context=$(DOMAIN_NAME)
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks param set kubeflow-core cloud aws --env=$(KF_ENV)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks param set kubeflow-core reportUsage false --env=$(KF_ENV)
@@ -76,6 +78,8 @@ else
 	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --server=https://$(K8S_API_SERVER)
 	-cd kubeflow && \
 	ks env set $(KF_ENV) --namespace=$(NAMESPACE)
+	-cd kubeflow && \
+	ks env set $(KF_ENV) --context=$(DOMAIN_NAME)
 	-cd kubeflow && \
 	ks param set kubeflow-core cloud aws --env=$(KF_ENV)
 	-cd kubeflow && \
