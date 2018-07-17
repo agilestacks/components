@@ -108,10 +108,6 @@ deploy: init install configure apply
 .PHONY: deploy
 
 undeploy: init install configure
-	$(kubectl) delete -f ambassador-ingress.yaml | true
-	$(kubectl) delete -f jupyterhub-ingress.yaml | true
-	$(kubectl) delete -f argo-ingress.yaml | true
-	$(kubectl) delete -f centraldashboard-ingress.yaml | true
 ifeq ($(GITHUB_TOKEN),)
 	cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks delete $(KF_ENV) -c kubeflow-core
@@ -127,5 +123,9 @@ else
 	cd kubeflow && \
 	ks env rm $(KF_ENV)
 endif
+	-$(kubectl) delete -f ambassador-ingress.yaml | true
+	-$(kubectl) delete -f jupyterhub-ingress.yaml | true
+	-$(kubectl) delete -f argo-ingress.yaml | true
+	-$(kubectl) delete -f centraldashboard-ingress.yaml | true
 .PHONY: undeploy
 
