@@ -71,19 +71,6 @@ locals {
   dns = "${data.aws_subnet.mount_target.availability_zone}.${aws_efs_file_system.main.id}.efs.${data.aws_region.current.name}.amazonaws.com"
 }
 
-data "aws_route53_zone" "int_zone" {
-  name         = "${var.cname_zone}"
-  private_zone = true
-}
-
-resource "aws_route53_record" "nfs_cname" {
-  zone_id = "${data.aws_route53_zone.int_zone.zone_id}"
-  name    = "${var.cname_record}"
-  type    = "CNAME"
-  records = ["${local.dns}"]
-  ttl     = "30"
-}
-
 output "efs_endpoint" {
   value = "${local.dns}"
 }
