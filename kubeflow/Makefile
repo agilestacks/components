@@ -15,7 +15,7 @@ export GITHUB_TOKEN			?=
 ifneq ($(GITHUB_TOKEN),)
 init:
 	-$(kubectl) create namespace $(NAMESPACE)
-	-ks init kubeflow --namespace=$(NAMESPACE) --server=https://$(K8S_API_SERVER) --dir=kubeflow --api-spec=version:$(K8S_API_SPEC)
+	-ks init kubeflow --context=$(DOMAIN_NAME) --namespace=$(NAMESPACE) --dir=kubeflow --api-spec=version:$(K8S_API_SPEC)
 .PHONY: init
 else
 init:
@@ -56,11 +56,9 @@ ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks param set kubeflow-core reportUsage false
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --server=https://$(K8S_API_SERVER)
+	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --context=$(DOMAIN_NAME)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks env set $(KF_ENV) --namespace=$(NAMESPACE)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks env set $(KF_ENV) --context=$(DOMAIN_NAME)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks param set kubeflow-core cloud aws --env=$(KF_ENV)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
@@ -75,11 +73,9 @@ else
 	-cd kubeflow && \
 	ks param set kubeflow-core reportUsage false
 	-cd kubeflow && \
-	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --server=https://$(K8S_API_SERVER)
+	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --context=$(DOMAIN_NAME)
 	-cd kubeflow && \
 	ks env set $(KF_ENV) --namespace=$(NAMESPACE)
-	-cd kubeflow && \
-	ks env set $(KF_ENV) --context=$(DOMAIN_NAME)
 	-cd kubeflow && \
 	ks param set kubeflow-core cloud aws --env=$(KF_ENV)
 	-cd kubeflow && \
@@ -93,7 +89,7 @@ endif
 apply:
 ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks -vvv apply $(KF_ENV) -c kubeflow-core
+	ks apply $(KF_ENV) -c kubeflow-core
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks apply $(KF_ENV) -c argo
 else
@@ -114,7 +110,7 @@ deploy: init install configure apply
 undeploy: init install configure
 ifeq ($(GITHUB_TOKEN),)
 	cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks -vvv delete $(KF_ENV) -c kubeflow-core
+	ks delete $(KF_ENV) -c kubeflow-core
 	cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks delete $(KF_ENV) -c argo
 	cd kubeflow-$(KUBEFLOW_VERSION) && \
