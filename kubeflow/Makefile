@@ -109,18 +109,18 @@ deploy: init install configure apply
 
 undeploy: init install configure
 ifeq ($(GITHUB_TOKEN),)
-	cd kubeflow-$(KUBEFLOW_VERSION) && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks delete $(KF_ENV) -c kubeflow-core
-	cd kubeflow-$(KUBEFLOW_VERSION) && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks delete $(KF_ENV) -c argo
-	cd kubeflow-$(KUBEFLOW_VERSION) && \
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks env rm $(KF_ENV)
 else
-	cd kubeflow && \
+	-cd kubeflow && \
 	ks delete $(KF_ENV) -c kubeflow-core
-	cd kubeflow && \
+	-cd kubeflow && \
 	ks delete $(KF_ENV) -c argo
-	cd kubeflow && \
+	-cd kubeflow && \
 	ks env rm $(KF_ENV)
 endif
 	-$(kubectl) delete -f ambassador-ingress.yaml | true
