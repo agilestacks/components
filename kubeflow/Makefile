@@ -89,14 +89,14 @@ endif
 apply:
 ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks apply $(KF_ENV) -c kubeflow-core
+	ks apply $(KF_ENV) -c kubeflow-core --context=$(DOMAIN_NAME)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks apply $(KF_ENV) -c argo
+	ks apply $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
 else
 	-cd kubeflow && \
-	ks apply $(KF_ENV) -c kubeflow-core
+	ks apply $(KF_ENV) -c kubeflow-core --context=$(DOMAIN_NAME)
 	-cd kubeflow && \
-	ks apply $(KF_ENV) -c argo
+	ks apply $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
 endif
 	-$(kubectl) apply -f ambassador-ingress.yaml
 	-$(kubectl) apply -f jupyterhub-ingress.yaml
@@ -107,19 +107,20 @@ endif
 deploy: init install configure apply
 .PHONY: deploy
 
+
 undeploy: init install configure
 ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks delete $(KF_ENV) -c kubeflow-core
+	ks delete $(KF_ENV) -c kubeflow-core --context=$(DOMAIN_NAME)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks delete $(KF_ENV) -c argo
+	ks delete $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks env rm $(KF_ENV)
 else
 	-cd kubeflow && \
-	ks delete $(KF_ENV) -c kubeflow-core
+	ks delete $(KF_ENV) -c kubeflow-core --context=$(DOMAIN_NAME)
 	-cd kubeflow && \
-	ks delete $(KF_ENV) -c argo
+	ks delete $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
 	-cd kubeflow && \
 	ks env rm $(KF_ENV)
 endif
