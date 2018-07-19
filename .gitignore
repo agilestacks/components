@@ -97,3 +97,4 @@ kubeflow/kubeflow-v0.2.0/components/argo.jsonnet
 kubeflow/kubeflow-v0.2.0/components/kubeflow-core.jsonnet
 kubeflow/kubeflow-v0.2.0/environments/cloud
 jenkins-pipelines/rbac.yaml
+argo/charts
