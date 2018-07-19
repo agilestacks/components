@@ -10,7 +10,7 @@ metadata:
     prometheus: {{ .Release.Name }}
     {{- if .Values.additionalServiceMonitorLabels }}
 {{ toYaml .Values.additionalServiceMonitorLabels | indent 4 }}
-    {{- end }}    
+    {{- end }}
   name: {{ template "exporter-kubelets.fullname" . }}
 spec:
   jobLabel: component
@@ -34,7 +34,7 @@ spec:
   - port: https-metrics
     scheme: https
     path: /metrics/cadvisor
-    interval: 30s
+    interval: 12s
     honorLabels: true
     tlsConfig:
       caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
@@ -46,6 +46,6 @@ spec:
   - port: http-metrics
     interval: 15s
   - port: cadvisor
-    interval: 30s
+    interval: 12s
     honorLabels: true
   {{- end }}
