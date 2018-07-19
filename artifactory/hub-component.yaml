@@ -1,0 +1,38 @@
+---
+version: 1
+kind: component
+meta:
+  name: artifactory
+  brief: Artifact Manager
+  source:
+    dir: ../../components/argo
+
+requires:
+  - aws
+provides:
+  - artifactory
+
+parameters:
+- name: component.artifactory
+  parameters:
+  - name: name
+    value: artifactory
+    env: COMPONENT_NAME
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
+- name: dns.domain
+  env:  DOMAIN_NAME
+- name: bin.terraform
+  value: terraform-v0.11
+  env: terraform
+- name: terraform.bucket
+  parameters:
+  - name: name
+    env: STATE_BUCKET
+  - name: region
+    env: STATE_REGION
+
+outputs:
+- name: component.artifactory.repository
+  brief: Artifactory repository
+  value: s3://${terraform.bucket.name}/components/argo
