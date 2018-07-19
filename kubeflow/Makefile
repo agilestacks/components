@@ -4,7 +4,7 @@ export NAMESPACE    		?= kubeflow
 export DOMAIN_NAME  		?= default
 export COMPONENT_NAME       ?= kubeflow
 export kubectl      		?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export KUBEFLOW_VERSION		?=v0.2.0
+export KUBEFLOW_VERSION		?=v0.2.2
 export ARGO_VERSION			?=v2.1.1
 export K8S_API_SPEC			?=v1.9.8
 export K8S_API_SERVER		?=
