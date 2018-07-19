@@ -1,0 +1,38 @@
+---
+version: 1
+kind: component
+meta:
+  name: argo
+  brief: Workflow Engine
+  source:
+    dir: ../../components/argo
+
+requires:
+  - aws
+provides:
+  - argo
+
+parameters:
+- name: component.argo
+  parameters:
+  - name: name
+    value: argo
+    env: COMPONENT_NAME
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
+- name: dns.domain
+  env:  DOMAIN_NAME
+- name: bin.terraform
+  value: terraform-v0.11
+  env: terraform
+- name: terraform.bucket
+  parameters:
+  - name: name
+    env: STATE_BUCKET
+  - name: region
+    env: STATE_REGION
+
+outputs:
+- name: component.argo.backend
+  brief: Argo backend S3 or Minio
+  value: s3://${terraform.bucket.name}/components/argo
