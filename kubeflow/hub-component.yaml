@@ -25,7 +25,7 @@ parameters:
       value: kubeflow
       env: NAMESPACE
     - name: version
-      value: v0.2.0
+      value: v0.2.2
       env: KUBEFLOW_VERSION
     - name: apiSpec
       value: v1.9.8
