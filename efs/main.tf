@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "1.23.0"
+  version = "1.28.0"
 }
 
 data "aws_region" "current" {}
@@ -64,4 +64,8 @@ locals {
 
 output "efs_endpoint" {
   value = "${local.dns}"
+}
+
+output "efs_id" {
+  value = "${aws_efs_file_system.main.id}"
 }
