@@ -1,0 +1,41 @@
+images:
+  namespace: argoproj
+  controller: workflow-controller
+  ui: argoui
+  executor: argoexec
+  tag: v2.1.1
+
+controller:
+  serviceAccount: argo
+  name: workflow-controller
+  workflowNamespaces:
+  - default
+  useReleaseAsInstanceID: true
+  instanceID:
+
+ui:
+  name: ui
+  serviceType: ClusterIp
+  serviceAccount: argo-ui
+  enableWebConsole: true
+
+crdVersion: v1alpha1
+
+useDefaultArtifactRepo: false
+useStaticCredentials: true
+
+minio:
+  install: false
+  defaultBucket:
+    enabled: false
+    name: argo-artifacts
+
+artifactRepository:
+  s3:
+    endpoint: s3.amazonaws.com
+    bucket: ${component.argo.bucket}
+    accessKeySecret:
+      key: easy
+    secretKeySecret:
+      key: secret
+    insecure: true

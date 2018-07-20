@@ -5,39 +5,94 @@ DOMAIN_NAME    ?= dev.stacks.delivery
 STATE_BUCKET   ?= terraform.agilestacks.com
 STATE_REGION   ?= us-east-1
 
-export AWS_PROFILE        ?= default
-export AWS_DEFAULT_REGION ?= us-east-2
-export TF_LOG             ?= debug
-export TF_LOG_PATH        ?= .terraform/$(DOMAIN_NAME).log
 export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
 export TF_VAR_name        := $(COMPONENT_NAME)
+export TF_CLI_ARGS        ?=
+export TF_DATA_DIR        ?= .terraform
 
-terraform ?= terraform
-TFPLAN ?= $(notdir $(COMPONENT_NAME)).tfplan
+export HELM_HOME ?= $(shell pwd)/.helm
+CHART_VERSION ?= 0.1.1
 
-deploy: init import plan apply
+terraform ?= terraform-v0.11
+helm ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
-init:
-	@echo "Init"
+$(TF_DATA_DIR):
+	mkdir -p "$@"
+
+$(HELM_HOME):
+	mkdir -p "$@"
+
+namespace:
+	- $(kubectl) create namespace $(NAMESPACE)
+
+init: $(TF_DATA_DIR) $(HELM_HOME) namespace
+	$(helm) init --client-only --upgrade --wait
+	$(helm) repo add argo https://argoproj.github.io/argo-helm/
+	$(terraform) init -get=true $(TF_CMD_OPTS) -force-copy \
+        -backend=true -input=false -reconfigure \
+        -backend-config="bucket=$(STATE_BUCKET)" \
+        -backend-config="region=$(STATE_REGION)" \
+        -backend-config="key=$(DOMAIN_NAME)/argo/$(COMPONENT_NAME)/terraform.tfstate" \
+        -backend-config="profile=$(AWS_PROFILE)"
 .PHONY: init
 
-get:
-	@echo "Get"
-.PHONY: get
+deploy: init plan
+	$(MAKE) apply || \
+	$(MAKE) import plan apply
+	$(MAKE) fetch install
+.PHONY: deploy
 
-plan:
-	@echo "Plan"
-.PHONY: plan
+fetch: $(HELM_HOME) $(TF_DATA_DIR)
+	$(helm) fetch \
+		--destination charts \
+		--untar argo/argo \
+		--version $(CHART_VERSION)
+.PHONY: fetch
 
-apply:
-	@echo "Apply"
-.PHONY: apply
+install:
+	$(eval ACCESS_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.access_key_id.value'))
+	$(eval SECRET_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.secret_access_key.value'))
+
+	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
+		$(helm) install charts/$(notdir $(CHART)) \
+			--name $(TF_VAR_component) \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values values.yaml \
+			--set accesskey=$(ACCESS_KEY_ID),secretkey=$(SECRET_KEY_ID) \
+			--version $(CHART_VERSION)
+.PHONY: install
 
 undeploy: init
-	@echo "Undeploy"
+	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' && \
+		$(helm) delete --purge $(TF_VAR_component) || exit 0
+	$(MAKE) plan TF_CLI_ARGS="-destroy"
+	$(MAKE) apply
 .PHONY: undeploy
 
+clean:
+	rm -rf $(HELM_HOME)
+	rm -rf $(TF_DATA_DIR)
+
 import:
-	@echo "Import"
+	- $(terraform) import aws_iam_user.main $(TF_VAR_component)
 .PHONY: import
+
+plan:
+	$(terraform) plan -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan
+.PHONY: plan
+
+refresh:
+	$(terraform) refresh
+.PHONY: refresh
+
+apply:
+	$(terraform) apply -auto-approve .terraform/terraform.tfplan
+.PHONY: apply
+
+output:
+	@ $(terraform) output
+.PHONY: output

@@ -3,36 +3,45 @@ version: 1
 kind: component
 meta:
   name: argo
-  brief: Workflow Engine
+  brief: The workflow engine for Kubernetes
   source:
     dir: ../../components/argo
 
 requires:
-  - aws
+  - kubernetes
+  - ingress
 provides:
   - argo
 
 parameters:
+- name: component.ingress.fqdn
+- name: component.ingress.ssoUrlPrefix
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.region
+  env: STATE_REGION
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: cloud.region
+  kind: user
+  env: AWS_DEFAULT_REGION
 - name: component.argo
   parameters:
   - name: name
     value: argo
-    env: COMPONENT_NAME
-- name: cloud.region
-  env: AWS_DEFAULT_REGION
-- name: dns.domain
-  env:  DOMAIN_NAME
-- name: bin.terraform
-  value: terraform-v0.11
-  env: terraform
-- name: terraform.bucket
-  parameters:
-  - name: name
-    env: STATE_BUCKET
-  - name: region
-    env: STATE_REGION
-
+    env: TF_VAR_component
+  - name: replicas
+    value: 4
+  - name: namespace
+    value: argo
+    env: NAMESPACE
+  - name: bucket
+    value: ${terraform.bucket.name}
+    env: TF_VAR_bucket_name
 outputs:
 - name: component.argo.backend
   brief: Argo backend S3 or Minio
   value: s3://${terraform.bucket.name}/components/argo
+templates:
+  files:
+  - "*.template"
