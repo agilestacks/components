@@ -17,7 +17,7 @@ deploy:
 	- $(kubectl) label --overwrite configmap/script-approvals provider=agilestacks.com project=jenkins qualifier=script-approvals
 
 ifeq ($(VOLUME_TYPE),nfs)
-	$(kubectl) apply -f job-nfs-mkdirs.yaml
+	$(kubectl) apply --force -f job-nfs-mkdirs.yaml
 	$(MAKE) wait_complete
 endif
 	$(kubectl) apply -f secrets.yaml
@@ -53,13 +53,12 @@ endif
 wait_complete:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
 	$(eval get_job=$(kubectl) get --output=json -f job-nfs-mkdirs.yaml)
-	@ printf "Waiting for job to finish"
+	@ printf 'Waiting for job to finish'
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
 		if [ `$(get_job) | jq -M '.status.succeeded or .status.failed'` == 'true' ]; then \
-			echo " done"; \
-			echo "---"; \
+			printf ' done\n---\n'; \
 			$(get_job) | jq .;\
-			test `$(get_job) | jq -M '.status.succeeded'` -eq "1" && exit 0; \
+			test `$(get_job) | jq -M '.status.succeeded' | xargs` == "1" && exit 0; \
 		fi; \
 		printf "."; \
 		sleep 2; \
