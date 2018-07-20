@@ -11,6 +11,7 @@ export TF_LOG             ?= info
 export TF_LOG_PATH        ?= .terraform/$(DOMAIN_NAME).log
 export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
+export TF_DATA_DIR        := .terraform
 
 export TF_VAR_name             := $(COMPONENT_NAME)
 export TF_VAR_performance_mode ?= generalPurpose
@@ -20,13 +21,15 @@ export TF_VAR_cname_record     ?= nfs
 export TF_VAR_subnet_id        ?=
 export TF_VAR_sgs              ?=
 
-terraform ?= terraform
+terraform ?= terraform-v0.11
 TFPLAN ?= .terraform/$(COMPONENT_NAME).tfplan
 
-deploy: init plan apply
+deploy: init plan apply output
 
-init:
-	@mkdir -p .terraform
+$(TF_DATA_DIR):
+	@mkdir -p "$@"
+
+init: $(TF_DATA_DIR)
 	$(terraform) init -get=true $(TF_CMD_OPTS) -reconfigure -force-copy  \
 		-backend=true -input=false \
 		-backend-config="bucket=$(STATE_BUCKET)" \
@@ -48,6 +51,10 @@ apply:
 .PHONY: apply
 
 undeploy: init
-	$(MAKE) plan TF_OPTS=-destroy
+	$(MAKE) plan TF_OPTS="-destroy -no-color"
 	$(MAKE) apply
 .PHONY: undeploy
+
+output:
+	$(terraform) output $(TF_OPTS) -json
+.PHONY: output
