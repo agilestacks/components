@@ -1,7 +1,7 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: ${component.postgresql.storageClass}
+  name: aws-storage
 provisioner: kubernetes.io/aws-ebs
 parameters:
   type: ${component.postgresql.volumeType}
