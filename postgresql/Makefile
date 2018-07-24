@@ -1,11 +1,12 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   ?= postgresql
-export COMPONENT_NAME      ?= postgresql
-export DOMAIN_NAME         ?= default
-export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+export HELM_HOME      ?= $(shell pwd)/.helm
+export NAMESPACE      ?= postgresql
+export COMPONENT_NAME ?= postgresql
+export DOMAIN_NAME    ?= default
+
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 deploy: clean init fetch install
 .PHONY: deploy
@@ -14,6 +15,7 @@ init:
 	@mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
 	@mkdir -p charts
+.PHONY: init
 
 fetch:
 	$(helm) fetch \
@@ -42,3 +44,4 @@ undeploy: init
 clean:
 	@rm -rf $(HELM_HOME)
 	@rm -rf charts
+.PHONY: clean
