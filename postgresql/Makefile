@@ -8,6 +8,8 @@ export DOMAIN_NAME    ?= default
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
+CLOUD_KIND ?= aws
+
 deploy: clean init fetch install
 .PHONY: deploy
 
@@ -26,7 +28,7 @@ fetch:
 
 install:
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply -f aws-storage-class.yaml
+	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/postgresql \
 			--name $(COMPONENT_NAME) \
