@@ -19,10 +19,12 @@ parameters:
     env: STATE_BUCKET
   - name: terraform.bucket.region
     env: STATE_REGION
-  - name: dns.domain
-    env: TF_VAR_domain_name
   - name: cloud.kind
     env: CLOUD_KIND
+  - name: dns.domain
+    env: TF_VAR_domain_name
+  - name: dns.name
+    env: TF_VAR_name
   - name: component.ingress
     parameters:
     - name: urlPrefix
@@ -73,8 +75,8 @@ outputs:
 - name: component.ingress.ssoUrlPrefix
 - name: component.ingress.dashboard.url
   value: http://${component.ingress.ssoUrlPrefix}.${dns.domain}/dashboard/
-- name: component.ingress.elb
-  fromTfVar: elb_domain
+- name: component.ingress.load-balancer
+  fromTfVar: load_balancer
 
 templates:
   files: ["values.yaml.template", "values-acm.yaml.template"]
