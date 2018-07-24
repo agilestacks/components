@@ -32,7 +32,7 @@ wait:
 
 wait_rbac:
 	@for i in $$(seq 1 60); do \
-		if $(kubectl) get sa ; then \
+		if $(kubectl) get sa >/dev/null; then \
 			exit 0; \
 		fi; \
 		echo "Waiting for admin RBAC roles to be created ($$i)..."; \
