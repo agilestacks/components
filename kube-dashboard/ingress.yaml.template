@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: ${component.kubernetes-dashboard.name}
   namespace: ${component.kubernetes-dashboard.namespace}
+  annotations:
+    kubernetes.io/ingress.class: traefik
   labels:
     provider:  agilestacks.com
     project:   kubernetes

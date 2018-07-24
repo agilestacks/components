@@ -10,6 +10,7 @@ metadata:
     heritage: "{{ .Release.Service }}"
   annotations:
     agilestacks.com/stack-component: pgweb
+    kubernetes.io/ingress.class: traefik
 spec:
   rules:
   - host: {{ .Values.ingress.fqdn | quote }}

@@ -147,6 +147,7 @@ dashboard:
       component: traefik-dashboard
     annotations:
       agilestacks.com/stack-component: Traefik
+      kubernetes.io/ingress.class: traefik
 
   statistics:
     ## Number of recent errors to show in the ‘Health’ tab
