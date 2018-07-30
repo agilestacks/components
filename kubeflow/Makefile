@@ -54,6 +54,12 @@ ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks generate argo argo --name=argo
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	ks generate pytorch-operator pytorch-operator --name=pytorch-operator
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	ks generate pachyderm pachyderm --name=pachyderm
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	ks generate seldon seldon --name=seldon
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks param set kubeflow-core reportUsage false
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --context=$(DOMAIN_NAME)
@@ -65,12 +71,20 @@ ifeq ($(GITHUB_TOKEN),)
 	ks param set kubeflow-core reportUsage false --env=$(KF_ENV)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks param set argo imageTag $(ARGO_VERSION) --env=$(KF_ENV)
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	ks param set pachyderm backend local --env=$(KF_ENV)
 else
 	-cd kubeflow && \
 	ks generate core kubeflow-core --name=kubeflow-core
 	-cd kubeflow && \
 	ks generate argo argo --name=argo
 	-cd kubeflow && \
+	ks generate pytorch-operator pytorch-operator --name=pytorch-operator
+	-cd kubeflow && \
+	ks generate pachyderm pachyderm --name=pachyderm
+	-cd kubeflow && \
+	ks generate seldon seldon --name=seldon
+	-cd kubeflow && \
 	ks param set kubeflow-core reportUsage false
 	-cd kubeflow && \
 	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --context=$(DOMAIN_NAME)
@@ -82,6 +96,8 @@ else
 	ks param set kubeflow-core reportUsage false --env=$(KF_ENV)
 	-cd kubeflow && \
 	ks param set argo imageTag $(ARGO_VERSION) --env=$(KF_ENV)
+	-cd kubeflow && \
+	ks param set pachyderm backend local --env=$(KF_ENV)
 endif
 .PHONY: configure
 
@@ -92,12 +108,25 @@ ifeq ($(GITHUB_TOKEN),)
 	ks apply $(KF_ENV) -c kubeflow-core --context=$(DOMAIN_NAME)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks apply $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	ks apply $(KF_ENV) -c pytorch-operator --context=$(DOMAIN_NAME)
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	ks apply $(KF_ENV) -c pachyderm --context=$(DOMAIN_NAME)
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	ks apply $(KF_ENV) -c seldon --context=$(DOMAIN_NAME)
 else
 	-cd kubeflow && \
 	ks apply $(KF_ENV) -c kubeflow-core --context=$(DOMAIN_NAME)
 	-cd kubeflow && \
 	ks apply $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
+	-cd kubeflow && \
+	ks apply $(KF_ENV) -c pytorch-operator --context=$(DOMAIN_NAME)
+	-cd kubeflow && \
+	ks apply $(KF_ENV) -c pachyderm --context=$(DOMAIN_NAME)
+	-cd kubeflow && \
+	ks apply $(KF_ENV) -c seldon --context=$(DOMAIN_NAME)
 endif
+	-$(kubectl) apply -f default-storage-class.yaml
 	-$(kubectl) apply -f ambassador-ingress.yaml
 	-$(kubectl) apply -f jupyterhub-ingress.yaml
 	-$(kubectl) apply -f argo-ingress.yaml
@@ -115,6 +144,12 @@ ifeq ($(GITHUB_TOKEN),)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks delete $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
 	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	ks delete $(KF_ENV) -c pytorch-operator --context=$(DOMAIN_NAME)
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	ks delete $(KF_ENV) -c pachyderm --context=$(DOMAIN_NAME)
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	ks delete $(KF_ENV) -c seldon --context=$(DOMAIN_NAME)
+	-cd kubeflow-$(KUBEFLOW_VERSION) && \
 	ks env rm $(KF_ENV)
 else
 	-cd kubeflow && \
@@ -122,8 +157,16 @@ else
 	-cd kubeflow && \
 	ks delete $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
 	-cd kubeflow && \
+	ks delete $(KF_ENV) -c pytorch-operator --context=$(DOMAIN_NAME)
+	-cd kubeflow && \
+	ks delete $(KF_ENV) -c pachyderm --context=$(DOMAIN_NAME)
+	-cd kubeflow && \
+	ks delete $(KF_ENV) -c seldon --context=$(DOMAIN_NAME)
+	-cd kubeflow && \
 	ks env rm $(KF_ENV)
 endif
+	-$(kubectl) delete pvc --all | true
+	-$(kubectl) delete -f default-storage-class.yaml | true
 	-$(kubectl) delete -f ambassador-ingress.yaml | true
 	-$(kubectl) delete -f jupyterhub-ingress.yaml | true
 	-$(kubectl) delete -f argo-ingress.yaml | true
