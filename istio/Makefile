@@ -1,45 +1,51 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME           ?= $(shell pwd)/.helm
-export COMPONENT_NAME      ?= istio
-export NAMESPACE           ?= ingress
-export DOMAIN_NAME         ?= default
-export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+HELM_HOME      ?= ./.helm
+COMPONENT_NAME ?= istio
+NAMESPACE      ?= istio-system
+DOMAIN_NAME    ?= default
+ISTIO_VERSION  ?= 1.0.0
 
-deploy: clean init fetch install
-    $(kubectl) apply -f namespace.yaml
-.PHONY: deploy
+kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+
+deploy: clean init fetch namespace crds install
+
+namespace:
+	$(kubectl) apply -f namespace.yaml
+.PHONY: namespace
+
+crds:
+	$(kubectl) apply -f istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/templates/crds.yaml
+.PHONY: crds
 
 init:
-    mkdir -p $(HELM_HOME)
-    @$(helm) init --client-only --upgrade --wait
-    -$(helm) repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com
-    @mkdir -p tmp
+	@mkdir -p $(HELM_HOME)
+	$(helm) init --client-only --upgrade --wait
+.PHONY: init
 
-fetch:
-    $(helm) fetch \
-            --destination charts \
-            --untar incubator/istio
-.PHONY: fetch
+# https://github.com/istio/istio/issues/7505
+fetch: istio-$(ISTIO_VERSION)
+
+istio-$(ISTIO_VERSION):
+	curl -L https://github.com/istio/istio/archive/$(ISTIO_VERSION).tar.gz | \
+		tar xz istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio
 
 install:
-    $(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
-        $(helm) install incubator/istio \
-            --name $(COMPONENT_NAME) \
-            --namespace $(NAMESPACE) \
-            --replace \
-            --wait \
-            --values values.yaml
-endif
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+		$(helm) install istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio \
+			--name $(COMPONENT_NAME) \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values values.yaml
 .PHONY: install
 
-undeploy: init
-    $(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
-        $(helm) delete --purge $(COMPONENT_NAME) || exit 0
+undeploy:
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 
 clean:
-    rm -rf $(HELM_HOME)
-    rm -rf tmp
-
+	@rm -rf $(HELM_HOME)
+.PHONY: clean
