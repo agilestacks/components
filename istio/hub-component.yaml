@@ -12,6 +12,9 @@ requires:
   - helm
   - tiller
 
+provides:
+  - istio
+
 parameters:
   - name: dns.domain
     env: DOMAIN_NAME
