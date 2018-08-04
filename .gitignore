@@ -106,3 +106,5 @@ kubeflow/kubeflow-v0.2.2/environments/cloud
 jenkins-pipelines/rbac.yaml
 argo/charts
 values.yaml
+ingress.yaml
+rbac.yaml

@@ -1,12 +1,12 @@
 images:
-  namespace: argoproj
+  namespace: ${component.argo.namespace}
   controller: workflow-controller
   ui: argoui
   executor: argoexec
   tag: v2.1.1
 
 controller:
-  serviceAccount: argo
+  serviceAccount: ${component.argo.serviceAccount}
   name: workflow-controller
   workflowNamespaces:
   - default
@@ -15,7 +15,7 @@ controller:
 
 ui:
   name: ui
-  serviceType: ClusterIp
+  serviceType: ClusterIP
   serviceAccount: argo-ui
   enableWebConsole: true
 

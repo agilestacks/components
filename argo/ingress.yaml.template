@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${component.argo.name}
+  namespace: ${component.argo.namespace}
+  labels:
+    provider:  agilestacks.com
+    component: argo
+  annotations:
+    agilestacks.com/stack-component: Argo
+spec:
+  rules:
+  - host: ${component.argo.name}.${component.argo.ingress.baseDomain}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: argo-ui
+          servicePort: 80

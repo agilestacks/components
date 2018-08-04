@@ -4,6 +4,7 @@ COMPONENT_NAME ?= argo
 DOMAIN_NAME    ?= dev.stacks.delivery
 STATE_BUCKET   ?= terraform.agilestacks.com
 STATE_REGION   ?= us-east-1
+NAMESPACE      ?= argoproj
 
 export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
@@ -16,7 +17,7 @@ CHART_VERSION ?= 0.1.1
 
 terraform ?= terraform-v0.11
 helm ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 $(TF_DATA_DIR):
 	mkdir -p "$@"
@@ -38,39 +39,48 @@ init: $(TF_DATA_DIR) $(HELM_HOME) namespace
         -backend-config="profile=$(AWS_PROFILE)"
 .PHONY: init
 
-deploy: init plan
-	$(MAKE) apply || \
-	$(MAKE) import plan apply
+deploy:
+	# init plan
+	# $(MAKE) apply || \
+	# $(MAKE) import plan apply
+	$(kubectl) apply -f rbac.yaml
+	$(kubectl) apply -f ingress.yaml
 	$(MAKE) fetch install
 .PHONY: deploy
 
 fetch: $(HELM_HOME) $(TF_DATA_DIR)
+	$(helm) repo update
 	$(helm) fetch \
 		--destination charts \
 		--untar argo/argo \
-		--version $(CHART_VERSION)
+		--version '$(CHART_VERSION)'
 .PHONY: fetch
 
 install:
 	$(eval ACCESS_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.access_key_id.value'))
 	$(eval SECRET_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.secret_access_key.value'))
 
-	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
-		$(helm) install charts/$(notdir $(CHART)) \
-			--name $(TF_VAR_component) \
-			--namespace $(NAMESPACE) \
-			--replace \
-			--wait \
-			--values values.yaml \
-			--set accesskey=$(ACCESS_KEY_ID),secretkey=$(SECRET_KEY_ID) \
-			--version $(CHART_VERSION)
+	# $(helm) list -q | grep -E '^$(TF_VAR_component)$$' ||
+	$(helm) install charts/$(notdir $(CHART)) \
+		--name $(TF_VAR_component) \
+		--namespace $(NAMESPACE) \
+		--replace \
+		--wait \
+		--values values.yaml \
+		--set accesskey=$(ACCESS_KEY_ID),secretkey=$(SECRET_KEY_ID) \
+		--version '$(CHART_VERSION)'
+		$(kubectl) get services -o wide | grep argo-
 .PHONY: install
 
 undeploy: init
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component) || exit 0
-	$(MAKE) plan TF_CLI_ARGS="-destroy"
-	$(MAKE) apply
+
+	# $(MAKE) plan TF_CLI_ARGS="-destroy"
+	# $(MAKE) apply
+	- $(kubectl) delete -f ingress.yaml
+	- $(kubectl) delete -f rbac.yaml
+	- $(kubectl) delete job argo-apply-workflow-crd
 .PHONY: undeploy
 
 clean:

@@ -33,15 +33,25 @@ parameters:
   - name: replicas
     value: 4
   - name: namespace
-    value: argo
+    value: argoproj
     env: NAMESPACE
   - name: bucket
     value: ${terraform.bucket.name}
     env: TF_VAR_bucket_name
+  - name: serviceAccount
+    value: argo
+  - name: ingress.baseDomain
+    value: ${component.ingress.ssoUrlPrefix}.${dns.domain}
+  - name: chart.version
+    value: '>0.0.0-0'
+    env: CHART_VERSION
 outputs:
 - name: component.argo.backend
   brief: Argo backend S3 or Minio
   value: s3://${terraform.bucket.name}/components/argo
+- name: component.argo.ingress
+  brief: URL to connect to argo-ui
+  value: ${component.argo.name}.${component.argo.ingress.baseDomain}
 templates:
   files:
   - "*.template"
