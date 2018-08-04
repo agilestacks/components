@@ -40,9 +40,9 @@ init: $(TF_DATA_DIR) $(HELM_HOME) namespace
 .PHONY: init
 
 deploy:
-	# init plan
-	# $(MAKE) apply || \
-	# $(MAKE) import plan apply
+	init plan
+	$(MAKE) apply || \
+	$(MAKE) import plan apply
 	$(kubectl) apply -f rbac.yaml
 	$(kubectl) apply -f ingress.yaml
 	$(MAKE) fetch install
@@ -76,8 +76,8 @@ undeploy: init
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component) || exit 0
 
-	# $(MAKE) plan TF_CLI_ARGS="-destroy"
-	# $(MAKE) apply
+	$(MAKE) plan TF_CLI_ARGS="-destroy"
+	$(MAKE) apply
 	- $(kubectl) delete -f ingress.yaml
 	- $(kubectl) delete -f rbac.yaml
 	- $(kubectl) delete job argo-apply-workflow-crd
