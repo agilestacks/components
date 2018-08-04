@@ -52,6 +52,9 @@ outputs:
 - name: component.argo.ingress
   brief: URL to connect to argo-ui
   value: ${component.argo.name}.${component.argo.ingress.baseDomain}
+- name: component.argo.namespace
+  brief: Namespace where Argo has been installed
+  value: ${component.argo.namespace}
 templates:
   files:
   - "*.template"

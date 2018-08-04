@@ -40,7 +40,7 @@ init: $(TF_DATA_DIR) $(HELM_HOME) namespace
 .PHONY: init
 
 deploy:
-	init plan
+	$(MAKE) init plan
 	$(MAKE) apply || \
 	$(MAKE) import plan apply
 	$(kubectl) apply -f rbac.yaml
@@ -60,16 +60,16 @@ install:
 	$(eval ACCESS_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.access_key_id.value'))
 	$(eval SECRET_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.secret_access_key.value'))
 
-	# $(helm) list -q | grep -E '^$(TF_VAR_component)$$' ||
-	$(helm) install charts/$(notdir $(CHART)) \
-		--name $(TF_VAR_component) \
-		--namespace $(NAMESPACE) \
-		--replace \
-		--wait \
-		--values values.yaml \
-		--set accesskey=$(ACCESS_KEY_ID),secretkey=$(SECRET_KEY_ID) \
-		--version '$(CHART_VERSION)'
-		$(kubectl) get services -o wide | grep argo-
+	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
+		$(helm) install charts/$(notdir $(CHART)) \
+			--name $(TF_VAR_component) \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values values.yaml \
+			--set accesskey=$(ACCESS_KEY_ID),secretkey=$(SECRET_KEY_ID) \
+			--version '$(CHART_VERSION)'
+			$(kubectl) get services -o wide | grep argo-
 .PHONY: install
 
 undeploy: init
