@@ -46,6 +46,13 @@ deploy:
 	$(kubectl) apply -f rbac.yaml
 	$(kubectl) apply -f ingress.yaml
 	$(MAKE) fetch install
+
+	$(kubectl) apply -f events/argo-events-sa.yaml
+	$(kubectl) apply -f events/argo-events-cluster-roles.yaml
+	$(kubectl) apply -f events/sensor-crd.yaml
+	$(kubectl) apply -f events/sensor-controller-configmap.yaml
+	$(kubectl) apply -f events/sensor-controller-deployment.yaml
+	$(kubectl) apply -f events/webhook.yaml
 .PHONY: deploy
 
 fetch: $(HELM_HOME) $(TF_DATA_DIR)
@@ -80,7 +87,16 @@ undeploy: init
 	$(MAKE) apply
 	- $(kubectl) delete -f ingress.yaml
 	- $(kubectl) delete -f rbac.yaml
+	# cleaning some garbage left by helm chart
 	- $(kubectl) delete job argo-apply-workflow-crd
+	- $(kubectl) delete job/argo-events-apply-sensor-crd
+
+	- $(kubectl) delete -f events/webhook.yaml
+	- $(kubectl) delete -f events/sensor-controller-deployment.yaml
+	- $(kubectl) delete -f events/sensor-controller-configmap.yaml
+	- $(kubectl) delete -f events/sensor-crd.yaml
+	- $(kubectl) delete -f events/argo-events-cluster-roles.yaml
+	- $(kubectl) delete -f events/argo-events-sa.yaml
 .PHONY: undeploy
 
 clean:

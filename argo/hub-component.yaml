@@ -58,3 +58,4 @@ outputs:
 templates:
   files:
   - "*.template"
+  - "events/*.template"
