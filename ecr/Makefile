@@ -13,7 +13,7 @@ export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
 export TF_VAR_name        := $(COMPONENT_NAME)
 
-terraform ?= terraform
+terraform ?= terraform-v0.11
 TFPLAN ?= $(notdir $(COMPONENT_NAME)).tfplan
 
 deploy: init import plan apply
