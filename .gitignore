@@ -92,6 +92,7 @@ kubeflow/kubeflow
 kubeflow/ambassador-ingress.yaml
 kubeflow/jupyterhub-ingress.yaml
 kubeflow/argo-ingress.yaml
+kubeflow/tf-dashboard-ingress.yaml
 kubeflow/centraldashboard-ingress.yaml
 kubeflow/default-storage-class.yaml
 kubeflow/kubeflow-v0.2.2/components/argo.jsonnet
