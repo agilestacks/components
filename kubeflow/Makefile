@@ -130,6 +130,7 @@ endif
 	-$(kubectl) apply -f ambassador-ingress.yaml
 	-$(kubectl) apply -f jupyterhub-ingress.yaml
 	-$(kubectl) apply -f argo-ingress.yaml
+	-$(kubectl) apply -f tf-dashboard-ingress.yaml
 	-$(kubectl) apply -f centraldashboard-ingress.yaml
 .PHONY: apply
 
@@ -170,6 +171,7 @@ endif
 	-$(kubectl) delete -f ambassador-ingress.yaml | true
 	-$(kubectl) delete -f jupyterhub-ingress.yaml | true
 	-$(kubectl) delete -f argo-ingress.yaml | true
+	-$(kubectl) delete -f tf-dashboard-ingress.yaml | true
 	-$(kubectl) delete -f centraldashboard-ingress.yaml | true
 .PHONY: undeploy
 
