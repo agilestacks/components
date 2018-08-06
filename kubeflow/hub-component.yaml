@@ -53,6 +53,14 @@ parameters:
         value: ambassador-admin
       - name: service
         value: ambassador-admin
+    - name: tf.ingress
+      parameters:
+      - name: name
+        value: tf-dashboard
+      - name: urlPrefix
+        value: tf-dashboard
+      - name: service
+        value: tf-job-dashboard
     - name: jupyterhub.ingress
       parameters:
       - name: name
