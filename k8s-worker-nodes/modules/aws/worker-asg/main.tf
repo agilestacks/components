@@ -65,7 +65,7 @@ resource "aws_autoscaling_group" "workers" {
   tags = [
     {
       key                 = "Name"
-      value               = "worker-${var.cluster_name}-${var.base_domain}"
+      value               = "worker-${var.cluster_name}-${var.node_type}-${var.base_domain}"
       propagate_at_launch = true
     },
     {
