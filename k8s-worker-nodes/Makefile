@@ -14,7 +14,6 @@ WORKER_CONTAINER_LINUX_VERSION ?= 1800.5.0
 
 AWS_WORKER_SECURITY_GROUP_ID ?= sg-0d0f47844b86b151d
 AWS_WORKER_SUBNET_ID ?= subnet-0596d28123e4cc821
-AWS_WORKER_ROLE ?= worker-role-viktor3-demo01.kubernetes.delivery
 
 export TF_LOG             ?= debug
 export TF_OPTS            ?= -no-color
@@ -25,7 +24,6 @@ export TF_VAR_node_pool_name := $(NODE_POOL_NAME)
 export TF_VAR_s3_files_worker_bucket := files.$(TF_VAR_base_domain)
 export TF_VAR_worker_sg_ids := ["$(AWS_WORKER_SECURITY_GROUP_ID)"]
 export TF_VAR_worker_subnet_ids :=  ["$(AWS_WORKER_SUBNET_ID)"]
-export TF_VAR_worker_iam_role := $(AWS_WORKER_ROLE)
 export TF_VAR_worker_instance_type := $(WORKER_INSTANCE_TYPE)
 export TF_VAR_worker_instance_count := $(WORKER_INSTANCE_COUNT)
 export TF_VAR_worker_spot_price := $(WORKER_INSTANCE_SPOT_PRICE)
@@ -65,7 +63,9 @@ undeploy: init
 .PHONY: undeploy
 
 import:
-	-$(terraform) import $(TF_OPTS) -config=platforms/aws module.workers.aws_autoscaling_group.workers workers-$(NODE_POOL_NAME)-$(TF_VAR_base_domain) 2>/dev/null
-	-$(terraform) import $(TF_OPTS) -config=platforms/aws module.workers.aws_iam_instance_profile.worker_profile worker-profile-$(NODE_POOL_NAME)-$(TF_VAR_base_domain) 2>/dev/null
-	-$(terraform) import $(TF_OPTS) -config=platforms/aws module.workers.aws_launch_configuration.worker_conf worker-conf-$(NODE_POOL_NAME)-$(TF_VAR_base_domain) 2>/dev/null
+	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers workers-$(NODE_POOL_NAME)-$(TF_VAR_base_domain) 2>/dev/null
+	-$(terraform) import $(TF_OPTS) aws_iam_instance_profile.worker_profile worker-profile-$(NODE_POOL_NAME)-$(TF_VAR_base_domain) 2>/dev/null
+	-$(terraform) import $(TF_OPTS) aws_launch_configuration.worker_conf worker-conf-$(NODE_POOL_NAME)-$(TF_VAR_base_domain) 2>/dev/null
+	-$(terraform) import $(TF_OPTS) aws_iam_role.worker_role worker_role-$(NODE_POOL_NAME)-$(TF_VAR_base_domain) 2>/dev/null
+	-$(terraform) import $(TF_OPTS) aws_iam_role_policy.worker_policy worker_policy-$(NODE_POOL_NAME)-$(TF_VAR_base_domain) 2>/dev/null
 .PHONY: import
