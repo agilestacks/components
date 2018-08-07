@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# In order to support clients such as Argo, we need to configure minio events to emit an event
+# This script downloads minio-client and uses it to create a listener on the specified bucket
+
+if [ -z "${component.minio.event-bucke}" ]; then
+  echo "component.minio.event-bucket not specified. Skipping minio event listener configuration"
+  exit 0
+fi
+
+OS=$(uname | tr A-Z a-z)
+
 POD_NAME=""
 while [ -z "$POD_NAME" ]; do
     POD_NAME=$(kubectl --context="$DOMAIN_NAME" --namespace="$NAMESPACE" get pods -l "release=minio" -o jsonpath="{.items[0].metadata.name}")
@@ -13,9 +23,11 @@ while [ -z $MINIO_ARN ]; do
 done
 
 nohup kubectl port-forward $POD_NAME 9000 --namespace minio &
+PF_PID=$!
 sleep 2
+wget https://dl.minio.io/client/mc/release/$(OS)-amd64/mc
+chmod +x mc
 mc config host add minio-local http://localhost:9000 ${component.minio.access-key} ${component.minio.secret-key} S3v4
 mc mb minio-local/${component.minio.event-bucket}
-mc mb minio-local/argo-assets
-mc events add minio-local/sample-data $MINIO_ARN
-
+mc events add minio-local/${component.minio.event-bucket} $MINIO_ARN
+kill $PF_PID
