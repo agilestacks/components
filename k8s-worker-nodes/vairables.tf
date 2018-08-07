@@ -165,10 +165,10 @@ Example:
 EOF
 }
 
-variable "worker_iam_role" {
-  type        = "string"
-  description = "AWS IAM role of existing worker nodes"
-}
+# variable "worker_iam_role" {
+#   type        = "string"
+#   description = "AWS IAM role of existing worker nodes"
+# }
 
 variable "cluster_tag" {
   type        = "string"
