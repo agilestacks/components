@@ -7,7 +7,7 @@ export DOMAIN_NAME         ?= default
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy: clean init fetch install post_install
+deploy: clean init fetch install
 	$(kubectl) apply -f namespace.yaml
 .PHONY: deploy
 
@@ -34,6 +34,9 @@ install:
             --values Values.yaml
 .PHONY: install
 
+# presently this is disabled. 
+# We're assuming that the creation of a minio bucket and a minio-event
+# listener is the responsibility of the consumer of the events
 post_install:
 	./create_bucket_listener.sh
 .PHONY: install
