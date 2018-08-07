@@ -31,18 +31,18 @@ parameters:
     parameters:
     - name: count
       env: WORKER_INSTANCE_COUNT
-      value: "5"
+      value: "2"
     - name: size
       env: WORKER_INSTANCE_TYPE
       value: "r4.large"
     - name: spotPrice
       env: WORKER_INSTANCE_SPOT_PRICE
-      value: "0.06"
+      value: "0.08"
     - name: containerLinuxVersion
       env: WORKER_CONTAINER_LINUX_VERSION
       value: "1800.5.0"  
     - name: nodePool
       env: NODE_POOL_NAME
-      value: "gpu2"  
+      value: "gpu1"  
 
 
