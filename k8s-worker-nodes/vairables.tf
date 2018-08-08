@@ -149,7 +149,7 @@ variable "worker_sg_ids" {
   type = "list"
 
   description = <<EOF
-Security group where additional worker nodes will be joined. 
+Security group where additional worker nodes will be joined.
 Example:
  * `["sg-a7c955cb"]`
 EOF
@@ -161,7 +161,7 @@ variable "worker_subnet_ids" {
   description = <<EOF
 Subnet where additional worker nodes will be joined. Example: `ami-foobar123`.
 Example:
- * `["subnet-805f57eb"]` 
+ * `["subnet-805f57eb"]`
 EOF
 }
 
