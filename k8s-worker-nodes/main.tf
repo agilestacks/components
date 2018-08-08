@@ -7,9 +7,25 @@ provider "aws" {
   version = "~> 1.30"
 }
 
+data "ignition_systemd_unit" "nvidia" {
+  name    = "nvidia.service"
+  enabled = "${var.worker_instance_gpu}"
+  content = "${file("nvidia.service")}"
+}
+
+
+data "ignition_config" "nvidia" {
+  systemd = [
+    "${data.ignition_systemd_unit.nvidia.id}"
+  ]
+}
+
 data "ignition_config" "main" {
   replace {
     source = "${format("s3://%s/%s", var.s3_files_worker_bucket, "ignition_worker.json")}"
+  }
+  append {
+    source = "data:;base64,${base64encode(data.ignition_config.nvidia.rendered)}"
   }
 }
 
