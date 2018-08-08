@@ -14,19 +14,14 @@ data "ignition_systemd_unit" "nvidia" {
 }
 
 
-data "ignition_config" "nvidia" {
+data "ignition_config" "main" {
+  append {
+    source = "${format("s3://%s/%s", var.s3_files_worker_bucket, "ignition_worker.json")}"
+  }
+
   systemd = [
     "${data.ignition_systemd_unit.nvidia.id}"
   ]
-}
-
-data "ignition_config" "main" {
-  replace {
-    source = "${format("s3://%s/%s", var.s3_files_worker_bucket, "ignition_worker.json")}"
-  }
-  append {
-    source = "data:;base64,${base64encode(data.ignition_config.nvidia.rendered)}"
-  }
 }
 
 # data "aws_iam_role" "worker_role" {
