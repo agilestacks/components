@@ -3,13 +3,14 @@
 COMPONENT_NAME ?= k8s-worker-nodes
 
 DOMAIN_NAME    ?= viktor3.demo01.kubernetes.delivery
-NODE_POOL_NAME ?= gpu2
 STATE_BUCKET   ?= demo01.agilestacks.com
 STATE_REGION   ?= eu-west-1
 export AWS_DEFAULT_REGION ?= eu-central-1
-WORKER_INSTANCE_TYPE ?= r4.large
-WORKER_INSTANCE_COUNT ?= 2
-WORKER_INSTANCE_SPOT_PRICE ?= 0.15
+
+NODE_POOL_NAME                 ?= gpu1
+WORKER_INSTANCE_TYPE           ?= r4.large
+WORKER_INSTANCE_COUNT          ?= 2
+WORKER_INSTANCE_SPOT_PRICE     ?= 0.15
 WORKER_CONTAINER_LINUX_VERSION ?= 1800.5.0
 
 AWS_WORKER_SECURITY_GROUP_ID ?= sg-0d0f47844b86b151d
@@ -42,7 +43,7 @@ init:
 		-backend-config="bucket=$(STATE_BUCKET)" \
 		-backend-config="region=$(STATE_REGION)" \
 		-backend-config="key=$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(NODE_POOL_NAME)/terraform.tfstate" \
-		-backend-config="profile=$(AWS_PROFILE)" 
+		-backend-config="profile=$(AWS_PROFILE)"
 .PHONY: init
 
 get:
