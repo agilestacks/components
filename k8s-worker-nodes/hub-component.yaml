@@ -29,7 +29,7 @@ parameters:
     env: AWS_WORKER_SECURITY_GROUP_ID
   - name: cloud.role.worker
     env: AWS_WORKER_ROLE
-  - name: stack-k8s-aws
+  - name: component.k8s-worker-nodes
     parameters:
     - name: count
       env: WORKER_INSTANCE_COUNT
