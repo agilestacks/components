@@ -6,7 +6,7 @@ metadata:
 data:
   .dex-operator.yaml: |
     handler: AuthProxy
-    image: 'quay.io/coreos/tectonic-monitoring-auth:v0.0.1'
+    image: 'agilestacks/oauth2_proxy:v2.3'
     cookieExpire: '8h0m0s'
     emailDomain: '*'
     ingressPrefix: ${component.ingress.ssoUrlPrefix}
