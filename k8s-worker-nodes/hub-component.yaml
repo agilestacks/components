@@ -15,6 +15,8 @@ provides:
 parameters:
   - name: cloud.region
     env: AWS_DEFAULT_REGION
+  - name: cloud.sshKey
+    env: TF_VAR_keypair
   - name: terraform.bucket.name
     env: STATE_BUCKET
   - name: terraform.bucket.region
