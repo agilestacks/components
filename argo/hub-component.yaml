@@ -12,6 +12,7 @@ requires:
   - ingress
 provides:
   - argo
+  - argo-events
 
 parameters:
 - name: component.ingress.fqdn
@@ -55,6 +56,8 @@ outputs:
 - name: component.argo.namespace
   brief: Namespace where Argo has been installed
   value: ${component.argo.namespace}
+- name:  component.argo.events.webhook.service.url
+  value: http://webhook.${component.argo.namespace}.svc.cluster.local:8080
 templates:
   files:
   - "*.template"
