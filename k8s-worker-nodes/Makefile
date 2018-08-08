@@ -3,6 +3,7 @@
 COMPONENT_NAME ?= k8s-worker-nodes
 
 DOMAIN_NAME    ?= viktor3.demo01.kubernetes.delivery
+CLOUD_BUCKET   ?= files.$(DOMAIN_NAME)
 STATE_BUCKET   ?= demo01.agilestacks.com
 STATE_REGION   ?= eu-west-1
 export AWS_DEFAULT_REGION ?= eu-central-1
@@ -22,7 +23,7 @@ export TF_UPDATE          ?= -update
 export TF_LOG_PATH        := .terraform/$(DOMAIN_NAME)/$(notdir $(COMPONENT_NAME))-$(NODE_POOL_NAME).log
 export TF_VAR_base_domain := $(DOMAIN_NAME)
 export TF_VAR_node_pool_name := $(NODE_POOL_NAME)
-export TF_VAR_s3_files_worker_bucket := files.$(TF_VAR_base_domain)
+export TF_VAR_s3_files_worker_bucket := $(CLOUD_BUCKET)
 export TF_VAR_worker_sg_ids := ["$(AWS_WORKER_SECURITY_GROUP_ID)"]
 export TF_VAR_worker_subnet_ids :=  ["$(AWS_WORKER_SUBNET_ID)"]
 export TF_VAR_worker_instance_type := $(WORKER_INSTANCE_TYPE)

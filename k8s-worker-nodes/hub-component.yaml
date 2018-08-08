@@ -21,6 +21,8 @@ parameters:
     env: STATE_REGION
   - name: dns.domain
     env: DOMAIN_NAME
+  - name: cloud.bucket
+    env: CLOUD_BUCKET
   - name: cloud.vpc.worker.subnet.id
     env: AWS_WORKER_SUBNET_ID
   - name: cloud.vpc.worker.sg.id
