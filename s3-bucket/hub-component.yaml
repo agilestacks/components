@@ -30,3 +30,9 @@ parameters:
 outputs:
 - name: component.s3.bucket
   fromTfVar: bucket
+- name: component.s3.arn
+  fromTfVar: arn
+- name: component.s3.domain
+  fromTfVar: domain
+- name: component.s3.region
+  fromTfVar: region
