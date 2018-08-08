@@ -22,7 +22,7 @@ else
 	PROTOCOL=https
 endif
 
-deploy: clean init fetch install get plan apply output
+deploy: clean init install get plan apply output
 .PHONY: deploy
 
 ifeq ($(CLOUD_KIND),aws)
@@ -90,7 +90,7 @@ undeploy: init
 
 clean:
 	rm -rf $(HELM_HOME)
-	rm -rf charts
+#	rm -rf charts
 	rm -rf .terraform/modules
 	rm -rf .terraform/plugins
 
