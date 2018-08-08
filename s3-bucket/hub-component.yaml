@@ -18,7 +18,7 @@ parameters:
 - name: component.s3
   parameters:
   - name: name
-    value: "s3.${dns.domain}"
+    value: bucket.${dns.domain}
     env: COMPONENT_NAME
   - name: acl
     value: private
