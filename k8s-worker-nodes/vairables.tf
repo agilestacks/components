@@ -39,7 +39,7 @@ variable "keypair" {
 variable "worker_instance_type" {
   type        = "string"
   default     = "r4.large"
-  description = "Instance size for the master node(s). Example: `t2.small`."
+  description = "Instance size for the worker node(s). Example: `t2.small`."
 }
 
 variable "worker_spot_price" {
