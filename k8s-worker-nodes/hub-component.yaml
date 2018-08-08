@@ -2,8 +2,8 @@
 version: 1
 kind: component
 meta:
-  name: 
-  brief: k8s-worker-nodes
+  name: k8s-worker-nodes
+  brief: Kubernetes worker nodes pool
   source:
     dir: ../../components/k8s-worker-nodes
 
@@ -40,9 +40,7 @@ parameters:
       value: "0.08"
     - name: containerLinuxVersion
       env: WORKER_CONTAINER_LINUX_VERSION
-      value: "1800.5.0"  
+      value: "1800.5.0"
     - name: nodePool
       env: NODE_POOL_NAME
-      value: "gpu1"  
-
-
+      value: "gpu1"
