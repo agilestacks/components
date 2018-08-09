@@ -16,7 +16,9 @@ export TF_VAR_cluster_tag := $(shell sed 's/\./-/' <<< $(TF_VAR_base_domain))
 terraform ?= terraform-v0.11
 TFPLAN ?= .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).tfplan
 
-deploy: init import plan apply
+kubectl ?= kubectl --context="$(TF_VAR_base_domain)" --namespace=kube-system
+
+deploy: init import plan apply kubernetes
 
 init:
 	@mkdir -p .terraform/$(TF_VAR_base_domain)
@@ -39,6 +41,11 @@ plan:
 apply:
 	$(terraform) apply $(TF_OPTS) -Xshadow=false $(TFPLAN)
 .PHONY: apply
+
+# we should make it a part of stack-k8s-aws? then what about eks?
+kubernetes:
+	$(kubectl) apply -f nvidia-gpu-device-plugin.yml
+.PHONY: kubernetes
 
 undeploy: init destroy apply
 
