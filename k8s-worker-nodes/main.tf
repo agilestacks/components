@@ -7,6 +7,10 @@ provider "aws" {
   version = "~> 1.30"
 }
 
+provider "ignition" {
+  version = "~> 1.0"
+}
+
 data "ignition_systemd_unit" "nvidia" {
   name    = "nvidia.service"
   enabled = "${var.worker_instance_gpu}"
