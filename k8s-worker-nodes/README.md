@@ -10,4 +10,4 @@ docker run -v /nvidia:/nvidia agilestacks/coreos-nvidia:$VERSION cp -rpd /opt/nv
 ```
 5. Test `kubectl run -ti --rm --limits=nvidia.com/gpu=1 --image=tensorflow/tensorflow:latest-gpu tensorflow /bin/bash`. Must use [limits](https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/). Then `python -c 'import tensorflow as tf; tf.Session(config=tf.ConfigProto())'`.
 
-The NVCC default link profile is to link statically to CUDA `--cudart=static`. Most people will be using Tensorflow / etc. derived images, so we don't need to bring full set of shared CUDA libraries into the container, just the OpenGL / OpenCL and `libcuda.so.1` parts. We need to research the exact working model, at least for our data-science / ML sample template.
+The NVCC default link profile is to link statically to CUDA `--cudart=static`. Most people will be using Tensorflow / etc. derived images, so we don't need to bring full set of shared CUDA libraries into the container, just the OpenGL / OpenCL and `libcuda.so.1` parts. We need to research (or define) dev workflow, at least for our data-science / ML sample template.
