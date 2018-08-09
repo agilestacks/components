@@ -20,7 +20,7 @@ parameters:
   - name: terraform.bucket.name
     env: TF_VAR_state_bucket
   - name: terraform.bucket.region
-    env: TV_VAR_state_region
+    env: TF_VAR_state_region
   - name: dns.domain
     env: TF_VAR_base_domain
   - name: cloud.vpc.worker.subnet.id
