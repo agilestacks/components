@@ -151,30 +151,25 @@ Example:
 EOF
 }
 
-variable "worker_sg_ids" {
-  type = "list"
+variable "worker_sg_id" {
+  type = "string"
 
   description = <<EOF
 Security group where additional worker nodes will be joined.
 Example:
- * `["sg-a7c955cb"]`
+ * `sg-a7c955cb`
 EOF
 }
 
-variable "worker_subnet_ids" {
-  type = "list"
+variable "worker_subnet_id" {
+  type = "string"
 
   description = <<EOF
 Subnet where additional worker nodes will be joined. Example: `ami-foobar123`.
 Example:
- * `["subnet-805f57eb"]`
+ * `subnet-805f57eb`
 EOF
 }
-
-# variable "worker_iam_role" {
-#   type        = "string"
-#   description = "AWS IAM role of existing worker nodes"
-# }
 
 variable "cluster_tag" {
   type        = "string"

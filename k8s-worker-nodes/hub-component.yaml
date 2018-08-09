@@ -18,36 +18,32 @@ parameters:
   - name: cloud.sshKey
     env: TF_VAR_keypair
   - name: terraform.bucket.name
-    env: STATE_BUCKET
+    env: TF_VAR_state_bucket
   - name: terraform.bucket.region
-    env: STATE_REGION
+    env: TV_VAR_state_region
   - name: dns.domain
-    env: DOMAIN_NAME
-  - name: cloud.bucket
-    env: CLOUD_BUCKET
+    env: TF_VAR_base_domain
   - name: cloud.vpc.worker.subnet.id
-    env: AWS_WORKER_SUBNET_ID
-  - name: cloud.vpc.worker.sg.id
-    env: AWS_WORKER_SECURITY_GROUP_ID
-  - name: cloud.role.worker
-    env: AWS_WORKER_ROLE
+    env: TF_VAR_worker_subnet_id
+  - name: cloud.vpc.worker.sg.id 
+    env: TF_VAR_worker_sg_id
   - name: component.k8s-worker-nodes
     parameters:
     - name: count
-      env: WORKER_INSTANCE_COUNT
+      env: TF_VAR_worker_instance_count
       value: 2
     - name: size
-      env: WORKER_INSTANCE_TYPE
+      env: TF_VAR_worker_instance_type
       value: r4.large
     - name: gpu
       env: TF_VAR_worker_instance_gpu
       value: false
     - name: spotPrice
-      env: WORKER_INSTANCE_SPOT_PRICE
+      env: TF_VAR_worker_spot_price
       value: 0.08
     - name: containerLinuxVersion
-      env: WORKER_CONTAINER_LINUX_VERSION
+      env: TF_VAR_container_linux_version
       value: 1800.6.0
     - name: nodePool
-      env: NODE_POOL_NAME
+      env: TF_VAR_node_pool_name
       value: gpu1
