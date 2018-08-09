@@ -6,7 +6,7 @@ export AWS_DEFAULT_REGION ?= eu-central-1
 
 CLOUD_BUCKET   ?= files.$(TF_VAR_base_domain)
 
-export TF_LOG             ?= debug
+export TF_LOG             ?= info
 export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
 export TF_LOG_PATH        := .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).log
@@ -20,8 +20,8 @@ deploy: init import plan apply
 
 init:
 	@mkdir -p .terraform/$(TF_VAR_base_domain)
-	$(terraform) init -get=true $(TF_CMD_OPTS) -reconfigure -force-copy  \
-		-backend=true -input=false \
+	$(terraform) init -reconfigure -input=false -get=true -force-copy $(TF_OPTS) \
+		-backend=true \
 		-backend-config="bucket=$(TF_VAR_state_bucket)" \
 		-backend-config="region=$(TF_VAR_state_region)" \
 		-backend-config="key=$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name)/terraform.tfstate" \
@@ -40,10 +40,10 @@ apply:
 	$(terraform) apply $(TF_OPTS) -Xshadow=false $(TFPLAN)
 .PHONY: apply
 
-undeploy: init
-	$(MAKE) plan TF_OPTS=-destroy
-	$(MAKE) apply
-.PHONY: undeploy
+undeploy: init destroy apply
+
+destroy: TF_OPTS=-destroy
+destroy: plan
 
 import:
 	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers workers-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain) 2>/dev/null
