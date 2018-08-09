@@ -39,10 +39,10 @@ spec:
                 - g3.8xlarge
                 - g3.16xlarge
       tolerations:
-      - operator: "Exists"
-        effect: "NoExecute"
-      - operator: "Exists"
-        effect: "NoSchedule"
+      - operator: Exists
+        effect: NoExecute
+      - operator: Exists
+        effect: NoSchedule
       volumes:
       - name: device-plugin
         hostPath:
