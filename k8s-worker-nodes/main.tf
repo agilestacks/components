@@ -13,21 +13,15 @@ data "ignition_systemd_unit" "nvidia" {
   content = "${file("nvidia.service")}"
 }
 
-
 data "ignition_config" "main" {
   append {
     source = "${format("s3://%s/%s", var.s3_files_worker_bucket, "ignition_worker.json")}"
   }
 
   systemd = [
-    "${data.ignition_systemd_unit.nvidia.id}"
+    "${data.ignition_systemd_unit.nvidia.id}",
   ]
 }
-
-# data "aws_iam_role" "worker_role" {
-#   count = "${var.worker_iam_role == "" ? 0 : 1}"
-#   name  = "${var.worker_iam_role}"
-# }
 
 data "aws_ami" "coreos_ami" {
   filter {
@@ -56,7 +50,7 @@ resource "aws_launch_configuration" "worker_conf" {
   instance_type        = "${var.worker_instance_type}"
   image_id             = "${coalesce(var.ec2_ami_override, data.aws_ami.coreos_ami.image_id)}"
   key_name             = "${var.keypair}"
-  security_groups      = "${var.worker_sg_ids}"
+  security_groups      = ["${var.worker_sg_id}"]
   iam_instance_profile = "${aws_iam_instance_profile.worker_profile.arn}"
   user_data            = "${data.ignition_config.main.rendered}"
   spot_price           = "${var.worker_spot_price}"
@@ -79,7 +73,7 @@ resource "aws_autoscaling_group" "workers" {
   max_size             = "${var.worker_instance_count * 3}"
   min_size             = "${var.worker_instance_count}"
   launch_configuration = "${aws_launch_configuration.worker_conf.id}"
-  vpc_zone_identifier  = "${var.worker_subnet_ids}"
+  vpc_zone_identifier  = ["${var.worker_subnet_id}"]
   termination_policies = ["ClosestToNextInstanceHour", "default"]
 
   tags = [
