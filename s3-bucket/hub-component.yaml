@@ -36,3 +36,5 @@ outputs:
   fromTfVar: domain
 - name: component.s3.region
   fromTfVar: region
+- name: component.s3.endpoint
+  fromTfVar: endpoint
