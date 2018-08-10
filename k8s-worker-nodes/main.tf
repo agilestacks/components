@@ -96,7 +96,7 @@ resource "aws_autoscaling_group" "workers" {
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = ["min_size", "max_size", "desired_capacity", "tag"]
+    ignore_changes        = ["tag"]
   }
 }
 
