@@ -31,7 +31,7 @@ parameters:
     parameters:
     - name: count
       env: TF_VAR_worker_instance_count
-      value: 2
+      value: 1
     - name: size
       env: TF_VAR_worker_instance_type
       value: r4.large
