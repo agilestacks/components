@@ -27,6 +27,8 @@ parameters:
       brief: Kubernetes namespace to install into
       value: sysdig
       env:   NAMESPACE
+    - name: clusterName
+      value: ""
     - name:  rbac.install
       value: true
     - name:  license
