@@ -48,12 +48,8 @@ resources:
   requests:
     memory: 256Mi
     cpu: 100m
-ingress:
-  enabled: true
-  fqdn: postgress.app.viktor6.demo01.kubernetes.delivery
-  path: /
-  imageTag: v0.1.1
-  imagePullPolicy: IfNotPresent
+
 service:
   type: ClusterIP
   port: 5432
+  externalIPs: []

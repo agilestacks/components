@@ -11,7 +11,7 @@ export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
 export TF_LOG_PATH        := .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).log
 export TF_VAR_s3_files_worker_bucket := $(CLOUD_BUCKET)
-export TF_VAR_cluster_tag := ${TF_VAR_base_domain:\./-}
+export TF_VAR_cluster_tag := $(shell sed 's/\./-/' <<< $(TF_VAR_base_domain))
 
 terraform ?= terraform-v0.11
 TFPLAN ?= .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).tfplan
