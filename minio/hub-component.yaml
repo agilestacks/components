@@ -30,15 +30,19 @@ parameters:
     - name: port
       value: 9000
     - name: storage-class
-      value: aws-ebs-gp2
+      value: ebs-gp2
     - name: storage-size
       value: 20Gi
     - name: event-bucket
       value: ""
-    - name: redis
+    - name: webhook
       parameters:
       - name: enable
         value: true
+    - name: redis
+      parameters:
+      - name: enable
+        value: false
       - name: format
         value: "access"
       - name: address

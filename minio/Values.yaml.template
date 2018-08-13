@@ -122,8 +122,8 @@ minioConfig:
     brokers: "null"
     topic: ""
   webhook:
-    enable: false
-    endpoint: ""
+    enable: ${component.minio.webhook.enable}
+    endpoint: http://localhost:3000
   mysql:
     enable: false
     format: "namespace"

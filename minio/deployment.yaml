@@ -58,6 +58,10 @@ spec:
           ports:
             - name: service
               containerPort: 9000
+            {{- if .Values.minioConfig.webhook.enabled }}
+            - name: webhook
+              containerPort: 3000
+            {{- end}}
           env:
             - name: MINIO_ACCESS_KEY
               valueFrom:
