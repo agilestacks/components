@@ -130,8 +130,8 @@ data:
         },
         "webhook": {
           "1": {
-            "enable": false,
-            "endpoint": ""
+            "enable": {{ .Values.minioConfig.webhook.enable }},
+            "endpoint": "{{ .Values.minioConfig.webhook.endpoint }}"
           }
         }
       }

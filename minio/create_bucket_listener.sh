@@ -3,7 +3,7 @@
 # In order to support clients such as Argo, we need to configure minio events to emit an event
 # This script downloads minio-client and uses it to create a listener on the specified bucket
 
-if [ -z "${component.minio.event-bucket}" ]; then
+if [ -z "asi-rick-minio-events" ]; then
   echo "component.minio.event-bucket not specified. Skipping minio event listener configuration"
   exit 0
 fi
@@ -27,7 +27,7 @@ PF_PID=$!
 sleep 2
 wget https://dl.minio.io/client/mc/release/$(OS)-amd64/mc
 chmod +x mc
-mc config host add minio-local http://localhost:9000 ${component.minio.access-key} ${component.minio.secret-key} S3v4
-mc mb minio-local/${component.minio.event-bucket}
-mc events add minio-local/${component.minio.event-bucket} $MINIO_ARN
+mc config host add minio-local http://localhost:9000 AKIAIOSFODNN7EXAMPLE wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY S3v4
+mc mb minio-local/asi-rick-minio-events
+mc events add minio-local/asi-rick-minio-events $MINIO_ARN
 kill $PF_PID
