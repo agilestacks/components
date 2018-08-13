@@ -36,8 +36,8 @@ sysdig:
      # collector certificate validation
      # ssl_verify_certificate: true
      #######################################
-     # new_k8s: true
-     # k8s_cluster_name: production
+      new_k8s: true
+      k8s_cluster_name: ${component.sysdig.clusterName}
 
 secure:
     # true here enables Sysdig Secure: container run-time security & forensics
