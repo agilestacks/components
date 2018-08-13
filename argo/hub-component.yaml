@@ -47,9 +47,15 @@ parameters:
     value: '>0.0.0-0'
     env: CHART_VERSION
 outputs:
+- name: component.argo.accessKey
+  brief: Argo backend access key
+  fromTfVar: access_key_id
+- name: component.argo.secretKey
+  brief: Argo backend secret key
+  fromTfVar: secret_access_key
 - name: component.argo.backend
   brief: Argo backend S3 or Minio
-  value: s3://${terraform.bucket.name}/components/argo
+  value: s3
 - name: component.argo.ingress
   brief: URL to connect to argo-ui
   value: ${component.argo.name}.${component.argo.ingress.baseDomain}
