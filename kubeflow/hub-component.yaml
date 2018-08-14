@@ -93,7 +93,7 @@ outputs:
     value: http://${component.kubeflow.jupyterhub.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
   - name: component.kubeflow.tf-job.url
     brief: TF Job Dashboard
-    value: http://${component.kubeflow.tf.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+    value: http://${component.kubeflow.tf.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}/tfjobs/ui
   - name: component.kubeflow.argo.url
     brief: Argo UI
     value: http://${component.kubeflow.argo.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
