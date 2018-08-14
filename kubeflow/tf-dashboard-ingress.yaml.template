@@ -11,7 +11,7 @@ spec:
   - host: ${component.kubeflow.tf.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
     http:
       paths:
-      - path: /
+      - path: /tfjobs/ui
         backend:
           serviceName: ${component.kubeflow.tf.ingress.service}
           servicePort: 80
