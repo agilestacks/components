@@ -24,20 +24,9 @@ data "aws_s3_bucket" "main" {
   bucket = "${var.bucket_name}"
 }
 
-resource "aws_iam_user" "main" {
-  name = "${var.component}"
-  path = "/system/"
-  force_destroy = true
-}
-
-resource "aws_iam_access_key" "main" {
-  user    = "${aws_iam_user.main.name}"
-}
-
-resource "aws_iam_user_policy" "s3write" {
-  name_prefix  = "argo"
-  user = "${aws_iam_user.main.name}"
-
+module "user" {
+  source = "github.com/agilestacks/terraform-modules.git//iam_user"
+  username = "agilestacks-${var.component}"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -66,9 +55,9 @@ EOF
 }
 
 output "access_key_id" {
-  value = "${aws_iam_access_key.main.id}"
+  value = "${module.user.access_key_id}"
 }
 
 output "secret_access_key" {
-  value = "${aws_iam_access_key.main.secret}"
+  value = "${module.user.secret_access_key}"
 }
