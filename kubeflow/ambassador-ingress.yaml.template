@@ -11,7 +11,7 @@ spec:
   - host: ${component.kubeflow.ambassador.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
     http:
       paths:
-      - path: /
+      - path: /ambassador/v0/diag
         backend:
           serviceName: ${component.kubeflow.ambassador.ingress.service}
           servicePort: 8877
