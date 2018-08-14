@@ -50,7 +50,6 @@ data "aws_ami" "coreos_ami" {
 }
 
 resource "aws_launch_configuration" "worker_conf" {
-  name                 = "worker-conf-${var.node_pool_name}-${var.base_domain}"
   instance_type        = "${var.worker_instance_type}"
   image_id             = "${coalesce(var.ec2_ami_override, data.aws_ami.coreos_ami.image_id)}"
   key_name             = "${var.keypair}"

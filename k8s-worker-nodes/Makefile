@@ -11,7 +11,7 @@ export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
 export TF_LOG_PATH        := .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).log
 export TF_VAR_s3_files_worker_bucket := $(CLOUD_BUCKET)
-export TF_VAR_cluster_tag :=$${TF_VAR_base_domain/./-}
+export TF_VAR_cluster_tag := $$(TF_VAR_base_domain/./-)
 
 terraform ?= terraform-v0.11
 TFPLAN ?= .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).tfplan
@@ -55,7 +55,6 @@ destroy: plan
 import:
 	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers workers-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain) 2>/dev/null
 	-$(terraform) import $(TF_OPTS) aws_iam_instance_profile.worker_profile worker-profile-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain) 2>/dev/null
-	-$(terraform) import $(TF_OPTS) aws_launch_configuration.worker_conf worker-conf-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain) 2>/dev/null
 	-$(terraform) import $(TF_OPTS) aws_iam_role.worker_role worker_role-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain) 2>/dev/null
 	-$(terraform) import $(TF_OPTS) aws_iam_role_policy.worker_policy worker_policy-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain) 2>/dev/null
 .PHONY: import
