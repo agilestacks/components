@@ -104,7 +104,7 @@ clean:
 	rm -rf $(TF_DATA_DIR)
 
 import:
-	- $(terraform) import aws_iam_user.main $(TF_VAR_component)
+	- $(terraform) import module.user.aws_iam_user.main agilestacks-$(TF_VAR_component)
 .PHONY: import
 
 plan:
