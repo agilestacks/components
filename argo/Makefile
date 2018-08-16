@@ -1,6 +1,5 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= argo
 DOMAIN_NAME    ?= dev.stacks.delivery
 STATE_BUCKET   ?= terraform.agilestacks.com
 STATE_REGION   ?= us-east-1
@@ -8,7 +7,7 @@ NAMESPACE      ?= argoproj
 
 export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
-export TF_VAR_name        := $(COMPONENT_NAME)
+export TF_VAR_component   ?= argo
 export TF_CLI_ARGS        ?=
 export TF_DATA_DIR        ?= .terraform
 
@@ -43,6 +42,8 @@ deploy:
 	$(MAKE) init plan
 	$(MAKE) apply || \
 	$(MAKE) import plan apply
+
+	@ echo
 	$(kubectl) apply -f rbac.yaml
 	$(kubectl) apply -f ingress.yaml
 	$(MAKE) fetch install
@@ -66,8 +67,12 @@ fetch: $(HELM_HOME) $(TF_DATA_DIR)
 install:
 	$(eval ACCESS_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.access_key_id.value'))
 	$(eval SECRET_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.secret_access_key.value'))
-	$(eval ENDPOINT := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.secret_access_key.value'))
+	$(eval ENDPOINT := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.endpoint.value'))
 
+	- $(kubectl) create secret generic --type=string \
+		argo-repo-$(TF_VAR_component) \
+		--from-literal=accessKey=$(ACCESS_KEY_ID)
+		--from-literal=secretKey=$(SECRET_KEY_ID)
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm) install charts/$(notdir $(CHART)) \
 			--name $(TF_VAR_component) \
@@ -75,7 +80,7 @@ install:
 			--replace \
 			--wait \
 			--values values.yaml \
-			--set accesskey=$(ACCESS_KEY_ID),secretkey=$(SECRET_KEY_ID),artifactRepository.s3.endpoint=$(ENDPOINT) \
+			--set "artifactRepository.s3.endpoint=$(ENDPOINT)" \
 			--version '$(CHART_VERSION)'
 			$(kubectl) get services -o wide | grep argo-
 .PHONY: install
@@ -98,6 +103,7 @@ undeploy: init
 	- $(kubectl) delete -f events/sensor-crd.yaml
 	- $(kubectl) delete -f events/argo-events-cluster-roles.yaml
 	- $(kubectl) delete -f events/argo-events-sa.yaml
+	- $(kubectl) delete secret argo-repo-$(TF_VAR_component)
 .PHONY: undeploy
 
 clean:
@@ -122,4 +128,5 @@ apply:
 
 output:
 	@ $(terraform) output
+	@ echo
 .PHONY: output

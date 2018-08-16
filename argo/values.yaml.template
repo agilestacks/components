@@ -21,21 +21,25 @@ ui:
 
 crdVersion: v1alpha1
 
-useDefaultArtifactRepo: false
+useDefaultArtifactRepo: true
 useStaticCredentials: true
 
 minio:
   install: false
   defaultBucket:
-    enabled: false
-    name: argo-artifacts
+    enabled: true
+    name: ${component.argo.repo.bucket.name}
 
 artifactRepository:
   s3:
     endpoint: undefined
-    bucket: ${component.argo.bucket.name}
+    bucket: ${component.argo.repo.bucket.name}
     accessKeySecret:
-      key: undefined
+      name: argo-repo-${component.argo.name}
+      key: accessKey
     secretKeySecret:
-      key: undefined
-    insecure: true
+      name: argo-repo-${component.argo.name}
+      key: secretKey
+    insecure: ${component.argo.repo.bucket.insecure}
+    keyPrefix: ${component.argo.repo.bucket.keyPrefix}
+

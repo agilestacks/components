@@ -107,3 +107,11 @@ output "secret_access_key" {
 output "endpoint" {
   value = "${var.endpoints[ data.aws_region.bucket.name ]}"
 }
+
+output "iam_user_name" {
+  value = "agilestacks-${var.component}"
+}
+
+output "iam_user_arn" {
+  value = "${module.user.arn}"
+}
