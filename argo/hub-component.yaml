@@ -36,12 +36,17 @@ parameters:
   - name: namespace
     value: argoproj
     env: NAMESPACE
-  - name: bucket.name
+  - name: repo.bucket.name
     value: ${terraform.bucket.name}
     env: TF_VAR_bucket_name
-  - name: bucket.region
+  - name: repo.bucket.region
     value: ${terraform.bucket.region}
     env: TF_VAR_bucket_region
+  - name: repo.bucket.insecure
+    value: "false"
+  - name: repo.bucket.keyPrefix
+    value: ""
+    empty: allow
   - name: serviceAccount
     value: argo
   - name: ingress.baseDomain
@@ -50,15 +55,36 @@ parameters:
     value: '>0.0.0-0'
     env: CHART_VERSION
 outputs:
-- name: component.argo.accessKey
+- name: component.argo.repo.accessKey
   brief: Argo backend access key
   fromTfVar: access_key_id
-- name: component.argo.secretKey
+- name: component.argo.repo.secretKey
   brief: Argo backend secret key
   fromTfVar: secret_access_key
-- name: component.argo.backend
+- name: component.argo.repo
   brief: Argo backend S3 or Minio
   value: s3
+- name: component.argo.repo.bucket.name
+  brief: Argo backend bucket name
+  value: ${component.argo.repo.bucket.name}
+- name: component.argo.repo.bucket.region
+  brief: Argo backend bucket region
+  value: ${component.argo.repo.bucket.region}
+- name: component.argo.repo.bucket.endpoint
+  brief: Argo backend bucket service endpoint
+  fromTfVar: endpoint
+- name: component.argo.repo.bucket.insecure
+  brief: Argo backend bucket insecure
+  value: ${component.argo.repo.bucket.insecure}
+- name: component.argo.repo.bucket.keyPrefix
+  brief: Argo backend bucket key
+  value: ${component.argo.repo.bucket.keyPrefix}
+- name: component.argo.repo.iam.username
+  brief: Name of the IAM user who have access to artifacts repository
+  fromTfVar: iam_user_name
+- name: component.argo.repo.iam.arn
+  brief: ARN of the IAM user who have access to artifacts repository
+  fromTfVar: iam_user_arn
 - name: component.argo.ingress
   brief: URL to connect to argo-ui
   value: ${component.argo.name}.${component.argo.ingress.baseDomain}
