@@ -32,13 +32,16 @@ parameters:
     value: argo
     env: TF_VAR_component
   - name: replicas
-    value: 4
+    value: 1
   - name: namespace
     value: argoproj
     env: NAMESPACE
-  - name: bucket
+  - name: bucket.name
     value: ${terraform.bucket.name}
     env: TF_VAR_bucket_name
+  - name: bucket.region
+    value: ${terraform.bucket.region}
+    env: TF_VAR_bucket_region
   - name: serviceAccount
     value: argo
   - name: ingress.baseDomain
@@ -67,4 +70,3 @@ outputs:
 templates:
   files:
   - "*.template"
-  - "events/*.template"

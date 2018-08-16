@@ -66,6 +66,7 @@ fetch: $(HELM_HOME) $(TF_DATA_DIR)
 install:
 	$(eval ACCESS_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.access_key_id.value'))
 	$(eval SECRET_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.secret_access_key.value'))
+	$(eval ENDPOINT := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.secret_access_key.value'))
 
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm) install charts/$(notdir $(CHART)) \
@@ -74,7 +75,7 @@ install:
 			--replace \
 			--wait \
 			--values values.yaml \
-			--set accesskey=$(ACCESS_KEY_ID),secretkey=$(SECRET_KEY_ID) \
+			--set accesskey=$(ACCESS_KEY_ID),secretkey=$(SECRET_KEY_ID),artifactRepository.s3.endpoint=$(ENDPOINT) \
 			--version '$(CHART_VERSION)'
 			$(kubectl) get services -o wide | grep argo-
 .PHONY: install
