@@ -32,10 +32,10 @@ minio:
 
 artifactRepository:
   s3:
-    endpoint: s3.amazonaws.com
-    bucket: ${component.argo.bucket}
+    endpoint: undefined
+    bucket: ${component.argo.bucket.name}
     accessKeySecret:
-      key: easy
+      key: undefined
     secretKeySecret:
-      key: secret
+      key: undefined
     insecure: true
