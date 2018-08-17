@@ -11,7 +11,7 @@ export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
 export TF_LOG_PATH        := .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).log
 export TF_VAR_s3_files_worker_bucket := $(CLOUD_BUCKET)
-export TF_VAR_cluster_tag := $$(TF_VAR_base_domain/./-)
+export TF_VAR_base_domain ?= 'domain.kubernetes.delivery'
 
 terraform ?= terraform-v0.11
 TFPLAN ?= .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).tfplan
@@ -35,7 +35,11 @@ get:
 .PHONY: get
 
 plan:
-	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+	$(terraform) plan $(TF_OPTS) \
+		-var cluster_tag=$${TF_VAR_base_domain/./-} \
+		-refresh=true \
+		-module-depth=-1 \
+		-out=$(TFPLAN)
 .PHONY: plan
 
 apply:
@@ -58,3 +62,4 @@ import:
 	-$(terraform) import $(TF_OPTS) aws_iam_role.worker_role worker_role-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain) 2>/dev/null
 	-$(terraform) import $(TF_OPTS) aws_iam_role_policy.worker_policy worker_policy-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain) 2>/dev/null
 .PHONY: import
+
