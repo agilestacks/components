@@ -11,6 +11,19 @@ provider "ignition" {
   version = "~> 1.0"
 }
 
+data "aws_s3_bucket_object" "bootstrap_script" {
+  bucket = "${var.s3_files_worker_bucket}"
+  key    = "ignition_worker.json"
+}
+
+resource "aws_s3_bucket_object" "bootstrap_script" {
+  bucket       = "${var.s3_files_worker_bucket}"
+  key          = "${var.node_pool_name}-worker-pool/ignition_worker.json"
+  content      = "${replace(data.aws_s3_bucket_object.bootstrap_script.body, "--node-labels=node-role.kubernetes.io/node", format("--node-labels=node-role.kubernetes.io/node,%s",var.node_pool_label))}"
+  content_type = "text/json"
+  acl          = "private"
+}
+
 data "ignition_systemd_unit" "nvidia" {
   name    = "nvidia.service"
   enabled = "${var.worker_instance_gpu}"
@@ -19,7 +32,7 @@ data "ignition_systemd_unit" "nvidia" {
 
 data "ignition_config" "main" {
   append {
-    source = "${format("s3://%s/%s", var.s3_files_worker_bucket, "ignition_worker.json")}"
+    source = "${format("s3://%s/%s-worker-pool/%s", var.s3_files_worker_bucket,var.node_pool_name,"ignition_worker.json")}"
   }
 
   systemd = [

@@ -175,3 +175,8 @@ variable "cluster_tag" {
   type        = "string"
   description = "Tag to enable worker nodes to join the Kube cluster"
 }
+
+variable "node_pool_label" {
+  type        = "string"
+  description = "Type of nodes in the pool"
+}
