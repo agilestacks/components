@@ -35,11 +35,21 @@ get:
 .PHONY: get
 
 plan:
-	$(terraform) plan $(TF_OPTS) \
+	@if [ $(TF_VAR_worker_instance_gpu) = true ]; then \
+		$(terraform) plan $(TF_OPTS) \
 		-var cluster_tag=$${TF_VAR_base_domain/./-} \
+		-var node_pool_label="kind=gpu" \
 		-refresh=true \
 		-module-depth=-1 \
-		-out=$(TFPLAN)
+		-out=$(TFPLAN); \
+	else \
+		$(terraform) plan $(TF_OPTS) \
+		-var cluster_tag=$${TF_VAR_base_domain/./-} \
+		-var node_pool_label="kind=default" \
+		-refresh=true \
+		-module-depth=-1 \
+		-out=$(TFPLAN); \
+	fi
 .PHONY: plan
 
 apply:
