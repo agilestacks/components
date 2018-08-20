@@ -12,6 +12,13 @@ export TF_UPDATE          ?= -update
 export TF_LOG_PATH        := .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).log
 export TF_VAR_s3_files_worker_bucket := $(CLOUD_BUCKET)
 export TF_VAR_base_domain ?= 'domain.kubernetes.delivery'
+ifeq ($(TF_VAR_worker_instance_gpu),true)
+export TF_VAR_node_pool_label := kind=gpu
+
+else
+export TF_VAR_node_pool_label := kind=default
+
+endif
 
 terraform ?= terraform-v0.11
 TFPLAN ?= .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).tfplan
@@ -35,21 +42,11 @@ get:
 .PHONY: get
 
 plan:
-	@if [ $(TF_VAR_worker_instance_gpu) = true ]; then \
-		$(terraform) plan $(TF_OPTS) \
+	$(terraform) plan $(TF_OPTS) \
 		-var cluster_tag=$${TF_VAR_base_domain/./-} \
-		-var node_pool_label="kind=gpu" \
 		-refresh=true \
 		-module-depth=-1 \
 		-out=$(TFPLAN); \
-	else \
-		$(terraform) plan $(TF_OPTS) \
-		-var cluster_tag=$${TF_VAR_base_domain/./-} \
-		-var node_pool_label="kind=default" \
-		-refresh=true \
-		-module-depth=-1 \
-		-out=$(TFPLAN); \
-	fi
 .PHONY: plan
 
 apply:
