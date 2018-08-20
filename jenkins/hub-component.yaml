@@ -9,6 +9,9 @@ meta:
 
 requires:
   - kubernetes
+provides:
+  - jenkins
+  - ci
 
 parameters:
 - name: component.ingress
