@@ -8,8 +8,10 @@ NAMESPACE      ?= argoproj
 export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
 export TF_VAR_component   ?= argo
-export TF_CLI_ARGS        ?=
 export TF_DATA_DIR        ?= .terraform
+
+# https://github.com/hashicorp/terraform/issues/14847
+unexport TF_CLI_ARGS
 
 export HELM_HOME ?= $(shell pwd)/.helm
 CHART_VERSION ?= 0.1.1
@@ -71,7 +73,7 @@ install:
 
 	- $(kubectl) create secret generic --type=string \
 		argo-repo-$(TF_VAR_component) \
-		--from-literal=accessKey=$(ACCESS_KEY_ID)
+		--from-literal=accessKey=$(ACCESS_KEY_ID) \
 		--from-literal=secretKey=$(SECRET_KEY_ID)
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm) install charts/$(notdir $(CHART)) \
