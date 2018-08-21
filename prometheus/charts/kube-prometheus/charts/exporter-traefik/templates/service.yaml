@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ template "exporter-traefik.name" . }}
+    component: traefik
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+  name: {{ template "exporter-traefik.fullname" . }}
+  namespace: ingress
+spec:
+  clusterIP: None
+  ports:
+    - name: metrics
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: traefik
+  type: ClusterIP

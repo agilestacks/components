@@ -54,3 +54,11 @@ dependencies:
   - name: grafana
     version: 0.0.36
     repository: file://charts/grafana
+
+  - name: exporter-traefik
+    version: 0.0.1
+    repository: file://charts/exporter-traefik
+
+  - name: exporter-argo
+    version: 0.0.1
+    repository: file://charts/exporter-argo
