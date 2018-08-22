@@ -3,6 +3,14 @@ terraform {
   backend          "s3"             {}
 }
 
+provider "kubernetes" {
+  version        = "1.2.0"
+}
+
+provider "null" {
+  version = "1.0.0"
+}
+
 provider "aws" {
   version = "1.29.0"
 }
@@ -59,7 +67,23 @@ variable "component" {
   description = "name of the component that will be associated with user"
 }
 
-data "aws_region" "current" {}
+variable "namespace" {
+  type = "string"
+  default = "argoproj"
+  description = "kubenretes namespace"
+}
+
+variable "access_key_ref" {
+  type = "string"
+  description = "secret reference to access key id"
+  default = "accessKey"
+}
+
+variable "secret_key_ref" {
+  type = "string"
+  description = "secret reference to access secret key"
+  default = "secretKey"
+}
 
 data "aws_s3_bucket" "main" {
   provider = "aws.bucket"
@@ -96,12 +120,24 @@ module "user" {
 EOF
 }
 
-output "access_key_id" {
-  value = "${module.user.access_key_id}"
+resource "kubernetes_secret" "aws" {
+  metadata {
+    name = "argo-repo-${var.component}"
+    namespace = "${var.namespace}"
+  }
+
+  data {
+    accessKey = "${module.user.access_key_id}"
+    secretKey = "${module.user.secret_access_key}"
+  }
 }
 
-output "secret_access_key" {
-  value = "${module.user.secret_access_key}"
+output "secret_name" {
+  value = "argo-repo-${var.component}"
+}
+
+output "region" {
+  value = "${data.aws_region.bucket.name}"
 }
 
 output "endpoint" {
