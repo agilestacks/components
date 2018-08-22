@@ -20,6 +20,7 @@ terraform ?= terraform-v0.11
 helm ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
+
 $(TF_DATA_DIR):
 	mkdir -p "$@"
 
@@ -32,7 +33,8 @@ namespace:
 init: $(TF_DATA_DIR) $(HELM_HOME) namespace
 	$(helm) init --client-only --upgrade --wait
 	$(helm) repo add argo https://argoproj.github.io/argo-helm/
-	$(terraform) init -get=true $(TF_CMD_OPTS) -force-copy \
+	$(terraform) init $(TF_OPTS) \
+        -get=true -force-copy \
         -backend=true -input=false -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
         -backend-config="region=$(STATE_REGION)" \
@@ -67,15 +69,15 @@ fetch: $(HELM_HOME) $(TF_DATA_DIR)
 .PHONY: fetch
 
 install:
-	$(eval ACCESS_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.access_key_id.value'))
-	$(eval SECRET_KEY_ID := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.secret_access_key.value'))
-	$(eval ENDPOINT := $(shell $(MAKE) output TF_CLI_ARGS="-json" | jq -crM '.endpoint.value'))
-
+	$(eval ACCESS_KEY_ID := $(shell $(MAKE) output TF_OPTS="-json" | jq -crM '.access_key_id.value'))
+	$(eval SECRET_KEY_ID := $(shell $(MAKE) output TF_OPTS="-json" | jq -crM '.secret_access_key.value'))
+	$(eval ENDPOINT := $(shell $(MAKE) output TF_OPTS="-json" | jq -crM '.endpoint.value'))
 	- $(kubectl) create secret generic --type=string \
 		argo-repo-$(TF_VAR_component) \
 		--from-literal=accessKey=$(ACCESS_KEY_ID) \
 		--from-literal=secretKey=$(SECRET_KEY_ID)
-	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
+	@ echo Running: helm install...
+	@ $(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm) install charts/$(notdir $(CHART)) \
 			--name $(TF_VAR_component) \
 			--namespace $(NAMESPACE) \
@@ -91,7 +93,7 @@ undeploy: init
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component) || exit 0
 
-	$(MAKE) plan TF_CLI_ARGS="-destroy"
+	$(MAKE) plan TF_OPTS="-destroy -no-color"
 	$(MAKE) apply
 	- $(kubectl) delete -f ingress.yaml
 	- $(kubectl) delete -f rbac.yaml
@@ -113,22 +115,22 @@ clean:
 	rm -rf $(TF_DATA_DIR)
 
 import:
-	- $(terraform) import module.user.aws_iam_user.main agilestacks-$(TF_VAR_component)
+	- $(terraform) import $(TF_OPTS) module.user.aws_iam_user.main agilestacks-$(TF_VAR_component)
 .PHONY: import
 
 plan:
-	$(terraform) plan -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan
+	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan
 .PHONY: plan
 
 refresh:
-	$(terraform) refresh
+	$(terraform) refresh $(TF_OPTS)
 .PHONY: refresh
 
 apply:
-	$(terraform) apply -auto-approve .terraform/terraform.tfplan
+	$(terraform) apply $(TF_OPTS) -auto-approve .terraform/terraform.tfplan
 .PHONY: apply
 
 output:
-	@ $(terraform) output
+	@ $(terraform) output $(TF_OPTS)
 	@ echo
 .PHONY: output
