@@ -20,6 +20,7 @@ lifecycle:
 parameters:
   - name: dns.domain
     env: DOMAIN_NAME
+
   - name: kubernetes.api.endpoint
     env: TF_VAR_api_endpoint
   - name: kubernetes.api.namespace
@@ -28,6 +29,11 @@ parameters:
   - name: kubernetes.flavor
     value: eks
   - name: kubernetes.eks.cluster
+
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
 
 outputs:
   - name: dns.domain
