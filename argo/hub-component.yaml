@@ -35,10 +35,16 @@ parameters:
     value: 1
   - name: namespace
     value: argoproj
-    env: NAMESPACE
+    env: TF_VAR_namespace
   - name: repo.bucket.name
     value: ${terraform.bucket.name}
     env: TF_VAR_bucket_name
+  - name: repo.secret.accessKeyRef
+    value: accessKey
+    env: TF_VAR_access_key_ref
+  - name: repo.secret.secretKeyRef
+    value: secretKey
+    env: TF_VAR_secret_key_ref
   - name: repo.bucket.region
     value: ${terraform.bucket.region}
     env: TF_VAR_bucket_region
@@ -55,12 +61,15 @@ parameters:
     value: '>0.0.0-0'
     env: CHART_VERSION
 outputs:
-- name: component.argo.repo.accessKey
-  brief: Argo backend access key
-  fromTfVar: access_key_id
-- name: component.argo.repo.secretKey
-  brief: Argo backend secret key
-  fromTfVar: secret_access_key
+- name: component.argo.repo.secret.name
+  brief: Kubenetes secret that holds access and secret key info
+  fromTfVar: secret_name
+- name: component.argo.repo.secret.accessKeyRef
+  brief: Kubenetes secret data field that holds Access Key Id
+  value: ${component.argo.repo.secret.accessKeyRef}
+- name: component.argo.repo.secret.secretKeyRef
+  brief: Kubenetes secret data field that holds Secret Key
+  vakue: ${component.argo.repo.secret.secretKeyRef}
 - name: component.argo.repo
   brief: Argo backend S3 or Minio
   value: s3

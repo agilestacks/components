@@ -32,14 +32,14 @@ minio:
 
 artifactRepository:
   s3:
-    endpoint: undefined
+    endpoint: defined via cli arg
     bucket: ${component.argo.repo.bucket.name}
     accessKeySecret:
       name: argo-repo-${component.argo.name}
-      key: accessKey
+      key: ${component.argo.repo.secret.accessKeyRef}
     secretKeySecret:
       name: argo-repo-${component.argo.name}
-      key: secretKey
+      key: ${component.argo.repo.secret.secretKeyRef}
     insecure: ${component.argo.repo.bucket.insecure}
     keyPrefix: ${component.argo.repo.bucket.keyPrefix}
 
