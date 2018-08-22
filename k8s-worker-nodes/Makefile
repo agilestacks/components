@@ -46,7 +46,7 @@ plan:
 		-var cluster_tag=$${TF_VAR_base_domain/./-} \
 		-refresh=true \
 		-module-depth=-1 \
-		-out=$(TFPLAN); \
+		-out=$(TFPLAN)
 .PHONY: plan
 
 apply:
