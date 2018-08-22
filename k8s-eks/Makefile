@@ -65,7 +65,7 @@ output: vpc
 	@echo
 .PHONY: output
 
-undeploy: init
-	$(MAKE) plan TF_OPTS=-destroy
-	$(MAKE) apply
-.PHONY: undeploy
+undeploy: init destroy apply
+
+destroy: TF_OPTS=-destroy
+destroy: plan
