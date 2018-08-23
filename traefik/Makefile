@@ -25,14 +25,14 @@ endif
 deploy: clean init fetch install get plan apply output
 .PHONY: deploy
 
-ifeq ($(CLOUD_KIND),aws)
+ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
 STATE_BACKEND_CONFIG := -backend-config="key=$(TF_VAR_domain_name)/traefik/$(TF_VAR_component)/terraform.tfstate" \
 				-backend-config="profile=$(AWS_PROFILE)"
 else ifeq ($(CLOUD_KIND),gcp)
 STATE_BACKEND_CONFIG := -backend-config="prefix=$(TF_VAR_domain_name)/traefik/$(TF_VAR_component)" \
 				-backend-config="credentials=$(GOOGLE_APPLICATION_CREDENTIALS)"
 else
-	$(error cloud.kind / CLOUD_KIND must be one of: aws, gcp)
+	$(error cloud.kind / CLOUD_KIND must be one of: aws, gcp, hybrid)
 endif
 
 init:
