@@ -26,6 +26,6 @@ parameters:
   kind: user
   env: AWS_DEFAULT_REGION
 outputs:
-- name: component.acm.certificate_arn
+- name: component.acm.certificateArn
   brief: ACM Certificate ARN
   fromTfVar: certificate_arn

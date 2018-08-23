@@ -30,7 +30,7 @@ parameters:
   - name: component.gitlab-ce
     parameters:
     - name: acm_certificate.arn
-      value: ${component.acm.certificate_arn}
+      value: ${component.acm.certificateArn}
       env: ACM_CERTIFICATE_ARN
     - name:  name
       value: gitlab-ce
