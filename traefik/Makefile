@@ -7,7 +7,7 @@ export TF_VAR_domain_name  ?= dev.kubernetes.delivery
 
 CLOUD_KIND ?= aws
 ACM_CERTIFICATE_ARN ?=
-CHART_VERSION ?= 1.14.2
+CHART_VERSION ?= 1.38.0
 CHART ?= stable/traefik
 STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1
