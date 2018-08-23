@@ -23,7 +23,6 @@ else
 endif
 
 deploy: clean init fetch install get plan apply output
-.PHONY: deploy
 
 ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
 STATE_BACKEND_CONFIG := -backend-config="key=$(TF_VAR_domain_name)/traefik/$(TF_VAR_component)/terraform.tfstate" \
@@ -93,6 +92,7 @@ clean:
 	rm -rf charts
 	rm -rf .terraform/modules
 	rm -rf .terraform/plugins
+.PHONY: clean
 
 output:
 	@echo
