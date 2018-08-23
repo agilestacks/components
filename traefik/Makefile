@@ -6,7 +6,7 @@ export TF_VAR_component    ?= traefik
 export TF_VAR_domain_name  ?= dev.kubernetes.delivery
 
 CLOUD_KIND ?= aws
-ACM_CERTIFICATE_ARN ?= undefined
+ACM_CERTIFICATE_ARN ?=
 CHART_VERSION ?= 1.14.2
 CHART ?= stable/traefik
 STATE_BUCKET ?= terraform.agilestacks.com
@@ -14,12 +14,12 @@ STATE_REGION ?= us-east-1
 helm ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
 terraform ?= terraform-v0.11
 
-ifeq ($(ACM_CERTIFICATE_ARN),undefined)
-	VALUES_FILE=values.yaml
-	PROTOCOL=http
-else
+ifneq (,$(ACM_CERTIFICATE_ARN))
 	VALUES_FILE=values-acm.yaml
 	PROTOCOL=https
+else
+	VALUES_FILE=values.yaml
+	PROTOCOL=http
 endif
 
 deploy: clean init fetch install get plan apply output
