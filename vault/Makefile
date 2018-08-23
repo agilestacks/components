@@ -109,7 +109,7 @@ login:
 
 connect: disconnect
 	@echo Searching for Vault pod
-	@$(kubectl) get pods
+	$(kubectl) get pods
 	$(eval VAULT_POD=$(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}))
 	@if test -z "$(VAULT_POD)"; then \
 		echo Cannot find Vault pod; \
