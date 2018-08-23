@@ -2,7 +2,7 @@
 image: traefik
 imageTag: 1.6.5
 ## can switch the service type to NodePort if required
-serviceType: LoadBalancer
+serviceType: ${component.ingress.kubernetes.serviceType}
 loadBalancerIP:
 # loadBalancerSourceRanges: []
 whiteListSourceRange: []
@@ -26,11 +26,11 @@ deploymentStrategy: {}
   #   maxUnavailable: 0
   # type: RollingUpdate
 
-nodeSelector: {}
+nodeSelector: ${component.traefik.kubernetes.nodeSelector}
   # key: value
 affinity: {}
   # key: value
-tolerations: []
+tolerations: ${component.traefik.kubernetes.tolerations}
 # - key: "key"
 #   operator: "Equal|Exists"
 #   value: "value"
@@ -204,8 +204,8 @@ service:
   ## Default config with empty string "" will assign a dynamic
   ## nodePort to http and https ports
   nodePorts:
-    http: ""
-    https: ""
+    http: "${component.ingress.kubernetes.nodePort.http}"
+    https: "${component.ingress.kubernetes.nodePort.https}"
   ## If static nodePort configuration is required it can be enabled as below
   ## Configure ports in allowable range (eg. 30000 - 32767 on minikube)
   # nodePorts:
