@@ -113,3 +113,6 @@ argo/events/argo-events-cluster-roles.yaml
 argo/events/sensor-controller-configmap.yaml
 argo/events/sensor-controller-deployment.yaml
 argo/events/webhook.yaml
+argo/events/resource.yaml
+argo/events/artifact.yaml
+
