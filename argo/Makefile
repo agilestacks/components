@@ -62,6 +62,7 @@ deploy:
 	$(kubectl) apply -f events/sensor-controller-deployment.yaml
 	$(kubectl) apply -f events/webhook.yaml
 	$(kubectl) apply -f events/artifact.yaml
+	$(kubectl) apply -f events/resource.yaml
 .PHONY: deploy
 
 fetch: $(HELM_HOME) $(TF_DATA_DIR)
@@ -101,6 +102,7 @@ undeploy: init
 
 	- $(kubectl) delete -f events/artifact.yaml
 	- $(kubectl) delete -f events/webhook.yaml
+	- $(kubectl) delete -f events/resource.yaml
 	- $(kubectl) delete -f events/sensor-controller-deployment.yaml
 	- $(kubectl) delete -f events/sensor-controller-configmap.yaml
 	- $(kubectl) delete -f events/sensor-crd.yaml
