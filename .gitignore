@@ -115,4 +115,6 @@ argo/events/sensor-controller-deployment.yaml
 argo/events/webhook.yaml
 argo/events/resource.yaml
 argo/events/artifact.yaml
+argo/events/calendar.yaml
+argo/events/stream.yaml
 
