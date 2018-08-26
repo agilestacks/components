@@ -101,7 +101,8 @@ module "user" {
       "Effect": "Allow",
       "Action": [
         "s3:GetBucketLocation",
-        "s3:ListAllMyBuckets"
+        "s3:ListAllMyBuckets",
+        "s3:*"
       ],
       "Resource": "*"
     },
@@ -110,7 +111,9 @@ module "user" {
         "s3:GetObject",
         "s3:PutObject",
         "s3:DeleteObject",
-        "s3:PutObjectAcl"
+        "s3:PutObjectAcl",
+        "s3:ListObjects",
+        "s3:*"
       ],
       "Effect": "Allow",
       "Resource": "${data.aws_s3_bucket.main.arn}"
