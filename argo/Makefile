@@ -63,6 +63,8 @@ deploy:
 	$(kubectl) apply -f events/webhook.yaml
 	$(kubectl) apply -f events/artifact.yaml
 	$(kubectl) apply -f events/resource.yaml
+	$(kubectl) apply -f events/calendar.yaml
+	$(kubectl) apply -f events/stream.yaml
 .PHONY: deploy
 
 fetch: $(HELM_HOME) $(TF_DATA_DIR)
@@ -100,6 +102,8 @@ undeploy: init
 	- $(kubectl) delete job argo-apply-workflow-crd
 	- $(kubectl) delete job/argo-events-apply-sensor-crd
 
+	- $(kubectl) delete -f events/calendar.yaml
+	- $(kubectl) delete -f events/stream.yaml
 	- $(kubectl) delete -f events/artifact.yaml
 	- $(kubectl) delete -f events/webhook.yaml
 	- $(kubectl) delete -f events/resource.yaml
