@@ -1,0 +1,42 @@
+---
+version: 1
+kind: component
+meta:
+  name: argo
+  brief: The workflow engine for Kubernetes
+  source:
+    dir: ../../components/argo
+
+requires:
+  - kubernetes
+  - ingress
+provides:
+  - argo
+  - argo-events
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.nats
+  parameters:
+  - name: name
+    value: nats
+    env: COMPONENT_NAME
+  - name: namespace
+    # primary consumer is argo
+    value: argoproj
+    env: NAMESPACD
+  - name: port
+    value: 4222
+  - name: replicas
+    value: 1
+  - name: chart.version
+    value: '0.0.6'
+    env: CHART_VERSION
+outputs:
+- name:  component.nats.fqdn
+  value: ${component.nats.name}-nats-client.${component.nats.namespace}.svc.cluster.local:${component.nats.port}
+templates:
+  files:
+  - "*.template"
+

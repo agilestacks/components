@@ -117,4 +117,5 @@ argo/events/resource.yaml
 argo/events/artifact.yaml
 argo/events/calendar.yaml
 argo/events/stream.yaml
-
+nats/values.yaml
+nats/charts
