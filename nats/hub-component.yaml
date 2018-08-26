@@ -2,17 +2,15 @@
 version: 1
 kind: component
 meta:
-  name: argo
+  name: nats
   brief: The workflow engine for Kubernetes
   source:
-    dir: ../../components/argo
+    dir: ../../components/nats
 
 requires:
   - kubernetes
-  - ingress
 provides:
-  - argo
-  - argo-events
+  - nats
 
 parameters:
 - name: dns.domain
