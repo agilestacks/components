@@ -119,3 +119,5 @@ argo/events/calendar.yaml
 argo/events/stream.yaml
 nats/values.yaml
 nats/charts
+nats/natsboard/deployment.yaml
+nats/natsboard/service.yaml
