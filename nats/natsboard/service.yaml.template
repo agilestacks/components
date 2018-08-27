@@ -1,13 +1,13 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: ${component.nats.name}-natsboardspec
+  name: ${component.nats.name}-natsboard
   namespace: ${component.nats.namespace}
   labels:
     k8s-app: ${component.nats.name}
     provider:  agilestacks.com
     component: ${component.nats.name}
-    app: ${component.nats.name}-natsboardspec
+    app: ${component.nats.name}-natsboard
 spec:
   ports:
   - name: http
@@ -21,4 +21,4 @@ spec:
     targetPort: 3001
   selector:
     component: ${component.nats.name}
-    app: ${component.nats.name}-natsboardspec
+    app: ${component.nats.name}-natsboard
