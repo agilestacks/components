@@ -1,12 +1,12 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ${component.nats.name}-natsboardspec
+  name: ${component.nats.name}-natsboard
   namespace: ${component.nats.namespace}
   labels:
     provider:  agilestacks.com
     component: ${component.nats.name}
-    app: ${component.nats.name}-natsboardspec
+    app: ${component.nats.name}-natsboard
   annotations:
     agilestacks.com/stack-component: Nats
 spec:
