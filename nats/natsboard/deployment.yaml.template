@@ -23,7 +23,7 @@ spec:
         image: ${component.nats.natsboard.image}
         env:
           - name: NATS_MONITOR_URL
-            value: http://${component.nats.name}-nats-monitoring.${component.nats.namespace}.svc.cluster.local:${component.nats.port}
+            value: http://${component.nats.name}-nats-monitoring.${component.nats.namespace}.svc.cluster.local:8222
         imagePullPolicy: Always
         ports:
         - name: http

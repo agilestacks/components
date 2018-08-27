@@ -121,3 +121,4 @@ nats/values.yaml
 nats/charts
 nats/natsboard/deployment.yaml
 nats/natsboard/service.yaml
+nats/mon-ingress.yaml
