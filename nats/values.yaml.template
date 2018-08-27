@@ -96,7 +96,7 @@ readinessProbe:
 ## ref: https://github.com/nats-io/gnatsd#authentication
 ##
 auth:
-  enabled: true
+  enabled: false
   user: nats_client
   # password:
   # token:
