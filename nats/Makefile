@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME		   ?= $(shell pwd)/.helm
+export HELM_HOME ?= $(shell pwd)/.helm
 
 NAMESPACE		?= argoproj
 COMPONENT_NAME	?= nats
@@ -9,16 +9,19 @@ kubectl			?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm			?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 CHART			?= charts/nats
 CHART_VERSION	?= 0.0.6
-TIMEOUT			?= 300
 
+$(HELM_HOME):
+	mkdir -p "$@"
 
-deploy: clean init fetch install
-.PHONY: deploy
+charts:
+	mkdir -p "$@"
 
-init:
-	@mkdir -p $(HELM_HOME)
-	@$(helm) init --client-only --upgrade --wait
-	@mkdir -p charts
+namespace:
+	- $(kubectl) create namespace $(NAMESPACE)
+.PHONY: namespace
+
+init: $(HELM_HOME) charts namespace
+	@ $(helm) init --client-only --upgrade --wait
 
 fetch:
 	$(helm) fetch \
@@ -28,7 +31,6 @@ fetch:
 .PHONY: fetch
 
 install:
-	-$(kubectl) create namespace $(NAMESPACE)
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART) \
 			--name $(COMPONENT_NAME) \
@@ -39,11 +41,21 @@ install:
 			--wait
 .PHONY: install
 
+deploy: clean init fetch install
+	$(kubectl) apply -f natsboard/deployment.yaml
+	$(kubectl) apply -f natsboard/service.yaml
+	$(kubectl) apply -f natsboard/ingress.yaml
+.PHONY: deploy
+
 undeploy: init
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+
+	- $(kubectl) delete -f natsboard/ingress.yaml
+	- $(kubectl) delete -f natsboard/service.yaml
+	- $(kubectl) delete -f natsboard/deployment.yaml
 .PHONY: undeploy
 
 clean:
-	@rm -rf $(HELM_HOME)
-	@rm -rf charts
+	@ rm -rf $(HELM_HOME)
+	@ rm -rf charts

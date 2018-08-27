@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name:      natsboard
+  namespace: ${component.nats.namespace}
+  labels:
+    provider:  agilestacks.com
+    component: ${component.nats.name}
+    app: ${component.nats.name}-natsboard
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        provider:  agilestacks.com
+        component: ${component.nats.name}
+        app: ${component.nats.name}-natsboard
+    spec:
+      containers:
+      - name: ${component.nats.name}-natsboard
+        image: ${component.nats.natsboard.image}
+        env:
+          - name: NATS_MONITOR_URL
+            value: http://${component.nats.name}-nats-monitoring.${component.nats.namespace}.svc.cluster.local:${component.nats.port}
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3000
+        - name: http2
+          containerPort: 3001
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+        livenessProbe:
+          timeoutSeconds: 3
+          initialDelaySeconds: 30
+          failureThreshold: 30
+          httpGet:
+            path: /
+            port: 3000

@@ -9,12 +9,14 @@ meta:
 
 requires:
   - kubernetes
+  - ingress
 provides:
   - nats
 
 parameters:
 - name: dns.domain
   env: DOMAIN_NAME
+- name: component.ingress.ssoUrlPrefix
 - name: component.nats
   parameters:
   - name: name
@@ -23,7 +25,7 @@ parameters:
   - name: namespace
     # primary consumer is argo
     value: argoproj
-    env: NAMESPACD
+    env: NAMESPACE
   - name: port
     value: 4222
   - name: replicas
@@ -31,10 +33,15 @@ parameters:
   - name: chart.version
     value: '0.0.6'
     env: CHART_VERSION
+  - name: natsboard.image
+    value: urashidmalik/natsboard:latest
 outputs:
-- name:  component.nats.fqdn
+- name:  component.nats.client.fqdn
   value: ${component.nats.name}-nats-client.${component.nats.namespace}.svc.cluster.local:${component.nats.port}
+- name:  component.nats.monitor.fqdn
+  value: ${component.nats.name}-nats-monitoring.${component.nats.namespace}.svc.cluster.local:${component.nats.port}
 templates:
   files:
   - "*.template"
+  - "natsboard/*.template"
 
