@@ -45,6 +45,7 @@ deploy: clean init fetch install
 	$(kubectl) apply -f natsboard/deployment.yaml
 	$(kubectl) apply -f natsboard/service.yaml
 	$(kubectl) apply -f natsboard/ingress.yaml
+	$(kubectl) apply -f mon-ingress.yaml
 .PHONY: deploy
 
 undeploy: init
@@ -54,6 +55,7 @@ undeploy: init
 	- $(kubectl) delete -f natsboard/ingress.yaml
 	- $(kubectl) delete -f natsboard/service.yaml
 	- $(kubectl) delete -f natsboard/deployment.yaml
+	- $(kubectl) delete -f mon-ingress.yaml
 .PHONY: undeploy
 
 clean:
