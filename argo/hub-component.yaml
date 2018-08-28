@@ -31,6 +31,8 @@ parameters:
   - name: name
     value: argo
     env: TF_VAR_component
+  - name: instanceId
+    value: axis
   - name: replicas
     value: 1
   - name: namespace
