@@ -1,0 +1,12 @@
+ingress:
+  enabled: false
+persistence:
+  enabled: false
+externalDomain: ${component.harbor.fqdn}
+externalPort: 
+registry:
+  storage:
+    type: s3
+    s3: 
+      region: ${component.s3.region}
+      bucket: ${component.s3.bucket} 

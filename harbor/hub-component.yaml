@@ -1,0 +1,40 @@
+---
+version: 1
+kind: component
+meta:
+  name: harbor
+  brief: Private Docker Registry
+  source:
+    dir: ../../components/harbor
+
+requires:
+  - kubernetes
+  - ingress
+  - s3-bucket
+provides:
+  - harbor
+
+parameters:
+- name: component.ingress.ssoFqdn
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: cloud.region
+  kind: user
+  env: AWS_DEFAULT_REGION
+- name: component.s3.bucket
+- name: component.s3.region  
+- name: component.harbor
+  parameters:
+  - name: name
+    value: harbor
+    env: COMPONENT
+  - name: namespace
+    value: harbor
+    env: NAMESPACE
+  - name: fqdn
+    value: ${component.harbor.name}.${component.ingress.ssoFqdn}
+outputs:
+
+templates:
+  files:
+  - "*.template"
