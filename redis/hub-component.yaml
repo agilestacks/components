@@ -15,13 +15,17 @@ requires:
 parameters:
   - name: dns.domain
     env: DOMAIN_NAME
+  - name: cloud.kind
+    env: CLOUD_KIND
   - name: component.redis
     parameters:
     - name: volume.enabled
       brief: true if persistence enabled
       value: "true"
     - name: volume.storageClass
-      value: "ebs-gp2"
+      value: "${cloud.kind}-storage"
+    - name: volume.type
+      value: gp2
     - name: volume.size
       value: 8Gi
     - name: usePassword

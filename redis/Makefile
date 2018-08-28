@@ -10,6 +10,8 @@ kubectl          ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)
 helm             ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 HA_CHART_VERSION ?= 2.1.1
 
+CLOUD_KIND ?= aws
+
 ifeq ($(HA_ENABLED),true)
 HELM_CHART=stable/redis-ha
 VALUES_FILE=values-ha.yaml
@@ -35,8 +37,8 @@ fetch:
 .PHONY: fetch
 
 install:
-	- $(kubectl) create namespace $(NAMESPACE)
-	$(kubectl) apply -f storage-class.yaml
+	-$(kubectl) create namespace $(NAMESPACE)
+	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \
@@ -72,6 +74,7 @@ output:
 undeploy: init
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	-$(kubectl) delete -f $(CLOUD_KIND)-storage-class.yaml
 .PHONY: undeploy
 
 clean:
