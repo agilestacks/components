@@ -46,6 +46,7 @@ outputs:
   value: ${component.postgresql.name}-postgresql.${component.postgresql.namespace}.svc.cluster.local
 - name: component.postgresql.port
 - name: component.postgresql.user
+- name: component.postgresql.namespace
 
 templates:
   files:
