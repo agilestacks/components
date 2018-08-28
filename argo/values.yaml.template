@@ -8,10 +8,9 @@ images:
 controller:
   serviceAccount: ${component.argo.serviceAccount}
   name: workflow-controller
-  workflowNamespaces:
-  - default
-  useReleaseAsInstanceID: true
-  instanceID:
+  workflowNamespaces: [default, ${component.argo.namespace}]
+  useReleaseAsInstanceID: false
+  instanceID: ${component.argo.instanceId}
 
 ui:
   name: ui
@@ -32,7 +31,7 @@ minio:
 
 artifactRepository:
   s3:
-    endpoint: defined via cli arg
+    endpoint: must be defined via helm cli arg
     bucket: ${component.argo.repo.bucket.name}
     accessKeySecret:
       name: argo-repo-${component.argo.name}
