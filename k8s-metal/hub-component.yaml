@@ -20,6 +20,8 @@ lifecycle:
       url: https://${kubernetes.api.endpoint}/api/v1
 
 parameters:
+  - name: cloud.kind
+    value: hybrid
   - name: cloud.region
     env: AWS_DEFAULT_REGION
   - name: dns.domain
