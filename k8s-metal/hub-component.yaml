@@ -46,6 +46,7 @@ outputs:
     fromTfVar: dns_name
   - name: dns.baseDomain
     fromTfVar: dns_base_domain
+  - name: cloud.region
   - name: cloud.bucket
     fromTfVar: s3_bucket
 
