@@ -13,7 +13,7 @@ spec:
       serviceAccountName: argo-events-sa
       containers:
         - name: stream-nats
-                  image: agilestacks/argo-stream-nats-signal:latest
+          image: agilestacks/argo-stream-nats-signal:latest
           # image: argoproj/stream-nats-signal:latest
           imagePullPolicy: IfNotPresent
           env:
