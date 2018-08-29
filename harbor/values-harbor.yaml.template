@@ -1,5 +1,8 @@
+harborAdminPassword: ${component.harbor.adminPassword}
+selfRegistration: "off"
+externalProtocol: https
 ingress:
-  enabled: false
+  enabled: true
 persistence:
   enabled: false
 externalDomain: ${component.harbor.fqdn}

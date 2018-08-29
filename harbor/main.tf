@@ -1,5 +1,6 @@
 terraform {
   required_version = ">= 0.11.3"
+  backend          "s3"             {}
 }
 
 provider "aws" {
@@ -8,7 +9,7 @@ provider "aws" {
 
 provider "kubernetes" {
   version        = "1.1.10"
-  config_context = "${var.kube_context}"
+  config_context = "${var.domain_name}"
 }
 
 data "aws_region" "current" {}
@@ -17,19 +18,19 @@ data "aws_route53_zone" "ext_zone" {
   name = "${var.domain_name}"
 }
 
-data "kubernetes_service" "harbor" {
+data "kubernetes_service" "harbor_nginx" {
   metadata {
-    name      = "${var.component}"
+    name      = "${var.nginx_service_name}"
     namespace = "${var.namespace}"
   }
 }
 
 resource "aws_route53_record" "dns_app_ext" {
   zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
-  name    = "${var.url_prefix}"
+  name    = "${var.service_prefix}"
   type    = "CNAME"
   ttl     = "300"
-  records = ["${data.kubernetes_service.harbor.load_balancer_ingress.0.hostname}"]
+  records = ["${data.kubernetes_service.harbor_nginx.load_balancer_ingress.0.hostname}"]
 
   lifecycle {
     ignore_changes = ["records", "ttl"]
