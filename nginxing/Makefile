@@ -3,13 +3,13 @@
 export HELM_HOME           ?= $(shell pwd)/.helm
 export TF_VAR_namespace    ?= nginx-ingress
 export TF_VAR_component    ?= nginxing
-export TF_VAR_domain_name  ?= DOMAIN_NAME
+export TF_VAR_domain_name  ?= dev.kubernetes.delivery
 
 CLOUD_KIND ?= aws
 CHART_VERSION ?= 0.11.1
 CHART ?= stable/nginx-ingress
-STATE_BUCKET ?= agilestacks.voacc76.demo01.kubernetes.delivery
-STATE_REGION ?= eu-west-1
+STATE_BUCKET ?= terraform.agilestacks.com
+STATE_REGION ?= us-east-1
 helm ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
 terraform ?= terraform
 
