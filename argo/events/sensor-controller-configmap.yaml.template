@@ -1,4 +1,3 @@
-# The sensor controller configmap includes configuration information for the sensor controller
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,4 +5,4 @@ metadata:
   namespace: ${component.argo.namespace}
 data:
   config: |
-    instanceID: axis
+    instanceID: ${component.argo.instanceId}

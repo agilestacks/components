@@ -14,8 +14,10 @@ spec:
       serviceAccountName: argo-events-sa
       containers:
       - name: sensor-controller
-        image: argoproj/sensor-controller:latest
-        imagePullPolicy: IfNotPresent
+        image: agilestacks/argo-sensor-controller
+        imagePullPolicy: Always
+        # image: argoproj/sensor-controller:latest
+        # imagePullPolicy: IfNotPresent
         env:
           - name: SENSOR_NAMESPACE
             valueFrom:
