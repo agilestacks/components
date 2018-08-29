@@ -13,7 +13,8 @@ spec:
       serviceAccountName: argo-events-sa
       containers:
         - name: resource
-          image: argoproj/resource-signal:latest
+          image: agilestacks/argo-resource-signal:latest
+          # image: argoproj/resource-signal:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: MICRO_SERVER_ADDRESS

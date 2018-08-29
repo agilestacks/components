@@ -13,7 +13,8 @@ spec:
       serviceAccountName: argo-events-sa
       containers:
         - name: calendar
-          image: argoproj/calendar-signal:latest
+          image: agilestacks/argo-calendar-signal:latest
+          # image: argoproj/calendar-signal:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: MICRO_SERVER_ADDRESS

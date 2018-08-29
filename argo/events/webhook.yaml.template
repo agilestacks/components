@@ -13,7 +13,8 @@ spec:
       serviceAccountName: argo-events-sa
       containers:
       - name: webhook
-        image: argoproj/webhook-signal:latest
+        image: agilestacks/argo-webhook-signal:latest
+        # image: argoproj/webhook-signal:latest
         imagePullPolicy: IfNotPresent
         env:
         - name: MICRO_SERVER_ADDRESS

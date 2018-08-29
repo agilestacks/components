@@ -10,6 +10,11 @@ export TF_VAR_component   ?= argo
 export TF_VAR_namespace   ?= argoproj
 export KUBE_CTX           := $(DOMAIN_NAME)
 
+export GOPATH ?= $(realpath .)/.go
+export GOBIN ?= $(GOPATH)/bin/$(shell uname -s | tr A-Z a-z)
+
+IMAGE_PREFIX := agilestacks/argo-
+
 # export SECRET_NAME        ?= argo-repo-$(TF_VAR_component)
 
 # https://github.com/hashicorp/terraform/issues/14847
@@ -29,6 +34,9 @@ $(TF_DATA_DIR):
 $(HELM_HOME):
 	mkdir -p "$@"
 
+$(GOPATH):
+	mkdir -p "$@"
+
 namespace:
 	- $(kubectl) create namespace $(TF_VAR_namespace)
 .PHONY: namespace
@@ -44,6 +52,17 @@ init: $(TF_DATA_DIR) $(HELM_HOME) namespace
         -backend-config="key=$(DOMAIN_NAME)/argo/$(COMPONENT_NAME)/terraform.tfstate" \
         -backend-config="profile=$(AWS_PROFILE)"
 .PHONY: init
+
+argo-events: $(GOPATH)
+	go get github.com/argoproj/argo-events
+	go get -u github.com/golang/dep/cmd/dep
+	cd $(GOPATH)/src/github.com/argoproj/argo-events && $(GOBIN)/dep ensure -vendor-only
+	$(MAKE) -C $(GOPATH)/src/github.com/argoproj/argo-events clean all IMAGE_PREFIX=$(IMAGE_PREFIX) DOCKER_PUSH=true
+.PHONY: argo-events
+
+push-argo:
+		$(eval argo_images=$(shell docker images --format '{{.Repository}}:{{.Tag}}' --no-trunc | grep 'argoproj/' | xargs))
+.PHONY: push-argo
 
 deploy:
 	$(MAKE) init plan
@@ -117,6 +136,7 @@ undeploy: init
 clean:
 	rm -rf $(HELM_HOME)
 	rm -rf $(TF_DATA_DIR)
+	rm -rf $(GOPATH)
 
 import:
 	- $(terraform) import $(TF_OPTS) module.user.aws_iam_user.main agilestacks-$(TF_VAR_component)
