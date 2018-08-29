@@ -9,31 +9,46 @@ meta:
 
 requires:
   - kubernetes
-  - ingress
-  - s3-bucket
 provides:
   - harbor
 
 parameters:
-- name: component.ingress.ssoFqdn
 - name: dns.domain
-  env: DOMAIN_NAME
+  env: TF_VAR_domain_name
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
 - name: component.s3.bucket
 - name: component.s3.region  
+- name: component.acm.certificate_arn
+- name: terraform.bucket.region
+  env: STATE_REGION
+- name: terraform.bucket.name
+  env: STATE_BUCKET  
 - name: component.harbor
   parameters:
   - name: name
     value: harbor
-    env: COMPONENT
+    env: TF_VAR_component
   - name: namespace
     value: harbor
-    env: NAMESPACE
+    env: TF_VAR_namespace
+  - name: servicePrefix
+    value: svc
+    env: TF_VAR_service_prefix
+  - name: adminPassword
+    value: Harbor12345      
   - name: fqdn
-    value: ${component.harbor.name}.${component.ingress.ssoFqdn}
+    value: ${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+  - name: nginx.image.repository  
+    value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
+  - name: nginx.version
+    value: 0.12.0
+
 outputs:
+- name: component.harbor.url
+  brief: Harbor URL
+  value: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
 
 templates:
   files:
