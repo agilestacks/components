@@ -1,68 +1,82 @@
 .DEFAULT_GOAL := deploy
 
-DOMAIN_NAME    ?= dev.stacks.delivery
 STATE_BUCKET   ?= terraform.agilestacks.com
-NAMESPACE      ?= harbor
-COMPONENT 	   ?= harbor
+STATE_REGION   ?= us-west-1
 
 export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
-export TF_VAR_component   ?= argo
 export TF_CLI_ARGS        ?=
 export TF_DATA_DIR        ?= .terraform
 
 export HELM_HOME ?= $(shell pwd)/.helm
-CHART_VERSION ?= 0.1.1
+
+NGINX_CHART ?= stable/nginx-ingress
+NGINX_CHART_VERSION ?= 0.1.1
+
+export TF_VAR_nginx_service_name ?= nginx-nginx-ingress-controller
 
 terraform ?= terraform-v0.11
-helm ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="$(TF_VAR_namespace)"
+kubectl ?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
+git ?= git
 
-$(TF_DATA_DIR):
-	mkdir -p "$@"
+init:
+	- $(kubectl) create namespace $(TF_VAR_namespace)
+	@mkdir -p charts
+	$(terraform) init -get=true -force-copy $(CLI_ARGS) \
+        -backend=true -reconfigure \
+        -backend-config="bucket=$(STATE_BUCKET)" \
+        -backend-config="region=$(STATE_REGION)" \
+        -backend-config="key=$(TF_VAR_domain_name)/s3-bucket/$(TF_VAR_component)/terraform.tfstate" \
+        -backend-config="profile=$(AWS_PROFILE)"
+.PHONY: init	
 
-$(HELM_HOME):
-	mkdir -p "$@"
+harbor: 
+	$(helm) init --client-only --upgrade --wait
+	$(git) clone https://github.com/goharbor/harbor-helm
+	$(helm) dependency update harbor-helm
+	$(helm)	install harbor-helm \
+	    --name $(TF_VAR_component) \
+		--namespace $(TF_VAR_namespace) \
+		--replace \
+		--wait \
+		-f values-harbor.yaml
+.PHONY: harbor
 
-namespace:
-	- $(kubectl) create namespace $(NAMESPACE)
+nginx:
+	$(helm) fetch \
+		--destination charts \
+		--untar $(NGINX_CHART) \
+		--version $(NGINX_CHART_VERSION)
+	$(helm) install charts/$(notdir $(NGINX_CHART)) \
+		--name nginx \
+		--namespace $(TF_VAR_namespace) \
+		--replace \
+		--wait \
+		--values values-nginx.yaml \
+		--version $(NGINX_CHART_VERSION)		
+.PHONY: nginx
 
-deploy:
-	$(MAKE) init plan
-	$(MAKE) apply || \
-	$(MAKE) import plan apply
+plan:
+	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan
+.PHONY: plan
 
-	@ echo
-	$(kubectl) apply -f rbac.yaml
-	$(kubectl) apply -f ingress.yaml
-	$(MAKE) fetch install
+apply:
+	$(terraform) apply $(TF_OPTS) -auto-approve .terraform/terraform.tfplan
+.PHONY: apply	
 
-	$(kubectl) apply -f events/argo-events-sa.yaml
-	$(kubectl) apply -f events/argo-events-cluster-roles.yaml
-	$(kubectl) apply -f events/sensor-crd.yaml
-	$(kubectl) apply -f events/sensor-controller-configmap.yaml
-	$(kubectl) apply -f events/sensor-controller-deployment.yaml
-	$(kubectl) apply -f events/webhook.yaml
-.PHONY: deploy
+zone:
+	$(MAKE) plan
+	$(MAKE) apply
+.PHONY: zone
+
+deploy: init harbor nginx zone
 
 undeploy: init
-	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' && \
-		$(helm) delete --purge $(TF_VAR_component) || exit 0
-
-	$(MAKE) plan TF_CLI_ARGS="-destroy"
+	TF_OPTS=-destroy
+	$(MAKE) plan
 	$(MAKE) apply
-	- $(kubectl) delete -f ingress.yaml
-	- $(kubectl) delete -f rbac.yaml
-	# cleaning some garbage left by helm chart
-	- $(kubectl) delete job argo-apply-workflow-crd
-	- $(kubectl) delete job/argo-events-apply-sensor-crd
-
-	- $(kubectl) delete -f events/webhook.yaml
-	- $(kubectl) delete -f events/sensor-controller-deployment.yaml
-	- $(kubectl) delete -f events/sensor-controller-configmap.yaml
-	- $(kubectl) delete -f events/sensor-crd.yaml
-	- $(kubectl) delete -f events/argo-events-cluster-roles.yaml
-	- $(kubectl) delete -f events/argo-events-sa.yaml
-	- $(kubectl) delete secret argo-repo-$(TF_VAR_component)
+	$(helm) delete --purge nginx
+	$(helm) delete --purge $(TF_VAR_component)
 .PHONY: undeploy
 
