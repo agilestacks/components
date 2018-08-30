@@ -20,7 +20,7 @@ export TF_VAR_bucket       ?= files.$(DOMAIN_NAME)
 export TF_VAR_api_endpoint ?= BEEF.yl4.us-east-1.eks.amazonaws.com
 
 terraform ?= terraform-v0.11
-TFPLAN ?= .terraform/$(COMPONENT_NAME).tfplan
+TFPLAN ?= .terraform/$(DOMAIN_NAME).tfplan
 
 deploy: init plan apply output
 
