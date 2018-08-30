@@ -3,5 +3,5 @@ output "ingress_fqdn" {
 }
 
 output "load_balancer" {
-  value = "${data.kubernetes_service.harbor.load_balancer_ingress.0.hostname}"
+  value = "${data.kubernetes_service.harbor_nginx.load_balancer_ingress.0.hostname}"
 }

@@ -27,7 +27,7 @@ data "kubernetes_service" "harbor_nginx" {
 
 resource "aws_route53_record" "dns_app_ext" {
   zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
-  name    = "${var.service_prefix}"
+  name    = "${var.component}.${var.service_prefix}"
   type    = "CNAME"
   ttl     = "300"
   records = ["${data.kubernetes_service.harbor_nginx.load_balancer_ingress.0.hostname}"]
@@ -44,7 +44,7 @@ resource "null_resource" "drop_elb" {
 
     command = <<EOF
 export AWS_DEFAULT_REGION="${data.aws_region.current.name}"
-ELB_NAME="${element(split("-", element(split(".", "${data.kubernetes_service.harbor.load_balancer_ingress.0.hostname}"), 0)), 0)}"
+ELB_NAME="${element(split("-", element(split(".", "${data.kubernetes_service.harbor_nginx.load_balancer_ingress.0.hostname}"), 0)), 0)}"
 SG_IDS=$(aws \
   elb describe-load-balancers \
   --load-balancer-names $ELB_NAME --query 'LoadBalancerDescriptions[*].SecurityGroups[*]' --output=text \
