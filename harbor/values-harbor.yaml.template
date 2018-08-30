@@ -5,7 +5,7 @@ ingress:
   enabled: true
 persistence:
   enabled: false
-externalDomain: ${component.harbor.fqdn}
+externalDomain: ${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
 externalPort: 
 registry:
   storage:

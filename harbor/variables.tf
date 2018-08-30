@@ -4,8 +4,11 @@ variable "domain_name" {
 }
 
 variable "namespace" {
-  type    = "string"
-  default = "harbor"
+  type = "string"
+}
+
+variable "component" {
+  type = "string"
 }
 
 variable "service_prefix" {

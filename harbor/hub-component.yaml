@@ -37,9 +37,7 @@ parameters:
     value: svc
     env: TF_VAR_service_prefix
   - name: adminPassword
-    value: Harbor12345      
-  - name: fqdn
-    value: ${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+    value: Harbor12345
   - name: nginx.image.repository  
     value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
   - name: nginx.version
@@ -48,7 +46,7 @@ parameters:
 outputs:
 - name: component.harbor.url
   brief: Harbor URL
-  value: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+  value: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain} 
 
 templates:
   files:
