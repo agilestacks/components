@@ -20,7 +20,7 @@ parameters:
   env: AWS_DEFAULT_REGION
 - name: component.s3.bucket
 - name: component.s3.region  
-- name: component.acm.certificate_arn
+- name: component.acm.certificateArn
 - name: terraform.bucket.region
   env: STATE_REGION
 - name: terraform.bucket.name
