@@ -15,9 +15,6 @@ export TF_DATA_DIR        := .terraform
 
 export TF_VAR_name             := $(COMPONENT_NAME)
 export TF_VAR_performance_mode ?= generalPurpose
-export TF_VAR_cname_zone       ?= i.$(DOMAIN_NAME)
-export TF_VAR_cname_record     ?= nfs
-# export TF_VAR_aws_az           ?=
 export TF_VAR_subnet_id        ?=
 export TF_VAR_sgs              ?=
 
