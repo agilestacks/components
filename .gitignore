@@ -39,6 +39,7 @@ spinnaker-hal/.hal
 redis/charts
 redis/values.yaml
 redis/values-ha.yaml
+redis/aws-storage-class.yaml
 prometheus/values-operator.yaml
 prometheus/values-kube-prometheus.yaml
 kube-dashboard/deployment.yaml
