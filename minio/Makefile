@@ -23,8 +23,8 @@ fetch:
 .PHONY: fetch
 
 install:
-	cp config-json.yaml charts/minio/templates
-	cp deployment.yaml charts/minio/templates
+	# cp config-json.yaml charts/minio/templates
+	# cp deployment.yaml charts/minio/templates
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
         $(helm) install charts/minio \
             --name $(COMPONENT_NAME) \
@@ -34,7 +34,7 @@ install:
             --values Values.yaml
 .PHONY: install
 
-# presently this is disabled. 
+# presently this is disabled.
 # We're assuming that the creation of a minio bucket and a minio-event
 # listener is the responsibility of the consumer of the events
 post_install:

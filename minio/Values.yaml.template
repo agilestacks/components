@@ -15,8 +15,8 @@ ingress:
 ## number of nodes (only used for Minio distributed mode)
 ## Distributed Minio ref: https://docs.minio.io/docs/distributed-minio-quickstart-guide
 ##
-accessKey: ${component.minio.access-key}
-secretKey: ${component.minio.secret-key}
+accessKey: ${component.minio.accessKey}
+secretKey: ${component.minio.secretKey}
 configPath: "/root/.minio"
 mountPath: "/export"
 replicas: 4
@@ -39,9 +39,9 @@ persistence:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  storageClass: ${component.minio.storage-class}
+  storageClass: ${component.minio.storageClass}
   accessMode: ReadWriteOnce
-  size: ${component.minio.storage-size}
+  size: ${component.minio.storageSize}
 
 ## Expose the Minio service to be accessed from outside the cluster (LoadBalancer service).
 ## or access it from within the cluster (ClusterIP service). Set the service type and the port to serve it.
@@ -83,8 +83,8 @@ minioConfig:
     noWait: false
     autoDeleted: false
   nats:
-    enable: false
-    address: ""
+    enable: ${component.minio.nats.enabled}
+    address: ${component.nats.fqdn}
     subject: ""
     username: ""
     password: ""
