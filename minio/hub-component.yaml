@@ -21,20 +21,22 @@ parameters:
       env: NAMESPACE
     - name: version
       value: 0.2.12
-    - name: access-key
+    - name: accessKey
       value: "AKIAIOSFODNN7EXAMPLE"
-    - name: secret-key
+    - name: secretKey
       value: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
     - name: mode
       value: standalone
     - name: port
       value: 9000
-    - name: storage-class
+    - name: storageClass
       value: ebs-gp2
-    - name: storage-size
+    - name: storageSize
       value: 20Gi
-    - name: event-bucket
+    - name: eventBucket
       value: ""
+    - name: nats.enable
+      value: false
     - name: webhook
       parameters:
       - name: enable
@@ -47,8 +49,15 @@ parameters:
         value: "access"
       - name: address
         value: "redis-redis:6379"
-      - name: key 
-        value: "file-events"
+      - name: key
+        value: "fileEvents"
+outputs:
+  - name: component.minio.endpoint
+    value: localhost:${component.minio.port}
+  - name: component.minio.accessKey
+    value: ${component.minio.accessKey}
+  - name: component.minio.secretKey
+    value: ${component.minio.secretKey}
 templates:
   files:
     - "*.template"
