@@ -106,7 +106,7 @@ parameters:
       value: public
     - name: ingress.baseDomain
       value: ${component.ingress.urlPrefix}.${dns.domain}
-      env: MINIO_FQDN
+      env: INGRESS_DOMAIN
     - name: webhook
       parameters:
       - name: enabled
@@ -123,15 +123,17 @@ parameters:
 outputs:
   - name: component.minio.endpoint
     value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.port}
+  - name: component.minio.endpoint.ingress
+    value: ${component.minio.name}.${component.minio.ingress.baseDomain}
   - name: component.minio.secret.name
     brief: Kubenetes secret that holds access and secret key info
     value: minio
   - name: component.minio.secret.accessKeyRef
     brief: Kubenetes secret data field that holds Access Key9
-    value: accessKey
+    value: accesskey
   - name: component.minio.secret.secretKeyRef
     brief: Kubenetes secret data field that holds Secret Key
-    value: secretKey
+    value: secretkey
 templates:
   files:
     - "*.template"
