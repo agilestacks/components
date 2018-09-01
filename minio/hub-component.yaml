@@ -12,12 +12,25 @@ requires:
   - helm
   - tiller
 
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
+  - configure
+  - unconfigure
+
 parameters:
   - name: cloud.kind
     env: CLOUD
   - name: dns.domain
     brief: DNS domain
     env: DOMAIN_NAME
+  - name: component.ingress
+    parameters:
+    - name: urlPrefix
+    - name: protocol
+      value: http
+      env: PROTOCOL
   - name: component.nats
     parameters:
     - name: fqdn
@@ -92,7 +105,8 @@ parameters:
     - name: bucket.policy
       value: public
     - name: ingress.baseDomain
-      value: ${component.ingress.ssoUrlPrefix}.${dns.domain}
+      value: ${component.ingress.urlPrefix}.${dns.domain}
+      env: MINIO_FQDN
     - name: webhook
       parameters:
       - name: enabled
