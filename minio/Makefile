@@ -4,7 +4,7 @@ export HELM_HOME ?= $(shell pwd)/.helm
 COMPONENT_NAME   ?= minio
 NAMESPACE        ?= minio
 DOMAIN_NAME      ?= default
-MINIO_FQDN	 	 ?= localhost:9000
+INGRESS_DOMAIN	 ?= localhost
 PROTOCOL 		 ?= http
 CLOUD 			 ?= aws
 ALIAS            ?= $(COMPONENT_NAME)
@@ -62,7 +62,7 @@ install: namespace $(CLOUD)-storage-class
 
 configure:
 	@ $(mc) config host add $(ALIAS) \
-		$(PROTOCOL)://$(MINIO_FQDN) \
+		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
 		$(ACCESS_KEY) $(SECRET_KEY) \
 		S3v4
 	@ $(mc) config host list
