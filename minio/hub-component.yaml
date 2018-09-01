@@ -13,51 +13,111 @@ requires:
   - tiller
 
 parameters:
-  - name: component.redis.password
+  - name: cloud.kind
+    env: CLOUD
+  - name: dns.domain
+    brief: DNS domain
+    env: DOMAIN_NAME
+  - name: component.nats
+    parameters:
+    - name: fqdn
+      empty: allow
+    - name: username
+      empty: allow
+    - name: password
+      empty: allow
+  - name: component.postgresql
+    parameters:
+    - name: host
+      empty: allow
+    - name: port
+      empty: allow
+    - name: user
+      empty: allow
+    - name: password
+      empty: allow
+    - name: database
+      empty: allow
+  - name: component.redis
+    parameters:
+    - name: host
+      value: localhost
+      empty: allow
+    - name: port
+      value: 6379
+      empty: allow
+    - name: password
+      empty: allow
   - name: component.minio
     parameters:
     - name: namespace
       value: minio
       env: NAMESPACE
+    - name: name
+      value: minio
+      env: COMPONENT_NAME
     - name: version
       value: 0.2.12
     - name: accessKey
-      value: "AKIAIOSFODNN7EXAMPLE"
+      value: ""
+      empty: allow
+      env: ACCESS_KEY
     - name: secretKey
-      value: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+      value: ""
+      empty: allow
+      env: SECRET_KEY
     - name: mode
       value: standalone
     - name: port
       value: 9000
+    - name:  volumeType
+      value: gp2
     - name: storageClass
       value: ebs-gp2
     - name: storageSize
       value: 20Gi
-    - name: eventBucket
-      value: ""
-    - name: nats.enable
+    - name: postgresql.enabled
       value: false
+    - name: postgresql.table
+      value: bucket-events
+      empty: allow
+    - name: nats.enabled
+      value: false
+    - name: nats.subject
+      value: default
+    - name: bucket.enabled
+      value: true
+    - name: bucket.name
+      value: default
+    - name: bucket.policy
+      value: public
+    - name: ingress.baseDomain
+      value: ${component.ingress.ssoUrlPrefix}.${dns.domain}
     - name: webhook
       parameters:
-      - name: enable
-        value: true
+      - name: enabled
+        value: false
     - name: redis
       parameters:
-      - name: enable
+      - name: enabled
         value: false
       - name: format
         value: "access"
-      - name: address
-        value: "redis-redis:6379"
       - name: key
         value: "fileEvents"
+
 outputs:
   - name: component.minio.endpoint
-    value: localhost:${component.minio.port}
-  - name: component.minio.accessKey
-    value: ${component.minio.accessKey}
-  - name: component.minio.secretKey
-    value: ${component.minio.secretKey}
+    value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.port}
+  - name: component.minio.secret.name
+    brief: Kubenetes secret that holds access and secret key info
+    value: minio
+  - name: component.minio.secret.accessKeyRef
+    brief: Kubenetes secret data field that holds Access Key9
+    value: accessKey
+  - name: component.minio.secret.secretKeyRef
+    brief: Kubenetes secret data field that holds Secret Key
+    value: secretKey
 templates:
   files:
     - "*.template"

@@ -10,6 +10,14 @@ mode: ${component.minio.mode}
 
 ingress:
   enabled: true
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  path: /
+  hosts:
+    - ${component.minio.name}.${component.minio.ingress.baseDomain}
+  tls: []
+
 
 ## Set default accesskey, secretkey, Minio config file path, volume mount path and
 ## number of nodes (only used for Minio distributed mode)
@@ -61,10 +69,10 @@ resources:
 
 ## Create a bucket after minio install
 ##
-# defaultBucket:
-#  enabled: true
-#  name: sample-data
-#  policy: public
+defaultBucket:
+ enabled: ${component.minio.bucket.enabled}
+ name: ${component.minio.bucket.name}
+ policy: ${component.minio.bucket.policy}
 
 ## https://docs.minio.io/docs/minio-bucket-notification-guide
 ##
@@ -84,10 +92,10 @@ minioConfig:
     autoDeleted: false
   nats:
     enable: ${component.minio.nats.enabled}
-    address: ${component.nats.fqdn}
-    subject: ""
-    username: ""
-    password: ""
+    address: "${component.nats.fqdn}"
+    subject: "${component.minio.nats.subject}"
+    username: "${component.nats.username}"
+    password: "${component.nats.password}"
     token: ""
     secure: false
     pingInterval: 0
@@ -102,27 +110,27 @@ minioConfig:
     url: ""
     index: ""
   redis:
-    enable: ${component.minio.redis.enable}
+    enable: ${component.minio.redis.enabled}
     format: ${component.minio.redis.format}
-    address: ${component.minio.redis.address}
-    password: ${component.redis.password}
+    address: ${component.redis.host}:${component.redis.port}
+    password: "${component.redis.password}"
     key: ${component.minio.redis.key}
   postgresql:
-    enable: false
+    enable: ${component.minio.postgresql.enabled}
     format: "namespace"
-    connectionString: ""
-    table: ""
-    host: ""
-    port: ""
-    user: ""
-    password: ""
-    database: ""
+    connectionString: "sslmode=disable"
+    table: "${component.minio.postgresql.table}"
+    host: "${component.postgresql.host}"
+    port: "${component.postgresql.port}"
+    user: "${component.postgresql.user}"
+    password: "${component.postgresql.password}"
+    database: "${component.postgresql.database}"
   kafka:
     enable: false
     brokers: "null"
     topic: ""
   webhook:
-    enable: ${component.minio.webhook.enable}
+    enable: ${component.minio.webhook.enabled}
     endpoint: http://localhost:3000
   mysql:
     enable: false

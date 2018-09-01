@@ -7,9 +7,17 @@ export DOMAIN_NAME         ?= default
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
+ifeq ($(ACCESS_KEY),)
+ACCESS_KEY := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
+endif
+
+ifeq ($(SECRET_KEY),)
+SECRET_KEY := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
+endif
+
+CLOUD ?= aws
+
 deploy: clean init fetch install
-	$(kubectl) apply -f namespace.yaml
-.PHONY: deploy
 
 init:
 	mkdir -p $(HELM_HOME)
@@ -22,16 +30,27 @@ fetch:
             --untar stable/minio
 .PHONY: fetch
 
-install:
+namespace:
+	- $(kubectl) create namespace $(NAMESPACE)
+.PHONY: namespace
+
+$(CLOUD)-storage-class:
+	kubectl apply -f $@.yaml
+.PHONY: $(CLOUD)-storage-class
+
+install: namespace $(CLOUD)-storage-class
 	# cp config-json.yaml charts/minio/templates
 	# cp deployment.yaml charts/minio/templates
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	@ echo Running helm install charts/minio...
+	@ $(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
         $(helm) install charts/minio \
             --name $(COMPONENT_NAME) \
             --namespace $(NAMESPACE) \
             --replace \
             --wait \
-            --values Values.yaml
+            --values Values.yaml \
+            --set 'accessKey=$(ACCESS_KEY)' \
+            --set 'secretKey=$(SECRET_KEY)'
 .PHONY: install
 
 # presently this is disabled.
