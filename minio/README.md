@@ -1,4 +1,4 @@
-# Minio component
+# Minio
 
 [Minio](https://github.com/minio/minio) is a storage server, compatible with with Amazon S3 cloud storage service. It is best suited for storing unstructured data such as photos, videos, log files, backups and container / VM images. Size of an object can range from a few KBs to a maximum of 5TB.
 
@@ -22,7 +22,7 @@ Current component requires following prerequisites to be available
 Below you will find a list of essential parameters. All parameters can be found in: [hub-component.yaml](https://github.com/agilestacks/components/blob/master/minio/hub-component.yaml)
 
 | Parameter | Default | Description  |
-|:---------:|---------|-----|
+|:----------|---------|-----|
 | `component.minio.name` | `minio` | Minio component name |
 | `component.minio.accessKey` | <empty> | Sccess key for minio server. Stored in the secret with identified by component name. Random if empty |
 | `component.minio.secretKey` | <empty> | Secret key for minio server. Stored in the secret with identified by component name. Random if empty |
@@ -34,7 +34,7 @@ Below you will find a list of essential parameters. All parameters can be found 
 ### Outputs
 
 | Parameter | Description  |
-|:---------:|-----|
+|:----------|-----|
 | `component.minio.endpoint` | Minio endpoint available for reference inside same cluster |
 | `component.minio.endpoint.ingress` | Minio endpoint for reference outside cluster |
 | `component.minio.secret.name` | Name of the secret where access and secret key to e stored |
