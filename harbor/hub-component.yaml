@@ -36,7 +36,7 @@ parameters:
   - name: servicePrefix
     value: svc
     env: TF_VAR_service_prefix
-  - name: adminPassword
+  - name: password
     value: Harbor12345
   - name: nginx.image.repository  
     value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller

@@ -1,4 +1,4 @@
-harborAdminPassword: ${component.harbor.adminPassword}
+harborAdminPassword: ${component.harbor.password}
 selfRegistration: "off"
 externalProtocol: https
 ingress:
