@@ -9,8 +9,14 @@ PROTOCOL 		 ?= http
 CLOUD 			 ?= aws
 ALIAS            ?= $(COMPONENT_NAME)
 
+# hardcoded in helm chart
+SECRET           ?= minio
+ACCESS_KEY_REF   ?= accesskey
+SECRET_KEY_REF   ?= secretkey
+
 kubectl 		 ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm 			 ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+jq				 ?= jq -Ms
 
 ifeq ($(PROTOCOL),https)
 mc ?= mc --no-color
@@ -19,11 +25,15 @@ mc ?= mc --insecure --no-color
 endif
 
 ifeq ($(ACCESS_KEY),)
-ACCESS_KEY := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
+	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(ACCESS_KEY_REF)' | base64 --decode)
+	random     := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
+	ACCESS_KEY :=  $(or $(secret_val),$(random))
 endif
 
 ifeq ($(SECRET_KEY),)
-SECRET_KEY := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
+	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(SECRET_KEY_REF)' | base64 --decode)
+	random     := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
+	SECRET_KEY :=  $(or $(secret_val),$(random))
 endif
 
 deploy: clean init fetch install configure
@@ -82,6 +92,7 @@ post_install:
 undeploy: init unconfigure
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
         $(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	- $(kubectl) delete pvc $(COMPONENT_NAME)
 .PHONY: undeploy
 
 clean:
