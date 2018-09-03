@@ -4,8 +4,8 @@ export HELM_HOME ?= $(shell pwd)/.helm
 COMPONENT_NAME   ?= minio
 NAMESPACE        ?= minio
 DOMAIN_NAME      ?= default
-INGRESS_DOMAIN	 ?= localhost
-PROTOCOL 		 ?= http
+INGRESS_DOMAIN   ?= localhost
+PROTOCOL         ?= http
 CLOUD 			 ?= aws
 ALIAS            ?= $(COMPONENT_NAME)
 
@@ -14,9 +14,9 @@ SECRET           ?= minio
 ACCESS_KEY_REF   ?= accesskey
 SECRET_KEY_REF   ?= secretkey
 
-kubectl 		 ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm 			 ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-jq				 ?= jq -Ms
+kubectl          ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm             ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+jq               ?= jq -Ms
 
 ifeq ($(PROTOCOL),https)
 mc ?= mc --no-color
@@ -41,11 +41,12 @@ deploy: clean init fetch install configure
 init:
 	mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade --wait
+.PHONY: init
 
 fetch:
 	$(helm) fetch \
-            --destination charts \
-            --untar stable/minio
+		--destination charts \
+		--untar stable/minio
 .PHONY: fetch
 
 namespace:
@@ -59,14 +60,14 @@ $(CLOUD)-storage-class:
 install: namespace $(CLOUD)-storage-class
 	@ echo Running helm install charts/minio...
 	@ $(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
-        $(helm) install charts/minio \
-            --name $(COMPONENT_NAME) \
-            --namespace $(NAMESPACE) \
-            --replace \
-            --wait \
-            --values Values.yaml \
-            --set 'accessKey=$(ACCESS_KEY)' \
-            --set 'secretKey=$(SECRET_KEY)'
+		$(helm) install charts/minio \
+			--name $(COMPONENT_NAME) \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values Values.yaml \
+			--set 'accessKey=$(ACCESS_KEY)' \
+			--set 'secretKey=$(SECRET_KEY)'
 .PHONY: install
 
 configure:
@@ -79,7 +80,7 @@ configure:
 
 unconfigure:
 	- $(mc) config host rm $(ALIAS)
-.PHONY: configure
+.PHONY: unconfigure
 
 # presently this is disabled.
 # We're assuming that the creation of a minio bucket and a minio-event
@@ -90,10 +91,9 @@ post_install:
 
 undeploy: init unconfigure
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
-        $(helm) delete --purge $(COMPONENT_NAME) || exit 0
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	- $(kubectl) delete pvc $(COMPONENT_NAME)
 .PHONY: undeploy
 
 clean:
 	rm -rf $(HELM_HOME)
-
