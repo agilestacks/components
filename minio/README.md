@@ -6,32 +6,33 @@ Minio server is light enough to be bundled with the application stack, similar t
 
 ## Usage
 
-Current component installs minio with helm chart and then creates an alias by for minio client with default bucket.
+Current component installs minio with helm chart and then creates an alias for minio client with default bucket.
 
 ## Prerequisites
 
-Current component requires following prerequisites to be available
+Current component requires following prerequisites to be available:
+
 * Kubernetes cluster
 * Ingress controller
 * SSL certificate (optional)
 * Tiller
-* Minio Client
+* Minio client
 
-### Parameters
+## Parameters
 
-Below you will find a list of essential parameters. All parameters can be found in: [hub-component.yaml](https://github.com/agilestacks/components/blob/master/minio/hub-component.yaml)
+Below you will find a list of essential parameters. All parameters can be found in [hub-component.yaml](https://github.com/agilestacks/components/blob/master/minio/hub-component.yaml)
 
 | Parameter | Default | Description  |
 |:----------|---------|-----|
 | `component.minio.name` | `minio` | Minio component name |
-| `component.minio.accessKey` | <empty> | Sccess key for minio server. Stored in the secret with identified by component name. Random if empty |
+| `component.minio.accessKey` | <empty> | Access key for minio server. Stored in the secret with identified by component name. Random if empty |
 | `component.minio.secretKey` | <empty> | Secret key for minio server. Stored in the secret with identified by component name. Random if empty |
 | `component.minio.volumeType` | `gp2` | Type of minio volume for dynamic provisioner |
 | `component.minio.storageSize` | `20Gi` | Size for PV to be created |
 | `component.minio.bucket.name` | `default` | Default bucket to be created |
 | `component.minio.bucket.policy` | `public` | Default bucket ACL |
 
-### Outputs
+## Outputs
 
 | Parameter | Description  |
 |:----------|-----|
@@ -50,4 +51,4 @@ Below you will find a list of essential parameters. All parameters can be found 
 
 ## Minio events 
 
-Current component supports `postgresql`, `nats` and `redis` as the backend to publish minio bucket events.
+Currently component supports `postgresql`, `nats` and `redis` as a backend to publish minio bucket events.

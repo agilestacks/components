@@ -3,9 +3,9 @@ version: 1
 kind: component
 meta:
   name: minio
-  brief: Kubernetes centric service mesh
+  brief: Private cloud storage
   source:
-      dir: ../../../samsung-component/components/minio
+      dir: ../../components/minio
 
 requires:
   - kubernetes
@@ -27,7 +27,6 @@ parameters:
     env: DOMAIN_NAME
   - name: component.ingress
     parameters:
-    - name: urlPrefix
     - name: protocol
       value: http
       env: PROTOCOL
@@ -105,7 +104,7 @@ parameters:
     - name: default.bucket.policy
       value: public
     - name: ingress.baseDomain
-      value: ${component.ingress.urlPrefix}.${dns.domain}
+      value: ${component.ingress.fqdn}
       env: INGRESS_DOMAIN
     - name: webhook
       parameters:
@@ -142,6 +141,7 @@ outputs:
   - name: component.bucket.name
     brief: Name of the default bucket
     value: ${component.minio.default.bucket.name}
+
 templates:
   files:
     - "*.template"
