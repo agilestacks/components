@@ -6,7 +6,7 @@ NAMESPACE        ?= minio
 DOMAIN_NAME      ?= default
 INGRESS_DOMAIN   ?= localhost
 PROTOCOL         ?= http
-CLOUD 			 ?= aws
+CLOUD            ?= aws
 ALIAS            ?= $(COMPONENT_NAME)
 
 # hardcoded in helm chart
