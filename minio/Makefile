@@ -41,7 +41,6 @@ deploy: clean init fetch install configure
 init:
 	mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade --wait
-	@mkdir -p tmp
 
 fetch:
 	$(helm) fetch \
@@ -97,5 +96,4 @@ undeploy: init unconfigure
 
 clean:
 	rm -rf $(HELM_HOME)
-	rm -rf tmp
 
