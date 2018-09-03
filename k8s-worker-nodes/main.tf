@@ -84,7 +84,7 @@ resource "aws_launch_configuration" "worker_conf" {
 }
 
 resource "aws_autoscaling_group" "workers" {
-  name                 = "workers-${var.node_pool_name}-${var.base_domain}"
+  name                 = "${substr(format("workers-%s-%s",var.node_pool_name,var.base_domain),0,min(63, length(format("workers-%s-%s",var.node_pool_name,var.base_domain))))}"
   desired_capacity     = "${var.worker_instance_count}"
   max_size             = "${var.worker_instance_count * 3}"
   min_size             = "${var.worker_instance_count}"
@@ -119,12 +119,12 @@ resource "aws_autoscaling_attachment" "workers" {
 }
 
 resource "aws_iam_instance_profile" "worker_profile" {
-  name = "worker-profile-${var.node_pool_name}-${var.base_domain}"
+  name = "${substr(format("worker-profile-%s-%s",var.node_pool_name,var.base_domain),0,min(63, length(format("worker-profile-%s-%s",var.node_pool_name,var.base_domain))))}"
   role = "${aws_iam_role.worker_role.name}"
 }
 
 resource "aws_iam_role" "worker_role" {
-  name = "worker-role-${var.node_pool_name}-${var.base_domain}"
+  name = "${substr(format("worker-role-%s-%s",var.node_pool_name,var.base_domain),0,min(63, length(format("worker-role-%s-%s",var.node_pool_name,var.base_domain))))}"
   path = "/"
 
   assume_role_policy = <<EOF
@@ -157,7 +157,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "worker_policy" {
-  name = "worker_policy-${var.node_pool_name}-${var.base_domain}"
+  name = "${substr(format("worker-policy-%s-%s",var.node_pool_name,var.base_domain),0,min(63, length(format("worker-policy-%s-%s",var.node_pool_name,var.base_domain))))}"
   role = "${aws_iam_role.worker_role.id}"
 
   policy = <<EOF
