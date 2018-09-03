@@ -98,11 +98,11 @@ parameters:
       value: false
     - name: nats.subject
       value: default
-    - name: bucket.enabled
+    - name: default.bucket.enabled
       value: true
-    - name: bucket.name
+    - name: default.bucket.name
       value: default
-    - name: bucket.policy
+    - name: default.bucket.policy
       value: public
     - name: ingress.baseDomain
       value: ${component.ingress.urlPrefix}.${dns.domain}
@@ -122,8 +122,10 @@ parameters:
 
 outputs:
   - name: component.minio.endpoint
+    brief: Bucket endpoint for reference by other service
     value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.port}
   - name: component.minio.endpoint.ingress
+    brief: External minio endpoint
     value: ${component.minio.name}.${component.minio.ingress.baseDomain}
   - name: component.minio.secret.name
     brief: Kubenetes secret that holds access and secret key info
@@ -134,6 +136,12 @@ outputs:
   - name: component.minio.secret.secretKeyRef
     brief: Kubenetes secret data field that holds Secret Key
     value: secretkey
+  - name: component.minio.default.bucket.name
+    brief: Name of the default bucket
+    value: ${component.minio.default.bucket.name}
+  - name: component.bucket.name
+    brief: Name of the default bucket
+    value: ${component.minio.default.bucket.name}
 templates:
   files:
     - "*.template"

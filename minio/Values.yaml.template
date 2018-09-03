@@ -70,9 +70,9 @@ resources:
 ## Create a bucket after minio install
 ##
 defaultBucket:
- enabled: ${component.minio.bucket.enabled}
- name: ${component.minio.bucket.name}
- policy: ${component.minio.bucket.policy}
+ enabled: ${component.minio.default.bucket.enabled}
+ name: ${component.minio.default.bucket.name}
+ policy: ${component.minio.default.bucket.policy}
 
 ## https://docs.minio.io/docs/minio-bucket-notification-guide
 ##
