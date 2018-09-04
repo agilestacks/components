@@ -31,7 +31,7 @@ parameters:
       env:   NAMESPACE
     - name:  version
       brief: Prometheus version
-      value: v2.3.1
+      value: v2.3.2
     - name:  rbac.enabled
       value: true
     - name:  psp.enabled
@@ -46,7 +46,7 @@ parameters:
     parameters:
     - name:  version
       brief: Alertmanager version
-      value: v0.15.0
+      value: v0.15.2
     - name:  ingress.enabled
       value: true
     - name:  ingress.urlPrefix
@@ -57,7 +57,7 @@ parameters:
     parameters:
     - name:  version
       brief: Grafana version
-      value: 5.2.1
+      value: 5.2.3
     - name:  ingress.enabled
       value: true
     - name:  ingress.urlPrefix
