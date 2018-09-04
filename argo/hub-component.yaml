@@ -26,6 +26,12 @@ parameters:
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
+- name: component.bucket.endpoint
+  env: ENDPOINT
+  empty: allow
+- name: component.bucket.secret.name
+  env: SECRET_NAME
+  empty: allow
 - name: component.argo
   parameters:
   - name: name
