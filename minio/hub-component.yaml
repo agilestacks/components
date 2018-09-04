@@ -12,6 +12,10 @@ requires:
   - helm
   - tiller
 
+provides:
+  - minio
+  - bucket
+
 lifecycle:
   verbs:
   - deploy
@@ -120,6 +124,10 @@ parameters:
         value: "fileEvents"
 
 outputs:
+  - name: component.bucket.endpoint
+    value: http://${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.port}
+  - name: component.bucket.name
+    value: ${component.minio.default.bucket.name}
   - name: component.minio.endpoint
     brief: Bucket endpoint for reference by other service
     value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.port}
