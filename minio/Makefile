@@ -82,13 +82,6 @@ unconfigure:
 	- $(mc) config host rm $(ALIAS)
 .PHONY: unconfigure
 
-# presently this is disabled.
-# We're assuming that the creation of a minio bucket and a minio-event
-# listener is the responsibility of the consumer of the events
-post_install:
-	./create_bucket_listener.sh
-.PHONY: install
-
 undeploy: init unconfigure
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
