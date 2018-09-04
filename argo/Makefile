@@ -8,12 +8,11 @@ export TF_UPDATE          ?= -update
 export TF_DATA_DIR        ?= .terraform
 export TF_VAR_component   ?= argo
 export TF_VAR_namespace   ?= argoproj
-export KUBE_CTX           := $(DOMAIN_NAME)
 
-export GOPATH ?= $(realpath .)/.go
-export GOBIN ?= $(GOPATH)/bin/$(shell uname -s | tr A-Z a-z)
-
+ENDPOINT     ?= localhost:9000
+SECRET_NAME  ?= minio
 IMAGE_PREFIX := agilestacks/argo-
+REPO_TYPE := minio
 
 # export SECRET_NAME        ?= argo-repo-$(TF_VAR_component)
 
@@ -23,76 +22,24 @@ unexport TF_CLI_ARGS
 export HELM_HOME ?= $(shell pwd)/.helm
 CHART_VERSION ?= 0.1.1
 
-terraform ?= terraform-v0.11
 helm ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(TF_VAR_namespace)"
-
-
-$(TF_DATA_DIR):
-	mkdir -p "$@"
 
 $(HELM_HOME):
 	mkdir -p "$@"
 
-$(GOPATH):
-	mkdir -p "$@"
+rbac:
+	$(kubectl) apply -f rbac.yaml
+.PHONY: rbac
 
 namespace:
 	- $(kubectl) create namespace $(TF_VAR_namespace)
 .PHONY: namespace
 
-init: $(TF_DATA_DIR) $(HELM_HOME) namespace
+init: $(HELM_HOME)
 	$(helm) init --client-only --upgrade --wait
 	$(helm) repo add argo https://argoproj.github.io/argo-helm/
-	$(terraform) init $(TF_OPTS) \
-        -get=true -force-copy \
-        -backend=true -input=false -reconfigure \
-        -backend-config="bucket=$(STATE_BUCKET)" \
-        -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(DOMAIN_NAME)/argo/$(COMPONENT_NAME)/terraform.tfstate" \
-        -backend-config="profile=$(AWS_PROFILE)"
 .PHONY: init
-
-argo-events: $(GOPATH)
-	go get github.com/argoproj/argo-events
-	go get -u github.com/golang/dep/cmd/dep
-	cd $(GOPATH)/src/github.com/argoproj/argo-events && $(GOBIN)/dep ensure -vendor-only
-	$(MAKE) -C $(GOPATH)/src/github.com/argoproj/argo-events clean all IMAGE_PREFIX=$(IMAGE_PREFIX) DOCKER_PUSH=true
-.PHONY: argo-events
-
-push-argo:
-		$(eval argo_images=$(shell docker images --format '{{.Repository}}:{{.Tag}}' --no-trunc | grep 'argoproj/' | xargs))
-.PHONY: push-argo
-
-deploy:
-	$(MAKE) init plan
-	$(MAKE) apply || \
-	$(MAKE) import plan apply
-
-	@ echo
-	$(kubectl) apply -f rbac.yaml
-	$(kubectl) apply -f ingress.yaml
-	$(MAKE) fetch install
-
-	$(kubectl) apply -f events/argo-events-sa.yaml
-	$(kubectl) apply -f events/argo-events-cluster-roles.yaml
-	$(kubectl) apply -f events/sensor-crd.yaml
-	$(kubectl) apply -f events/sensor-controller-configmap.yaml
-	$(kubectl) apply -f events/sensor-controller-deployment.yaml
-	$(kubectl) apply -f events/webhook.yaml
-	$(kubectl) apply -f events/artifact.yaml
-	$(kubectl) apply -f events/resource.yaml
-	$(kubectl) apply -f events/calendar.yaml
-	$(kubectl) apply -f events/stream.yaml
-.PHONY: deploy
-
-fetch: $(HELM_HOME) $(TF_DATA_DIR)
-	$(helm) repo update
-	$(helm) fetch \
-		--destination charts \
-		--untar argo/argo \
-		--version '$(CHART_VERSION)'
-.PHONY: fetch
 
 install:
 	$(eval ENDPOINT := $(shell $(MAKE) output TF_OPTS="-json" | jq -crM '.endpoint.value'))
@@ -109,53 +56,33 @@ install:
 	$(kubectl) get services -o wide | grep argo-
 .PHONY: install
 
+deploy: init namespace rbac install
+ifeq ($(REPO_TYPE),s3)
+	$(MAKE) -C s3 $@
+else
+	$(MAKE) -C minio $@
+endif
+	$(kubectl) apply -f ingress.yaml
+.PHONY: deploy
+
 undeploy: init
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component) || exit 0
-
-	$(MAKE) plan TF_OPTS="-destroy -no-color"
-	$(MAKE) apply
-	- $(kubectl) delete -f ingress.yaml
-	- $(kubectl) delete -f rbac.yaml
-	# cleaning some garbage left by helm chart
-	- $(kubectl) delete job argo-apply-workflow-crd
-	- $(kubectl) delete job/argo-events-apply-sensor-crd
-
-	- $(kubectl) delete -f events/calendar.yaml
-	- $(kubectl) delete -f events/stream.yaml
-	- $(kubectl) delete -f events/artifact.yaml
-	- $(kubectl) delete -f events/webhook.yaml
-	- $(kubectl) delete -f events/resource.yaml
-	- $(kubectl) delete -f events/sensor-controller-deployment.yaml
-	- $(kubectl) delete -f events/sensor-controller-configmap.yaml
-	- $(kubectl) delete -f events/sensor-crd.yaml
-	- $(kubectl) delete -f events/argo-events-cluster-roles.yaml
-	- $(kubectl) delete -f events/argo-events-sa.yaml
+ifeq ($(REPO_TYPE),s3)
+	$(MAKE) -C s3 $@
+else
+	$(MAKE) -C minio $@
+endif
 .PHONY: undeploy
 
 clean:
 	rm -rf $(HELM_HOME)
-	rm -rf $(TF_DATA_DIR)
-	rm -rf $(GOPATH)
-
-import:
-	- $(terraform) import $(TF_OPTS) module.user.aws_iam_user.main agilestacks-$(TF_VAR_component)
-	- $(terraform) import $(TF_OPTS) kubernetes_secret.aws $(TF_VAR_namespace)/argo-repo-$(TF_VAR_component)
-.PHONY: import
-
-plan:
-	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan
-.PHONY: plan
-
-refresh:
-	$(terraform) refresh $(TF_OPTS)
-.PHONY: refresh
-
-apply:
-	$(terraform) apply $(TF_OPTS) -auto-approve .terraform/terraform.tfplan
-.PHONY: apply
 
 output:
-	@ $(terraform) output $(TF_OPTS)
+ifeq ($(REPO_TYPE),s3)
+	$(MAKE) -C s3 $@
+else
+	$(MAKE) -C minio $@
+endif
 	@ echo
-.PHONY: output
+.PHONY: tf_output
