@@ -34,13 +34,13 @@ endif
 ifeq ($(ACCESS_KEY),)
 	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(ACCESS_KEY_REF)' | $(base64_decode))
 	random     := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
-	ACCESS_KEY :=  $(or $(secret_val),$(random))
+	ACCESS_KEY := $(or $(secret_val),$(random))
 endif
 
 ifeq ($(SECRET_KEY),)
 	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(SECRET_KEY_REF)' | $(base64_decode))
 	random     := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
-	SECRET_KEY :=  $(or $(secret_val),$(random))
+	SECRET_KEY := $(or $(secret_val),$(random))
 endif
 
 deploy: clean init fetch install configure
