@@ -24,14 +24,21 @@ else
 mc ?= mc --insecure --no-color
 endif
 
+ARCH ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
+ifeq ($(ARCH),darwin)
+	base64_decode = base64 --decode
+else
+	base64_decode = base64 -d
+endif
+
 ifeq ($(ACCESS_KEY),)
-	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(ACCESS_KEY_REF)' | base64 --decode)
+	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(ACCESS_KEY_REF)' | $(base64_decode))
 	random     := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
 	ACCESS_KEY :=  $(or $(secret_val),$(random))
 endif
 
 ifeq ($(SECRET_KEY),)
-	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(SECRET_KEY_REF)' | base64 --decode)
+	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(SECRET_KEY_REF)' | $(base64_decode))
 	random     := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
 	SECRET_KEY :=  $(or $(secret_val),$(random))
 endif
