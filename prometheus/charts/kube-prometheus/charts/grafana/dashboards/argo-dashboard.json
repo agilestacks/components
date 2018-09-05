@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "5.2.1"
+      "version": "5.2.3"
     },
     {
       "type": "panel",
@@ -59,7 +59,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1535037378657,
+  "iteration": 1536164848838,
   "links": [],
   "panels": [
     {
@@ -1197,6 +1197,295 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fill": 1,
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 0,
+        "y": 27
+      },
+      "id": 39,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum ( rate(container_cpu_usage_seconds_total{image!=\"\",container_name!=\"POD\",pod_name=~\"$WorkflowGroup.*\"}[1m] ) )",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Total CPU for $WorkflowGroup",
+          "refId": "A"
+        },
+        {
+          "expr": "sum ( rate(container_cpu_user_seconds_total{image!=\"\",container_name!=\"POD\",pod_name=~\"$WorkflowGroup.*\"}[1m] ) )",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "User CPU for $WorkflowGroup",
+          "refId": "B"
+        },
+        {
+          "expr": "sum ( rate(container_cpu_system_seconds_total{image!=\"\",container_name!=\"POD\",pod_name=~\"$WorkflowGroup.*\"}[1m] ) )",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "System CPU for $WorkflowGroup",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Workflow Group Total CPU Usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "editable": true,
+      "error": false,
+      "fill": 1,
+      "grid": {
+        "threshold1Color": "rgba(216, 200, 27, 0.27)",
+        "threshold2Color": "rgba(234, 112, 112, 0.22)"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 9,
+        "y": 27
+      },
+      "id": 41,
+      "isNew": false,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum (container_memory_usage_bytes{pod_name=~\"$WorkflowGroup.*\", container_name!=\"POD\"})",
+          "format": "time_series",
+          "interval": "10s",
+          "intervalFactor": 1,
+          "legendFormat": "Memory Used by $WorkflowGroup",
+          "metric": "container_memory_usage_bytes",
+          "refId": "A",
+          "step": 15
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Workflow Group Total Memory Usage",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "bytes",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "editable": true,
+      "error": false,
+      "fill": 1,
+      "grid": {
+        "threshold1Color": "rgba(216, 200, 27, 0.27)",
+        "threshold2Color": "rgba(234, 112, 112, 0.22)"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 7,
+        "x": 17,
+        "y": 27
+      },
+      "id": 43,
+      "isNew": false,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sort_desc(sum (rate(container_network_receive_bytes_total{pod_name=~\"$WorkflowGroup.*\"}[1m])))",
+          "format": "time_series",
+          "intervalFactor": 2,
+          "legendFormat": "Network received bytes by $WorkflowGroup",
+          "refId": "A",
+          "step": 30
+        },
+        {
+          "expr": "sort_desc(sum (rate(container_network_transmit_bytes_total{pod_name=~\"$WorkflowGroup.*\"}[1m])))",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Network transmitted bytes by $WorkflowGroup",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Workflow Group Total Network I/O",
+      "tooltip": {
+        "msResolution": true,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "bytes",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "schemaVersion": 16,
@@ -1212,11 +1501,31 @@
         "includeAll": false,
         "label": null,
         "multi": false,
+        "name": "WorkflowGroup",
+        "options": [],
+        "query": "label_values(argo_workflow_info, generate_name)",
+        "refresh": 2,
+        "regex": "",
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
         "name": "Workflow",
         "options": [],
-        "query": "label_values(argo_workflow_info,workflow)",
-        "refresh": 1,
-        "regex": "",
+        "query": "query_result(argo_workflow_info{generate_name=\"$WorkflowGroup\"})",
+        "refresh": 2,
+        "regex": "/.*workflow=\"([^\"]*).*/",
         "sort": 1,
         "tagValuesQuery": "",
         "tags": [],
@@ -1234,8 +1543,8 @@
         "multi": false,
         "name": "Node",
         "options": [],
-        "query": "query_result(argo_workflow_node_info{workflow=\"$Workflow\"})",
-        "refresh": 1,
+        "query": "query_result(argo_workflow_node_info{workflow=\"$Workflow\", generate_name=\"$WorkflowGroup\"})",
+        "refresh": 2,
         "regex": "/.*node_id=\"([^\"]*).*/",
         "sort": 0,
         "tagValuesQuery": "",
@@ -1254,8 +1563,8 @@
         "multi": false,
         "name": "Pod",
         "options": [],
-        "query": "query_result(argo_workflow_node_info{workflow=\"$Workflow\",type=\"Pod\"})",
-        "refresh": 1,
+        "query": "query_result(argo_workflow_node_info{workflow=\"$Workflow\",type=\"Pod\",generate_name=\"$WorkflowGroup\"})",
+        "refresh": 2,
         "regex": "/.*node_id=\"([^\"]*).*/",
         "sort": 0,
         "tagValuesQuery": "",
@@ -1274,8 +1583,8 @@
         "multi": false,
         "name": "Phase",
         "options": [],
-        "query": "query_result(argo_workflow_status_phase{workflow=\"$Workflow\"} > 0)",
-        "refresh": 1,
+        "query": "query_result(argo_workflow_status_phase{workflow=\"$Workflow\", generate_name=\"$WorkflowGroup\"} > 0)",
+        "refresh": 2,
         "regex": "/.*phase=\"([^\"]*).*/",
         "sort": 0,
         "tagValuesQuery": "",
@@ -1287,7 +1596,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -1318,7 +1627,7 @@
   "timezone": "",
   "title": "Argo",
   "uid": "GqBBaatmk",
-  "version": 4
+  "version": 13
 },
 "inputs": [
   {
