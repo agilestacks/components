@@ -126,3 +126,4 @@ nats/mon-ingress.yaml
 argo/.go
 minio/charts
 minio/aws-storage-class.yaml
+minio/hybrid-storage-class.yaml
