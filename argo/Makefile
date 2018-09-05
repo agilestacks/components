@@ -3,16 +3,16 @@
 DOMAIN_NAME      ?= dev.stacks.delivery
 STATE_BUCKET     ?= terraform.agilestacks.com
 STATE_REGION     ?= us-east-1
-export TF_OPTS            ?= -no-color
-export TF_UPDATE          ?= -update
-export TF_DATA_DIR        ?= .terraform
+
+ENDPOINT     ?=
+SECRET_NAME  ?= minio
+IMAGE_PREFIX := agilestacks/argo-
+REPO_TYPE 	 := minio
+
 export TF_VAR_component   ?= argo
 export TF_VAR_namespace   ?= argoproj
 
-ENDPOINT     ?= localhost:9000
-SECRET_NAME  ?= minio
-IMAGE_PREFIX := agilestacks/argo-
-REPO_TYPE := minio
+HELM_ARGS :=
 
 # export SECRET_NAME        ?= argo-repo-$(TF_VAR_component)
 
@@ -42,47 +42,46 @@ init: $(HELM_HOME)
 .PHONY: init
 
 install:
-	$(eval ENDPOINT := $(shell $(MAKE) output TF_OPTS="-json" | jq -crM '.endpoint.value'))
+ifeq ($(REPO_TYPE),s3)
+	$(eval ENDPOINT := $(shell $(MAKE) -C s3 output TF_OPTS="-json" | jq -crM '.endpoint.value'))
+endif
+ifeq ($(ENDPOINT),)
+	HELM_ARGS += --set "artifactRepository.defaultBucket.enabled=false"
+else
+	HELM_ARGS += --set "artifactRepository.defaultBucket.enabled=true"
+	HELM_ARGS += --set "artifactRepository.s3.endpoint=$(ENDPOINT)"
+endif
+
 	@ echo Running: helm install...
-	@ $(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
+	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm) install charts/$(notdir $(CHART)) \
 			--name $(TF_VAR_component) \
 			--namespace $(TF_VAR_namespace) \
 			--replace \
 			--wait \
 			--values values.yaml \
-			--set "artifactRepository.s3.endpoint=$(ENDPOINT)" \
+			$(HELM_ARGS) \
 			--version '$(CHART_VERSION)'
 	$(kubectl) get services -o wide | grep argo-
 .PHONY: install
 
 deploy: init namespace rbac install
-ifeq ($(REPO_TYPE),s3)
-	$(MAKE) -C s3 $@
-else
-	$(MAKE) -C minio $@
-endif
+	$(MAKE) -C $(REPO_TYPE) $@
+	$(MAKE) -C events $@
 	$(kubectl) apply -f ingress.yaml
 .PHONY: deploy
 
 undeploy: init
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component) || exit 0
-ifeq ($(REPO_TYPE),s3)
-	$(MAKE) -C s3 $@
-else
-	$(MAKE) -C minio $@
-endif
+	$(MAKE) -C $(REPO_TYPE) $@
+	$(MAKE) -C events $@
 .PHONY: undeploy
 
 clean:
 	rm -rf $(HELM_HOME)
 
 output:
-ifeq ($(REPO_TYPE),s3)
-	$(MAKE) -C s3 $@
-else
-	$(MAKE) -C minio $@
-endif
+	$(MAKE) -C $(REPO_TYPE) $@
 	@ echo
 .PHONY: tf_output
