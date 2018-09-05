@@ -46,13 +46,11 @@ ifeq ($(REPO_TYPE),s3)
 	$(eval ENDPOINT := $(shell $(MAKE) -C s3 output TF_OPTS="-json" | jq -crM '.endpoint.value'))
 endif
 ifeq ($(ENDPOINT),)
-	HELM_ARGS += --set "artifactRepository.defaultBucket.enabled=false"
+	$(eval HELM_ARGS += --set "artifactRepository.defaultBucket.enabled=false")
 else
-	HELM_ARGS += --set "artifactRepository.defaultBucket.enabled=true"
-	HELM_ARGS += --set "artifactRepository.s3.endpoint=$(ENDPOINT)"
+	$(eval HELM_ARGS += --set "artifactRepository.defaultBucket.enabled=true")
+	$(eval HELM_ARGS += --set "artifactRepository.s3.endpoint=$(ENDPOINT)")
 endif
-
-	@ echo Running: helm install...
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm) install charts/$(notdir $(CHART)) \
 			--name $(TF_VAR_component) \
