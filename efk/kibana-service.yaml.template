@@ -29,7 +29,7 @@ metadata:
     agilestacks.com/stack-component: Kibana
 spec:
   rules:
-  - host: ${component.efk.ingress.kibanaUrlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  - host: ${component.efk.ingress.kibanaUrlPrefix}.${component.ingress.ssoFqdn}
     http:
       paths:
       - path: /

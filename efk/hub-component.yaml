@@ -14,12 +14,12 @@ provides:
   - efk
 
 parameters:
-  - name: component.ingress.ssoUrlPrefix
-  - name: component.ingress.protocol
   - name: dns.domain
     env: DOMAIN_NAME
   - name: cloud.kind
     env: CLOUD_KIND
+  - name: component.ingress.ssoFqdn
+  - name: component.ingress.protocol
   - name: component.efk
     parameters:
     - name:  name
@@ -52,4 +52,4 @@ templates:
 outputs:
   - name: component.efk.url
     brief: Kibana Dashboard
-    value: ${component.ingress.protocol}://${component.efk.ingress.kibanaUrlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+    value: ${component.ingress.protocol}://${component.efk.ingress.kibanaUrlPrefix}.${component.ingress.ssoFqdn}
