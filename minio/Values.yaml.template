@@ -71,7 +71,7 @@ persistence:
 service:
   type: ClusterIP
   clusterIP: ~
-  port: 9000
+  port: ${component.minio.service.port}
   # nodePort: 31311
   annotations: {}
     # prometheus.io/scrape: 'true'

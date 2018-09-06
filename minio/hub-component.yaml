@@ -86,7 +86,7 @@ parameters:
       value: 4
     - name: mode
       value: standalone
-    - name: port
+    - name: service.port
       value: 9000
     - name:  volumeType
       value: gp2
@@ -134,12 +134,14 @@ parameters:
 
 outputs:
   - name: component.bucket.endpoint
-    value: http://${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.port}
+    value: http://${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.service.port}
   - name: component.bucket.name
     value: ${component.minio.default.bucket.name}
-  - name: component.minio.endpoint
+  - name: component.minio.service.host
     brief: Bucket endpoint for reference by other service
-    value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.port}
+    value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local
+  - name: component.minio.service.port
+    value: ${component.minio.service.port}
   - name: component.minio.endpoint.ingress
     brief: External minio endpoint
     value: ${component.minio.name}.${component.minio.ingress.baseDomain}
@@ -160,7 +162,7 @@ outputs:
     brief: Name of the default bucket
     value: ${component.minio.default.bucket.name}
   - name: component.bucket.endpoint.internal
-    value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.port}
+    value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.service.port}
   - name: component.bucket.endpoint
     value: ${component.minio.name}.${component.minio.ingress.baseDomain}
   - name: component.bucket.secret.name
