@@ -18,6 +18,8 @@ parameters:
   - name: component.ingress.protocol
   - name: dns.domain
     env: DOMAIN_NAME
+  - name: cloud.kind
+    env: CLOUD_KIND
   - name: component.efk
     parameters:
     - name:  name

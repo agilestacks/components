@@ -16,7 +16,7 @@ deploy:
 																   --from-file=conf/log4j2.properties \
 																   --from-file=conf/post-start-hook.sh
 	$(kubectl) create --namespace $(NAMESPACE) configmap cerebro-config --from-file=conf/cerebro.conf
-	$(kubectl) apply -f es-storage-class.yaml
+	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
 	$(kubectl) apply -f es-env.yaml
 	$(kubectl) apply -f es-statefulset.yaml
 	$(kubectl) apply -f es-service.yaml
