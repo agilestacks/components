@@ -30,7 +30,7 @@ metadata:
     qualifier: cerebro
 spec:
   rules:
-  - host: cerebro.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  - host: cerebro.${component.ingress.ssoFqdn}
     http:
       paths:
       - path: /
