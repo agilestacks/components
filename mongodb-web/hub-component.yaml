@@ -14,6 +14,7 @@ parameters:
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.ingress.ssoFqdn
+  - name: component.ingress.protocol
   - name: component.mongodb.namespace
     brief: Kubernetes namespace to install into
     env: NAMESPACE
@@ -61,4 +62,4 @@ templates:
 
 outputs:
   - name: component.mongodb-web.url
-    value: http://${component.mongodb-web.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.mongodb-web.ingress.urlPrefix}.${component.ingress.ssoFqdn}
