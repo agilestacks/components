@@ -19,14 +19,14 @@ parameters:
     env: CLOUD_KIND
   - name: component.redis
     parameters:
-    - name: volume.enabled
+    - name: persistence
       brief: true if persistence enabled
       value: "true"
-    - name: volume.storageClass
+    - name: storageClass
       value: "${cloud.kind}-storage"
-    - name: volume.type
+    - name: volumeType
       value: gp2
-    - name: volume.size
+    - name: volumeSize
       value: 8Gi
     - name: usePassword
       value: "false"

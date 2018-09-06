@@ -4,4 +4,4 @@ metadata:
   name: aws-storage
 provisioner: kubernetes.io/aws-ebs
 parameters:
-  type: ${component.redis.volume.type}
+  type: ${component.redis.volumeType}
