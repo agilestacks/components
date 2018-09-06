@@ -1,25 +1,24 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME		   ?= $(shell pwd)/.helm
+export HELM_HOME ?= $(shell pwd)/.helm
 
-NAMESPACE		?= mongodb
-COMPONENT_NAME	?= mongodb
-DOMAIN_NAME		?= default
-HOST			:= $(COMPONENT_NAME)-mongodb.$(NAMESPACE).svc.cluster.local
-kubectl			?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm			?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-CHART			?= charts/mongodb
-CHART_VERSION	?= 0.4.27
-TIMEOUT			?= 300
-
+NAMESPACE      ?= mongodb
+COMPONENT_NAME ?= mongodb
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+HOST           := $(COMPONENT_NAME)-mongodb.$(NAMESPACE).svc.cluster.local
+kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+CHART          ?= charts/mongodb
+CHART_VERSION  ?= 4.3.0
+TIMEOUT        ?= 300
+CLOUD_KIND     ?= aws
 
 deploy: clean init fetch install wait
-.PHONY: deploy
 
 init:
-	@mkdir -p $(HELM_HOME)
+	@mkdir -p $(HELM_HOME) charts
 	@$(helm) init --client-only --upgrade --wait
-	@mkdir -p charts
+.PHONY: init
 
 fetch:
 	$(helm) fetch \
@@ -29,8 +28,8 @@ fetch:
 .PHONY: fetch
 
 install:
-	-$(kubectl) create namespace $(mongodb)
-	$(kubectl) apply -f aws-storage-class.yaml
+	-$(kubectl) create namespace $(NAMESPACE)
+	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART) \
 			--name $(COMPONENT_NAME) \
@@ -44,17 +43,16 @@ install:
 undeploy: init
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	-$(kubectl) delete -f aws-storage-class.yaml
 .PHONY: undeploy
 
 clean:
-	@rm -rf $(HELM_HOME)
-	@rm -rf charts
+	@rm -rf $(HELM_HOME) charts
+.PHONY: clean
 
-mongo_ready_container=$(kubectl) get pods -l app=mongodb-mongodb -o jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}'
+mongo_ready_container=$(kubectl) get pods -l app=mongodb -o jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}'
 wait:
 		$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
-		@printf "Waiting for mongodb pod to be ready "
+		@printf "Waiting for MongoDB pod to become ready "
 
 		@while [ `date +%s` -le "$(timeout)" ]; do \
 				if test -n "`$(mongo_ready_container)`"; then \

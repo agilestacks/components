@@ -1,62 +1,64 @@
 ---
-  version: 1
-  kind: component
-  meta:
-    name: mongodb
-    brief: MongoDB
-    source:
-      dir: ../../components/mongodb
+version: 1
+kind: component
+meta:
+  name: mongodb
+  brief: MongoDB document database
+  source:
+    dir: ../../components/mongodb
 
-  requires:
-    - kubernetes
-    - helm
-    - tiller
-  provides:
-    - mongodb
+requires:
+  - kubernetes
+  - helm
+  - tiller
+provides:
+  - mongodb
 
-  parameters:
-    - name: dns.domain
-      env: DOMAIN_NAME
-    - name: component.mongodb
-      parameters:
-      - name:  name
-        value: mongodb
-        env:   COMPONENT_NAME
-      - name:  namespace
-        value: mongodb
-        env:   NAMESPACE
-      - name:  user
-        value: mongouser
-      - name:  password
-        value: b0d41457fcac49689186667dbdfbef5f
-      - name:  database
-        value: mongodb
-      - name:  volumeType
-        value: gp2
-      - name:  volumeSize
-        value: 8Gi
-      - name:  storageClass
-        value: aws-ebs-gp2
-      - name:  port
-        value: 27017
-        env:   PORT
-      - name:  chart.name
-        value: charts/mongodb
-        env:   CHART
-      - name:  chart.version
-        value: 0.4.27
-        env:   CHART_VERSION
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: cloud.kind
+    env: CLOUD_KIND
+  - name: component.mongodb
+    parameters:
+    - name:  name
+      value: mongodb
+      env:   COMPONENT_NAME
+    - name:  namespace
+      value: mongodb
+      env:   NAMESPACE
+    - name:  user
+      value: mongouser
+    - name:  password
+      value: b0d41457fcac49689186667dbdfbef5f
+    - name:  database
+      value: mongodb
+    - name:  volumeType
+      value: gp2
+    - name:  volumeSize
+      value: 8Gi
+    - name:  storageClass
+      value: "${cloud.kind}-storage"
+    - name:  port
+      value: 27017
+      env:   PORT
+    - name:  chart.name
+      value: charts/mongodb
+      env:   CHART
+    - name:  chart.version
+      value: 4.3.0
+      env:   CHART_VERSION
 
-  outputs:
-  - name: component.mongodb.namespace
-  - name: component.mongodb.host
-    value: ${component.mongodb.name}-mongodb.${component.mongodb.namespace}.svc.cluster.local
-  - name: component.mongodb.port
-  - name: component.mongodb.user
-  - name: component.mongodb.password
-  - name: component.mongodb.database
+outputs:
+- name: component.mongodb.namespace
+- name: component.mongodb.host
+  value: ${component.mongodb.name}.${component.mongodb.namespace}.svc.cluster.local
+- name: component.mongodb.port
+- name: component.mongodb.user
+- name: component.mongodb.password
+- name: component.mongodb.database
 
-  templates:
-    files:
-      - "*.template"
+templates:
+  files:
+    - "*.template"
 
