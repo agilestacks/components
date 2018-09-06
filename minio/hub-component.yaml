@@ -72,8 +72,8 @@ parameters:
     - name: name
       value: minio
       env: COMPONENT_NAME
-    - name: version
-      value: 0.2.12
+    - name: region
+      value: us-east-1
     - name: accessKey
       value: ""
       empty: allow
@@ -82,6 +82,8 @@ parameters:
       value: ""
       empty: allow
       env: SECRET_KEY
+    - name: replicas
+      value: 4
     - name: mode
       value: standalone
     - name: port
@@ -122,6 +124,13 @@ parameters:
         value: "access"
       - name: key
         value: "fileEvents"
+    - name: image.name
+      value: minio/minio
+    - name: image.tag
+      value: RELEASE.2018-09-01T00-38-25Z
+    - name: chart.version
+      value: 1.6.4
+      env: CHART_VERSION
 
 outputs:
   - name: component.bucket.endpoint
@@ -143,9 +152,10 @@ outputs:
   - name: component.minio.secret.secretKeyRef
     brief: Kubenetes secret data field that holds Secret Key
     value: secretkey
-  - name: component.minio.default.bucket.name
-    brief: Name of the default bucket
-    value: ${component.minio.default.bucket.name}
+  - name: component.minio.arn
+    value: arn:minio:sqs:${component.minio.region}:1:nats
+  - name: component.minio.region
+    value: ${component.minio.region}
   - name: component.bucket.name
     brief: Name of the default bucket
     value: ${component.minio.default.bucket.name}

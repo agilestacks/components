@@ -18,6 +18,8 @@ kubectl          ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)
 helm             ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 jq               ?= jq -Ms
 
+CHART_VERSION    ?= 1.6.4
+
 ifeq ($(PROTOCOL),https)
 mc ?= mc --no-color
 else
@@ -53,7 +55,8 @@ init:
 fetch:
 	$(helm) fetch \
 		--destination charts \
-		--untar stable/minio
+		--untar stable/minio \
+		--version $(CHART_VERSION)
 .PHONY: fetch
 
 namespace:
