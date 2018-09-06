@@ -3,18 +3,17 @@
 export DOMAIN_NAME ?= default
 export NAMESPACE   ?= mongodb
 
-TIMEOUT     ?= 300
+TIMEOUT ?= 300
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
+deploy: kubernetes wait
 
-deploy:
+kubernetes:
 	-$(kubectl) create namespace $(NAMESPACE)
 	$(kubectl) apply -f service.yaml
 	$(kubectl) apply -f ingress.yaml
 	$(kubectl) apply -f deployment.yaml
-
-	$(MAKE) wait
-.PHONY: deploy
+.PHONY: kubernetes
 
 wait:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
