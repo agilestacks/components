@@ -22,7 +22,7 @@ redisPassword: '${component.redis.password}'
 args:
 
 persistence:
-  enabled: ${component.redis.volume.enabled}
+  enabled: ${component.redis.persistence}
 
   ## A manually managed Persistent Volume and Claim
   ## Requires persistence.enabled: true
@@ -36,9 +36,9 @@ persistence:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  storageClass: "${component.redis.volume.storageClass}"
+  storageClass: "${component.redis.storageClass}"
   accessMode: ReadWriteOnce
-  size: ${component.redis.volume.size}
+  size: ${component.redis.volumeSize}
 
 metrics:
   enabled: false
