@@ -29,6 +29,8 @@ parameters:
       brief: Kubernetes namespace to install into
       value: logs
       env:   NAMESPACE
+    - name: storageClass
+      value: "${cloud.kind}-storage"
     - name:  ingress.urlPrefix
       value: logs
     - name:  ingress.kibanaUrlPrefix

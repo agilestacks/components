@@ -160,4 +160,4 @@ spec:
       resources:
         requests:
           storage: 10Gi
-      storageClassName: ${cloud.kind}-storage
+      storageClassName: ${component.efk.storageClass}
