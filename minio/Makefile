@@ -96,6 +96,7 @@ undeploy: init unconfigure
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	- $(kubectl) delete pvc $(COMPONENT_NAME)
+	- $(kubectl) delete job $(COMPONENT_NAME)-make-bucket-job
 .PHONY: undeploy
 
 clean:
