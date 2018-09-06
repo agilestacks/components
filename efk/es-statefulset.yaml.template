@@ -160,4 +160,4 @@ spec:
       resources:
         requests:
           storage: 10Gi
-      storageClassName: ebs-gp2
+      storageClassName: ${cloud.kind}-storage
