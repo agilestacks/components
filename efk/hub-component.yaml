@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: efk
-  brief: Elasticseach Fluentd and Kibana
+  brief: Elasticsearch Fluentd and Kibana
   source:
     dir: ../../components/efk
 
