@@ -20,8 +20,9 @@ namespace:
 	- $(kubectl) create namespace $(NAMESPACE)
 .PHONY: namespace
 
-init: $(HELM_HOME) charts namespace
+init: $(HELM_HOME) charts
 	@ $(helm) init --client-only --upgrade --wait
+.PHONY: init
 
 fetch:
 	$(helm) fetch \
@@ -30,7 +31,7 @@ fetch:
 		--version $(CHART_VERSION)
 .PHONY: fetch
 
-install:
+install: namespace
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART) \
 			--name $(COMPONENT_NAME) \
