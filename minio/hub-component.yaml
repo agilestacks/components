@@ -129,7 +129,7 @@ parameters:
     - name: image.tag
       value: RELEASE.2018-09-01T00-38-25Z
     - name: chart.version
-      value: 1.6.4
+      value: 1.6.5
       env: CHART_VERSION
 
 outputs:
