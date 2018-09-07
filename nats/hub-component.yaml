@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: nats
-  brief: The workflow engine for Kubernetes
+  brief: NATS messaging system
   source:
     dir: ../../components/nats
 
@@ -39,10 +39,10 @@ parameters:
     value: agilestacks/natsboard:latest
     # value: urashidmalik/natsboard:latest
 outputs:
-- name:  component.nats.fqdn
-  value: ${component.nats.name}-nats-client.${component.nats.namespace}.svc.cluster.local:${component.nats.port}
 - name:  component.nats.client.fqdn
   value: ${component.nats.name}-nats-client.${component.nats.namespace}.svc.cluster.local:${component.nats.port}
+- name:  component.nats.fqdn
+  value: ${component.nats.client.fqdn}
 - name:  component.nats.monitor.fqdn
   value: ${component.nats.name}-nats-monitoring.${component.nats.namespace}.svc.cluster.local:${component.nats.monitor.port}
 - name:  component.nats.monitor.ingress
@@ -51,4 +51,3 @@ templates:
   files:
   - "*.template"
   - "natsboard/*.template"
-

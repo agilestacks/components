@@ -2,13 +2,13 @@
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
-NAMESPACE		?= argoproj
-COMPONENT_NAME	?= nats
-DOMAIN_NAME		?= default
-kubectl			?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm			?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-CHART			?= charts/nats
-CHART_VERSION	?= 0.0.6
+NAMESPACE       ?= argoproj
+COMPONENT_NAME  ?= nats
+DOMAIN_NAME     ?= default
+kubectl         ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm            ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+CHART           ?= charts/nats
+CHART_VERSION   ?= 0.0.6
 
 $(HELM_HOME):
 	mkdir -p "$@"
@@ -61,3 +61,4 @@ undeploy: init
 clean:
 	@ rm -rf $(HELM_HOME)
 	@ rm -rf charts
+.PHONY: clean
