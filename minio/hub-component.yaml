@@ -102,7 +102,7 @@ parameters:
     - name: nats.enabled
       value: false
     - name: nats.subject
-      value: default
+      value: bucketevents
     - name: default.bucket.enabled
       value: true
     - name: default.bucket.name
