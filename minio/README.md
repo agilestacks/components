@@ -18,6 +18,13 @@ Current component requires following prerequisites to be available:
 * Tiller
 * Minio client
 
+```bash
+go get -d github.com/minio/mc
+cd ${GOPATH}/src/github.com/minio/mc
+make
+mv mc ~/bin/
+```
+
 ## Parameters
 
 Below you will find a list of essential parameters. All parameters can be found in [hub-component.yaml](https://github.com/agilestacks/components/blob/master/minio/hub-component.yaml)
