@@ -11,7 +11,7 @@ metadata:
     agilestacks.com/stack-component: Nats
 spec:
   rules:
-  - host: raw.${component.nats.name}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  - host: raw.${component.nats.name}.${component.ingress.ssoFqdn}
     http:
       paths:
       - path: /

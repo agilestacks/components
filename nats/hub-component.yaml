@@ -16,7 +16,7 @@ provides:
 parameters:
 - name: dns.domain
   env: DOMAIN_NAME
-- name: component.ingress.ssoUrlPrefix
+- name: component.ingress.ssoFqdn
 - name: component.nats
   parameters:
   - name: name
@@ -46,7 +46,7 @@ outputs:
 - name:  component.nats.monitor.fqdn
   value: ${component.nats.name}-nats-monitoring.${component.nats.namespace}.svc.cluster.local:${component.nats.monitor.port}
 - name:  component.nats.monitor.ingress
-  value: nats.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  value: ${component.nats.name}.${component.ingress.ssoFqdn}
 templates:
   files:
   - "*.template"
