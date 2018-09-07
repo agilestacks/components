@@ -100,4 +100,4 @@ undeploy: init unconfigure
 .PHONY: undeploy
 
 clean:
-	rm -rf $(HELM_HOME)
+	rm -rf $(HELM_HOME) charts
