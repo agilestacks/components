@@ -75,7 +75,7 @@ install: namespace $(CLOUD)-storage-class
 			--namespace $(NAMESPACE) \
 			--replace \
 			--wait \
-			--values Values.yaml \
+			--values values.yaml \
 			--set 'accessKey=$(ACCESS_KEY)' \
 			--set 'secretKey=$(SECRET_KEY)'
 .PHONY: install

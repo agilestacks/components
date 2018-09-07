@@ -91,7 +91,7 @@ parameters:
     - name:  volumeType
       value: gp2
     - name: storageClass
-      value: ebs-gp2
+      value: ${cloud.kind}-storage
     - name: storageSize
       value: 20Gi
     - name: postgresql.enabled
