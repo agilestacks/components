@@ -7,28 +7,28 @@ export AWS_DEFAULT_REGION ?= us-east-2
 
 CLOUD_BUCKET ?= files.$(TF_VAR_domain)
 
-export TF_LOG             ?= info
-export TF_OPTS            ?= -no-color
-export TF_UPDATE          ?= -update
-export TF_LOG_PATH        := .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).log
-export TF_VAR_s3_files_worker_bucket := $(CLOUD_BUCKET)
-export TF_VAR_base_domain ?= 'domain.kubernetes.delivery'
+export TF_VAR_s3_bucket := $(CLOUD_BUCKET)
+export TF_VAR_domain    ?= 'dev.kubernetes.delivery'
+export TF_VAR_pool_name ?= gpu1
 
+export TF_LOG      ?= info
+export TF_OPTS     ?= -no-color
+export TF_UPDATE   ?= -update
+export TF_LOG_PATH := .terraform/$(TF_VAR_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_pool_name).log
+TFPLAN             ?= .terraform/$(TF_VAR_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_pool_name).tfplan
 
+kubectl   ?= kubectl --context="$(TF_VAR_domain)" --namespace=kube-system
 terraform ?= terraform-v0.11
-TFPLAN ?= .terraform/$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name).tfplan
-
-kubectl ?= kubectl --context="$(TF_VAR_base_domain)" --namespace=kube-system
 
 deploy: init import plan apply kubernetes
 
 init:
-	@mkdir -p .terraform/$(TF_VAR_base_domain)
+	@mkdir -p .terraform/$(TF_VAR_domain)
 	$(terraform) init -reconfigure -input=false -get=true -force-copy $(TF_OPTS) \
 		-backend=true \
-		-backend-config="key=$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name)/terraform.tfstate" \
 		-backend-config="bucket=$(STATE_BUCKET)" \
 		-backend-config="region=$(STATE_REGION)" \
+		-backend-config="key=$(TF_VAR_domain)/k8s-worker-nodes/$(notdir $(COMPONENT_NAME))-$(TF_VAR_pool_name)/terraform.tfstate" \
 		-backend-config="profile=$(AWS_PROFILE)"
 .PHONY: init
 
@@ -38,7 +38,7 @@ get:
 
 plan:
 	$(terraform) plan $(TF_OPTS) \
-		-var cluster_tag=$${TF_VAR_base_domain/./-} \
+		-var cluster_tag=$${TF_VAR_domain/./-} \
 		-refresh=true \
 		-module-depth=-1 \
 		-out=$(TFPLAN)
@@ -59,10 +59,10 @@ destroy: TF_OPTS=-destroy
 destroy: plan
 
 import:
-	$(eval WORKERS=$(shell echo workers-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain) | cut -c 0-63))
-	$(eval WORKER_PROFILE=$(shell echo worker-profile-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain) | cut -c 0-63))
-	$(eval WORKER_ROLE=$(shell echo worker_role-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain)  | cut -c 0-63))
-	$(eval WORKER_POLICY=$(shell echo worker_policy-$(TF_VAR_node_pool_name)-$(TF_VAR_base_domain) | cut -c 0-63))
+	$(eval WORKERS=$(shell echo workers-$(TF_VAR_pool_name)-$(TF_VAR_domain) | cut -c 0-63))
+	$(eval WORKER_PROFILE=$(shell echo worker-profile-$(TF_VAR_pool_name)-$(TF_VAR_domain) | cut -c 0-63))
+	$(eval WORKER_ROLE=$(shell echo worker_role-$(TF_VAR_pool_name)-$(TF_VAR_domain)  | cut -c 0-63))
+	$(eval WORKER_POLICY=$(shell echo worker_policy-$(TF_VAR_pool_name)-$(TF_VAR_domain) | cut -c 0-63))
 	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers $(WORKERS) 2>/dev/null
 	-$(terraform) import $(TF_OPTS) aws_iam_instance_profile.worker_profile $(WORKER_PROFILE) 2>/dev/null
 	-$(terraform) import $(TF_OPTS) aws_iam_role.worker_role $(WORKER_ROLE) 2>/dev/null
