@@ -42,12 +42,6 @@ variable "worker_instance_type" {
   description = "Instance size for the worker node(s). Example: `t2.small`."
 }
 
-variable "worker_instance_gpu" {
-  type        = "string"
-  default     = "false"
-  description = "Whatever instance should have Nvidia driver inserted"
-}
-
 variable "worker_spot_price" {
   type        = "string"
   default     = "0.06"
@@ -174,9 +168,4 @@ EOF
 variable "cluster_tag" {
   type        = "string"
   description = "Tag to enable worker nodes to join the Kube cluster"
-}
-
-variable "node_pool_label" {
-  type        = "string"
-  description = "Type of nodes in the pool"
 }

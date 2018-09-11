@@ -37,9 +37,6 @@ parameters:
     - name: size
       env: TF_VAR_worker_instance_type
       value: r4.large
-    - name: gpu
-      env: TF_VAR_worker_instance_gpu
-      value: false
     - name: spotPrice
       env: TF_VAR_worker_spot_price
       value: 0.06
