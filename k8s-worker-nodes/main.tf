@@ -16,17 +16,36 @@ data "aws_s3_bucket_object" "bootstrap_script" {
   key    = "ignition_worker.json"
 }
 
+locals {
+  gpu_instance_types = [
+    "p2.xlarge",
+    "p2.8xlarge",
+    "p2.16xlarge",
+    "p3.2xlarge",
+    "p3.8xlarge",
+    "p3.16xlarge",
+    "g3.4xlarge",
+    "g3.8xlarge",
+    "g3.16xlarge"
+  ]
+  worker_instance_gpu = "${contains(local.gpu_instance_types, var.worker_instance_type)}"
+}
+
 resource "aws_s3_bucket_object" "bootstrap_script" {
   bucket       = "${var.s3_files_worker_bucket}"
   key          = "${var.node_pool_name}-worker-pool/ignition_worker.json"
-  content      = "${replace(data.aws_s3_bucket_object.bootstrap_script.body, "--node-labels=node-role.kubernetes.io/node", format("--node-labels=node-role.kubernetes.io/node,%s",var.node_pool_label))}"
+  content      = "${local.worker_instance_gpu ?
+    replace(data.aws_s3_bucket_object.bootstrap_script.body,
+      "--node-labels=node-role.kubernetes.io/node",
+      "--node-labels=node-role.kubernetes.io/node,gpu=true") :
+    data.aws_s3_bucket_object.bootstrap_script.body}"
   content_type = "text/json"
   acl          = "private"
 }
 
 data "ignition_systemd_unit" "nvidia" {
   name    = "nvidia.service"
-  enabled = "${var.worker_instance_gpu}"
+  enabled = "${local.worker_instance_gpu}"
   content = "${file("nvidia.service")}"
 }
 
