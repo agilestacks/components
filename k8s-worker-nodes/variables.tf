@@ -1,6 +1,6 @@
-variable "worker_instance_count" {
+variable "worker_count" {
   type    = "string"
-  default = "30"
+  default = "1"
 
   description = <<EOF
 The number of worker nodes to be created.
