@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: etcd
-  brief: etcd distributed storage
+  brief: etcd distributed key value store
   source:
       dir: ../../components/etcd
 
