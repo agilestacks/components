@@ -1,0 +1,49 @@
+---
+version: 1
+kind: component
+meta:
+  name: eks-worker-nodes
+  brief: EKS worker nodes pool
+  source:
+    dir: ../../components/eks-worker-nodes
+
+requires:
+  - kubernetes
+provides:
+  - eks-worker-nodes
+
+parameters:
+  - name: cloud.region
+    env: AWS_DEFAULT_REGION
+  - name: cloud.sshKey
+    env: TF_VAR_keypair
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+  - name: dns.domain
+    env: TF_VAR_domain
+
+  - name: kubernetes.eks.cluster
+    env: TF_VAR_cluster_name
+  - name: cloud.vpc.worker.subnet.ids
+    env: TF_VAR_worker_subnet_ids
+  - name: cloud.vpc.worker.sg.id
+    env: TF_VAR_worker_sg_id
+  - name: cloud.iam.worker.instanceProfile
+    env: TF_VAR_worker_instance_profile
+
+  - name: component.k8s-worker-nodes
+    parameters:
+    - name: count
+      env: TF_VAR_worker_count
+      value: 1
+    - name: size
+      env: TF_VAR_worker_instance_type
+      value: r4.large
+    - name: spotPrice
+      env: TF_VAR_worker_spot_price
+      value: 0.06
+    - name: poolName
+      env: TF_VAR_pool_name
+      value: gpu1
