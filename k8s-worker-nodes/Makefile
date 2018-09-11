@@ -32,9 +32,9 @@ init:
 	@mkdir -p .terraform/$(TF_VAR_base_domain)
 	$(terraform) init -reconfigure -input=false -get=true -force-copy $(TF_OPTS) \
 		-backend=true \
-		-backend-config="bucket=$(TF_VAR_state_bucket)" \
-		-backend-config="region=$(TF_VAR_state_region)" \
 		-backend-config="key=$(TF_VAR_base_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_node_pool_name)/terraform.tfstate" \
+		-backend-config="bucket=$(STATE_BUCKET)" \
+		-backend-config="region=$(STATE_REGION)" \
 		-backend-config="profile=$(AWS_PROFILE)"
 .PHONY: init
 

@@ -18,9 +18,9 @@ parameters:
   - name: cloud.sshKey
     env: TF_VAR_keypair
   - name: terraform.bucket.name
-    env: TF_VAR_state_bucket
+    env: STATE_BUCKET
   - name: terraform.bucket.region
-    env: TF_VAR_state_region
+    env: STATE_REGION
   - name: dns.domain
     env: TF_VAR_base_domain
 
