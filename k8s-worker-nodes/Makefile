@@ -2,9 +2,10 @@
 
 COMPONENT_NAME ?= k8s-worker-nodes
 
-export AWS_DEFAULT_REGION ?= eu-central-1
+export AWS_PROFILE        ?= default
+export AWS_DEFAULT_REGION ?= us-east-2
 
-CLOUD_BUCKET   ?= files.$(TF_VAR_base_domain)
+CLOUD_BUCKET ?= files.$(TF_VAR_domain)
 
 export TF_LOG             ?= info
 export TF_OPTS            ?= -no-color
@@ -73,4 +74,3 @@ import:
 	-$(terraform) import $(TF_OPTS) aws_iam_role.worker_role $(WORKER_ROLE) 2>/dev/null
 	-$(terraform) import $(TF_OPTS) aws_iam_role_policy.worker_policy $(WORKER_POLICY) 2>/dev/null
 .PHONY: import
-
