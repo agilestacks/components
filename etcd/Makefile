@@ -65,7 +65,7 @@ wait_pods:
 
 # after all Makefile and shell/echo acrobatics I can't make --from-literal to insert newline into config= value
 awsetcd:
-	#$(HUB) render secret-config.template
+	$(HUB) render secret-config.template
 	-$(kubectl) create secret generic $(AWS_SECRET_NAME) --from-file=config=secret-config
 .PHONY: awsetcd
 
