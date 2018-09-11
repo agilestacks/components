@@ -21,7 +21,7 @@ EOF
 
 variable "container_linux_version" {
   type    = "string"
-  default = "1800.5.0"
+  default = "1855.4.0"
 
   description = <<EOF
 (optional) The Container Linux version to use. Set to `latest` to select the latest available version for the selected update channel.
