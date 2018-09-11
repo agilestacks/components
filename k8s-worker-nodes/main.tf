@@ -12,7 +12,7 @@ provider "ignition" {
 }
 
 data "aws_s3_bucket_object" "bootstrap_script" {
-  bucket = "${var.s3_files_worker_bucket}"
+  bucket = "${var.s3_bucket}"
   key    = "ignition_worker.json"
 }
 
@@ -32,8 +32,8 @@ locals {
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
-  bucket       = "${var.s3_files_worker_bucket}"
-  key          = "${var.node_pool_name}-worker-pool/ignition_worker.json"
+  bucket       = "${var.s3_bucket}"
+  key          = "k8s-worker-nodes/${var.pool_name}/ignition_worker.json"
   content      = "${local.worker_instance_gpu ?
     replace(data.aws_s3_bucket_object.bootstrap_script.body,
       "--node-labels=node-role.kubernetes.io/node",
@@ -51,7 +51,10 @@ data "ignition_systemd_unit" "nvidia" {
 
 data "ignition_config" "main" {
   append {
-    source = "${format("s3://%s/%s-worker-pool/%s", var.s3_files_worker_bucket,var.node_pool_name,"ignition_worker.json")}"
+    # https://github.com/terraform-providers/terraform-provider-ignition/issues/12
+    source = "${format("s3://%s/%s",
+      "${var.s3_bucket}",
+      "k8s-worker-nodes/${var.pool_name}/ignition_worker.json")}"
   }
 
   systemd = [
@@ -103,10 +106,10 @@ resource "aws_launch_configuration" "worker_conf" {
 }
 
 resource "aws_autoscaling_group" "workers" {
-  name                 = "${substr(format("workers-%s-%s",var.node_pool_name,var.base_domain),0,min(63, length(format("workers-%s-%s",var.node_pool_name,var.base_domain))))}"
-  desired_capacity     = "${var.worker_instance_count}"
-  max_size             = "${var.worker_instance_count * 3}"
-  min_size             = "${var.worker_instance_count}"
+  name                 = "${substr(format("workers-%s-%s",var.pool_name,var.domain),0,min(63, length(format("workers-%s-%s",var.pool_name,var.domain))))}"
+  desired_capacity     = "${var.worker_count}"
+  max_size             = "${var.worker_count * 3}"
+  min_size             = "${var.worker_count}"
   launch_configuration = "${aws_launch_configuration.worker_conf.id}"
   vpc_zone_identifier  = ["${var.worker_subnet_id}"]
   termination_policies = ["ClosestToNextInstanceHour", "default"]
@@ -114,7 +117,7 @@ resource "aws_autoscaling_group" "workers" {
   tags = [
     {
       key                 = "Name"
-      value               = "worker-${var.node_pool_name}-${var.base_domain}"
+      value               = "worker-${var.pool_name}-${var.domain}"
       propagate_at_launch = true
     },
     {
@@ -138,12 +141,12 @@ resource "aws_autoscaling_attachment" "workers" {
 }
 
 resource "aws_iam_instance_profile" "worker_profile" {
-  name = "${substr(format("worker-profile-%s-%s",var.node_pool_name,var.base_domain),0,min(63, length(format("worker-profile-%s-%s",var.node_pool_name,var.base_domain))))}"
+  name = "${substr(format("worker-profile-%s-%s",var.pool_name,var.domain),0,min(63, length(format("worker-profile-%s-%s",var.pool_name,var.domain))))}"
   role = "${aws_iam_role.worker_role.name}"
 }
 
 resource "aws_iam_role" "worker_role" {
-  name = "${substr(format("worker-role-%s-%s",var.node_pool_name,var.base_domain),0,min(63, length(format("worker-role-%s-%s",var.node_pool_name,var.base_domain))))}"
+  name = "${substr(format("worker-role-%s-%s",var.pool_name,var.domain),0,min(63, length(format("worker-role-%s-%s",var.pool_name,var.domain))))}"
   path = "/"
 
   assume_role_policy = <<EOF
@@ -176,7 +179,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "worker_policy" {
-  name = "${substr(format("worker-policy-%s-%s",var.node_pool_name,var.base_domain),0,min(63, length(format("worker-policy-%s-%s",var.node_pool_name,var.base_domain))))}"
+  name = "${substr(format("worker-policy-%s-%s",var.pool_name,var.domain),0,min(63, length(format("worker-policy-%s-%s",var.pool_name,var.domain))))}"
   role = "${aws_iam_role.worker_role.id}"
 
   policy = <<EOF

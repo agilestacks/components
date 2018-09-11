@@ -22,7 +22,7 @@ parameters:
   - name: terraform.bucket.region
     env: STATE_REGION
   - name: dns.domain
-    env: TF_VAR_base_domain
+    env: TF_VAR_domain
 
   - name: cloud.vpc.worker.subnet.id
     env: TF_VAR_worker_subnet_id
@@ -32,7 +32,7 @@ parameters:
   - name: component.k8s-worker-nodes
     parameters:
     - name: count
-      env: TF_VAR_worker_instance_count
+      env: TF_VAR_worker_count
       value: 1
     - name: size
       env: TF_VAR_worker_instance_type

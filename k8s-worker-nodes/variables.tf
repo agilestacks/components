@@ -118,27 +118,27 @@ Example:
 EOF
 }
 
-variable "base_domain" {
+variable "domain" {
   type        = "string"
-  description = "Base domain of a stack"
+  description = "Domain of the stack"
 }
 
-variable "node_pool_name" {
+variable "pool_name" {
   type = "string"
 
   description = <<EOF
-Type of worker nodes beeing added to the existing cluster
+Name of the pool
 
 Example:
- * `gpu`
+ * `gpu1`
 EOF
 }
 
-variable "s3_files_worker_bucket" {
+variable "s3_bucket" {
   type = "string"
 
   description = <<EOF
-Bucket name in S3 from where to download igniniton configuration of existing worker nodes in the cluster
+S3 bucket name to download igniniton config of cluster existing worker nodes from
 
 Example:
  * `files.mycluster.myaccount.demo01.kubernetes.delivery`
