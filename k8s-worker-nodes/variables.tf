@@ -159,7 +159,7 @@ variable "worker_subnet_id" {
   type = "string"
 
   description = <<EOF
-Subnet where additional worker nodes will be joined. Example: `ami-foobar123`.
+Subnet where additional worker nodes will be joined.
 Example:
  * `subnet-805f57eb`
 EOF
