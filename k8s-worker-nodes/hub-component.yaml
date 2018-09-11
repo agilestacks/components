@@ -23,10 +23,12 @@ parameters:
     env: TF_VAR_state_region
   - name: dns.domain
     env: TF_VAR_base_domain
+
   - name: cloud.vpc.worker.subnet.id
     env: TF_VAR_worker_subnet_id
-  - name: cloud.vpc.worker.sg.id 
+  - name: cloud.vpc.worker.sg.id
     env: TF_VAR_worker_sg_id
+
   - name: component.k8s-worker-nodes
     parameters:
     - name: count
