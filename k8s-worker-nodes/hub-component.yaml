@@ -44,5 +44,5 @@ parameters:
       env: TF_VAR_container_linux_version
       value: 1855.4.0
     - name: poolName
-      env: TF_VAR_node_pool_name
+      env: TF_VAR_pool_name
       value: gpu1
