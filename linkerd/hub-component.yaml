@@ -26,15 +26,12 @@ parameters:
     kind: user
     env: AWS_REGION
   - name: cloud.bucket
-    kind: tech
     brief: Bucket for Spinnaker. Coming from basestack
   - name: dns.domain
     brief: DNS domain
-    kind: tech
     env: DOMAIN_NAME
   - name: docker.registry
     brief: DNS domain
-    kind: tech
     env: DOCKER_REGISTRY
 
 templates:
