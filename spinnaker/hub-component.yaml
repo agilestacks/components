@@ -22,12 +22,10 @@ parameters:
     value: agilestacks
     env: AWS_KEYPAIR
   - name: cloud.bucket
-    kind: tech
     brief: Bucket for Spinnaker. Coming from basestack
     env: AWS_S3_BUCKET
   - name: dns.domain
     brief: DNS domain
-    kind: tech
     env: DOMAIN_NAME
   - name: cloud.role.master
     value: unknown
