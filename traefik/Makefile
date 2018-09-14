@@ -76,6 +76,7 @@ plan:
 
 apply:
 	$(terraform) apply $(TF_OPTS) -Xshadow=false .terraform/terraform.tfplan
+	@echo
 .PHONY: apply
 
 undeploy: init
