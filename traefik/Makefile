@@ -22,7 +22,7 @@ else
 	PROTOCOL=http
 endif
 
-deploy: clean init fetch install get plan apply output
+deploy: clean init fetch install get plan output apply
 
 ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
 STATE_BACKEND_CONFIG := -backend-config="key=$(TF_VAR_domain_name)/traefik/$(TF_VAR_component)/terraform.tfstate" \
