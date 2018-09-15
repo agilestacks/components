@@ -26,7 +26,7 @@ wait:
 		echo "Waiting for Tiller pod is up and running ($$i)..."; \
 		sleep 10; \
 	done; \
-	echo "Timeout waiting for Tiller" \
+	echo "Timeout waiting for Tiller"; \
 	exit 1
 .PHONY: wait
 
@@ -38,6 +38,6 @@ wait_rbac:
 		echo "Waiting for admin RBAC roles to be created ($$i)..."; \
 		sleep 10; \
 	done; \
-	echo "Timeout waiting for admin RBAC roles to be deployed" \
+	echo "Timeout waiting for admin RBAC roles to be deployed"; \
 	exit 1
 .PHONY: wait_rbac
