@@ -66,6 +66,14 @@ install:
 			--version $(CHART_VERSION)
 .PHONY: install
 
+upgrade:
+	$(helm) upgrade $(TF_VAR_component) charts/$(notdir $(CHART)) \
+		--namespace $(TF_VAR_namespace) \
+		--wait \
+		--values $(VALUES_FILE) \
+		--version $(CHART_VERSION)
+.PHONY: upgrade
+
 get:
 	$(terraform) get $(TF_UPDATE) ./$(CLOUD_KIND)
 .PHONY: get
