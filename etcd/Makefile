@@ -36,6 +36,7 @@ init:
 	@$(helm) init --client-only --upgrade
 .PHONY: init
 
+# TODO the single line output won't flush thru Kubernetes pod log - appears to be stuck to the observer
 wait_crd:
 	@for i in $$(seq 1 60); do \
 		if $(kubectl) get customresourcedefinitions/etcdclusters.etcd.database.coreos.com; then \
@@ -45,7 +46,7 @@ wait_crd:
 		echo "Waiting for customresourcedefinitions/etcdclusters.etcd.database.coreos.com to be deployed ($$i)..."; \
 		sleep 20; \
 	done; \
-	echo "Timeout waiting for customresourcedefinitions to be deployed" \
+	echo "Timeout waiting for customresourcedefinitions to be deployed"; \
 	exit 1
 .PHONY: wait_crd
 
@@ -59,7 +60,7 @@ wait_pods:
 		printf "."; \
 		sleep 20; \
 	done; \
-	printf "\nTimeout Error\n" \
+	printf "\nTimeout Error\n"; \
 	exit 1
 .PHONY: wait_pods
 
