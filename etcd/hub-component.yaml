@@ -41,7 +41,7 @@ parameters:
       value: v0.9.2
     - name:  cluster.enabled
       brief: Start etcd cluster
-      value: false
+      value: true
       env:   CLUSTER_ENABLED
     - name:  cluster.size
       value: 3
