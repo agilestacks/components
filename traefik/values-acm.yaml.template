@@ -13,10 +13,10 @@ podDisruptionBudget: {}
   # maxUnavailable: 1
   # minAvailable: 2
 
-cpuRequest: 100m
+cpuRequest: 200m
 memoryRequest: 20Mi
-cpuLimit: 100m
-memoryLimit: 30Mi
+cpuLimit: 400m
+memoryLimit: 40Mi
 debug:
   enabled: false
 
