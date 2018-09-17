@@ -51,7 +51,7 @@ wait_crd:
 .PHONY: wait_crd
 
 wait_pods:
-	@printf "Waiting for cluster pods to be running"; \
+	@if test "$(CLUSTER_ENABLED)" = true; then printf "Waiting for cluster pods to be running"; \
 	for i in $$(seq 1 60); do \
 		if [ $$($(running_pods) | wc -l) -eq $(ETCD_CLUSTER_SIZE) ] ; then \
 			printf "\ndone\n"; \
