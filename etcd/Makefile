@@ -61,7 +61,7 @@ wait_pods:
 		sleep 20; \
 	done; \
 	printf "\nTimeout Error\n"; \
-	exit 1
+	exit 1; fi
 .PHONY: wait_pods
 
 # after all Makefile and shell/echo acrobatics I can't make --from-literal to insert newline into config= value
