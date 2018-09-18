@@ -8,7 +8,7 @@ metadata:
     project:   kubernetes
 spec:
   rules:
-  - host: ${component.kubeflow.ambassador.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  - host: ${component.kubeflow.ambassador.ingress.urlPrefix}.${component.ingress.ssoFqdn}
     http:
       paths:
       - path: /ambassador/v0/diag

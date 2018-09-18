@@ -8,7 +8,7 @@ metadata:
     project:   kubernetes
 spec:
   rules:
-  - host: ${component.kubeflow.jupyterhub.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  - host: ${component.kubeflow.jupyterhub.ingress.urlPrefix}.${component.ingress.ssoFqdn}
     http:
       paths:
       - path: /

@@ -96,7 +96,7 @@ outputs:
 - name: component.ingress.urlPrefix
 - name: component.ingress.ssoUrlPrefix
 - name: component.ingress.dashboard.url
-  value: http://${component.ingress.ssoUrlPrefix}.${dns.domain}/dashboard/
+  value: ${component.ingress.protocol}://${component.ingress.ssoFqdn}/dashboard/
 - name: component.ingress.load-balancer
   fromTfVar: load_balancer
 

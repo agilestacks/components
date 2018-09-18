@@ -19,9 +19,6 @@ parameters:
   - name: fqdn
   - name: ssoFqdn
   - name: protocol
-    value: http
-  - name: ssoUrlPrefix
-    value: swww
 - name: component.jenkins
   parameters:
   - name: namespace

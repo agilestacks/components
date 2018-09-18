@@ -116,7 +116,7 @@ alertmanager:
     # hosts:
     #   - alertmanager.domain.com
     hosts:
-      - ${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+      - ${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.ssoFqdn}
 
     ## TLS configuration for Alertmanager Ingress
     ## Secret must be manually created in the namespace
@@ -294,7 +294,7 @@ prometheus:
     # hosts:
     #   - prometheus.domain.com
     hosts:
-      - ${component.prometheus.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+      - ${component.prometheus.ingress.urlPrefix}.${component.ingress.ssoFqdn}
 
     ## TLS configuration for Prometheus Ingress
     ## Secret must be manually created in the namespace
@@ -725,7 +725,7 @@ grafana:
     # hosts:
     #   - grafana.domain.com
     hosts:
-      - ${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+      - ${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.ssoFqdn}
 
     ## TLS configuration for Alertmanager Ingress
     ## Secret must be manually created in the namespace
