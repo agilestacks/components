@@ -46,9 +46,9 @@ nginx:
 	$(helm) fetch \
 		--destination charts \
 		--untar $(NGINX_CHART)
-	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^nginx$$' || \
+	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)-nginx$$' || \
 		$(helm) install charts/$(notdir $(NGINX_CHART)) \
-			--name nginx \
+			--name $(TF_VAR_component)-nginx \
 			--namespace $(TF_VAR_namespace) \
 			--wait \
 			--version $(NGINX_CHART_VERSION) \
@@ -86,6 +86,8 @@ deploy: init harbor nginx zone
 undeploy:
 	-$(MAKE) plan TF_OPTS="$(TF_OPTS) -destroy"
 	-$(MAKE) apply
-	-$(helm) delete --purge nginx
-	-$(helm) delete --purge $(TF_VAR_component)
+	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)-nginx$$' && \
+		$(helm) delete --namespace $(NAMESPACE) --purge $(TF_VAR_component)-nginx
+	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
+		$(helm) delete --namespace $(NAMESPACE) --purge $(TF_VAR_component)
 .PHONY: undeploy
