@@ -4,8 +4,8 @@ metadata:
   name: ${component.kubeflow.jupyterhub.ingress.name}
   namespace: ${component.kubeflow.namespace}
   labels:
-    provider:  agilestacks.com
-    project:   kubernetes
+    provider: agilestacks.com
+    project:  kubernetes
 spec:
   rules:
   - host: ${component.kubeflow.jupyterhub.ingress.urlPrefix}.${component.ingress.ssoFqdn}

@@ -27,9 +27,9 @@ init:
 	@rm -rf harbor-helm
 	@mkdir -p charts
 	@mkdir -p .terraform
-.PHONY: init	
+.PHONY: init
 
-harbor: 
+harbor:
 	$(helm) init --client-only --upgrade --wait
 	$(git) clone https://github.com/goharbor/harbor-helm
 	$(helm) dependency update harbor-helm
@@ -52,7 +52,7 @@ nginx:
 			--namespace $(TF_VAR_namespace) \
 			--wait \
 			--version $(NGINX_CHART_VERSION) \
-			--values values-nginx.yaml	
+			--values values-nginx.yaml
 .PHONY: nginx
 
 plan:
@@ -67,7 +67,7 @@ plan:
 
 apply:
 	$(terraform) apply $(TF_OPTS) -auto-approve .terraform/terraform.tfplan
-.PHONY: apply	
+.PHONY: apply
 
 zone:
 	$(MAKE) plan
@@ -79,7 +79,7 @@ clean:
 	@rm -rf .terraform
 	@rm -rf charts
 	@rm -rf harbor-helm
-.PHONY: clean	
+.PHONY: clean
 
 deploy: init harbor nginx zone
 
