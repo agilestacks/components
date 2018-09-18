@@ -52,7 +52,7 @@ get:
 
 plan:
 	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/$(TF_VAR_domain_name).tfplan
-..PHONY: plan
+.PHONY: plan
 
 apply:
 	$(terraform) apply $(TF_OPTS) -Xshadow=false .terraform/$(TF_VAR_domain_name).tfplan
