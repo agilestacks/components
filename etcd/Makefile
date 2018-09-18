@@ -16,7 +16,7 @@ export BACKUP_ENABLED      ?= false
 export RESTORE_ENABLED     ?= false
 export AWS_SECRET_NAME     ?= awsetcd
 
-export RESTORE_SNAPSHOT    ?= $(BACKUP_BUCKET)/backup/$(DOMAIN_NAME)/etcd/$(COMPONENT_NAME)/latest
+export RESTORE_SNAPSHOT    ?= $(BACKUP_BUCKET)/$(DOMAIN_NAME)/backup/etcd/$(COMPONENT_NAME)/latest
 export TS       	       := $(shell date +"%Y-%m-%d-%H-%M-%S")
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
