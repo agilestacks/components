@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: ${component.kubernetes-dashboard.name}
-        image: k8s.gcr.io/kubernetes-dashboard-amd64:${component.kubernetes-dashboard.version}
+        image: gcr.io/google_containers/kubernetes-dashboard-amd64:${component.kubernetes-dashboard.version}
         ports:
         - containerPort: 9090
           protocol: TCP
