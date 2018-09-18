@@ -60,7 +60,7 @@ plan:
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
         -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(TF_VAR_domain_name)/s3-bucket/$(TF_VAR_component)/terraform.tfstate" \
+        -backend-config="key=$(TF_VAR_domain_name)/harbor/$(TF_VAR_component)/terraform.tfstate" \
         -backend-config="profile=$(AWS_PROFILE)"
 	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan
 .PHONY: plan
