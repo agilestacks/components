@@ -8,7 +8,7 @@ metadata:
     project:   wowza
 spec:
   rules:
-  - host: wowza.${component.wowza.ingress.urlPrefix}.${component.ingress.urlPrefix}.${dns.domain}
+  - host: wowza.${component.wowza.ingress.urlPrefix}.${component.ingress.fqdn}
     http:
       paths:
       - path: /enginemanager

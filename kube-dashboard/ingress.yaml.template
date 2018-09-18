@@ -10,7 +10,7 @@ metadata:
     project:   kubernetes
 spec:
   rules:
-  - host: ${component.kubernetes-dashboard.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  - host: ${component.kubernetes-dashboard.ingress.urlPrefix}.${component.ingress.ssoFqdn}
     http:
       paths:
       - path: ${component.kubernetes-dashboard.ingress.path}

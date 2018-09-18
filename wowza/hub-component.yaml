@@ -14,8 +14,7 @@ provides:
   - wowza
 
 parameters:
-  - name: component.ingress.ssoUrlPrefix
-  - name: component.ingress.urlPrefix
+  - name: component.ingress.fqdn
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.wowza
@@ -45,7 +44,7 @@ templates:
 outputs:
   - name: component.wowza.url
     brief: Wowza URL
-    value: http://wowza.${component.wowza.ingress.urlPrefix}.${component.ingress.urlPrefix}.${dns.domain}/enginemanager
+    value: http://wowza.${component.wowza.ingress.urlPrefix}.${component.ingress.fqdn}/enginemanager
   - name: component.wowza.name
   - name: component.wowza.namespace
   - name: component.wowza.streamPrefix

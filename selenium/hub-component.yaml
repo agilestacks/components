@@ -14,7 +14,6 @@ requires:
 
 parameters:
   - name: component.ingress.protocol
-  - name: component.ingress.ssoUrlPrefix
   - name: dns.domain
     brief: DNS domain
     env: DOMAIN_NAME
@@ -35,7 +34,7 @@ parameters:
     - name: javaOpts
       value: -Xmx400m
     - name: ingress.url
-      value: ${component.ingress.ssoUrlPrefix}.${dns.domain}
+      value: ${component.ingress.ssoFqdn}
     - name: cpu
       value: .0
     - name: ram

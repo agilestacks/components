@@ -10,7 +10,7 @@ metadata:
     agilestacks.com/stack-component: MongoDB Web Client
 spec:
   rules:
-  - host: ${component.mongodb-web.ingress.urlPrefix}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  - host: ${component.mongodb-web.ingress.urlPrefix}.${component.ingress.ssoFqdn}
     http:
       paths:
       - path: /
