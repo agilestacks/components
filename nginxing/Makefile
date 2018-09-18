@@ -13,7 +13,7 @@ STATE_REGION ?= us-east-1
 helm ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
 terraform ?= terraform
 
-deploy: clean init fetch install get plan apply output
+deploy: clean init fetch install get plan apply
 .PHONY: deploy
 
 init:
@@ -72,8 +72,3 @@ clean:
 	rm -rf charts
 	rm -rf .terraform/modules
 	rm -rf .terraform/plugins
-
-output:
-	@echo Outputs:
-#	@echo ingress_fqdn=$(URL_PREFIX).$(DOMAIN_NAME)
-.PHONY: output

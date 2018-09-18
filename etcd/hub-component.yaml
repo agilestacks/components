@@ -25,8 +25,6 @@ parameters:
     env:  AWS_DEFAULT_REGION
   - name: dns.domain
     env:  DOMAIN_NAME
-  - name: terraform.bucket.name
-  - name: terraform.bucket.region
   - name: component.etcd
     parameters:
     - name:  namespace
