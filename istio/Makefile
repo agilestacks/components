@@ -32,7 +32,7 @@ istio-$(ISTIO_VERSION):
 		tar xz istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio
 
 install:
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
@@ -42,7 +42,7 @@ install:
 .PHONY: install
 
 undeploy:
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 

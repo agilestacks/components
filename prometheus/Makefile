@@ -20,7 +20,7 @@ namespace:
 .PHONY: namespace
 
 install_operator:
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-operator$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-operator$$' || \
 		$(helm) install charts/prometheus-operator \
 			--name $(COMPONENT_NAME)-operator \
 			--namespace $(NAMESPACE) \
@@ -30,7 +30,7 @@ install_operator:
 .PHONY: install_operator
 
 install_kube_prom:
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-kube-prom$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-kube-prom$$' || \
 		$(helm) install charts/kube-prometheus \
 			--name $(COMPONENT_NAME)-kube-prom \
 			--namespace $(NAMESPACE) \
@@ -40,9 +40,9 @@ install_kube_prom:
 .PHONY: install_kube_prom
 
 undeploy: init clean
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-kube-prom$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-kube-prom$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME)-kube-prom || exit 0
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)-operator$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-operator$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME)-operator || exit 0
 
 	$(kubectl) get --namespace $(NAMESPACE) svc/$(COMPONENT_NAME)-operated -o=yaml|$(kubectl) delete -f - || true

@@ -37,7 +37,7 @@ install:
 	@cp configmap.yaml    charts/gitlab-ce/templates/
 	@cp requirements.yaml charts/gitlab-ce/
 	@rm charts/gitlab-ce/requirements.lock
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/gitlab-ce \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
@@ -48,7 +48,7 @@ install:
 
 undeploy: init
 	bash -e ./undeploy-$(kind).sh
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 

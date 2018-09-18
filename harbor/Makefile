@@ -33,7 +33,7 @@ harbor:
 	$(helm) init --client-only --upgrade --wait
 	$(git) clone https://github.com/goharbor/harbor-helm
 	$(helm) dependency update harbor-helm
-	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
+	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm)	install harbor-helm \
 		    --name $(TF_VAR_component) \
 			--namespace $(TF_VAR_namespace) \
@@ -46,7 +46,7 @@ nginx:
 	$(helm) fetch \
 		--destination charts \
 		--untar $(NGINX_CHART)
-	$(helm) list -q | grep -E '^nginx$$' || \
+	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^nginx$$' || \
 		$(helm) install charts/$(notdir $(NGINX_CHART)) \
 			--name nginx \
 			--namespace $(TF_VAR_namespace) \

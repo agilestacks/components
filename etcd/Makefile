@@ -104,7 +104,7 @@ restore: wait_pods unrestore awsetcd
 .PHONY: restore
 
 install:
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install . \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
@@ -131,7 +131,7 @@ uncluster:
 .PHONY: uncluster
 
 undeploy: init unrestore uncluster
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 

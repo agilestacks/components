@@ -27,7 +27,7 @@ fetch:
 install:
 	$(kubectl) apply -f namespace.yaml
 	$(kubectl) apply -f ingress.yaml
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \
 			--name-template $(COMPONENT_NAME) \
@@ -39,7 +39,7 @@ install:
 
 undeploy: init
 	-$(kubectl) delete -f ingress.yaml
-	-$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	-$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME)
 .PHONY: undeploy
 

@@ -39,7 +39,7 @@ fetch:
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
 	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \
 			--name-template $(COMPONENT_NAME) \
@@ -72,7 +72,7 @@ output:
 .PHONY: outputs
 
 undeploy: init
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	#-$(kubectl) delete -f $(CLOUD_KIND)-storage-class.yaml
 .PHONY: undeploy

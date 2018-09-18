@@ -69,7 +69,7 @@ $(CLOUD)-storage-class:
 
 install: namespace $(CLOUD)-storage-class
 	@ echo Running helm install charts/minio...
-	@ $(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	@ $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/minio \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
@@ -93,7 +93,7 @@ unconfigure:
 .PHONY: unconfigure
 
 undeploy: init unconfigure
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	- $(kubectl) delete pvc $(COMPONENT_NAME)
 	- $(kubectl) delete job $(COMPONENT_NAME)-make-bucket-job

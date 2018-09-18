@@ -30,7 +30,7 @@ fetch:
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
 	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART) \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
@@ -41,7 +41,7 @@ install:
 .PHONY: install
 
 undeploy: init
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 
