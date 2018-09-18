@@ -34,7 +34,7 @@ init:
 .PHONY: init
 
 install:
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install . \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
@@ -98,7 +98,7 @@ seal: login
 .PHONY: seal
 
 undeploy: init disconnect
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	# rm -f $(UNSEAL_FILE)
 .PHONY: undeploy

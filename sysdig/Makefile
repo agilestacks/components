@@ -23,7 +23,7 @@ fetch:
 .PHONY: fetch
 
 install:
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/sysdig \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
@@ -33,7 +33,7 @@ install:
 .PHONY: install
 
 undeploy: init
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 

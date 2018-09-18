@@ -56,7 +56,7 @@ fetch:
 .PHONY: fetch
 
 install:
-	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
+	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm) install charts/$(notdir $(CHART)) \
 			--name $(TF_VAR_component) \
 			--namespace $(TF_VAR_namespace) \
@@ -92,7 +92,7 @@ undeploy: init
 	# roll forward on error for undeploy
 	- $(MAKE) apply
 
-	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' && \
+	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component) || exit 0
 .PHONY: undeploy
 

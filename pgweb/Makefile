@@ -14,7 +14,7 @@ init:
 	@$(helm) init --client-only --upgrade
 
 install:
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install . \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
@@ -23,7 +23,7 @@ install:
 .PHONY: install
 
 undeploy: init
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 

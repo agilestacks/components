@@ -32,7 +32,7 @@ fetch:
 .PHONY: fetch
 
 install: namespace
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART) \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
@@ -50,7 +50,7 @@ deploy: clean init fetch install
 .PHONY: deploy
 
 undeploy: init
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 	- $(kubectl) delete -f natsboard/ingress.yaml
