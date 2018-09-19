@@ -11,13 +11,15 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 CLOUD_KIND ?= aws
 
 deploy:
-	-$(kubectl) apply -f namespace.yaml
+	$(kubectl) apply -f namespace.yaml
 	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
+	-$(kubectl) delete configmap es-config
 	$(kubectl) create configmap es-config \
 		--from-file=conf/elasticsearch.yml \
 		--from-file=conf/jvm.options \
 		--from-file=conf/log4j2.properties \
 		--from-file=conf/post-start-hook.sh
+	-$(kubectl) delete configmap cerebro-config
 	$(kubectl) create configmap cerebro-config --from-file=conf/cerebro.conf
 	$(kubectl) apply -f es-env.yaml
 	$(kubectl) apply -f es-statefulset.yaml
