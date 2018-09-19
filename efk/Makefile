@@ -41,5 +41,4 @@ undeploy:
 	-$(kubectl) delete -f kibana-service.yaml
 	-$(kubectl) delete -f es-cerebro.yaml
 	-$(kubectl) delete pvc -l k8s-app=elasticsearch-logging
-	-$(kubectl) delete -f es-storage-class.yaml
 .PHONY: undeploy
