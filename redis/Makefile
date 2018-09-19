@@ -74,7 +74,6 @@ output:
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	#-$(kubectl) delete -f $(CLOUD_KIND)-storage-class.yaml
 .PHONY: undeploy
 
 clean:
