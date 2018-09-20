@@ -69,7 +69,7 @@ outputs:
 - name:  component.jenkins.internal.url
   value: http://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
 - name:  component.jenkins.fqdn
-  value: ${component.jenkins.namespace}.${component.ingress.ssoUrlPrefix}.${dns.domain}
+  value: ${component.jenkins.namespace}.${component.ingress.ssoFqdn}
 
 templates:
   files:
