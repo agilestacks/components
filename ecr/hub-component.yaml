@@ -33,6 +33,9 @@ parameters:
     env: STATE_REGION
 
 outputs:
+- name: component.docker.image
+  brief: Docker image of this component
+  fromTfVar: repository_url
 - name: component.ecr.image
   brief: Docker image of this component
   fromTfVar: repository_url
