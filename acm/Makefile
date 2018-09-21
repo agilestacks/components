@@ -87,4 +87,4 @@ clean:
 	rm -f generated.tf
 
 wait: venv
-	$(python) main.py wait $(DOMAIN_NAME) --timeout 1200
+	$(python) main.py wait $(DOMAIN_NAME) --timeout $(TIMEOUT)
