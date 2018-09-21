@@ -48,7 +48,7 @@ proxyProtocol:
   trustedIPs:
   # - 10.0.0.0/8
 ssl:
-  enabled: ${component.ingress.ssl.enabled}
+  enabled: false # TLS connection terminated by ELB; ${component.ingress.ssl.enabled}
   enforced: true
   insecureSkipVerify: false
 acme:
@@ -217,7 +217,10 @@ service:
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "${component.acm.certificateArn}"
     # Changed from "http" to default "tcp", to mitigate ELB doesn't supporting websocket on L7 level
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: ""
+    # https://kubernetes.io/docs/concepts/cluster-administration/cloud-providers/#aws
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+    # or "ssl" to speak ELB - Traefik over TLS - when 'ssl.enabled = true'
+    # TODO after Hub CLI supports conditionals - choose tcp vs ssl by component.ingress.ssl.enabled
     fabric8.io/app-menu: development
     api.service.kubernetes.io/path: ${component.ingress.urlPrefix}.${dns.domain}
 gzip:
