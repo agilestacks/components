@@ -63,7 +63,7 @@ variable "skip_final_snapshot" {
 }
 
 variable "copy_tags_to_snapshot" {
-  default = false
+  default = true
 }
 
 variable "multi_availability_zone" {
