@@ -44,9 +44,9 @@ resource "aws_route53_record" "dns_app1_ext" {
   ttl     = "300"
   records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
 
-  lifecycle {
-    ignore_changes = ["records", "ttl"]
-  }
+  # lifecycle {
+  #   ignore_changes = ["records", "ttl"]
+  # }
 }
 
 resource "aws_route53_record" "dns_app2_ext" {
@@ -56,9 +56,9 @@ resource "aws_route53_record" "dns_app2_ext" {
   ttl     = "300"
   records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
 
-  lifecycle {
-    ignore_changes = ["records", "ttl"]
-  }
+  # lifecycle {
+  #   ignore_changes = ["records", "ttl"]
+  # }
 }
 
 resource "aws_route53_record" "dns_apps1_ext" {
@@ -68,9 +68,9 @@ resource "aws_route53_record" "dns_apps1_ext" {
   ttl     = "300"
   records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
 
-  lifecycle {
-    ignore_changes = ["records", "ttl"]
-  }
+  # lifecycle {
+  #   ignore_changes = ["records", "ttl"]
+  # }
 }
 
 resource "aws_route53_record" "dns_apps2_ext" {
@@ -80,9 +80,9 @@ resource "aws_route53_record" "dns_apps2_ext" {
   ttl     = "300"
   records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
 
-  lifecycle {
-    ignore_changes = ["records", "ttl"]
-  }
+  # lifecycle {
+  #   ignore_changes = ["records", "ttl"]
+  # }
 }
 
 resource "null_resource" "drop_elb" {

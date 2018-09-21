@@ -54,14 +54,17 @@ fetch:
 .PHONY: fetch
 
 install:
-	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
+	if ! $(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$'; then \
 		$(helm) install charts/$(notdir $(CHART)) \
 			--name $(TF_VAR_component) \
 			--namespace $(TF_VAR_namespace) \
 			--replace \
 			--wait \
 			--values $(VALUES_FILE) \
-			--version $(CHART_VERSION)
+			--version $(CHART_VERSION); \
+	else \
+		$(MAKE) upgrade; \
+	fi
 .PHONY: install
 
 upgrade:
