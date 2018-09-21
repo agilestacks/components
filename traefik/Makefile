@@ -35,10 +35,8 @@ else
 endif
 
 init:
-	@mkdir -p $(HELM_HOME)
+	@mkdir -p $(HELM_HOME) charts .terraform
 	$(helm) init --client-only --upgrade --wait
-	@mkdir -p charts
-	@mkdir -p .terraform
 	$(terraform) init $(TF_OPTS) \
 		-get=true -reconfigure -force-copy  \
 		-backend=true -input=false \
@@ -87,20 +85,18 @@ apply:
 	@echo
 .PHONY: apply
 
-undeploy: init
-	- $(MAKE) plan TF_OPTS="$(TF_OPTS) -destroy"
-	# roll forward on error for undeploy
-	- $(MAKE) apply
+undeploy: init destroy apply uninstall
 
+destroy: TF_OPTS:=-destroy
+destroy: plan
+
+uninstall:
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
-		$(helm) delete --purge $(TF_VAR_component) || exit 0
+		$(helm) delete --purge $(TF_VAR_component)
 .PHONY: undeploy
 
 clean:
-	rm -rf $(HELM_HOME)
-	rm -rf charts
-	rm -rf .terraform/modules
-	rm -rf .terraform/plugins
+	rm -rf $(HELM_HOME) charts .terraform/modules .terraform/plugins
 .PHONY: clean
 
 output:
