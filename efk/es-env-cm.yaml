@@ -5,11 +5,3 @@ metadata:
 data:
   es-java-opts: '-Xms2g -Xmx2g'
   es-client-endpoint: 'http://elasticsearch-logging:9200'
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: es-secrets
-data:
-  es-username: ZWxhc3RpYw==
-  es-password: Y2hhbmdlbWU=
