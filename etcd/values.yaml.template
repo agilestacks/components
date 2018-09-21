@@ -69,7 +69,7 @@ backupOperator:
   spec:
     storageType: S3
     s3:
-      path: ${component.etcd.backup.bucket}/backup/${dns.domain}/etcd/${component.name}/latest
+      path: ${component.etcd.backup.bucket}/backup/${dns.domain}/etcd/${hub.componentName}/latest
       awsSecret: ${component.etcd.cluster.awssecret}
   ## Node labels for etcd pod assignment
   ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
