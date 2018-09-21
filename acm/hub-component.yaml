@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: acm
-  brief: AWS Certificate Manager component to produce valid SSL certificates
+  brief: TLS certificates with AWS Certificate Manager
   source:
     dir: ../../components/acm
 
@@ -25,6 +25,7 @@ parameters:
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
+
 outputs:
 - name: component.acm.certificateArn
   brief: ACM Certificate ARN
