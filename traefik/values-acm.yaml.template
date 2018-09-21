@@ -185,7 +185,6 @@ dashboard:
     annotations:
       agilestacks.com/stack-component: Traefik
       kubernetes.io/ingress.class: traefik
-
   auth:
     # basic:
     #   username: password
