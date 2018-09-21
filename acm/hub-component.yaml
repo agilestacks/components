@@ -16,7 +16,7 @@ parameters:
 - name: component.acm.deleteCert
   env: ACM_DELETE_CERTIFICATE
   value: false
-- name: component.acm.wait.timeout
+- name: component.acm.timeout
   env: TIMEOUT
   value: 1200
 - name: terraform.bucket.name
