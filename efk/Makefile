@@ -24,8 +24,8 @@ deploy:
 	$(kubectl) apply -f es-env.yaml
 	$(kubectl) apply -f es-statefulset.yaml
 	$(kubectl) apply -f es-service.yaml
-	$(kubectl) apply -f fluentd-es-configmap.yaml
-	$(kubectl) apply -f fluentd-es-ds.yaml
+	kubectl --context="$(DOMAIN_NAME)" apply -f fluentd-es-configmap.yaml
+	kubectl --context="$(DOMAIN_NAME)" apply -f fluentd-es-ds.yaml
 	$(kubectl) apply -f es-cerebro.yaml
 	$(kubectl) apply -f kibana-deployment.yaml
 	$(kubectl) apply -f kibana-service.yaml
@@ -37,8 +37,8 @@ undeploy:
 	-$(kubectl) delete -f es-env.yaml
 	-$(kubectl) delete -f es-statefulset.yaml
 	-$(kubectl) delete -f es-service.yaml
-	-$(kubectl) delete -f fluentd-es-configmap.yaml
-	-$(kubectl) delete -f fluentd-es-ds.yaml
+	-kubectl --context="$(DOMAIN_NAME)" delete -f fluentd-es-configmap.yaml
+	-kubectl --context="$(DOMAIN_NAME)" delete -f fluentd-es-ds.yaml
 	-$(kubectl) delete -f kibana-deployment.yaml
 	-$(kubectl) delete -f kibana-service.yaml
 	-$(kubectl) delete -f es-cerebro.yaml
