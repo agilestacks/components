@@ -5,7 +5,7 @@ metadata:
   labels:
     provider:  agilestacks.com
     project:   postgresql
-    instance:  "${component.name}"
+    instance:  "${hub.componentName}"
     storage:   local
 spec:
   capacity:
@@ -13,4 +13,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/nfs/postgresql/${component.postgresql.namespace}/${component.name}"
+    path: "/mnt/nfs/postgresql/${component.postgresql.namespace}/${hub.componentName}"
