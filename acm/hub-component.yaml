@@ -11,6 +11,7 @@ parameters:
 - name: dns.domain
   env: DOMAIN_NAME
 - name: component.acm.additionalNames
+  empty: allow
   env: ADDITIONAL_NAMES
 - name: component.acm.deleteCert
   env: ACM_DELETE_CERTIFICATE
