@@ -21,11 +21,13 @@ deploy:
 		--from-file=conf/post-start-hook.sh
 	-$(kubectl) delete configmap cerebro-config
 	$(kubectl) create configmap cerebro-config --from-file=conf/cerebro.conf
-	$(kubectl) apply -f es-env.yaml
+	$(kubectl) apply -f es-env-cm.yaml
+	$(kubectl) apply -f es-secrets.yaml
 	$(kubectl) apply -f es-statefulset.yaml
 	$(kubectl) apply -f es-service.yaml
-	kubectl --context="$(DOMAIN_NAME)" apply -f fluentd-es-configmap.yaml
-	kubectl --context="$(DOMAIN_NAME)" apply -f fluentd-es-ds.yaml
+	kubectl --context="$(DOMAIN_NAME)" --namespace="kube-system" apply -f es-secrets.yaml
+	kubectl --context="$(DOMAIN_NAME)" --namespace="kube-system" apply -f fluentd-es-configmap.yaml
+	kubectl --context="$(DOMAIN_NAME)" --namespace="kube-system" apply -f fluentd-es-ds.yaml
 	$(kubectl) apply -f es-cerebro.yaml
 	$(kubectl) apply -f kibana-deployment.yaml
 	$(kubectl) apply -f kibana-service.yaml
@@ -34,11 +36,13 @@ deploy:
 undeploy:
 	-$(kubectl) delete configmap es-config
 	-$(kubectl) delete configmap cerebro-config
-	-$(kubectl) delete -f es-env.yaml
+	-$(kubectl) delete -f es-env-cm.yaml
+	-$(kubectl) delete -f es-secrets.yaml
 	-$(kubectl) delete -f es-statefulset.yaml
 	-$(kubectl) delete -f es-service.yaml
-	-kubectl --context="$(DOMAIN_NAME)" delete -f fluentd-es-configmap.yaml
-	-kubectl --context="$(DOMAIN_NAME)" delete -f fluentd-es-ds.yaml
+	-kubectl --context="$(DOMAIN_NAME)" --namespace="kube-system" delete -f es-secrets.yaml
+	-kubectl --context="$(DOMAIN_NAME)" --namespace="kube-system" delete -f fluentd-es-configmap.yaml
+	-kubectl --context="$(DOMAIN_NAME)" --namespace="kube-system" delete -f fluentd-es-ds.yaml
 	-$(kubectl) delete -f kibana-deployment.yaml
 	-$(kubectl) delete -f kibana-service.yaml
 	-$(kubectl) delete -f es-cerebro.yaml
