@@ -42,6 +42,9 @@ parameters:
   - name: rds.snapshot
     empty: allow
     env: TF_VAR_snapshot_identifier
+  - name: rds.skip_snapshot
+    value: true
+    env: TF_VAR_skip_final_snapshot
 - name: terraform.bucket.name
   env: STATE_BUCKET
 - name: terraform.bucket.region
