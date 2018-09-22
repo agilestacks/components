@@ -109,7 +109,12 @@ outputs:
   brief: Namespace where Argo has been installed
   value: ${component.argo.namespace}
 - name:  component.argo.events.webhook.service.url
-  value: http://webhook.${component.argo.namespace}.svc.cluster.local:8080
+  value: webhook.${component.argo.namespace}.svc.cluster.local:8080
+- name:  component.argo.events.webhook.service.name
+  value: webhook
+- name:  component.argo.events.webhook.service.port
+  value: 8080
+
 templates:
   files:
   - "*.template"
