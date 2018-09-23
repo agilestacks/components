@@ -12,7 +12,7 @@ export HELM_HOME ?= $(shell pwd)/.helm
 
 NGINX_CHART ?= stable/nginx-ingress
 NGINX_CHART_VERSION ?= 0.26.0
-HARBOR_CHART_VERSION ?= 0.2.0
+HARBOR_CHART_VERSION ?= dev
 TIMEOUT     ?= 600
 
 export TF_VAR_nginx_service_name ?= nginx-nginx-ingress-controller
