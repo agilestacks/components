@@ -5,6 +5,10 @@ ingress:
   enabled: true
 persistence:
   enabled: false
+redis:
+  master:
+    persistence:
+      enabled: false  
 externalDomain: ${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
 externalPort: 
 registry:
