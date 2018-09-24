@@ -12,7 +12,7 @@ export HELM_HOME ?= $(shell pwd)/.helm
 
 NGINX_CHART ?= stable/nginx-ingress
 NGINX_CHART_VERSION ?= 0.26.0
-HARBOR_CHART_VERSION ?= dev
+HARBOR_CHART_VERSION ?= 0.3.0
 TIMEOUT     ?= 600
 
 export TF_VAR_nginx_service_name ?= $(TF_VAR_component)-nginx-nginx-ingress-controller
@@ -31,7 +31,7 @@ init:
 
 harbor:
 	$(helm) init --client-only --upgrade --wait
-	$(git) clone https://github.com/goharbor/harbor-helm
+	$(git) clone --single-branch -b $(HARBOR_CHART_VERSION) https://github.com/goharbor/harbor-helm
 	$(helm) dependency update harbor-helm
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm)	install harbor-helm \
@@ -86,8 +86,6 @@ deploy: init harbor nginx zone
 undeploy:
 	-$(MAKE) plan TF_OPTS="$(TF_OPTS) -destroy"
 	-$(MAKE) apply
-	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)-nginx$$' && \
-		$(helm) delete --namespace $(NAMESPACE) --purge $(TF_VAR_component)-nginx
-	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
-		$(helm) delete --namespace $(NAMESPACE) --purge $(TF_VAR_component)
+	-$(helm) delete --purge $(TF_VAR_component)-nginx
+	-$(helm) delete --purge $(TF_VAR_component)
 .PHONY: undeploy
