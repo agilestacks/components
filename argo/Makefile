@@ -19,8 +19,9 @@ HELM_ARGS :=
 # https://github.com/hashicorp/terraform/issues/14847
 unexport TF_CLI_ARGS
 
-export HELM_HOME ?= $(shell pwd)/.helm
-CHART_VERSION ?= 0.1.1
+export HELM_HOME ?= $(CURDIR)/.helm
+CHART ?= argo/argo
+CHART_VERSION ?= 2.1.1
 
 helm ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(TF_VAR_namespace)"
@@ -39,9 +40,18 @@ namespace:
 init: $(HELM_HOME)
 	$(helm) init --client-only --upgrade --wait
 	$(helm) repo add argo https://argoproj.github.io/argo-helm/
+	- $(helm) repo update
+	- $(helm) search argo
 .PHONY: init
 
-install:
+fetch:
+	$(helm) fetch \
+		--destination charts \
+		--untar $(CHART) \
+		--version "$(CHART_VERSION)"
+.PHONY: fetch
+
+install: fetch
 ifeq ($(REPO_TYPE),s3)
 	$(eval ENDPOINT := $(shell $(MAKE) -C s3 output TF_OPTS="-json" | jq -crM '.endpoint.value'))
 endif
@@ -52,7 +62,7 @@ else
 	$(eval HELM_ARGS += --set "artifactRepository.s3.endpoint=$(ENDPOINT)")
 endif
 	$(helm) list -q | grep -E '^$(TF_VAR_component)$$' || \
-		$(helm) install charts/$(notdir $(CHART)) \
+		$(helm) install argo/argo \
 			--name $(TF_VAR_component) \
 			--namespace $(TF_VAR_namespace) \
 			--replace \
@@ -78,6 +88,7 @@ undeploy: init
 
 clean:
 	rm -rf $(HELM_HOME)
+	rm -rf charts
 
 output:
 	$(MAKE) -C $(REPO_TYPE) $@
