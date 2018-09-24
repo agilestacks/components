@@ -15,7 +15,7 @@ NGINX_CHART_VERSION ?= 0.26.0
 HARBOR_CHART_VERSION ?= dev
 TIMEOUT     ?= 600
 
-export TF_VAR_nginx_service_name ?= nginx-nginx-ingress-controller
+export TF_VAR_nginx_service_name ?= $(TF_VAR_component)-nginx-nginx-ingress-controller
 
 terraform ?= terraform-v0.11
 helm ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
