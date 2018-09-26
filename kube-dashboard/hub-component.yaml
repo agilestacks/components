@@ -14,6 +14,7 @@ provides:
   - kubernetes-dashboard
 
 parameters:
+  - name: component.ingress.protocol
   - name: component.ingress.ssoFqdn
   - name: dns.domain
     env: DOMAIN_NAME
@@ -41,4 +42,4 @@ templates:
 outputs:
   - name: component.kubernetes-dashboard.url
     brief: Kubernetes Dashboard
-    value: http://${component.kubernetes-dashboard.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.kubernetes-dashboard.ingress.urlPrefix}.${component.ingress.ssoFqdn}
