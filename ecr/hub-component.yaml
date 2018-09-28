@@ -11,6 +11,7 @@ requires:
   - aws
 provides:
   - docker-registry
+  - ecr
 
 parameters:
 - name: component.ecr
