@@ -173,6 +173,9 @@ outputs:
     value: accesskey
   - name: component.bucket.secret.secretKeyRef
     value: secretkey
+  - name: component.minio.nats.subject
+    brief: NATS subject used for minio events publishing
+    value: ${component.minio.nats.subject}
 
 templates:
   files:
