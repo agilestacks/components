@@ -15,7 +15,7 @@ deploy:
 	$(aws) cloudformation wait stack-create-complete --stack-name $(NAME)
 	$(aws) cloudformation describe-stacks --stack-name $(NAME) | tee $(OUT)
 	@echo Outputs:
-	@jq -r '.Stacks[0].Outputs[] | select (.OutputKey == "S3BucketName") | "s3_bucket_name = " + .OutputValue' $(OUT)
+	@jq -r '.Stacks[0].Outputs[] | .OutputKey + " = " + .OutputValue' $(OUT)
 	@echo
 	-@rm $(OUT)
 .PHONY: deploy

@@ -19,7 +19,7 @@ parameters:
 outputs:
   - name: component.cloudformation.s3bucket.name
     brief: S3 bucket name
-    fromTfVar: s3_bucket_name
+    fromTfVar: S3BucketName
   - name: component.cloudformation.s3bucket.region
     brief: S3 bucket region
     value: ${cloud.region}
