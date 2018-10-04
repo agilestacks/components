@@ -15,8 +15,6 @@ provides:
   - argo-events
 
 parameters:
-- name: component.ingress.fqdn
-- name: component.ingress.ssoUrlPrefix
 - name: terraform.bucket.name
   env: STATE_BUCKET
 - name: terraform.bucket.region
@@ -64,7 +62,7 @@ parameters:
   - name: serviceAccount
     value: argo
   - name: ingress.baseDomain
-    value: ${component.ingress.ssoUrlPrefix}.${dns.domain}
+    value: ${component.ingress.ssoFqdn}
   - name: chart.version
     value: '2.1.1'
     env: CHART_VERSION
