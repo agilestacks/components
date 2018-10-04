@@ -145,6 +145,9 @@ outputs:
   - name: component.minio.endpoint.ingress
     brief: External minio endpoint
     value: ${component.minio.name}.${component.minio.ingress.baseDomain}
+  - name: component.minio.endpoint.url
+    brief: Minio UI
+    value: ${component.ingress.protocol}://${component.minio.endpoint.ingress}
   - name: component.minio.secret.name
     brief: Kubenetes secret that holds access and secret key info
     value: minio
@@ -175,7 +178,6 @@ outputs:
     value: secretkey
   - name: component.minio.nats.subject
     brief: NATS subject used for minio events publishing
-    value: ${component.minio.nats.subject}
 
 templates:
   files:
