@@ -33,8 +33,9 @@ istio-$(ISTIO_VERSION):
 
 # https://github.com/istio/istio/pull/7625
 patch:
-	@sed -i '' -e 's/serviceName: .*/serviceName: servicegraph/' \
+	@sed -i~ -e 's/serviceName: .*/serviceName: servicegraph/' \
 		istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/charts/servicegraph/templates/ingress.yaml
+	@rm istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/charts/servicegraph/templates/ingress.yaml~
 .PHONY: patch
 
 install:
