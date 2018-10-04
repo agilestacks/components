@@ -70,6 +70,8 @@ outputs:
   value: http://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
 - name:  component.jenkins.fqdn
   value: ${component.jenkins.namespace}.${component.ingress.ssoFqdn}
+- name: component.jenkins.blueOcean.url
+  value: ${component.jenkins.namespace}.${component.ingress.ssoFqdn}/blue 
 
 templates:
   files:
