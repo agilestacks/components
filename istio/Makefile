@@ -4,12 +4,12 @@ HELM_HOME      ?= ./.helm
 COMPONENT_NAME ?= istio
 NAMESPACE      ?= istio-system
 DOMAIN_NAME    ?= default
-ISTIO_VERSION  ?= 1.0.0
+ISTIO_VERSION  ?= 1.0.2
 
 kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy: clean init fetch namespace crds install
+deploy: clean init fetch patch namespace crds install usage
 
 namespace:
 	$(kubectl) apply -f namespace.yaml
@@ -31,6 +31,12 @@ istio-$(ISTIO_VERSION):
 	curl -L https://github.com/istio/istio/archive/$(ISTIO_VERSION).tar.gz | \
 		tar xz istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio
 
+# https://github.com/istio/istio/pull/7625
+patch:
+	@sed -i '' -e 's/serviceName: .*/serviceName: servicegraph/' \
+		istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/charts/servicegraph/templates/ingress.yaml
+.PHONY: patch
+
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio \
@@ -38,8 +44,16 @@ install:
 			--namespace $(NAMESPACE) \
 			--replace \
 			--wait \
-			--values values.yaml
+			--values values.yaml.$(ISTIO_VERSION)
 .PHONY: install
+
+usage:
+	@echo
+	@echo Enable automatic sidecar injection by labeling a namespace:
+	@echo kubectl label namespace NAMESPACE istio-injection=enabled
+	@echo https://istio.io/docs/setup/kubernetes/sidecar-injection/
+	@echo
+.PHONY: usage
 
 undeploy:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
