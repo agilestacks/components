@@ -6,3 +6,4 @@ metadata:
 data:
   config: |
     instanceID: ${component.argo.instanceId}
+    namespace: ${component.argo.namespace}

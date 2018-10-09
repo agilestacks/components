@@ -127,3 +127,7 @@ argo/.go
 minio/charts
 minio/aws-storage-class.yaml
 minio/hybrid-storage-class.yaml
+argo/events/.go
+argo/events/gateway-crd.yaml
+argo/events/gateway-controller-deployment.yaml
+argo/events/gateway-controller-configmap.yaml
