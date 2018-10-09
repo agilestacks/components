@@ -67,34 +67,35 @@ parameters:
   - name: chart.version
     value: '2.1.1'
     env: CHART_VERSION
+  - name: events.webhook.service.name
+    value: webhook
+  - name: events.webhook.service.port
+    value: 7070
+  - name: events.webhook.service.type
+    value: ClusterIP
+    # value: LoadBalancer
 outputs:
 - name: component.argo.repo.secret.name
   brief: Kubenetes secret that holds access and secret key info
   fromTfVar: secret_name
 - name: component.argo.repo.secret.accessKeyRef
   brief: Kubenetes secret data field that holds Access Key Id
-  value: ${component.argo.repo.secret.accessKeyRef}
 - name: component.argo.repo.secret.secretKeyRef
   brief: Kubenetes secret data field that holds Secret Key
-  vakue: ${component.argo.repo.secret.secretKeyRef}
 - name: component.argo.repo
   brief: Argo backend S3 or Minio
   value: s3
 - name: component.argo.repo.bucket.name
   brief: Argo backend bucket name
-  value: ${component.argo.repo.bucket.name}
 - name: component.argo.repo.bucket.region
   brief: Argo backend bucket region
-  value: ${component.argo.repo.bucket.region}
 - name: component.argo.repo.bucket.endpoint
   brief: Argo backend bucket service endpoint
   fromTfVar: endpoint
 - name: component.argo.repo.bucket.insecure
   brief: Argo backend bucket insecure
-  value: ${component.argo.repo.bucket.insecure}
 - name: component.argo.repo.bucket.keyPrefix
   brief: Argo backend bucket key
-  value: ${component.argo.repo.bucket.keyPrefix}
 - name: component.argo.repo.iam.username
   brief: Name of the IAM user who have access to artifacts repository
   fromTfVar: iam_user_name
@@ -109,13 +110,10 @@ outputs:
   value: ${component.ingress.protocol}://${component.argo.ingress}
 - name: component.argo.namespace
   brief: Namespace where Argo has been installed
-  value: ${component.argo.namespace}
 - name:  component.argo.events.webhook.service.url
-  value: webhook.${component.argo.namespace}.svc.cluster.local:8080
+  value: webhook.${component.argo.namespace}.svc.cluster.local:7070
 - name:  component.argo.events.webhook.service.name
-  value: webhook
 - name:  component.argo.events.webhook.service.port
-  value: 8080
 
 templates:
   files:
