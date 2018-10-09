@@ -27,9 +27,14 @@ running_pods := $(kubectl) get pods -l app=etcd -o jsonpath='{range.items[?(@.st
 ifeq ($(RESTORE_SNAPSHOT),)
 deploy: clean init install enable wait_pods
 else
-deploy: clean init install enable restore
+deploy: clean init install enable restore sleep
 endif
 .PHONY: deploy
+
+sleep:
+	@echo Waiting 30sec for Etcd pods
+	@sleep 30
+.PHONY: sleep
 
 init:
 	@mkdir -p $(HELM_HOME)
