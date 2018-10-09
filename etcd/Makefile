@@ -32,8 +32,8 @@ endif
 .PHONY: deploy
 
 sleep:
-	@echo Waiting 30sec for Etcd pods
-	@sleep 30
+	@echo Waiting 120sec for Etcd pods
+	@sleep 120
 .PHONY: sleep
 
 init:
