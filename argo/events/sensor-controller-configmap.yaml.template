@@ -5,5 +5,5 @@ metadata:
   namespace: ${component.argo.namespace}
 data:
   config: |
-    instanceID: ${component.argo.instanceId}
+    instanceID: argo-events
     namespace: ${component.argo.namespace}

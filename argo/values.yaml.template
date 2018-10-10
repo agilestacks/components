@@ -3,14 +3,16 @@ images:
   controller: workflow-controller
   ui: argoui
   executor: argoexec
-  tag: v2.2.0
+  tag: v2.1.1
 
 controller:
   serviceAccount: ${component.argo.serviceAccount}
   name: workflow-controller
-  workflowNamespaces: [default, ${component.argo.namespace}]
-  useReleaseAsInstanceID: false
-  instanceID: ${component.argo.instanceId}
+  workflowNamespaces:
+  - "${component.argo.namespace}"
+  - default
+  useReleaseAsInstanceID: true
+  instanceID:
 
 ui:
   name: ui
@@ -34,10 +36,10 @@ artifactRepository:
     endpoint: must be defined via helm cli arg
     bucket: ${component.argo.repo.bucket.name}
     accessKeySecret:
-      name: argo-repo-${component.argo.name}
+      name: ${component.bucket.secret.name}
       key: ${component.argo.repo.secret.accessKeyRef}
     secretKeySecret:
-      name: argo-repo-${component.argo.name}
+      name: ${component.bucket.secret.name}
       key: ${component.argo.repo.secret.secretKeyRef}
     insecure: ${component.argo.repo.bucket.insecure}
     keyPrefix: ${component.argo.repo.bucket.keyPrefix}
