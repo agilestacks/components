@@ -9,7 +9,7 @@ export TF_VAR_base_domain  ?= kubernetes.delivery
 export DOMAIN_NAME         ?= $(TF_VAR_name).$(TF_VAR_base_domain)
 export BACKUP_BUCKET       ?= terraform.agilestacks.com
 export ETCD_IMAGE          ?= quay.io/coreos/etcd
-export ETCD_VERSION        ?= 3.2.17
+export ETCD_VERSION        ?= v3.2.24
 export ETCD_CLUSTER_SIZE   ?= 3
 export CLUSTER_ENABLED     ?= false
 export BACKUP_ENABLED      ?= false
@@ -22,26 +22,24 @@ export TS       	       := $(shell date +"%Y-%m-%d-%H-%M-%S")
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-running_pods := $(kubectl) get pods -l app=etcd -o jsonpath='{range.items[?(@.status.containerStatuses[0].ready==true)]}{.kind}{"\n"}{end}'
+running_etcd_pods := $(kubectl) get pods -l app=etcd -o jsonpath='{range.items[?(@.status.containerStatuses[0].ready==true)]}{.kind}{"\n"}{end}'
 
 ifeq ($(RESTORE_SNAPSHOT),)
-deploy: clean init install enable wait_pods
+deploy: clean init install enable wait_etcd_pods_initial
 else
-deploy: clean init install enable restore sleep
+# restore operator requires seed cluster before restore is initiated
+# it seems it doesn't require the cluster to fully stand up
+# but we'll wait anyway to isolate restore problem vs generic etcd problem
+deploy: CLUSTER_ENABLED:=true
+deploy: clean init install enable restore wait_etcd_pods_after_restore
 endif
 .PHONY: deploy
-
-sleep:
-	@echo Waiting 180sec for Etcd pods
-	@sleep 180
-.PHONY: sleep
 
 init:
 	@mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
 .PHONY: init
 
-# TODO the single line output won't flush thru Kubernetes pod log - appears to be stuck to the observer
 wait_crd:
 	@for i in $$(seq 1 60); do \
 		if $(kubectl) get customresourcedefinitions/etcdclusters.etcd.database.coreos.com; then \
@@ -55,19 +53,21 @@ wait_crd:
 	exit 1
 .PHONY: wait_crd
 
-wait_pods:
-	@if test "$(CLUSTER_ENABLED)" = true; then printf "Waiting for cluster pods to be running"; \
+# the single line output of ... won't flush thru Kubernetes pod log - appears to be stuck to the observer
+# at least we have the banner printed
+wait_etcd_pods%:
+	@if test "$(CLUSTER_ENABLED)" = true; then echo "Waiting for etcd cluster pods to stand up"; \
 	for i in $$(seq 1 60); do \
-		if [ $$($(running_pods) | wc -l) -eq $(ETCD_CLUSTER_SIZE) ] ; then \
-			printf "\ndone\n"; \
+		if test $$($(running_etcd_pods) | wc -l) -eq $(ETCD_CLUSTER_SIZE); then \
+			echo " done"; \
 			exit 0; \
 		fi; \
 		printf "."; \
-		sleep 20; \
+		sleep 10; \
 	done; \
-	printf "\nTimeout Error\n"; \
+	echo " timeout"; \
 	exit 1; fi
-.PHONY: wait_pods
+.PHONY: wait_etcd_pods%
 
 # after all Makefile and shell/echo acrobatics I can't make --from-literal to insert newline into config= value
 awsetcd:
@@ -81,10 +81,11 @@ unbackup:
 
 backup: unbackup awsetcd
 	./bin/templater.sh ./backup/EtcdBackup.yaml.template | $(kubectl) create -f -
-	$(eval get_crd=$(kubectl) get EtcdBackup/$(COMPONENT_NAME)-$(TS)  -o json)
-	@ printf "Waiting for EtcdBackup/$(COMPONENT_NAME)-$(TS)"
-	@ for tick in $$(seq 100); do \
-		if [ $$($(get_crd) | jq -r '.status.succeeded' | xargs) != 'null' ]; then \
+	$(eval crd:=EtcdBackup/$(COMPONENT_NAME)-$(TS))
+	$(eval get_crd:=$(kubectl) get $(crd) -o json)
+	@ echo "Waiting for $(crd)"
+	@ for i in $$(seq 60); do \
+		if test "$$($(get_crd) | jq -r '.status.succeeded')" != null; then \
 			echo " done"; \
 			break; \
 		fi; \
@@ -93,7 +94,7 @@ backup: unbackup awsetcd
 	done;
 
 	@ $(get_crd) | jq .
-	@ test "$$( $(get_crd) | jq -r '.status.succeeded' )" = "true"
+	@ test "$$( $(get_crd) | jq -r '.status.succeeded' )" = true
 	@ echo Outputs:
 	@ echo component.etcd.snapshot = $$( $(get_crd) | jq -r '.spec.s3.path' )
 	@ echo
@@ -103,9 +104,24 @@ unrestore:
 	-$(kubectl) delete EtcdRestore/$(COMPONENT_NAME)
 .PHONY: unrestore
 
-restore: wait_pods unrestore awsetcd
+restore: wait_etcd_pods_seed unrestore awsetcd
 	./bin/templater.sh ./restore/EtcdRestore.yaml.template | \
 		$(kubectl) create -f -
+	$(eval crd:=EtcdRestore/$(COMPONENT_NAME))
+	$(eval get_crd:=$(kubectl) get $(crd) -o json)
+	@ echo "Waiting for EtcdBackup/$(COMPONENT_NAME)"
+	@ for i in $$(seq 60); do \
+		if test "$$($(get_crd) | jq -r '.status.succeeded')" != null; then \
+			echo " done"; \
+			break; \
+		fi; \
+		printf "."; \
+		sleep 5; \
+	done;
+
+	@ $(get_crd) | jq .
+	@ test "$$( $(get_crd) | jq -r '.status.succeeded' )" = "true"
+	@ sleep 10
 .PHONY: restore
 
 install:
