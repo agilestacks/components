@@ -70,7 +70,6 @@ endif
 			--values values.yaml \
 			$(HELM_ARGS) \
 			--version '$(CHART_VERSION)'
-	$(kubectl) get services -o wide | grep argo-
 .PHONY: install
 
 deploy: init namespace rbac install
