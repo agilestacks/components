@@ -18,6 +18,7 @@ lifecycle:
   verbs:
     - deploy
     - undeploy
+    - backup
     - restore
 
 parameters:
