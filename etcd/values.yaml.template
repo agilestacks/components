@@ -43,7 +43,7 @@ etcdOperator:
   replicaCount: 1
   image:
     repository: quay.io/coreos/etcd-operator
-    tag: ${component.etcd.version}
+    tag: ${component.etcd.operator.version}
     pullPolicy: Always
   resources:
     cpu: 100m
@@ -61,7 +61,7 @@ backupOperator:
   replicaCount: 1
   image:
     repository: quay.io/coreos/etcd-operator
-    tag: ${component.etcd.version}
+    tag: ${component.etcd.operator.version}
     pullPolicy: Always
   resources:
     cpu: 100m
@@ -84,7 +84,7 @@ restoreOperator:
   replicaCount: 1
   image:
     repository: quay.io/coreos/etcd-operator
-    tag: ${component.etcd.version}
+    tag: ${component.etcd.operator.version}
     pullPolicy: Always
   port: 19999
   resources:
