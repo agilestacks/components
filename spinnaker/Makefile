@@ -23,7 +23,7 @@ JENKINS_ADDRESS      ?= http://jenkins.jenkins.svc.cluster.local:8080
 JENKINS_FQDN         ?= jenkins.app.$(DOMAIN_NAME)
 JENKINS_USER         ?= robot
 JENKINS_PASSWORD     ?= password
-SPINNAKER_VERSION    ?= 1.4.2
+SPINNAKER_VERSION    ?= 1.9.5
 NAMESPACE            ?= spinnaker
 AWS_S3_BUCKET        ?= files.$(DOMAIN_NAME)
 AWS_KEYPAIR          ?= agilestacks
@@ -140,10 +140,12 @@ deploy: tf_init tf_plan tf_apply configure
 .PHONY: deploy
 
 undeploy:
-	$(kubectl) delete -f ingress.yaml || true
-	@echo "Undeploy Spinnaker"
-	$(hal) deploy clean --quiet || true
-	@echo "Done"
+	-$(kubectl) delete -f ingress.yaml
+	@echo Undeploying Spinnaker
+	-$(hal) deploy clean --quiet
+	-$(kubectl) delete namespace "$(NAMESPACE)"
+	@echo Done
+	@echo Undeploying IAM role
 	$(MAKE) tf_destroy
 .PHONY: undeploy
 
