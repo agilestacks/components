@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 export DOMAIN_NAME          ?= dev.kubernetes.delivery
-export AWS_REGION           ?= us-east-2
+export AWS_DEFAULT_REGION   ?= us-east-2
 
 export KUBE_CONTEXT         := $(shell kubectl config current-context)
 
