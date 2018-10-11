@@ -1,13 +1,17 @@
 .DEFAULT_GOAL := deploy
 
+BUCKET      ?= argo
 ENDPOINT    ?= localhost:9000
 SECRET_NAME ?= minio
+CONFIGMAP   ?= workflow-controller-configmap
+INGRESS_PORTOCOL ?= http
+kubectl     ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
-deploy: output
+deploy: install output
 
-undeploy:
-	@ echo "Argo has nothing to undeploy for minio"
-.PHONY: undeploy
+install:
+	- $(kubectl) create configmap $(CONFIGMAP) --from-file configmap.yaml
+	$(CURDIR)/mb.sh
 
 output:
 	@ echo
@@ -16,5 +20,12 @@ output:
 	@ echo endpoint = $(ENDPOINT)
 	@ echo iam_user_name =
 	@ echo iam_user_arn =
+	@ echo insecure = true
 	@ echo
-.PHONY: output
+
+
+undeploy:
+	- $(kubectl) delete $(CONFIGMAP)
+
+
+.PHONY: output install undeploy
