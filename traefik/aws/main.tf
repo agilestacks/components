@@ -32,9 +32,9 @@ resource "aws_route53_record" "dns_auth_ext" {
   ttl     = "300"
   records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
 
-  lifecycle {
-    ignore_changes = ["records", "ttl"]
-  }
+  # lifecycle {
+  #   ignore_changes = ["records", "ttl"]
+  # }
 }
 
 resource "aws_route53_record" "dns_app1_ext" {
