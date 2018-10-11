@@ -154,3 +154,7 @@ output "iam_user_name" {
 output "iam_user_arn" {
   value = "${module.user.arn}"
 }
+
+output "insecure" {
+  value = "false"
+}

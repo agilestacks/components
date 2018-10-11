@@ -131,3 +131,5 @@ argo/events/.go
 argo/events/gateway-crd.yaml
 argo/events/gateway-controller-deployment.yaml
 argo/events/gateway-controller-configmap.yaml
+argo/install.yaml
+argo/minio/configmap.yaml

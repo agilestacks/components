@@ -1,14 +1,24 @@
 .DEFAULT_GOAL := deploy
 
-DOMAIN_NAME      		  ?= dev.stacks.delivery
-STATE_BUCKET     		  ?= terraform.agilestacks.com
-STATE_REGION     		  ?= us-east-1
-export TF_OPTS            ?= -no-color
-export TF_UPDATE          ?= -update
-export TF_DATA_DIR        ?= .terraform
-export TF_VAR_component   ?= argo
-export TF_VAR_namespace   ?= argoproj
-export KUBE_CTX           := $(DOMAIN_NAME)
+DOMAIN_NAME    ?= dev.stacks.delivery
+STATE_BUCKET   ?= terraform.agilestacks.com
+STATE_REGION   ?= us-east-1
+NAMESPACE      ?= argoproj
+BUCKET         ?= default
+ACCESS_KEY_REF ?= accesskey
+SECRET_KEY_REF ?= secretkey
+
+export TF_OPTS               ?= -no-color
+export TF_UPDATE             ?= -update
+export TF_DATA_DIR           ?= .terraform
+export TF_VAR_component      ?= argo
+export TF_VAR_namespace      := $(NAMESPACE)
+export KUBE_CTX              := $(DOMAIN_NAME)
+
+export TF_VAR_bucket_name    ?= $(BUCKET)
+export TF_VAR_component      ?= argo
+export TF_VAR_access_key_ref ?= $(ACCESS_KEY_REF)
+export TF_VAR_secret_key_ref ?= $(SECRET_KEY_REF)
 
 # https://github.com/hashicorp/terraform/issues/14847
 unexport TF_CLI_ARGS
