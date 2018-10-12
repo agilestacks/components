@@ -3,7 +3,7 @@
 
 export MC_HOME="$(pwd)/.mc"
 
-NAMESPACE="${NAMESPACE:-minio}"
+NAMESPACE="${SECRET_NAMESPACE:-minio}"
 DOMAIN_NAME="${DOMAIN_NAME:-localhost}"
 BUCKET="${BUCKET:-default}"
 SECRET_NAME="${SECRET_NAME:-minio}"

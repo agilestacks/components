@@ -37,6 +37,9 @@ parameters:
   - name: secret.name
     empty: allow
     env: SECRET_NAME
+  - name: secret.namespace
+    empty: allow
+    env: SECRET_NAMESPACE
   - name: secret.accessKeyRef
     value: accessKey
     env: ACCESS_KEY_REF
