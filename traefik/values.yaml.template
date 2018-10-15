@@ -319,7 +319,7 @@ rbac:
 ## set to true to enable metric collection by prometheus
 metrics:
   prometheus:
-    enabled: true
+    enabled: false
     # buckets: [0.1,0.3,1.2,5]
   datadog:
     enabled: false
