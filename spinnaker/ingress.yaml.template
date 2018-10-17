@@ -8,10 +8,10 @@ metadata:
   annotations:
     kubernetes.io/tls-acme: "true"
 spec:
-  tls:
-  - hosts:
-    - ${component.spinnaker.name}.${component.ingress.fqdn}
-    secretName: spinnaker-tls
+  # tls:
+  # - hosts:
+  #   - ${component.spinnaker.name}.${component.ingress.fqdn}
+  #   secretName: spinnaker-tls
   rules:
   - host: ${component.spinnaker.name}.${component.ingress.fqdn}
     http:
@@ -31,10 +31,10 @@ metadata:
   annotations:
     kubernetes.io/tls-acme: "true"
 spec:
-  tls:
-  - hosts:
-    - api.${component.spinnaker.name}.${component.ingress.fqdn}
-    secretName: spinnaker-tls
+  # tls:
+  # - hosts:
+  #   - api.${component.spinnaker.name}.${component.ingress.fqdn}
+  #   secretName: spinnaker-tls
   rules:
   - host: api.${component.spinnaker.name}.${component.ingress.fqdn}
     http:
