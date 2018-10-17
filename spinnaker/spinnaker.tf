@@ -70,6 +70,10 @@ resource "aws_iam_policy" "spinnaker" {
   "Statement": [
     {
       "Effect": "Allow",
+      "Action": ["iam:GetRole","iam:PassRole"],
+      "Resource": "*"
+    },{
+      "Effect": "Allow",
       "NotAction": ["iam:*", "organizations:*"],
       "Resource": "*"
     },{
