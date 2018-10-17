@@ -127,8 +127,8 @@ endif
 .PHONY: configure
 
 deploy: tf_init tf_plan tf_apply configure
-	$(hal) config security ui  edit --override-base-url http://$(COMPONENT_NAME).$(INGRESS_FQDN)
-	$(hal) config security api edit --override-base-url http://api.$(COMPONENT_NAME).$(INGRESS_FQDN)
+	$(hal) config security ui  edit --override-base-url $(INGRESS_PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_FQDN)
+	$(hal) config security api edit --override-base-url $(INGRESS_PROTOCOL)://api.$(COMPONENT_NAME).$(INGRESS_FQDN)
 	$(hal) config storage edit --type redis
 	$(hal) config storage edit --type s3
 	$(hal) config deploy edit \

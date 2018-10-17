@@ -32,6 +32,9 @@ parameters:
   - name: component.ingress.fqdn
     value: app.${dns.domain}
     env: INGRESS_FQDN
+  - name: component.ingress.protocol
+    value: http
+    env: INGRESS_PROTOCOL
   - name: component.spinnaker
     parameters:
     - name: name
