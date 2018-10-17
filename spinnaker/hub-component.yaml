@@ -27,8 +27,6 @@ parameters:
   - name: dns.domain
     brief: DNS domain
     env: DOMAIN_NAME
-  - name: cloud.role.master
-    value: unknown
   - name: component.ingress.fqdn
     value: app.${dns.domain}
     env: INGRESS_FQDN
@@ -51,13 +49,13 @@ parameters:
       value: spinnaker.${component.ingress.fqdn}
       env: SPINNAKER_INGRESS
     - name: aws.assume_role
-      value: ${cloud.role.master}
+      value: ${cloud.role.worker}
       env: AWS_ASSUME_ROLE
     - name: aws.keypair
-      value: agilestacks
+      value: ${cloud.sshKey}
       env: AWS_KEY_PAIR
-    - name: slack.bot_token
-      value: unknown
+    - name: slack.botToken
+      empty: allow
       env: SLACK_TOKEN
     - name: aws.accountName
       value: aws
