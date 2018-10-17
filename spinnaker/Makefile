@@ -17,7 +17,7 @@ export STATE_BUCKET ?= terraform.agilestacks.com
 export STATE_REGION ?= us-east-1
 
 COMPONENT_NAME       ?= spinnaker
-SLACK_TOKEN          ?= unknown
+SLACK_TOKEN          ?=
 INGRESS_FQDN         ?= spinnaker.app.$(DOMAIN_NAME)
 JENKINS_ADDRESS      ?= http://jenkins.jenkins.svc.cluster.local:8080
 JENKINS_FQDN         ?= jenkins.app.$(DOMAIN_NAME)
@@ -96,7 +96,7 @@ configure:
 		--address $(AWS_ECR_REGISTRY) || true
 	$(hal) config provider docker-registry enable
 
-ifeq ($(SLACK_TOKEN),unknown)
+ifndef $(SLACK_TOKEN)
 	$(hal) config notification slack disable
 else
 	echo $(SLACK_TOKEN) | \
