@@ -67,7 +67,7 @@ tf_destroy: tf_init
 
 
 install:
-	sudo $(SHELL) bin/$(shell uname -s | tr A-Z a-z)/InatallHalyard.sh
+	sudo $(SHELL) bin/$(shell uname -s | tr A-Z a-z)/InstallHalyard.sh
 
 tf_output=$(shell cd .terraform/$(DOMAIN_NAME) && $(terraform) output -json | jq -crM .$(1).value)
 
