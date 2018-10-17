@@ -44,6 +44,9 @@ parameters:
       brief: Kubernetes namespace to install into
       value: spinnaker
       env: NAMESPACE
+    - name: version
+      value: 1.10.0
+      env: SPINNAKER_VERSION
     - name: ingress
       value: spinnaker.${component.ingress.fqdn}
       env: SPINNAKER_INGRESS
