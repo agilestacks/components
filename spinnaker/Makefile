@@ -50,18 +50,19 @@ tf_init:
 		. .terraform/$(DOMAIN_NAME)
 
 tf_plan:
-	@cd .terraform/$(DOMAIN_NAME) && \
-	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=terraform.tfplan
+	cd .terraform/$(DOMAIN_NAME) && \
+		$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=terraform.tfplan
 .PHONY: tf_plan
 
 tf_apply:
-	@cd .terraform/$(DOMAIN_NAME) && \
-	$(terraform) apply $(TF_OPTS) -Xshadow=false terraform.tfplan
+	cd .terraform/$(DOMAIN_NAME) && \
+		$(terraform) apply $(TF_OPTS) -Xshadow=false terraform.tfplan
+	@echo
 .PHONY: tf_apply
 
 tf_destroy: tf_init
-	@cd .terraform/$(DOMAIN_NAME) && \
-	$(terraform) plan $(TF_OPTS) -destroy -refresh=true -module-depth=-1 -out=terraform.tfplan
+	cd .terraform/$(DOMAIN_NAME) && \
+		$(terraform) plan $(TF_OPTS) -destroy -refresh=true -module-depth=-1 -out=terraform.tfplan
 	$(MAKE) tf_apply
 .PHONY: tf_destroy
 
