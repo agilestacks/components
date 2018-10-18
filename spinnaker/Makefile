@@ -18,7 +18,8 @@ export STATE_REGION ?= us-east-1
 
 COMPONENT_NAME       ?= spinnaker
 SLACK_TOKEN          ?=
-INGRESS_FQDN         ?= spinnaker.app.$(DOMAIN_NAME)
+INGRESS_PROTOCOL     ?= http
+INGRESS_FQDN         ?= apps.$(DOMAIN_NAME)
 JENKINS_ADDRESS      ?= http://jenkins.jenkins.svc.cluster.local:8080
 JENKINS_FQDN         ?= jenkins.app.$(DOMAIN_NAME)
 JENKINS_USER         ?= robot
