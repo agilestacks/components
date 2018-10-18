@@ -89,7 +89,7 @@ resource "aws_launch_configuration" "worker_conf" {
   image_id             = "${coalesce(var.ec2_ami_override, data.aws_ami.coreos_ami.image_id)}"
   key_name             = "${var.keypair}"
   security_groups      = ["${var.worker_sg_id}"]
-  iam_instance_profile = "${aws_iam_instance_profile.worker_profile.arn}"
+  iam_instance_profile = "${var.worker_instance_profile}"
   user_data            = "${data.ignition_config.main.rendered}"
   spot_price           = "${var.worker_spot_price}"
 
@@ -138,99 +138,4 @@ resource "aws_autoscaling_attachment" "workers" {
   count                  = "${length(var.worker_load_balancers)}"
   autoscaling_group_name = "${aws_autoscaling_group.workers.name}"
   elb                    = "${var.worker_load_balancers[count.index]}"
-}
-
-resource "aws_iam_instance_profile" "worker_profile" {
-  name = "${substr(format("worker-profile-%s-%s",var.pool_name,var.domain),0,min(63, length(format("worker-profile-%s-%s",var.pool_name,var.domain))))}"
-  role = "${aws_iam_role.worker_role.name}"
-}
-
-resource "aws_iam_role" "worker_role" {
-  name = "${substr(format("worker-role-%s-%s",var.pool_name,var.domain),0,min(63, length(format("worker-role-%s-%s",var.pool_name,var.domain))))}"
-  path = "/"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": { "Service": "ec2.amazonaws.com"},
-      "Action": "sts:AssumeRole"
-    },
-    {
-      "Action": "sts:AssumeRole",
-      "Effect": "Allow",
-      "Principal": { "Service": "ecs-tasks.amazonaws.com"}
-    },
-    {
-      "Action": "sts:AssumeRole",
-      "Effect": "Allow",
-      "Principal": { "Service": "batch.amazonaws.com"}
-    },
-    {
-      "Action": "sts:AssumeRole",
-      "Effect": "Allow",
-      "Principal": {"AWS": "*"}
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy" "worker_policy" {
-  name = "${substr(format("worker-policy-%s-%s",var.pool_name,var.domain),0,min(63, length(format("worker-policy-%s-%s",var.pool_name,var.domain))))}"
-  role = "${aws_iam_role.worker_role.id}"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ec2:*",
-        "elasticloadbalancing:*",
-        "route53:*",
-        "s3:*",
-        "sts:*",
-        "dynamodb:*"
-      ],
-      "Resource": ["*"]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ecr:CompleteLayerUpload",
-        "ecr:UploadLayerPart",
-        "ecr:InitiateLayerUpload",
-        "ecr:GetAuthorizationToken",
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:GetRepositoryPolicy",
-        "ecr:DescribeRepositories",
-        "ecr:ListImages",
-        "ecr:BatchGetImage",
-        "ecs:CreateCluster",
-        "ecs:DeregisterContainerInstance",
-        "ecs:DiscoverPollEndpoint",
-        "ecs:Poll",
-        "ecs:RegisterContainerInstance",
-        "ecs:StartTelemetrySession",
-        "ecs:Submit*",
-        "sts:AssumeRole"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action" : [
-        "autoscaling:DescribeAutoScalingGroups",
-        "autoscaling:DescribeAutoScalingInstances"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-EOF
 }

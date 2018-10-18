@@ -165,6 +165,10 @@ Example:
 EOF
 }
 
+variable "worker_instance_profile" {
+  type = "string"
+}
+
 variable "cluster_tag" {
   type        = "string"
   description = "Tag to enable worker nodes to join the Kube cluster"
