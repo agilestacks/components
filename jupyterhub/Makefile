@@ -2,7 +2,7 @@
 
 JHUB_NAMESPACE ?= jhub
 NAME ?= jhub
-JHUB_HELM_VERSION = ?= 0.7.0
+JHUB_HELM_VERSION ?= 0.7.0
 DOMAIN_NAME ?=
 
 helm ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"

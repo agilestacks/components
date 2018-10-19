@@ -1,3 +1,7 @@
+proxy:
+  secretToken: fd35f6d4ccd5a33b8f82a15f29c918becaf1089e6346023b3bb7c116f7f0bcbb
+  service:
+    type: ClusterIP
 hub:
   db:
     pvc:
