@@ -1,0 +1,13 @@
+hub:
+  db:
+    pvc:
+      storageClassName: ${component.jupyterhub.storageClassName}
+singleuser:
+  storage:
+    dynamic:
+      storageClass: ${component.jupyterhub.storageClassName}
+debug:
+  enabled: false
+ingress:
+  enabled: true
+  hosts: ['${component.jupyterhub.name}.${component.ingress.ssoFqdn}']
