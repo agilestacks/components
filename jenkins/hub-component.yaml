@@ -68,10 +68,12 @@ outputs:
   value: 8080
 - name:  component.jenkins.internal.url
   value: http://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
+- name:  component.jenkins.fqdn # for Spinnaker
+  value: ${component.jenkins.namespace}.${component.ingress.ssoFqdn}
 - name:  component.jenkins.url
-  value: ${component.ingress.protocol}://${component.jenkins.namespace}.${component.ingress.ssoFqdn}
+  value: ${component.ingress.protocol}://${component.jenkins.fqdn}
 - name:  component.jenkins.blueOcean.url
-  value: ${component.ingress.protocol}://${component.jenkins.namespace}.${component.ingress.ssoFqdn}/blue 
+  value: ${component.ingress.protocol}://${component.jenkins.fqdn}/blue
 
 templates:
   files:
