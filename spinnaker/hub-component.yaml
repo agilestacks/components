@@ -24,6 +24,8 @@ parameters:
   - name: cloud.bucket
     brief: Bucket for Spinnaker. Created by platform
     env: AWS_S3_BUCKET
+  - name: dns.name
+    env: NAME
   - name: dns.domain
     brief: DNS domain
     env: DOMAIN_NAME

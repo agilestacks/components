@@ -1,11 +1,11 @@
 .DEFAULT_GOAL := deploy
 
+export NAME                 ?= dev
 export DOMAIN_NAME          ?= dev.kubernetes.delivery
 export AWS_DEFAULT_REGION   ?= us-east-2
 
-export KUBE_CONTEXT         := $(shell kubectl config current-context)
-
 export SHELL                := /bin/bash
+export HOME                 ?= /home/spinnaker
 
 export TF_LOG               ?= debug
 export TF_LOG_PATH          ?= .terraform/$(DOMAIN_NAME).log
@@ -28,9 +28,10 @@ SPINNAKER_VERSION    ?= 1.10.0
 NAMESPACE            ?= spinnaker
 AWS_S3_BUCKET        ?= files.$(DOMAIN_NAME)
 AWS_KEYPAIR          ?= agilestacks
-AWS_ECR_LOGIN_STRING ?= $(shell aws ecr get-login)
-AWS_ECR_USER         ?= $(word 4,$(AWS_ECR_LOGIN_STRING))
-AWS_ECR_REGISTRY     ?= $(subst https://,,$(lastword $(AWS_ECR_LOGIN_STRING)))
+
+AWS_ECR_LOGIN_STRING := $(shell aws ecr get-login)
+AWS_ECR_USER         := $(word 4,$(AWS_ECR_LOGIN_STRING))
+AWS_ECR_REGISTRY     := $(subst https://,,$(lastword $(AWS_ECR_LOGIN_STRING)))
 
 AWS_ACCOUNT_NAME     ?= aws
 K8S_ACCOUNT_NAME     ?= kubernetes
@@ -67,20 +68,24 @@ tf_destroy: tf_init
 	$(MAKE) tf_apply
 .PHONY: tf_destroy
 
-
 install:
 	sudo $(SHELL) bin/$(shell uname -s | tr A-Z a-z)/InstallHalyard.sh
 
 tf_output=$(shell cd .terraform/$(DOMAIN_NAME) && $(terraform) output -json | jq -crM .$(1).value)
 
+# long deployment name results in
+# $ hal backup create
+# ERROR Unexpected exception: java.lang.RuntimeException: file name
+# '...'
+# is too long ( > 100 bytes)
 configure:
 	$(eval AWS_ACCOUNT_ID  := $(call tf_output,account_id))
 	$(eval AWS_ASSUME_ROLE := $(call tf_output,role_name))
 
-	mkdir -p .hub/$(DOMAIN_NAME)
-	@echo $(word 6,$(AWS_ECR_LOGIN_STRING)) > .hub/$(DOMAIN_NAME)/ecr-pass.txt
+	mkdir -p $(HOME)/.hal
+	@echo $(word 6,$(AWS_ECR_LOGIN_STRING)) > $(HOME)/.hal/$(NAME)-ecr-pass.txt
 
-	$(hal) config --set-current-deployment $(DOMAIN_NAME) --deployment $(DOMAIN_NAME)
+	$(hal) config --set-current-deployment $(NAME) --deployment $(NAME)
 	$(hal) config version edit --version=$(SPINNAKER_VERSION)
 	$(hal) config provider aws account delete $(AWS_ACCOUNT_NAME) || true
 	$(hal) config provider aws account add $(AWS_ACCOUNT_NAME) \
@@ -93,7 +98,7 @@ configure:
 	$(hal) config provider docker-registry account delete aws-ecr-$(AWS_DEFAULT_REGION) || true
 	$(hal) config provider docker-registry account add aws-ecr-$(AWS_DEFAULT_REGION) \
 		--username $(AWS_ECR_USER) \
-		--password-file .hub/$(DOMAIN_NAME)/ecr-pass.txt \
+		--password-file $(HOME)/.hal/$(NAME)-ecr-pass.txt \
 		--address $(AWS_ECR_REGISTRY) || true
 	$(hal) config provider docker-registry enable
 
@@ -137,8 +142,13 @@ deploy: tf_init tf_plan tf_apply configure
 		--account-name kubernetes \
 		--type distributed
 	$(hal) deploy apply
+	-$(hal) backup create
 
 	$(kubectl) apply -f ingress.yaml
+
+	-tar cf - -C $(HOME)/.hal . | \
+		aws --region=$(STATE_REGION) s3 cp - s3://$(STATE_BUCKET)/$(DOMAIN_NAME)/spinnaker/$(COMPONENT_NAME)/halbackup-0.tar
+	-aws --region=$(STATE_REGION) s3 cp $(HOME)/halbackup*.tar s3://$(STATE_BUCKET)/$(DOMAIN_NAME)/spinnaker/$(COMPONENT_NAME)/
 .PHONY: deploy
 
 undeploy:
@@ -153,6 +163,4 @@ undeploy:
 
 clean:
 	rm -rf .terraform/$(DOMAIN_NAME)*
-	rm -rf ~/.hal/*
-	rm -rf .hal/$(DOMAIN_NAME)
-
+	rm -rf $(HOME)/.hal/$(NAME)
