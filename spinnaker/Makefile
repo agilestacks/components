@@ -153,10 +153,7 @@ deploy: tf_init tf_plan tf_apply configure
 
 undeploy:
 	-$(kubectl) delete -f ingress.yaml
-	@echo Undeploying Spinnaker
-	-$(hal) deploy clean --quiet
 	-$(kubectl) delete namespace "$(NAMESPACE)"
-	@echo Done
 	@echo Undeploying IAM role
 	$(MAKE) tf_destroy
 .PHONY: undeploy
