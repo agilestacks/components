@@ -45,7 +45,7 @@ ifeq ($(SECRET_KEY),)
 	SECRET_KEY := $(or $(secret_val),$(random))
 endif
 
-deploy: clean init fetch install configure
+deploy: clean init fetch purge install configure
 
 init:
 	mkdir -p $(HELM_HOME)
@@ -66,6 +66,11 @@ namespace:
 $(CLOUD)-storage-class:
 	kubectl apply -f $@.yaml
 .PHONY: $(CLOUD)-storage-class
+
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+.PHONY: purge
 
 install: namespace $(CLOUD)-storage-class
 	@ echo Running helm install charts/minio...

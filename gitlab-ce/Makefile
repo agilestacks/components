@@ -11,7 +11,7 @@ export kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMES
 export helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export kind           ?= aws
 
-deploy: clean init fetch install output
+deploy: clean init fetch purge install output
 	bash -e ./deploy-$(kind).sh
 	# $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml
 .PHONY: deploy
@@ -28,6 +28,11 @@ fetch:
 	bash -e ./replace.sh
 .PHONY: fetch
 
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+.PHONY: purge
+
 install:
 	# we don't use helm's postgres, we use our own component
 	rm -rf charts/gitlab-ce/charts/postgresql
@@ -43,7 +48,6 @@ install:
 			--namespace $(NAMESPACE) \
 			--replace \
 			--values values.yaml
-
 .PHONY: install
 
 undeploy: init

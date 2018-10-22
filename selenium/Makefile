@@ -10,7 +10,7 @@ export helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace
 HELM_CHART=stable/selenium
 VALUES_FILE=values.yaml
 
-deploy: clean init fetch install
+deploy: clean init fetch purge install
 .PHONY: deploy
 
 init:
@@ -23,6 +23,11 @@ fetch:
 			--destination charts \
 			--untar $(HELM_CHART)
 .PHONY: fetch
+
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+.PHONY: purge
 
 install:
 	$(kubectl) apply -f namespace.yaml
@@ -39,8 +44,8 @@ install:
 
 undeploy: init
 	-$(kubectl) delete -f ingress.yaml
-	-$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME)
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 
 clean:

@@ -20,7 +20,7 @@ export VAULT_SKIP_VERIFY   ?= true
 
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
 
-deploy: clean init install sleep connect enable unseal force-disconnect output
+deploy: clean init purge install sleep connect enable unseal force-disconnect output
 .PHONY: deploy
 
 sleep:
@@ -32,6 +32,11 @@ init:
 	@mkdir -p .vault $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
 .PHONY: init
+
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+.PHONY: purge
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \

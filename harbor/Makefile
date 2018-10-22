@@ -29,6 +29,13 @@ init:
 	@mkdir -p .terraform
 .PHONY: init
 
+purge:
+	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
+		$(helm) delete --purge $(TF_VAR_component) || exit 0
+	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)-nginx$$' && \
+		$(helm) delete --purge $(TF_VAR_component)-nginx || exit 0
+.PHONY: purge
+
 harbor:
 	$(helm) init --client-only --upgrade --wait
 	$(git) clone --single-branch -b $(HARBOR_CHART_VERSION) https://github.com/goharbor/harbor-helm
@@ -81,7 +88,7 @@ clean:
 	@rm -rf harbor-helm
 .PHONY: clean
 
-deploy: init harbor nginx zone
+deploy: init purge harbor nginx zone
 
 undeploy:
 	-$(MAKE) plan TF_OPTS="$(TF_OPTS) -destroy"

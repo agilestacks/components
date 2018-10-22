@@ -13,7 +13,7 @@ STATE_REGION ?= us-east-1
 helm ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
 terraform ?= terraform
 
-deploy: clean init fetch install get plan apply
+deploy: clean init fetch purge install get plan apply
 .PHONY: deploy
 
 init:
@@ -34,6 +34,11 @@ fetch:
 		--untar $(CHART) \
 		--version $(CHART_VERSION)
 .PHONY: fetch
+
+purge:
+	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
+		$(helm) delete --purge $(TF_VAR_component) || exit 0
+.PHONY: purge
 
 install:
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \

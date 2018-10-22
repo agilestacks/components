@@ -9,7 +9,7 @@ ISTIO_VERSION  ?= 1.0.2
 kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy: clean init fetch patch namespace crds install usage
+deploy: clean init fetch patch namespace crds purge install usage
 
 namespace:
 	$(kubectl) apply -f namespace.yaml
@@ -37,6 +37,11 @@ patch:
 		istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/charts/servicegraph/templates/ingress.yaml
 	@rm istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/charts/servicegraph/templates/ingress.yaml~
 .PHONY: patch
+
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+.PHONY: purge
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \

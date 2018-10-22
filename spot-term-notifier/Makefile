@@ -9,15 +9,20 @@ export DOMAIN_NAME         ?= $(TF_VAR_name).$(TF_VAR_base_domain)
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy: clean init install output
+deploy: clean init purge install output
 .PHONY: deploy
 
 init:
 	@mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
 
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+.PHONY: purge
+
 install:
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install . \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
@@ -26,7 +31,7 @@ install:
 			--values values.yaml
 
 undeploy: init
-	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: undeploy
 

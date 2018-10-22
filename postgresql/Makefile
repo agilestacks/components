@@ -10,7 +10,7 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 CLOUD_KIND ?= aws
 
-deploy: clean init fetch install
+deploy: clean init fetch purge install
 .PHONY: deploy
 
 init:
@@ -25,6 +25,11 @@ fetch:
 		--untar stable/postgresql \
 		--version 0.8.3
 .PHONY: fetch
+
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+.PHONY: purge
 
 install:
 	$(kubectl) apply -f namespace.yaml
