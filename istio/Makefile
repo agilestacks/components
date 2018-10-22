@@ -9,15 +9,11 @@ ISTIO_VERSION  ?= 1.0.2
 kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy: clean init fetch patch namespace crds purge install usage
+deploy: clean init fetch patch namespace purge install usage
 
 namespace:
 	$(kubectl) apply -f namespace.yaml
 .PHONY: namespace
-
-crds:
-	$(kubectl) apply -f istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/templates/crds.yaml
-.PHONY: crds
 
 init:
 	@mkdir -p $(HELM_HOME)
@@ -64,6 +60,7 @@ usage:
 undeploy:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	-$(kubectl) get crd -o name | grep -F istio.io | xargs $(kubectl) delete
 .PHONY: undeploy
 
 clean:
