@@ -36,7 +36,8 @@ patch:
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+		$(helm) delete --purge $(COMPONENT_NAME) && \
+		$(kubectl) get crd -o name | grep -F istio.io | xargs $(kubectl) delete || exit 0
 .PHONY: purge
 
 install:
