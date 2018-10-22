@@ -22,7 +22,7 @@ else
 	PROTOCOL=http
 endif
 
-deploy: clean init fetch install get plan output apply
+deploy: clean init fetch purge install get plan output apply
 
 ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
 STATE_BACKEND_CONFIG := -backend-config="key=$(TF_VAR_domain_name)/traefik/$(TF_VAR_component)/terraform.tfstate" \
@@ -52,6 +52,13 @@ fetch:
 		--untar $(CHART) \
 		--version $(CHART_VERSION)
 .PHONY: fetch
+
+purge:
+	if $(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$'; then \
+		echo Deleting $(TF_VAR_component); \
+		$(helm) delete --purge $(TF_VAR_component); \
+	fi
+.PHONY: purge
 
 install:
 	if ! $(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$'; then \
