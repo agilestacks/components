@@ -13,7 +13,7 @@ CHART_VERSION  ?= 4.3.0
 TIMEOUT        ?= 300
 CLOUD_KIND     ?= aws
 
-deploy: clean init fetch install wait
+deploy: clean init fetch purge install wait
 
 init:
 	@mkdir -p $(HELM_HOME) charts
@@ -26,6 +26,11 @@ fetch:
 		--untar stable/mongodb \
 		--version $(CHART_VERSION)
 .PHONY: fetch
+
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+.PHONY: purge
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)

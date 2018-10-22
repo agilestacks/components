@@ -21,7 +21,7 @@ HELM_CHART=stable/redis
 VALUES_FILE=values.yaml
 endif
 
-deploy: clean init fetch install output
+deploy: clean init fetch purge install output
 .PHONY: deploy
 
 init:
@@ -35,6 +35,11 @@ fetch:
 			--untar $(HELM_CHART) \
 			--version $(CHART_VERSION)
 .PHONY: fetch
+
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+.PHONY: purge
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)

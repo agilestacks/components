@@ -8,7 +8,7 @@ export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 export generator		   ?= ./grafana-gen/bin/grafana_dashboards_generate.sh --namespace "$(NAMESPACE)"
 
-deploy: clean init namespace install_operator install_kube_prom output
+deploy: clean init namespace purge install_operator install_kube_prom output
 .PHONY: deploy
 
 init:
@@ -18,6 +18,13 @@ init:
 namespace:
 	-$(kubectl) create namespace $(NAMESPACE)
 .PHONY: namespace
+
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-kube-prom$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME)-kube-prom || exit 0
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-operator$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME)-operator || exit 0
+.PHONY: purge
 
 install_operator:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-operator$$' || \

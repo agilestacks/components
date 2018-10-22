@@ -125,10 +125,8 @@ restore: wait_etcd_pods_seed unrestore awsetcd
 .PHONY: restore
 
 purge:
-	if $(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$'; then \
-		echo Deleting $(COMPONENT_NAME); \
-		$(helm) delete --purge $(COMPONENT_NAME); \
-	fi
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: purge
 
 install:

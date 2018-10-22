@@ -31,6 +31,11 @@ fetch:
 		--version $(CHART_VERSION)
 .PHONY: fetch
 
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+.PHONY: purge
+
 install: namespace
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART) \
@@ -42,7 +47,7 @@ install: namespace
 			--wait
 .PHONY: install
 
-deploy: clean init fetch install
+deploy: clean init fetch purge install
 	$(kubectl) apply -f natsboard/deployment.yaml
 	$(kubectl) apply -f natsboard/service.yaml
 	$(kubectl) apply -f natsboard/ingress.yaml

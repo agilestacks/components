@@ -8,7 +8,7 @@ export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 
-deploy: clean init fetch install output
+deploy: clean init fetch purge install output
 .PHONY: deploy
 
 init:
@@ -21,6 +21,11 @@ fetch:
 		--destination charts \
 		--untar stable/sysdig
 .PHONY: fetch
+
+purge:
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME)
+.PHONY: purge
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \

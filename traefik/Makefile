@@ -56,10 +56,8 @@ fetch:
 .PHONY: fetch
 
 purge:
-	if $(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$'; then \
-		echo Deleting $(TF_VAR_component); \
-		$(helm) delete --purge $(TF_VAR_component); \
-	fi
+	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
+		$(helm) delete --purge $(TF_VAR_component) || exit 0
 .PHONY: purge
 
 install:
