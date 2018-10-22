@@ -74,7 +74,7 @@ parameters:
       value: stable/traefik
       env: CHART
     - name: chart.version
-      value: 1.50.0
+      value: 1.52.1
       env: CHART_VERSION
     - name: bin.terraform
       value: terraform-v0.11
