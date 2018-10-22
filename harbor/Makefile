@@ -76,10 +76,7 @@ apply:
 	$(terraform) apply $(TF_OPTS) -auto-approve .terraform/terraform.tfplan
 .PHONY: apply
 
-zone:
-	$(MAKE) plan
-	$(MAKE) apply
-.PHONY: zone
+zone: plan apply
 
 clean:
 	@rm -rf .helm
