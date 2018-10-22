@@ -40,6 +40,5 @@ clean:
 	@rm -rf charts       | true
 
 output:
-	@echo Outputs:
 	@echo Spot instance termination notifier has been installed successfully.
 .PHONY: output

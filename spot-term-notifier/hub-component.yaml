@@ -41,7 +41,6 @@ parameters:
     - name: slackUrl
       value: https://hooks.slack.com/services/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
 
-
 templates:
   files:
     - "*.template"
