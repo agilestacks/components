@@ -25,13 +25,13 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 running_etcd_pods := $(kubectl) get pods -l app=etcd -o jsonpath='{range.items[?(@.status.containerStatuses[0].ready==true)]}{.kind}{"\n"}{end}'
 
 ifeq ($(RESTORE_SNAPSHOT),)
-deploy: clean init install enable wait_etcd_pods_initial
+deploy: clean init purge install enable wait_etcd_pods_initial
 else
 # restore operator requires seed cluster before restore is initiated
 # it seems it doesn't require the cluster to fully stand up
 # but we'll wait anyway to isolate restore problem vs generic etcd problem
 deploy: CLUSTER_ENABLED:=true
-deploy: clean init install enable restore wait_etcd_pods_after_restore
+deploy: clean init purge install enable restore wait_etcd_pods_after_restore
 endif
 .PHONY: deploy
 
@@ -123,6 +123,13 @@ restore: wait_etcd_pods_seed unrestore awsetcd
 	@ test "$$( $(get_crd) | jq -r '.status.succeeded' )" = "true"
 	@ sleep 10
 .PHONY: restore
+
+purge:
+	if $(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$'; then \
+		echo Deleting $(COMPONENT_NAME); \
+		$(helm) delete --purge $(COMPONENT_NAME); \
+	fi
+.PHONY: purge
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
