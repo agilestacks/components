@@ -61,6 +61,7 @@ forwardedHeaders:
 ssl:
   enabled: false # TLS connection terminated by ELB; ${component.ingress.ssl.enabled}
   enforced: true
+  permanentRedirect: false
   upstream: false
   insecureSkipVerify: false
 
@@ -119,6 +120,7 @@ kvprovider:
 acme:
   enabled: false
   email: admin@example.com
+  onHostRule: true
   staging: true
   logging: false
   # Configure a Let's Encrypt certificate to be managed by default.
