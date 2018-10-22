@@ -35,7 +35,6 @@ install:
             --replace \
             --wait \
             --values values.yaml
-endif
 .PHONY: install
 
 undeploy: init
