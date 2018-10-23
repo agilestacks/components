@@ -18,6 +18,7 @@ rules:
   - githuborgs
   - githubservers
   - pipelines
+  - pipelinelibraries
   - plugins
   verbs: ["watch"]
 - nonResourceURLs: ["/healthz", "/healthz/*", "/"]
