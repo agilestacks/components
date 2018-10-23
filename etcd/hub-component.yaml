@@ -8,6 +8,7 @@ meta:
       dir: ../../components/etcd
 
 requires:
+  - aws
   - kubernetes
   - helm
   - tiller
@@ -58,6 +59,7 @@ parameters:
       env:   BACKUP_BUCKET
     - name:  backup.region
       value: ${terraform.bucket.region}
+      env:   BACKUP_REGION
     - name:  backup.enabled
       brief: Enable backups
       value: false
