@@ -14,9 +14,11 @@ export BACKUP_ENABLED      ?= false
 export RESTORE_ENABLED     ?= false
 export AWS_SECRET_NAME     ?= awsetcd
 
-export RESTORE_SNAPSHOT    ?= $(BACKUP_BUCKET)/$(DOMAIN_NAME)/backup/etcd/$(COMPONENT_NAME)/latest
-export TS       	       := $(shell date +"%Y-%m-%d-%H-%M-%S")
+RESTORE_SNAPSHOT ?=
+export TS        := $(shell date +"%Y-%m-%d-%H-%M-%S")
 
+aws     ?= aws
+jq      ?= jq
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
@@ -68,16 +70,17 @@ wait_etcd_pods%:
 .PHONY: wait_etcd_pods%
 
 # after all Makefile and shell/echo acrobatics I can't make --from-literal to insert newline into config= value
-awsetcd:
-	$(HUB) render secret-config.template
-	-$(kubectl) create secret generic $(AWS_SECRET_NAME) --from-file=config=secret-config
-.PHONY: awsetcd
+backup_config:
+	@echo "[default]\nregion = $(BACKUP_REGION)" > secret-config
+	$(kubectl) create secret generic $(AWS_SECRET_NAME) --from-file=config=secret-config
+.PHONY: backup_config
 
 unbackup:
 	-$(kubectl) delete EtcdBackup/$(COMPONENT_NAME)-$(TS)
+	-$(kubectl) delete secret $(AWS_SECRET_NAME)
 .PHONY: unbackup
 
-backup: unbackup awsetcd
+backup: unbackup backup_config
 	./bin/templater.sh ./backup/EtcdBackup.yaml.template | $(kubectl) create -f -
 	$(eval crd:=EtcdBackup/$(COMPONENT_NAME)-$(TS))
 	$(eval get_crd:=$(kubectl) get $(crd) -o json)
@@ -98,16 +101,24 @@ backup: unbackup awsetcd
 	@ echo
 .PHONY: backup
 
+restore_config:
+	$(eval SNAPSHOT_REGION=$(shell $(aws) s3api get-bucket-location --bucket \
+		$$(echo $(RESTORE_SNAPSHOT) | sed -e 's|/.*||') | $(jq) -r '.LocationConstraint//"us-east-1"'))
+	@echo "[default]\nregion = $(SNAPSHOT_REGION)" > secret-config
+	$(kubectl) create secret generic $(AWS_SECRET_NAME) --from-file=config=secret-config
+.PHONY: restore_config
+
 unrestore:
 	-$(kubectl) delete EtcdRestore/$(COMPONENT_NAME)
+	-$(kubectl) delete secret $(AWS_SECRET_NAME)
 .PHONY: unrestore
 
-restore: wait_etcd_pods_seed unrestore awsetcd
+restore: wait_etcd_pods_seed unrestore restore_config
 	./bin/templater.sh ./restore/EtcdRestore.yaml.template | \
 		$(kubectl) create -f -
 	$(eval crd:=EtcdRestore/$(COMPONENT_NAME))
 	$(eval get_crd:=$(kubectl) get $(crd) -o json)
-	@ echo "Waiting for EtcdBackup/$(COMPONENT_NAME)"
+	@ echo "Waiting for $(crd)"
 	@ for i in $$(seq 60); do \
 		if test "$$($(get_crd) | jq -r '.status.succeeded')" != null; then \
 			echo " done"; \
@@ -166,6 +177,5 @@ connect:
 .PHONY: connect
 
 clean:
-	@rm -rf $(HELM_HOME)
-	@rm -rf charts
+	@rm -rf $(HELM_HOME) charts
 .PHONY: clean
