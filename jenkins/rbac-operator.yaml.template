@@ -12,14 +12,7 @@ rules:
   resources: ["customresourcedefinitions"]
   verbs: ["get", "list", "create", "delete", "update"]
 - apiGroups: ["jenkins.agilestacks.com"]
-  resources:
-  - credentials
-  - envvars
-  - githuborgs
-  - githubservers
-  - pipelines
-  - pipelinelibraries
-  - plugins
+  resources: ["*"]
   verbs: ["watch"]
 - nonResourceURLs: ["/healthz", "/healthz/*", "/"]
   verbs: ["get"]
