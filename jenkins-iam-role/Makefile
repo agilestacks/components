@@ -1,6 +1,5 @@
 .DEFAULT_GOAL := deploy
 
-export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-2
 export TF_VAR_base_domain ?= stacks.delivery
 export TF_LOG             ?= debug

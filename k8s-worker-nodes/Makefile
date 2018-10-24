@@ -2,7 +2,6 @@
 
 COMPONENT_NAME ?= k8s-worker-nodes
 
-export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-2
 
 CLOUD_BUCKET ?= files.$(TF_VAR_domain)

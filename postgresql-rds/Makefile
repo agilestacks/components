@@ -3,7 +3,6 @@
 export COMPONENT_NAME        ?= postgres-rds
 export DOMAIN_NAME           ?= dev.stacks.delivery
 export TF_VAR_rds_name       ?= postgresql
-export AWS_PROFILE           ?= default
 export AWS_DEFAULT_REGION    ?= us-east-2
 export TF_LOG                ?= info
 export TF_LOG_PATH           ?= .terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).log

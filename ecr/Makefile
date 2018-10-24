@@ -5,7 +5,6 @@ DOMAIN_NAME    ?= dev.stacks.delivery
 STATE_BUCKET   ?= terraform.agilestacks.com
 STATE_REGION   ?= us-east-1
 
-export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-2
 export TF_LOG             ?= debug
 export TF_LOG_PATH        ?= .terraform/$(DOMAIN_NAME).log
