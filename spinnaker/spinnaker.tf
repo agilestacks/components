@@ -11,8 +11,6 @@ data "aws_region" "current" {
   current = true
 }
 
-# data "aws_iam_account_alias" "current" {}
-
 resource "aws_iam_role" "spinnaker" {
   name_prefix = "spinnaker-"
   path        = "/"
@@ -48,6 +46,14 @@ resource "aws_iam_role" "spinnaker" {
       "Principal": {
         "Service": "lambda.amazonaws.com"
       }
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {}
     }
   ]
 }
