@@ -11,7 +11,7 @@ deploy:
 	$(kubectl) apply -f grpc-server-secret.yaml
 	$(kubectl) apply -f dex-rbac.yaml
 	$(kubectl) apply -f operator-rbac.yaml
-	$(kubectl) apply -f configmap.yaml
+	$(kubectl) get configmap dex || $(kubectl) apply -f configmap.yaml
 	$(kubectl) apply -f deployment.yaml
 	$(kubectl) apply -f service.yaml
 	$(kubectl) apply -f service-api.yaml
