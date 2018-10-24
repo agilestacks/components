@@ -30,7 +30,9 @@ parameters:
     value: 0.7.0
     env: JHUB_HELM_VERSION
   - name: storageClassName
-    value: jupyterhub-storage-class  
+    value: jupyterhub-storage-class
+  - name: operator.image
+    value: agilestacks/jupyter-operator    
 
 outputs:
 - name: component.jupyterhub.url
