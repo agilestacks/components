@@ -4,11 +4,11 @@ terraform {
 }
 
 provider "aws" {
-  version = "1.35.0"
+  version = "1.39.0"
 }
 
 provider "kubernetes" {
-  version        = "1.1.10"
+  version        = "1.3.0"
   config_context = "${var.domain_name}"
 }
 

@@ -4,11 +4,11 @@ terraform {
 }
 
 provider "google" {
-  version = "1.16.2"
+  version = "1.19.1"
 }
 
 provider "kubernetes" {
-  version        = "1.1.10"
+  version        = "1.3.0"
   config_context = "${var.domain_name}"
 }
 
