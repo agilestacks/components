@@ -48,13 +48,6 @@ resource "aws_iam_role" "spinnaker" {
       "Principal": {
         "Service": "lambda.amazonaws.com"
       }
-    },
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "*"
-      },
-      "Action": "sts:AssumeRole"
     }
   ]
 }
