@@ -4,7 +4,6 @@ export COMPONENT_NAME     ?= acm
 export DOMAIN_NAME        ?= dev.kubernetes.delivery
 export ADDITIONAL_NAMES   ?=
 export ZONE_DOMAIN        ?= $(DOMAIN_NAME)
-export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-1
 export TF_LOG             ?= info
 export TF_LOG_PATH        ?= $(shell pwd)/.terraform/$(DOMAIN_NAME)/terraform.log

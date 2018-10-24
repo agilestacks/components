@@ -2,10 +2,9 @@
 
 COMPONENT_NAME ?= eks-worker-nodes
 
-export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-2
 
-export TF_VAR_domain    ?= 'dev.kubernetes.delivery'
+export TF_VAR_domain    ?= dev.kubernetes.delivery
 export TF_VAR_pool_name ?= gpu1
 
 export TF_LOG      ?= info

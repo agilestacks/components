@@ -1,6 +1,5 @@
 .DEFAULT_GOAL := deploy
 
-export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-2
 
 STATE_BUCKET ?= terraform.agilestacks.com

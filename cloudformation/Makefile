@@ -2,7 +2,6 @@
 
 export NAME ?= example
 
-export AWS_PROFILE        ?= default
 export AWS_DEFAULT_REGION ?= us-east-2
 
 aws := aws
