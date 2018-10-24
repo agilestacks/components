@@ -16,9 +16,12 @@ deploy:
   		--namespace $(JHUB_NAMESPACE) \
   		--version $(JHUB_HELM_VERSION) \
   		--values config.yaml
+	$(kubectl) apply -f operator-config/role.yaml
+	$(kubectl) apply -f operator-config/jupyterhubnotebook-crd.yaml	
 .PHONY: deploy	
 
 undeploy:
+	-$(kubectl) delete -f operator-config/jupyterhubnotebook-crd.yaml	
 	-$(helm) delete $(NAME) --purge
 	-$(kubectl) delete -f storageclass.yaml
 .PHONY: undeploy

@@ -133,3 +133,5 @@ argo/events/gateway-controller-deployment.yaml
 argo/events/gateway-controller-configmap.yaml
 argo/install.yaml
 argo/minio/configmap.yaml
+jupyterhub/config.yaml
+jupyterhub/storageclass.yaml

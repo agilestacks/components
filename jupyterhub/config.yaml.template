@@ -6,12 +6,28 @@ hub:
   db:
     pvc:
       storageClassName: ${component.jupyterhub.storageClassName}
+  services:
+    hub-operator:
+      apiToken: 0319f12cdf215c0706be3805e0a1f52702f6f5e8fb8e1c0b3a3a888833900f37 
+      admin: true
+  extraContainers:
+    - name: hub-operator
+      image: ${component.jupyterhub.operator.image}
+      imagePullPolicy: Always
+      env:
+        - name: JHUB_API_TOKEN
+          value: 0319f12cdf215c0706be3805e0a1f52702f6f5e8fb8e1c0b3a3a888833900f37
 singleuser:
   storage:
     dynamic:
-      storageClass: ${component.jupyterhub.storageClassName}
+      storageClass: ${component.jupyterhub.storageClassName}      
 debug:
   enabled: false
 ingress:
   enabled: true
   hosts: ['${component.jupyterhub.name}.${component.ingress.ssoFqdn}']
+auth:
+  type: custom
+  custom:
+    # disable login (users created exclusively via API)
+    className: nullauthenticator.NullAuthenticator  
