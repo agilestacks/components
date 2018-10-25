@@ -10,6 +10,25 @@ hub:
     hub-operator:
       apiToken: 0319f12cdf215c0706be3805e0a1f52702f6f5e8fb8e1c0b3a3a888833900f37 
       admin: true
+  extraConfig:
+    hub-operator: |
+      import os
+      import sys
+      import yaml
+      from tornado import web
+      from kubespawner import KubeSpawner
+
+      class OperatorSpawner(KubeSpawner):
+        def start(self):
+            if 'image' not in self.user_options:
+              self.image_spec = '${component.jupyterhub.default.notebook.image}'
+            else:
+              if self.user_options['image'] == '':
+                self.image_spec = '${component.jupyterhub.default.notebook.image}'
+              else:  
+                self.image_spec = self.user_options['image']
+            return super().start()
+      c.JupyterHub.spawner_class = OperatorSpawner   
   extraContainers:
     - name: hub-operator
       image: ${component.jupyterhub.operator.image}
@@ -25,7 +44,7 @@ debug:
   enabled: false
 ingress:
   enabled: true
-  hosts: ['${component.jupyterhub.name}.${component.ingress.ssoFqdn}']
+  hosts: ['${component.jupyterhub.name}.${component.ingress.fqdn}']
 auth:
   type: custom
   custom:
