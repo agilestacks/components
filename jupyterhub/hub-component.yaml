@@ -14,7 +14,7 @@ provides:
   - jupyterhub
 
 parameters:
-- name: component.ingress.ssoFqdn
+- name: component.ingress.fqdn
 - name: component.ingress.protocol 
 - name: dns.domain
   env: DOMAIN_NAME
@@ -32,12 +32,14 @@ parameters:
   - name: storageClassName
     value: jupyterhub-storage-class
   - name: operator.image
-    value: agilestacks/jupyter-operator    
+    value: agilestacks/jupyter-operator
+  - name: default.notebook.image
+    value: jupyterhub/k8s-singleuser-sample:0.7.0      
 
 outputs:
 - name: component.jupyterhub.url
   brief: JupyterHub URL
-  value: ${component.ingress.protocol}://${component.jupyterhub.name}.${component.ingress.ssoFqdn} 
+  value: ${component.ingress.protocol}://${component.jupyterhub.name}.${component.ingress.fqdn} 
 
 templates:
   files:
