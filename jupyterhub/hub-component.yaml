@@ -14,7 +14,7 @@ provides:
   - jupyterhub
 
 parameters:
-- name: component.ingress.fqdn
+- name: component.ingress.ssoFqdn
 - name: component.ingress.protocol 
 - name: dns.domain
   env: DOMAIN_NAME
@@ -39,7 +39,7 @@ parameters:
 outputs:
 - name: component.jupyterhub.url
   brief: JupyterHub URL
-  value: ${component.ingress.protocol}://${component.jupyterhub.name}.${component.ingress.fqdn} 
+  value: ${component.ingress.protocol}://${component.jupyterhub.name}.${component.ingress.ssoFqdn} 
 
 templates:
   files:
