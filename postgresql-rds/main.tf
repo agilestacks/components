@@ -79,6 +79,10 @@ resource "aws_db_instance" "postgresql" {
 
   snapshot_identifier = "${var.snapshot_identifier}"
 
+  lifecycle {
+    ignore_changes = ["snapshot_identifier"]
+  }
+
   tags {
     Name = "${var.rds_name}-rds"
   }
