@@ -91,7 +91,7 @@ parameters:
     - name:  volumeType
       value: gp2
     - name: storageClass
-      value: ${cloud.kind}-storage
+      value: ${cloud.kind}-minio-buckets
     - name: storageSize
       value: 20Gi
     - name: postgresql.enabled
