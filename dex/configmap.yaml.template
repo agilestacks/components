@@ -26,6 +26,7 @@ data:
         clientID: ${component.dex.okta.clientId}
         clientSecret: ${component.dex.okta.clientSecret}
         redirectURI: ${component.ingress.protocol}://auth.${dns.domain}/callback
+        userInfoURI: ${component.dex.okta.issuer}/oauth2/v1/userinfo
     oauth2:
       skipApprovalScreen: true
     staticClients:

@@ -1,0 +1,170 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: auth-operator-manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - auth.agilestacks.com
+  resources:
+  - oidcs
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - admissionregistration.k8s.io
+  resources:
+  - mutatingwebhookconfigurations
+  - validatingwebhookconfigurations
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: null
+  name: auth-operator-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: auth-operator-manager-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: ${component.dex.namespace}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-operator-webhook-server-secret
+  namespace: ${component.dex.namespace}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    control-plane: controller-manager
+    controller-tools.k8s.io: "1.0"
+  name: auth-operator-controller-manager-service
+  namespace: ${component.dex.namespace}
+spec:
+  ports:
+  - port: 443
+  selector:
+    control-plane: controller-manager
+    controller-tools.k8s.io: "1.0"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    control-plane: controller-manager
+    controller-tools.k8s.io: "1.0"
+  name: auth-operator-controller-manager
+  namespace: ${component.dex.namespace}
+spec:
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+      controller-tools.k8s.io: "1.0"
+  serviceName: auth-operator-controller-manager-service
+  template:
+    metadata:
+      labels:
+        control-plane: controller-manager
+        controller-tools.k8s.io: "1.0"
+    spec:
+      containers:
+      - command:
+        - /root/manager
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: SECRET_NAME
+          value: auth-operator-webhook-server-secret
+        image: agilestacks/auth-operator:0.0.1
+        imagePullPolicy: Always
+        name: manager
+        ports:
+        - containerPort: 9876
+          name: webhook-server
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 200m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 20Mi
+        volumeMounts:
+        - mountPath: /tmp/cert
+          name: cert
+          readOnly: true
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: auth-operator-webhook-server-secret

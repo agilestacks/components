@@ -14,21 +14,30 @@ parameters:
   - name: component.ingress.ssoFqdn
   - name: kubernetes.api.endpoint
     env: K8S_API_SERVER
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
   - name: dns.domain
-    env: DOMAIN_NAME
+    env: TF_VAR_domain_name
+  - name: dns.name
+    env: TF_VAR_name
   - name: component.kubeflow
     parameters:
     - name:  name
       value: kubeflow
-      env:   COMPONENT_NAME
+      env: TF_VAR_component
     - name: namespace
       value: kubeflow
-      env: NAMESPACE
+      env: TF_VAR_namespace
     - name: version
-      value: v0.2.2
+      value: v0.3.2
       env: KUBEFLOW_VERSION
+    - name:  urlPrefix
+      value: kubeflow
+      env: TF_VAR_url_prefix
     - name: apiSpec
-      value: v1.9.8
+      value: v1.11.3
       env: K8S_API_SPEC
     - name: environment
       value: cloud
@@ -72,7 +81,7 @@ parameters:
     - name: argo
       parameters:
       - name: version
-        value: v2.1.1
+        value: v2.2.1
         env: ARGO_VERSION
       - name: ingress
         parameters:
@@ -87,19 +96,19 @@ parameters:
 outputs:
   - name: component.kubeflow.ambassador.url
     brief: Ambassador Diagnostics
-    value: http://${component.kubeflow.ambassador.ingress.urlPrefix}.${component.ingress.ssoFqdn}/ambassador/v0/diag
-  - name: component.kubeflow.jupyterhub.url
-    brief: Jupyter Hub Admin panel
-    value: http://${component.kubeflow.jupyterhub.ingress.urlPrefix}.${component.ingress.ssoFqdn}
-  - name: component.kubeflow.tf-job.url
-    brief: TF Job Dashboard
-    value: http://${component.kubeflow.tf.ingress.urlPrefix}.${component.ingress.ssoFqdn}/tfjobs/ui
+    value: http://${component.kubeflow.urlPrefix}.${dns.domain}/ambassador/v0/diag
   - name: component.kubeflow.argo.url
     brief: Argo UI
-    value: http://${component.kubeflow.argo.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: http://${component.kubeflow.urlPrefix}.${dns.domain}/argo/
+  - name: component.kubeflow.jupyterhub.url
+    brief: Jupyter Hub Admin panel
+    value: http://${component.kubeflow.urlPrefix}.${dns.domain}/hub/
+  - name: component.kubeflow.tf-job.url
+    brief: TF Job Dashboard
+    value: http://${component.kubeflow.urlPrefix}.${dns.domain}/tfjobs/ui
   - name: component.kubeflow.url
     brief: Kubeflow Dashboard
-    value: http://${component.kubeflow.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: http://${component.kubeflow.urlPrefix}.${dns.domain}/
 
 
 

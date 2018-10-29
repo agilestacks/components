@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dex
@@ -17,6 +17,9 @@ spec:
       # During a rolling update every deployed pod must be
       # ready before the update terminates an existing pod.
       maxUnavailable: 0
+  selector:
+    matchLabels:
+      component: dex
   template:
     metadata:
       name: dex

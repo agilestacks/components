@@ -1,177 +1,178 @@
 .DEFAULT_GOAL := deploy
 
-export NAMESPACE    		?= kubeflow
-export DOMAIN_NAME  		?= default
-export COMPONENT_NAME       ?= kubeflow
-export kubectl      		?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export KUBEFLOW_VERSION		?=v0.2.2
-export ARGO_VERSION			?=v2.1.1
-export K8S_API_SPEC			?=v1.9.8
+export TF_VAR_namespace    	?= kubeflow
+export TF_VAR_component    	?= kubeflow
+export TF_VAR_domain_name  	?= dev.kubernetes.delivery
+export kubectl      		?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
+export KUBEFLOW_VERSION		?= v0.3.2
+export KUBEFLOW_KS_DIR	    ?= ks-app
+export ARGO_VERSION			?= v2.2.1
+export AMBASSADOR_VERSION   ?= quay.io/datawire/ambassador:0.40.0
+export K8S_API_SPEC			?= v1.11.3
 export K8S_API_SERVER		?=
-export KF_ENV				?=cloud
-export GITHUB_TOKEN			?=
+export KF_ENV				?= cloud
 
+terraform ?= terraform-v0.11
+STATE_BUCKET ?= terraform.agilestacks.com
+STATE_REGION ?= us-east-1
 
-ifneq ($(GITHUB_TOKEN),)
+deploy: clean init fetch configure install get plan apply
+
 init:
-	-$(kubectl) create namespace $(NAMESPACE)
-	-ks init kubeflow --context=$(DOMAIN_NAME) --namespace=$(NAMESPACE) --dir=kubeflow --api-spec=version:$(K8S_API_SPEC)
+	@mkdir -p .terraform
+	$(terraform) init $(TF_OPTS) \
+		-get=true -reconfigure -force-copy  \
+		-backend=true -input=false \
+		-backend-config="bucket=$(STATE_BUCKET)" \
+		-backend-config="region=$(STATE_REGION)" \
+		-backend-config="key=$(TF_VAR_domain_name)/kubeflow/$(TF_VAR_component)/terraform.tfstate" \
+		-backend-config="profile=$(AWS_PROFILE)" \
+		./aws
+	-$(kubectl) create namespace $(TF_VAR_namespace)
+	-ks init kubeflow --context=$(TF_VAR_domain_name) --namespace=$(TF_VAR_namespace) --dir=$(KUBEFLOW_KS_DIR) --api-spec=version:$(K8S_API_SPEC)
 .PHONY: init
-else
-init:
-	-$(kubectl) create namespace $(NAMESPACE)
-.PHONY: init
-endif
 
-ifneq ($(GITHUB_TOKEN),)
-install:
-	-cd kubeflow && \
-	ks registry add kubeflow github.com/kubeflow/kubeflow/tree/$(KUBEFLOW_VERSION)/kubeflow
-	-cd kubeflow && \
-	ks pkg install kubeflow/core@$(KUBEFLOW_VERSION)
-	-cd kubeflow && \
-	ks pkg install kubeflow/tf-serving@$(KUBEFLOW_VERSION)
-	-cd kubeflow && \
-	ks pkg install kubeflow/argo@$(KUBEFLOW_VERSION)
-	-cd kubeflow && \
-	ks pkg install kubeflow/pytorch-job@$(KUBEFLOW_VERSION)
-	-cd kubeflow && \
-	ks pkg install kubeflow/pachyderm@$(KUBEFLOW_VERSION)
-	-cd kubeflow && \
-	ks pkg install kubeflow/katib@$(KUBEFLOW_VERSION)
-	-cd kubeflow && \
-	ks pkg install kubeflow/seldon@$(KUBEFLOW_VERSION)
-.PHONY: install
-else
-install:
-.PHONY: install
-endif
+fetch:
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks env rm default
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks registry add kubeflow ../kubeflow-$(KUBEFLOW_VERSION)/kubeflow
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks pkg install kubeflow/argo
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks pkg install kubeflow/core
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks pkg install kubeflow/examples
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks pkg install kubeflow/katib
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks pkg install kubeflow/mpi-job
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks pkg install kubeflow/pytorch-job
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks pkg install kubeflow/seldon
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks pkg install kubeflow/tf-serving
+.PHONY: fetch
 
 configure:
-ifeq ($(GITHUB_TOKEN),)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks generate core kubeflow-core --name=kubeflow-core
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks generate argo argo --name=argo
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks generate pytorch-operator pytorch-operator --name=pytorch-operator
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks generate pachyderm pachyderm --name=pachyderm
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks generate seldon seldon --name=seldon
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks param set kubeflow-core reportUsage false
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --context=$(DOMAIN_NAME)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks env set $(KF_ENV) --namespace=$(NAMESPACE)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks param set kubeflow-core cloud aws --env=$(KF_ENV)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks param set kubeflow-core reportUsage false --env=$(KF_ENV)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks generate argo argo
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks generate ambassador ambassador
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks generate jupyterhub jupyterhub
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks generate centraldashboard centraldashboard
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks generate tf-job-operator tf-job-operator
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks generate pytorch-operator pytorch-operator
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks generate katib katib
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks generate seldon seldon
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks generate tf-serving tf-serving
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks env set $(KF_ENV) --namespace=$(TF_VAR_namespace)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks param set spartakus reportUsage false --env=$(KF_ENV)
+	-cd $(KUBEFLOW_KS_DIR) && \
 	ks param set argo imageTag $(ARGO_VERSION) --env=$(KF_ENV)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks param set pachyderm backend local --env=$(KF_ENV)
-else
-	-cd kubeflow && \
-	ks generate core kubeflow-core --name=kubeflow-core
-	-cd kubeflow && \
-	ks generate argo argo --name=argo
-	-cd kubeflow && \
-	ks generate pytorch-operator pytorch-operator --name=pytorch-operator
-	-cd kubeflow && \
-	ks generate pachyderm pachyderm --name=pachyderm
-	-cd kubeflow && \
-	ks generate seldon seldon --name=seldon
-	-cd kubeflow && \
-	ks param set kubeflow-core reportUsage false
-	-cd kubeflow && \
-	ks env add $(KF_ENV) --api-spec=version:$(K8S_API_SPEC) --context=$(DOMAIN_NAME)
-	-cd kubeflow && \
-	ks env set $(KF_ENV) --namespace=$(NAMESPACE)
-	-cd kubeflow && \
-	ks param set kubeflow-core cloud aws --env=$(KF_ENV)
-	-cd kubeflow && \
-	ks param set kubeflow-core reportUsage false --env=$(KF_ENV)
-	-cd kubeflow && \
-	ks param set argo imageTag $(ARGO_VERSION) --env=$(KF_ENV)
-	-cd kubeflow && \
-	ks param set pachyderm backend local --env=$(KF_ENV)
-endif
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks param set ambassador ambassadorImage $(AMBASSADOR_VERSION) --env=$(KF_ENV)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks param set ambassador ambassadorServiceType LoadBalancer --env=$(KF_ENV)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks param set ambassador cloud aws --env=$(KF_ENV)
 .PHONY: configure
 
 
-apply:
-ifeq ($(GITHUB_TOKEN),)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks apply $(KF_ENV) -c kubeflow-core --context=$(DOMAIN_NAME)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks apply $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks apply $(KF_ENV) -c pytorch-operator --context=$(DOMAIN_NAME)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks apply $(KF_ENV) -c pachyderm --context=$(DOMAIN_NAME)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks apply $(KF_ENV) -c seldon --context=$(DOMAIN_NAME)
-else
-	-cd kubeflow && \
-	ks apply $(KF_ENV) -c kubeflow-core --context=$(DOMAIN_NAME)
-	-cd kubeflow && \
-	ks apply $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
-	-cd kubeflow && \
-	ks apply $(KF_ENV) -c pytorch-operator --context=$(DOMAIN_NAME)
-	-cd kubeflow && \
-	ks apply $(KF_ENV) -c pachyderm --context=$(DOMAIN_NAME)
-	-cd kubeflow && \
-	ks apply $(KF_ENV) -c seldon --context=$(DOMAIN_NAME)
-endif
+install:
 	-$(kubectl) apply -f default-storage-class.yaml
-	-$(kubectl) apply -f ambassador-ingress.yaml
-	-$(kubectl) apply -f jupyterhub-ingress.yaml
-	-$(kubectl) apply -f argo-ingress.yaml
-	-$(kubectl) apply -f tf-dashboard-ingress.yaml
-	-$(kubectl) apply -f centraldashboard-ingress.yaml
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks apply $(KF_ENV) -c ambassador --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks apply $(KF_ENV) -c jupyterhub --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks apply $(KF_ENV) -c centraldashboard --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks apply $(KF_ENV) -c tf-job-operator --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks apply $(KF_ENV) -c pytorch-operator --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks apply $(KF_ENV) -c argo --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks apply $(KF_ENV) -c katib --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks apply $(KF_ENV) -c seldon --context=$(TF_VAR_domain_name)
+#	-cd $(KUBEFLOW_KS_DIR) && \
+#	ks apply $(KF_ENV) -c tf-serving --context=$(TF_VAR_domain_name)
+	-$(kubectl) create secret generic ambassador-auth-jwt-key --from-literal=jwt-key=qafBTgd27hg0cX11tawDLu0SLsXXiiEW4kl6SC5p4eBwRCr0ejiSBDSdW8mQQwFh2nS0wOXtdWq28DvxEnIFaQ==
+	-$(kubectl) create secret generic ambassador-auth-redis-password --from-literal=redis-password=MH2POuA75acYSvm5RvpOJsAJINI=
+	-$(kubectl) create secret generic ambassador-auth-oidc-provider --from-literal=oidc-provider=http://auth.$(TF_VAR_domain_name)
+	-$(kubectl) create secret generic ambassador-auth-self-url --from-literal=self-url=http://kubeflow.$(TF_VAR_domain_name)/
+	-$(kubectl) create secret generic ambassador-auth-client-id --from-literal=client-id=kubeflow-client
+	-$(kubectl) create secret generic ambassador-auth-client-secret --from-literal=client-secret=345t6dfgdfg4-57yDSDfjeuDVQEW
+
+	-$(kubectl) create -f oidc-deployment.yaml
+	-$(kubectl) create -f oidc-ambassador-service.yaml
+.PHONY: install
+
+get:
+	$(terraform) get $(TF_UPDATE) ./aws
+.PHONY: get
+
+plan:
+	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan ./aws
+.PHONY: plan
+
+apply:
+	$(terraform) apply $(TF_OPTS) -Xshadow=false .terraform/terraform.tfplan
+	@echo
 .PHONY: apply
 
-deploy: init install configure apply
-.PHONY: deploy
+destroy: TF_OPTS:=-destroy
+destroy: plan
 
+undeploy: init destroy apply fetch configure uninstall
 
-undeploy: init install configure
-ifeq ($(GITHUB_TOKEN),)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks delete $(KF_ENV) -c kubeflow-core --context=$(DOMAIN_NAME)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks delete $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks delete $(KF_ENV) -c pytorch-operator --context=$(DOMAIN_NAME)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks delete $(KF_ENV) -c pachyderm --context=$(DOMAIN_NAME)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
-	ks delete $(KF_ENV) -c seldon --context=$(DOMAIN_NAME)
-	-cd kubeflow-$(KUBEFLOW_VERSION) && \
+uninstall:
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks delete $(KF_ENV) -c ambassador --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks delete $(KF_ENV) -c jupyterhub --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks delete $(KF_ENV) -c centraldashboard --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks delete $(KF_ENV) -c tf-job-operator --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks delete $(KF_ENV) -c pytorch-operator --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks delete $(KF_ENV) -c argo --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks delete $(KF_ENV) -c katib --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks delete $(KF_ENV) -c seldon --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks delete $(KF_ENV) -c tf-serving --context=$(TF_VAR_domain_name)
+	-cd $(KUBEFLOW_KS_DIR) && \
 	ks env rm $(KF_ENV)
-else
-	-cd kubeflow && \
-	ks delete $(KF_ENV) -c kubeflow-core --context=$(DOMAIN_NAME)
-	-cd kubeflow && \
-	ks delete $(KF_ENV) -c argo --context=$(DOMAIN_NAME)
-	-cd kubeflow && \
-	ks delete $(KF_ENV) -c pytorch-operator --context=$(DOMAIN_NAME)
-	-cd kubeflow && \
-	ks delete $(KF_ENV) -c pachyderm --context=$(DOMAIN_NAME)
-	-cd kubeflow && \
-	ks delete $(KF_ENV) -c seldon --context=$(DOMAIN_NAME)
-	-cd kubeflow && \
-	ks env rm $(KF_ENV)
-endif
 	-$(kubectl) delete pvc --all | true
 	-$(kubectl) delete -f default-storage-class.yaml | true
-	-$(kubectl) delete -f ambassador-ingress.yaml | true
-	-$(kubectl) delete -f jupyterhub-ingress.yaml | true
-	-$(kubectl) delete -f argo-ingress.yaml | true
-	-$(kubectl) delete -f tf-dashboard-ingress.yaml | true
-	-$(kubectl) delete -f centraldashboard-ingress.yaml | true
-.PHONY: undeploy
+	-$(kubectl) delete -f oidc-deployment.yaml | true
+	-$(kubectl) delete -f oidc-ambassador-service.yaml | true
+	-$(kubectl) delete secret generic ambassador-auth-jwt-key | true
+	-$(kubectl) delete secret ambassador-auth-redis-password | true
+	-$(kubectl) delete secret ambassador-auth-oidc-provider | true
+	-$(kubectl) delete secret ambassador-auth-self-url | true
+	-$(kubectl) delete secret ambassador-auth-client-id | true
+	-$(kubectl) delete secret ambassador-auth-client-secret | true
+.PHONY: uninstall
 
+clean:
+	rm -rf .terraform/modules .terraform/plugins $(KUBEFLOW_KS_DIR)
+.PHONY: clean
