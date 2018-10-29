@@ -164,7 +164,7 @@ uninstall:
 	-$(kubectl) delete pvc --all | true
 	-$(kubectl) delete -f default-storage-class.yaml | true
 	-$(kubectl) delete -f oidc-crd.yaml | true
-	-$(kubectl) delete -f oidc-deployment.yaml | true
+	-$(kubectl) delete -f oidc-deployment.yaml
 	-$(kubectl) delete -f oidc-ambassador-service.yaml | true
 	-$(kubectl) delete secret generic ambassador-auth-jwt-key | true
 	-$(kubectl) delete secret ambassador-auth-redis-password | true
