@@ -22,7 +22,7 @@ parameters:
     value: kube-system
     env: NAMESPACE
   - name: component.dex.image
-    value: agilestacks/dex:v2.10.0
+    value: agilestacks/dex:v2.12.0
   - name: component.dex.saml.id
     value: saml
   - name: component.dex.saml.name

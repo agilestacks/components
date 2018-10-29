@@ -19,9 +19,11 @@ deploy:
 
 	$(kubectl) apply -f dex-operator-configmap.yaml
 	$(kubectl) apply -f dex-operator.yaml
+	$(kubectl) apply -f auth-operator.yaml
 .PHONY: deploy
 
 undeploy:
+	-$(kubectl) delete -f auth-operator.yaml
 	-$(kubectl) delete -f dex-operator.yaml
 	-$(kubectl) delete -f dex-operator-configmap.yaml
 	-$(kubectl) delete -f ingress.yaml
