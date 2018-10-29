@@ -1,4 +1,4 @@
 *.yaml
 ssl
 !hub-component.yaml
-gencert.sh
+!auth_v1alpha1_oidc.yaml
