@@ -111,13 +111,13 @@ install:
 	ks apply $(KF_ENV) -c seldon --context=$(TF_VAR_domain_name)
 #	-cd $(KUBEFLOW_KS_DIR) && \
 #	ks apply $(KF_ENV) -c tf-serving --context=$(TF_VAR_domain_name)
+	-$(kubectl) create -f oidc-crd.yaml
 	-$(kubectl) create secret generic ambassador-auth-jwt-key --from-literal=jwt-key=qafBTgd27hg0cX11tawDLu0SLsXXiiEW4kl6SC5p4eBwRCr0ejiSBDSdW8mQQwFh2nS0wOXtdWq28DvxEnIFaQ==
 	-$(kubectl) create secret generic ambassador-auth-redis-password --from-literal=redis-password=MH2POuA75acYSvm5RvpOJsAJINI=
 	-$(kubectl) create secret generic ambassador-auth-oidc-provider --from-literal=oidc-provider=http://auth.$(TF_VAR_domain_name)
 	-$(kubectl) create secret generic ambassador-auth-self-url --from-literal=self-url=http://kubeflow.$(TF_VAR_domain_name)/
 	-$(kubectl) create secret generic ambassador-auth-client-id --from-literal=client-id=kubeflow-client
 	-$(kubectl) create secret generic ambassador-auth-client-secret --from-literal=client-secret=345t6dfgdfg4-57yDSDfjeuDVQEW
-
 	-$(kubectl) create -f oidc-deployment.yaml
 	-$(kubectl) create -f oidc-ambassador-service.yaml
 .PHONY: install
@@ -163,6 +163,7 @@ uninstall:
 	ks env rm $(KF_ENV)
 	-$(kubectl) delete pvc --all | true
 	-$(kubectl) delete -f default-storage-class.yaml | true
+	-$(kubectl) delete -f oidc-crd.yaml | true
 	-$(kubectl) delete -f oidc-deployment.yaml | true
 	-$(kubectl) delete -f oidc-ambassador-service.yaml | true
 	-$(kubectl) delete secret generic ambassador-auth-jwt-key | true
