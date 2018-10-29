@@ -1,2 +1,3 @@
 aws/
 ks-app/
+oidc-crd.yaml
