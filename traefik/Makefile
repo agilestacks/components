@@ -103,7 +103,7 @@ destroy: plan
 uninstall:
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component)
-.PHONY: undeploy
+.PHONY: uninstall
 
 clean:
 	rm -rf $(HELM_HOME) charts .terraform/modules .terraform/plugins
