@@ -19,6 +19,15 @@ hub:
       from kubespawner import KubeSpawner
 
       class OperatorSpawner(KubeSpawner):
+        def get_args(self):
+            args = [
+                '--ip=0.0.0.0',
+                '--port=%i' % self.port,
+                '--NotebookApp.base_url=%s' % self.server.base_url,
+                '--NotebookApp.token=%s' % self.user_options['token'],
+                '--NotebookApp.trust_xheaders=True'
+            ]
+            return args + self.args
         def start(self):
             if 'image' not in self.user_options:
               self.image_spec = '${component.jupyterhub.default.notebook.image}'
@@ -37,6 +46,7 @@ hub:
         - name: JHUB_API_TOKEN
           value: 0319f12cdf215c0706be3805e0a1f52702f6f5e8fb8e1c0b3a3a888833900f37
 singleuser:
+  cmd: jupyter-notebook
   storage:
     dynamic:
       storageClass: ${component.jupyterhub.storageClassName}      
