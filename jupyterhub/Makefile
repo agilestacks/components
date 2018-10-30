@@ -9,6 +9,7 @@ helm ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(JHUB_NAMESPACE)"
 
 deploy:
+	$(helm) init --client-only --upgrade
 	$(helm) repo add jupyterhub https://jupyterhub.github.io/helm-chart/
 	$(helm) repo update
 	$(kubectl) apply -f storageclass.yaml
@@ -17,11 +18,11 @@ deploy:
   		--version $(JHUB_HELM_VERSION) \
   		--values config.yaml
 	$(kubectl) apply -f operator-config/role.yaml
-	$(kubectl) apply -f operator-config/jupyterhubnotebook-crd.yaml	
-.PHONY: deploy	
+	$(kubectl) apply -f operator-config/jupyterhubnotebook-crd.yaml
+.PHONY: deploy
 
 undeploy:
-	-$(kubectl) delete -f operator-config/jupyterhubnotebook-crd.yaml	
+	-$(kubectl) delete -f operator-config/jupyterhubnotebook-crd.yaml
 	-$(helm) delete $(NAME) --purge
 	-$(kubectl) delete -f storageclass.yaml
 .PHONY: undeploy
