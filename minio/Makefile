@@ -64,7 +64,7 @@ namespace:
 .PHONY: namespace
 
 $(CLOUD)-storage-class:
-	- kubectl create -f $@.yaml
+	- $(kubectl) create -f $@.yaml
 .PHONY: $(CLOUD)-storage-class
 
 purge:
