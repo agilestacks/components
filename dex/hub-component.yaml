@@ -39,6 +39,12 @@ parameters:
     value: unknown
   - name: component.dex.okta.clientSecret
     value: unknown
+  - name: component.dex.authproxy.image
+    value: agilestacks/oauth2_proxy:v2.3
+  - name: component.dex.authproxy.emailDomain
+    value: "'*'"
+  - name: component.dex.authproxy.cookieExpire
+    value: "'8h0m0s'"
   - name: dns.domain
     env: DOMAIN_NAME
   - name: dns.name
