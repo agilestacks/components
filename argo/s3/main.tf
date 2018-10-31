@@ -12,11 +12,11 @@ provider "null" {
 }
 
 provider "aws" {
-  version = "1.29.0"
+  version = "1.41.0"
 }
 
 provider "aws" {
-  version = "1.29.0"
+  version = "1.41.0"
   alias = "bucket"
   region = "${var.bucket_region}"
 }
