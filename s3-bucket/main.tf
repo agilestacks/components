@@ -33,7 +33,7 @@ data "aws_region" "current" {
 }
 
 provider "aws" {
-  version = "~> 1.25"
+  version = "1.41.0"
 }
 
 variable "name" {
