@@ -17,8 +17,6 @@ deploy:
 	$(kubectl) apply -f service-api.yaml
 	$(kubectl) apply -f ingress.yaml
 
-	$(kubectl) apply -f dex-operator-configmap.yaml
-	$(kubectl) apply -f dex-operator.yaml
 	$(kubectl) apply -f auth_v1alpha1_oidc.yaml
 	$(kubectl) apply -f auth-operator.yaml
 .PHONY: deploy
@@ -26,8 +24,6 @@ deploy:
 undeploy:
 	-$(kubectl) delete -f auth_v1alpha1_oidc.yaml
 	-$(kubectl) delete -f auth-operator.yaml
-	-$(kubectl) delete -f dex-operator.yaml
-	-$(kubectl) delete -f dex-operator-configmap.yaml
 	-$(kubectl) delete -f ingress.yaml
 	-$(kubectl) delete -f service.yaml
 	-$(kubectl) delete -f service-api.yaml

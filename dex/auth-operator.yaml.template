@@ -1,10 +1,28 @@
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: auth-operator-manager
+  namespace: ${component.dex.namespace}
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
   name: auth-operator-manager-role
 rules:
+- apiGroups:
+  - extensions
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
 - apiGroups:
   - ""
   resources:
@@ -90,7 +108,7 @@ roleRef:
   name: auth-operator-manager-role
 subjects:
 - kind: ServiceAccount
-  name: default
+  name: auth-operator-manager
   namespace: ${component.dex.namespace}
 ---
 apiVersion: v1
@@ -134,6 +152,7 @@ spec:
         control-plane: controller-manager
         controller-tools.k8s.io: "1.0"
     spec:
+      serviceAccountName: auth-operator-manager
       containers:
       - command:
         - /root/manager
@@ -144,7 +163,19 @@ spec:
               fieldPath: metadata.namespace
         - name: SECRET_NAME
           value: auth-operator-webhook-server-secret
-        image: agilestacks/auth-operator:0.0.1
+        - name: APROXY_IMAGE
+          value: ${component.dex.authproxy.image}
+        - name: APROXY_COOKIE_EXP
+          value: ${component.dex.authproxy.cookieExpire}
+        - name: APROXY_EMAIL_DOMAIN
+          value: ${component.dex.authproxy.emailDomain}
+        - name: APROXY_ING_PREFIX
+          value: ${component.ingress.ssoUrlPrefix}
+        - name: APROXY_ING_PROTO
+          value: ${component.ingress.protocol}
+        - name: APROXY_DEX_NAMESPACE
+          value: ${component.dex.namespace}
+        image: agilestacks/auth-operator:0.0.2
         imagePullPolicy: Always
         name: manager
         ports:
@@ -153,8 +184,8 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: 200m
-            memory: 200Mi
+            cpu: 300m
+            memory: 100Mi
           requests:
             cpu: 100m
             memory: 20Mi
