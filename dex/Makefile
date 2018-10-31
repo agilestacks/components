@@ -10,7 +10,6 @@ deploy:
 	$(kubectl) apply -f grpc-client-secret.yaml
 	$(kubectl) apply -f grpc-server-secret.yaml
 	$(kubectl) apply -f dex-rbac.yaml
-	$(kubectl) apply -f operator-rbac.yaml
 	$(kubectl) get configmap dex || $(kubectl) apply -f configmap.yaml
 	$(kubectl) apply -f deployment.yaml
 	$(kubectl) apply -f service.yaml
@@ -29,7 +28,6 @@ undeploy:
 	-$(kubectl) delete -f service-api.yaml
 	-$(kubectl) delete -f deployment.yaml
 	-$(kubectl) delete -f dex-rbac.yaml
-	-$(kubectl) delete -f operator-rbac.yaml
 	-$(kubectl) delete -f grpc-client-secret.yaml
 	-$(kubectl) delete -f grpc-server-secret.yaml
 	-$(kubectl) delete -f configmap.yaml
