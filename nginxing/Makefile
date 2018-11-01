@@ -21,12 +21,15 @@ init:
 	$(helm) init --client-only --upgrade --wait
 	@mkdir -p charts
 	@mkdir -p .terraform
-	$(terraform) init -get=true $(TF_CMD_OPTS) -force-copy  \
+	$(terraform) init $(TF_OPTS) \
+		-get=true -reconfigure -force-copy  \
 		-backend=true -input=false \
 		-backend-config="bucket=$(STATE_BUCKET)" \
 		-backend-config="region=$(STATE_REGION)" \
 		-backend-config="key=$(TF_VAR_domain_name)/nginxing/$(TF_VAR_component)/terraform.tfstate" \
-		-backend-config="profile=$(AWS_PROFILE)"
+		-backend-config="profile=$(AWS_PROFILE)" \
+		./aws
+.PHONY: init
 
 fetch:
 	$(helm) fetch \
@@ -52,25 +55,27 @@ install:
 .PHONY: install
 
 get:
-	$(terraform) get $(TF_UPDATE)
+	$(terraform) get $(TF_UPDATE) ./aws
 .PHONY: get
 
 plan:
-	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/$(TF_VAR_domain_name).tfplan
+	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan ./aws
 .PHONY: plan
 
 apply:
-	$(terraform) apply $(TF_OPTS) -Xshadow=false .terraform/$(TF_VAR_domain_name).tfplan
+	$(terraform) apply $(TF_OPTS) -Xshadow=false .terraform/terraform.tfplan
+	@echo
 .PHONY: apply
 
-undeploy: init
-	$(MAKE) plan TF_OPTS="$(TF_OPTS) -destroy"
-	# roll forward on error for undeploy
-	-$(MAKE) apply
+destroy: TF_OPTS:=-destroy
+destroy: plan
 
+undeploy: init destroy apply uninstall
+
+uninstall:
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component) || exit 0
-.PHONY: undeploy
+.PHONY: uninstall
 
 clean:
 	rm -rf $(HELM_HOME)
