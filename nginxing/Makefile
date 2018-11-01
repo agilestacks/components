@@ -11,7 +11,7 @@ CHART ?= stable/nginx-ingress
 STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1
 helm ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
-terraform ?= terraform
+terraform ?= terraform-v0.11
 
 deploy: clean init fetch purge install get plan apply
 .PHONY: deploy
