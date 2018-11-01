@@ -2,9 +2,7 @@ terraform {
   required_version = ">= 0.9.3"
 }
 
-provider "aws" {
-  version = "1.41.0"
-}
+provider "aws" {}
 
 resource "aws_db_snapshot" "postgresql" {
   db_instance_identifier = "${var.rds_name}"
