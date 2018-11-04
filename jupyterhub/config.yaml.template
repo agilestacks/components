@@ -50,8 +50,6 @@ hub:
             env['GITHUB_TOKEN'] = self.user_options['github_token']
             return env
         def start(self):
-            self.log.info('progress generator: %s', self.pod_name)
-            self.log.info('progress generator: %s', self.pvc_name)
             if 'image' not in self.user_options:
               self.image_spec = '${component.jupyterhub.default.notebook.image}'
             else:
@@ -82,6 +80,9 @@ debug:
 ingress:
   enabled: true
   hosts: ['${component.jupyterhub.name}.${component.ingress.ssoFqdn}']
+# do not destroy notebook pod automatically, let application user decide when to destroy it
+cull:
+  enabled: false   
 auth:
   type: custom
   custom:
