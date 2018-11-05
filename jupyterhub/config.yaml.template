@@ -79,7 +79,7 @@ debug:
   enabled: false
 ingress:
   enabled: true
-  hosts: ['${component.jupyterhub.name}.${component.ingress.ssoFqdn}']
+  hosts: ['${component.jupyterhub.name}.${component.ingress.fqdn}']
 # do not destroy notebook pod automatically, let application user decide when to destroy it
 cull:
   enabled: false   
