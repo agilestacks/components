@@ -105,7 +105,6 @@ kubeflow/kubeflow-v0.2.2/components/seldon.jsonnet
 kubeflow/kubeflow-v0.2.2/components/tf-serving.jsonnet
 kubeflow/kubeflow-v0.2.2/components/pytorch-operator.jsonnet
 kubeflow/kubeflow-v0.2.2/environments/cloud
-jenkins-pipelines/rbac.yaml
 argo/charts
 values.yaml
 ingress.yaml
