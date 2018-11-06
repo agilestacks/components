@@ -24,7 +24,7 @@ fetch:
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME)
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 .PHONY: purge
 
 install:
