@@ -1,19 +1,20 @@
 .DEFAULT_GOAL := deploy
 
-export AWS_DEFAULT_REGION ?= us-east-2
-
 COMPONENT_NAME ?= s3
 DOMAIN_NAME    ?= dev.kubernetes.delivery
 STATE_BUCKET   ?= terraform.agilestacks.com
 STATE_REGION   ?= us-east-1
 
-export TF_LOG             ?= debug
-export TF_LOG_PATH        ?= .terraform/$(DOMAIN_NAME).log
-export TF_DATA_DIR        ?= .terraform
-export TF_VAR_name        := $(COMPONENT_NAME)
+export AWS_DEFAULT_REGION ?= us-east-2
 
-terraform    ?= terraform-v0.11
+export TF_LOG      ?= info
+export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
+export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
+export TF_VAR_name := $(COMPONENT_NAME)
+
+terraform ?= terraform-v0.11
 CLI_ARGS  ?= -no-color -input=false
+TFPLAN    := $(TF_DATA_DIR)/terraform.tfplan
 
 deploy: init plan
 	$(MAKE) apply || \
@@ -33,7 +34,7 @@ init: $(TF_DATA_DIR)
 .PHONY: init
 
 plan:
-	$(terraform) plan $(CLI_ARGS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan
+	$(terraform) plan $(CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
 .PHONY: plan
 
 refresh:
@@ -41,7 +42,7 @@ refresh:
 .PHONY: refresh
 
 apply:
-	$(terraform) apply $(CLI_ARGS)  -auto-approve .terraform/terraform.tfplan
+	$(terraform) apply $(CLI_ARGS) -auto-approve $(TFPLAN)
 .PHONY: apply
 
 output:
