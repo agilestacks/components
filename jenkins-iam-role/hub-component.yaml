@@ -5,13 +5,12 @@ meta:
   name: jenkins-iam-role
   brief: IAM role for jenkins
   source:
-    dir: ../../components/jenkins/cloud
+    dir: ../../components/jenkins-iam-role
 
 parameters:
 - name: dns.domain
   env: TF_VAR_domain_name
 - name: cloud.region
-  kind: user
   env: AWS_DEFAULT_REGION
 - name: component.jenkins.name
   value: jenkins
@@ -19,6 +18,6 @@ parameters:
 - name: cloud.role.worker
   env: TF_VAR_worker_role
 outputs:
-- name: component.jenkins-iam-role.role_arn
+- name: component.jenkins-iam-role.roleArn
   brief: Agile Stacks IAM role ARN
   fromTfVar: role_arn
