@@ -17,6 +17,12 @@ parameters:
   env: COMPONENT_NAME
 - name: cloud.role.worker
   env: CLOUD_WORKER_ROLE
+- name: terraform.bucket
+  parameters:
+  - name: name
+    env: STATE_BUCKET
+  - name: region
+    env: STATE_REGION
 outputs:
 - name: component.jenkins-iam-role.roleArn
   brief: Agile Stacks IAM role ARN
