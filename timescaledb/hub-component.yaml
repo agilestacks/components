@@ -1,0 +1,52 @@
+version: 1
+kind: component
+meta:
+  name: timescaledb
+  brief: timescaledb
+  source:
+    dir: ../../components/timescaledb
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+provides:
+  - timescaledb
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: cloud.kind
+    env: CLOUD_KIND
+  - name: component.timescaledb
+    parameters:
+    - name:  name
+      value: timescaledb
+      env:   COMPONENT_NAME
+    - name:  namespace
+      value: timescaledb
+      env:   NAMESPACE
+    - name:  user
+    - name:  password
+    - name:  database
+    - name:  volumeType
+      value: gp2
+      # conditional defaults?
+      # value: pd-ssd
+    - name:  volumeSize
+      value: 8Gi
+    - name:  storageClass
+      value: ${cloud.kind}-storage
+    - name:  port
+      value: 5432
+
+outputs:
+- name: component.timescaledb.host
+  value: ${component.timescaledb.name}-timescaledb.${component.timescaledb.namespace}.svc.cluster.local
+- name: component.timescaledb.port
+- name: component.timescaledb.user
+- name: component.timescaledb.namespace
+
+templates:
+  files:
+    - "*.template"

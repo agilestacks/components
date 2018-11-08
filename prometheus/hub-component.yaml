@@ -41,6 +41,10 @@ parameters:
       value: prometheus
     - name:  ingress.path
       value: /
+    - name: backend.timescale.name
+      value: ""
+    - name: backend.timescale.namespace
+      value: ""
   - name: component.prometheus.alertmanager
     parameters:
     - name:  version
