@@ -42,5 +42,4 @@ undeploy: init
 
 clean:
 	@rm -rf $(HELM_HOME)
-	@rm -rf charts
 .PHONY: clean

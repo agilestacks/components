@@ -62,3 +62,7 @@ dependencies:
   - name: exporter-argo
     version: 0.0.1
     repository: file://charts/exporter-argo
+
+  - name: prom-pg-adapter
+    version: 0.0.1
+    repository: file//charts/pg-adapter

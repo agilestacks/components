@@ -27,8 +27,11 @@ parameters:
       value: timescaledb
       env:   NAMESPACE
     - name:  user
+      value: postgres
     - name:  password
+      value: postgres
     - name:  database
+      value: postgres
     - name:  volumeType
       value: gp2
       # conditional defaults?
@@ -39,13 +42,19 @@ parameters:
       value: ${cloud.kind}-storage
     - name:  port
       value: 5432
+    - name: cpu
+      value: 500m
+    - name: memory
+      value: 500Mi
 
 outputs:
 - name: component.timescaledb.host
   value: ${component.timescaledb.name}-timescaledb.${component.timescaledb.namespace}.svc.cluster.local
 - name: component.timescaledb.port
 - name: component.timescaledb.user
+- name: component.timescaledb.password
 - name: component.timescaledb.namespace
+- name: component.timescaledb.database
 
 templates:
   files:
