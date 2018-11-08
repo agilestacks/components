@@ -157,7 +157,7 @@ controller:
     configMapKey: ""
 
   service:
-    annotations: 
+    annotations:
       "service.beta.kubernetes.io/aws-load-balancer-backend-protocol": "http"
       "service.beta.kubernetes.io/aws-load-balancer-ssl-cert": "${component.acm.certificateArn}"
       "service.beta.kubernetes.io/aws-load-balancer-ssl-ports": "443"
@@ -296,7 +296,7 @@ defaultBackend:
   name: default-backend
   image:
     repository: k8s.gcr.io/defaultbackend
-    tag: "1.4"
+    tag: "1.5"
     pullPolicy: IfNotPresent
 
   extraArgs: {}
