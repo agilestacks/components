@@ -419,6 +419,14 @@ data:
       @type kubernetes_metadata
     </filter>
 
+    # Concatenate multi-line logs
+    <filter **>
+      @type concat
+      key message
+      multiline_end_regexp /\n$/
+      separator ""
+    </filter>
+
     <match **>
       @id elasticsearch
       @type elasticsearch
