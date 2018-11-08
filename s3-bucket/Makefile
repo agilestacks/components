@@ -53,10 +53,10 @@ clean:
 	rm -rf .terraform
 .PHONY: clean
 
-undeploy: init
-	$(MAKE) plan CLI_ARGS="-destroy $(CLI_ARGS)"
-	$(MAKE) apply
-.PHONY: undeploy
+undeploy: init destroy apply
+
+destroy: CLI_ARGS:=-destroy $(CLI_ARGS)
+destroy: plan
 
 import:
 	- $(terraform) import $(CLI_ARGS) module.s3.aws_s3_bucket.main $(DOMAIN_NAME)
