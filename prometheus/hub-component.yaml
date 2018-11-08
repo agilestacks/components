@@ -41,9 +41,13 @@ parameters:
       value: prometheus
     - name:  ingress.path
       value: /
-    - name: backend.timescale.name
+    - name: backend.enabled
+      value: false
+    - name: backend.timescaledb.name
+      empty: allow
       value: ""
-    - name: backend.timescale.namespace
+    - name: backend.timescaledb.namespace
+      empty: allow
       value: ""
   - name: component.prometheus.alertmanager
     parameters:
@@ -65,10 +69,19 @@ parameters:
       value: true
     - name:  ingress.urlPrefix
       value: grafana
+  - name: component.timescaledb
+    parameters:
+    - name: user
+      value: postgres
+    - name: password
+      value: postgres
+    - name: database
+      value: postgres
 
 templates:
   files:
     - "*.template"
+    - "charts/kube-prometheus/charts/pg-adapter/*.template"
 
 outputs:
   - name: component.prometheus.url

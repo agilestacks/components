@@ -77,11 +77,10 @@ spec:
   serviceMonitorNamespaceSelector:
 {{ toYaml .Values.serviceMonitorNamespaceSelector | indent 4 }}
 {{- end }}
-{{- if .Values.remoteRead }}
+
+{{- if .Values.backend.enabled }}
   remoteRead:
 {{ toYaml .Values.remoteRead | indent 4 }}
-{{- end }}
-{{- if .Values.remoteWrite }}
   remoteWrite:
 {{ toYaml .Values.remoteWrite | indent 4 }}
 {{- end }}

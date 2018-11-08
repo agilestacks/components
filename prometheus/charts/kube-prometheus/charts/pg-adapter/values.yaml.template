@@ -1,4 +1,9 @@
 backend:
-  timescale:
-    name: ${component.prometheus.backend.timescale.name}
-    namespace: ${component.prometheus.backend.timescale.namespace}
+  enabled: ${component.prometheus.backend.enabled}
+  timescaledb:
+    name: ${component.prometheus.backend.timescaledb.name}
+    namespace: ${component.prometheus.backend.timescaledb.namespace}
+    user: ${component.timescaledb.user}
+    password: ${component.timescaledb.password}
+    database: ${component.timescaledb.database}
+

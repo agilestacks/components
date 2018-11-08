@@ -19,10 +19,6 @@ deployKubeControllerManager: True
 deployKubeState: True
 deployExporterNode: true
 
-backend:
-  timescale:
-    name: ${component.prometheus.backend.timescale.name}
-    namespace: ${component.prometheus.backend.timescale.namespace}
 
 ##Custom Labels to be added to Prometheus Rules ConfigMap
 ##
@@ -236,6 +232,12 @@ prometheus:
   #     namespace: ""
   #     port: 9093
   #     scheme: http
+
+  backend:
+    enabled: ${component.prometheus.backend.enabled}
+    timescaledb:
+      name: ${component.prometheus.backend.timescaledb.name}
+      namespace: ${component.prometheus.backend.timescaledb.namespace}
 
   ## Prometheus configuration directives
   ## Ignored if serviceMonitors are defined
@@ -762,3 +764,4 @@ grafana:
   auth:
     anonymous:
       enabled: "true"
+

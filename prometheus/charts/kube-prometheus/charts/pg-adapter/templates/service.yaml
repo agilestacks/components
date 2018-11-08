@@ -1,4 +1,4 @@
-{{- if ne .Values.backend.timescale.name "" -}}
+{{- if .Values.backend.enabled -}}
 kind: Service
 apiVersion: v1
 metadata:
@@ -11,4 +11,4 @@ spec:
   - protocol: TCP
     port: 9201 
     targetPort: 9201
-{{- end}}
+{{- end -}}
