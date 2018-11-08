@@ -59,5 +59,5 @@ destroy: CLI_ARGS:=-destroy $(CLI_ARGS)
 destroy: plan
 
 import:
-	- $(terraform) import $(CLI_ARGS) module.s3.aws_s3_bucket.main $(DOMAIN_NAME)
+	- $(terraform) import $(CLI_ARGS) aws_s3_bucket.main $(TF_VAR_name)
 .PHONY: import
