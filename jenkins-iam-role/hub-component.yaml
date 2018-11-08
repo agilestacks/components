@@ -12,8 +12,8 @@ parameters:
   env: DOMAIN_NAME
 - name: cloud.region
   env: AWS_DEFAULT_REGION
-- name: component.jenkins.name
-  value: jenkins
+- name: component.jenkins-iam-role.name
+  value: ${dns.domain}
   env: COMPONENT_NAME
 - name: cloud.role.worker
   env: CLOUD_WORKER_ROLE
