@@ -1,0 +1,4 @@
+backend:
+  timescale:
+    name: ${component.prometheus.backend.timescale.name}
+    namespace: ${component.prometheus.backend.timescale.namespace}

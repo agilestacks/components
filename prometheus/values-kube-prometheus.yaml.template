@@ -19,6 +19,11 @@ deployKubeControllerManager: True
 deployKubeState: True
 deployExporterNode: true
 
+backend:
+  timescale:
+    name: ${component.prometheus.backend.timescale.name}
+    namespace: ${component.prometheus.backend.timescale.namespace}
+
 ##Custom Labels to be added to Prometheus Rules ConfigMap
 ##
 additionalRulesConfigMapLabels: {}
@@ -355,13 +360,15 @@ prometheus:
 
   ## The remote_read spec configuration for Prometheus.
   ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#remotereadspec
-  remoteRead: {}
+  remoteRead:
+    - url: http://prometheus-postgres-adapter:9201/read
     # remoteRead:
     #   - url: http://remote1/read
 
   ## The remote_write spec configuriation for Prometheus.
   ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#remotewritespec
-  remoteWrite: {}
+  remoteWrite:
+    - url: http://prometheus-postgres-adapter:9201/write
     # remoteWrite:
     #   - url: http://remote1/push
 

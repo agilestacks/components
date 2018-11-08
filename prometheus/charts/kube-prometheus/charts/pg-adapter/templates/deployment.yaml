@@ -1,0 +1,24 @@
+{{- if ne .Values.backend.timescale.name "" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-pg-adapter
+  namespace: prometheus
+  labels:
+    app: prometheus-pg-adapter
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-pg-adapter
+  template:
+    metadata:
+      labels:
+        app: prometheus-pg-adapter
+    spec:
+      containers:
+      - name: prometheus-pg-adapter
+        image: timescale/prometheus-postgresql-adapter
+        args: ["-pg.host={{- .Values.backend.timescale.name -}}.{{- .Values.backend.timescale.namespace - }}", "pg.prometheus-log-samples"]
+        ports:
+        - containerPort: 9201
+{{- end }}

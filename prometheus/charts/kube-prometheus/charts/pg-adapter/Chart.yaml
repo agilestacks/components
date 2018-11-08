@@ -1,0 +1,9 @@
+apiVersion: v1
+description: Deployment for prometheus-postgresql-adaptor to allow prometheus to store/retrieve in postgres
+maintainers:
+  - name: AgileStacks Inc
+    email: rick@agilestacks.com
+name: prom-pg-adapter
+sources:
+  - https://github.com/timescale/prometheus-postgresql-adapter
+version: 0.0.1
