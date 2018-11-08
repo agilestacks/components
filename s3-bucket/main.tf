@@ -28,9 +28,7 @@ variable "endpoints" {
   }
 }
 
-data "aws_region" "current" {
-  current = true
-}
+data "aws_region" "current" {}
 
 provider "aws" {
   version = "1.41.0"
