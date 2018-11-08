@@ -9,14 +9,14 @@ meta:
 
 parameters:
 - name: dns.domain
-  env: TF_VAR_domain_name
+  env: DOMAIN_NAME
 - name: cloud.region
   env: AWS_DEFAULT_REGION
 - name: component.jenkins.name
   value: jenkins
   env: COMPONENT_NAME
 - name: cloud.role.worker
-  env: TF_VAR_worker_role
+  env: CLOUD_WORKER_ROLE
 outputs:
 - name: component.jenkins-iam-role.roleArn
   brief: Agile Stacks IAM role ARN
