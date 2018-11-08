@@ -13,7 +13,7 @@ export TF_OPTS            ?= -no-color
 export TF_UPDATE          ?= -update
 
 export TF_VAR_name        := $(COMPONENT_NAME)
-export TF_VAR_base_domain := $(DOMAIN_NAME)
+export TF_VAR_domain_name := $(DOMAIN_NAME)
 export TF_VAR_worker_role := $(CLOUD_WORKER_ROLE)
 
 terraform ?= terraform-v0.11
