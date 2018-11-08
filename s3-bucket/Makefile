@@ -2,11 +2,10 @@
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
-STATE_BUCKET ?= terraform.agilestacks.com
-STATE_REGION ?= us-east-1
 COMPONENT_NAME ?= s3
-DOMAIN_NAME ?= dev.kubernetes.delivery
-CLI_ARGS ?= -no-color -input=false
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+STATE_BUCKET   ?= terraform.agilestacks.com
+STATE_REGION   ?= us-east-1
 
 export TF_LOG             ?= debug
 export TF_LOG_PATH        ?= .terraform/$(DOMAIN_NAME).log
@@ -14,6 +13,7 @@ export TF_DATA_DIR        ?= .terraform
 export TF_VAR_name        := $(COMPONENT_NAME)
 
 terraform    ?= terraform-v0.11
+CLI_ARGS  ?= -no-color -input=false
 
 deploy: init plan
 	$(MAKE) apply || \
