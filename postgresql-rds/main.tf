@@ -80,7 +80,7 @@ resource "aws_db_instance" "postgresql" {
   snapshot_identifier = "${var.snapshot_identifier}"
 
   lifecycle {
-    ignore_changes = ["snapshot_identifier"]
+    ignore_changes = ["snapshot_identifier", "password"]
   }
 
   tags {
