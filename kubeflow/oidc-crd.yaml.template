@@ -8,5 +8,5 @@ spec:
   id: kubeflow-client
   secret: 345t6dfgdfg4-57yDSDfjeuDVQEW
   redirectURIs:
-  - http://${component.kubeflow.urlPrefix}.${dns.domain}/login/oidc
+  - ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/login/oidc
   name: 'Kubeflow AI framework'

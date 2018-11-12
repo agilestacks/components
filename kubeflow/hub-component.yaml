@@ -12,6 +12,8 @@ requires:
 
 parameters:
   - name: component.ingress.ssoFqdn
+  - name: component.ingress.protocol
+    env: INGRESS_PROTOCOL
   - name: kubernetes.api.endpoint
     env: K8S_API_SERVER
   - name: terraform.bucket.name
@@ -96,19 +98,19 @@ parameters:
 outputs:
   - name: component.kubeflow.ambassador.url
     brief: Ambassador Diagnostics
-    value: http://${component.kubeflow.urlPrefix}.${dns.domain}/ambassador/v0/diag
+    value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/ambassador/v0/diag
   - name: component.kubeflow.argo.url
     brief: Argo UI
-    value: http://${component.kubeflow.urlPrefix}.${dns.domain}/argo/
+    value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/argo/
   - name: component.kubeflow.jupyterhub.url
     brief: Jupyter Hub Admin panel
-    value: http://${component.kubeflow.urlPrefix}.${dns.domain}/hub/
+    value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/hub/
   - name: component.kubeflow.tf-job.url
     brief: TF Job Dashboard
-    value: http://${component.kubeflow.urlPrefix}.${dns.domain}/tfjobs/ui
+    value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/tfjobs/ui
   - name: component.kubeflow.url
     brief: Kubeflow Dashboard
-    value: http://${component.kubeflow.urlPrefix}.${dns.domain}/
+    value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/
 
 
 
