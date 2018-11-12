@@ -11,6 +11,7 @@ export AMBASSADOR_VERSION   ?= quay.io/datawire/ambassador:0.40.0
 export K8S_API_SPEC			?= v1.11.3
 export K8S_API_SERVER		?=
 export KF_ENV				?= cloud
+export INGRESS_PROTOCOL	    ?= http
 
 terraform ?= terraform-v0.11
 STATE_BUCKET ?= terraform.agilestacks.com
@@ -114,8 +115,8 @@ install:
 	-$(kubectl) create -f oidc-crd.yaml
 	-$(kubectl) create secret generic ambassador-auth-jwt-key --from-literal=jwt-key=qafBTgd27hg0cX11tawDLu0SLsXXiiEW4kl6SC5p4eBwRCr0ejiSBDSdW8mQQwFh2nS0wOXtdWq28DvxEnIFaQ==
 	-$(kubectl) create secret generic ambassador-auth-redis-password --from-literal=redis-password=MH2POuA75acYSvm5RvpOJsAJINI=
-	-$(kubectl) create secret generic ambassador-auth-oidc-provider --from-literal=oidc-provider=http://auth.$(TF_VAR_domain_name)
-	-$(kubectl) create secret generic ambassador-auth-self-url --from-literal=self-url=http://kubeflow.$(TF_VAR_domain_name)/
+	-$(kubectl) create secret generic ambassador-auth-oidc-provider --from-literal=oidc-provider=$(INGRESS_PROTOCOL)://auth.$(TF_VAR_domain_name)
+	-$(kubectl) create secret generic ambassador-auth-self-url --from-literal=self-url=$(INGRESS_PROTOCOL)://kubeflow.$(TF_VAR_domain_name)/
 	-$(kubectl) create secret generic ambassador-auth-client-id --from-literal=client-id=kubeflow-client
 	-$(kubectl) create secret generic ambassador-auth-client-secret --from-literal=client-secret=345t6dfgdfg4-57yDSDfjeuDVQEW
 	-$(kubectl) create -f oidc-deployment.yaml
