@@ -41,7 +41,7 @@ parameters:
       value: v0.3.2
       env: KUBEFLOW_VERSION
     - name:  urlPrefix
-      value: kubeflow
+      value: kubeflow.svc
       env: TF_VAR_url_prefix
     - name: apiSpec
       value: v1.11.4
