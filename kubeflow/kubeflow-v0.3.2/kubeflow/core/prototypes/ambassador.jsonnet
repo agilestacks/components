@@ -8,6 +8,8 @@
 // @optionalParam ambassadorImage string quay.io/datawire/ambassador:0.37.0 The image for the API Gateway.
 // @optionalParam statsdImage string quay.io/datawire/statsd:0.37.0 The image for the Stats and Monitoring.
 // @optionalParam statsdSinkImage string prom/statsd-exporter:v0.6.0 The image for the Statsd exporter.
+// @optionalParam ambassadorProtocol string http The protocol for the API Gateway.
+// @optionalParam ambassadorAcmCertificateArn string null The AWS ACM certificate's ARN to use for ELB
 
 local ambassador = import "kubeflow/core/ambassador.libsonnet";
 local instance = ambassador.new(env, params);

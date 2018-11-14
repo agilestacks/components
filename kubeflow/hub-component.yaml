@@ -9,11 +9,16 @@ meta:
 
 requires:
   - kubernetes
+  - ingress
+
+provides:
+  - kubeflow
 
 parameters:
-  - name: component.ingress.ssoFqdn
   - name: component.ingress.protocol
-    env: INGRESS_PROTOCOL
+  - name: component.acm.certificateArn
+    empty: allow
+    env: ACM_CERTIFICATE_ARN
   - name: kubernetes.api.endpoint
     env: K8S_API_SERVER
   - name: terraform.bucket.name
@@ -39,7 +44,7 @@ parameters:
       value: kubeflow
       env: TF_VAR_url_prefix
     - name: apiSpec
-      value: v1.11.3
+      value: v1.11.4
       env: K8S_API_SPEC
     - name: environment
       value: cloud
@@ -48,69 +53,36 @@ parameters:
       value: ""
       env: GITHUB_TOKEN
       empty: allow
-    - name: ingress
-      parameters:
-      - name: name
-        value: centraldashboard
-      - name: urlPrefix
-        value: kubeflow
-      - name: service
-        value: centraldashboard
-    - name: ambassador.ingress
-      parameters:
-      - name: name
-        value: ambassador-admin
-      - name: urlPrefix
-        value: ambassador-admin
-      - name: service
-        value: ambassador-admin
-    - name: tf.ingress
-      parameters:
-      - name: name
-        value: tf-dashboard
-      - name: urlPrefix
-        value: tf-dashboard
-      - name: service
-        value: tf-job-dashboard
-    - name: jupyterhub.ingress
-      parameters:
-      - name: name
-        value: jupyterhub
-      - name: urlPrefix
-        value: jupyterhub
-      - name: service
-        value: tf-hub-lb
     - name: argo
       parameters:
       - name: version
         value: v2.2.1
         env: ARGO_VERSION
-      - name: ingress
-        parameters:
-        - name: name
-          value: argo
-        - name: urlPrefix
-          value: argo
-        - name: service
-          value: argo-ui
+    - name: ambassador
+      parameters:
+      - name: image
+        value: quay.io/datawire/ambassador:0.40.1
+        env: AMBASSADOR_VERSION
 
 
 outputs:
+  - name: component.kubeflow.ambassador.protocol
+    fromTfVar: ingress_protocol
   - name: component.kubeflow.ambassador.url
     brief: Ambassador Diagnostics
-    value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/ambassador/v0/diag
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/ambassador/v0/diag
   - name: component.kubeflow.argo.url
     brief: Argo UI
-    value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/argo/
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/argo/
   - name: component.kubeflow.jupyterhub.url
     brief: Jupyter Hub Admin panel
-    value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/hub/
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/hub/
   - name: component.kubeflow.tf-job.url
     brief: TF Job Dashboard
-    value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/tfjobs/ui
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/tfjobs/ui
   - name: component.kubeflow.url
     brief: Kubeflow Dashboard
-    value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/
 
 
 

@@ -8,6 +8,7 @@
     },
 
     local ambassadorService = {
+
       apiVersion: "v1",
       kind: "Service",
       metadata: {
@@ -16,9 +17,48 @@
         },
         name: "ambassador",
         namespace: params.namespace,
+        annotations:
+          if params.ambassadorProtocol == "https" then {
+          "getambassador.io/config":
+            std.join("\n", [
+              "---",
+              "apiVersion: ambassador/v0",
+              "kind:  Module",
+              "name: ambassador",
+              "config:",
+              " use_proxy_proto: true",
+              " use_remote_address: true",
+              "---",
+              "apiVersion: ambassador/v1",
+              "kind: Module",
+              "name: tls",
+              "config:",
+              " server:",
+              "   enabled: true",
+              "   redirect_cleartext_from: 8080",
+            ]),
+          "service.beta.kubernetes.io/aws-load-balancer-ssl-ports": "443",
+          "service.beta.kubernetes.io/aws-load-balancer-ssl-cert": params.ambassadorAcmCertificateArn,
+          "service.beta.kubernetes.io/aws-load-balancer-backend-protocol": "tcp",
+          "service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled": "true",
+          "service.beta.kubernetes.io/aws-load-balancer-proxy-protocol": "*",
+        } else {},
       },
       spec: {
-        ports: [
+        ports:
+        if params.ambassadorProtocol == "https" then [
+          {
+            name: "ambassador-tls",
+            port: 443,
+            targetPort: 443,
+          },
+          {
+            name: "ambassador-redirect",
+            port: 80,
+            targetPort: 8080,
+          },
+        ]
+        else [
           {
             name: "ambassador",
             port: 80,

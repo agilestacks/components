@@ -3,21 +3,29 @@
 export TF_VAR_namespace    	?= kubeflow
 export TF_VAR_component    	?= kubeflow
 export TF_VAR_domain_name  	?= dev.kubernetes.delivery
+export TF_VAR_url_prefix	?= svc
 export kubectl      		?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
 export KUBEFLOW_VERSION		?= v0.3.2
 export KUBEFLOW_KS_DIR	    ?= ks-app
 export ARGO_VERSION			?= v2.2.1
-export AMBASSADOR_VERSION   ?= quay.io/datawire/ambassador:0.40.0
-export K8S_API_SPEC			?= v1.11.3
+export AMBASSADOR_VERSION   ?= quay.io/datawire/ambassador:0.40.1
+export K8S_API_SPEC			?= v1.11.4
 export K8S_API_SERVER		?=
 export KF_ENV				?= cloud
-export INGRESS_PROTOCOL	    ?= http
+
 
 terraform ?= terraform-v0.11
 STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1
+ACM_CERTIFICATE_ARN ?=
 
-deploy: clean init fetch configure install get plan apply
+ifneq (,$(ACM_CERTIFICATE_ARN))
+	PROTOCOL=https
+else
+	PROTOCOL=http
+endif
+
+deploy: clean init fetch configure install get plan apply output
 
 init:
 	@mkdir -p .terraform
@@ -88,6 +96,10 @@ configure:
 	-cd $(KUBEFLOW_KS_DIR) && \
 	ks param set ambassador ambassadorServiceType LoadBalancer --env=$(KF_ENV)
 	-cd $(KUBEFLOW_KS_DIR) && \
+	ks param set ambassador ambassadorProtocol $(PROTOCOL) --env=$(KF_ENV)
+	-cd $(KUBEFLOW_KS_DIR) && \
+	ks param set ambassador ambassadorAcmCertificateArn $(ACM_CERTIFICATE_ARN) --env=$(KF_ENV)
+	-cd $(KUBEFLOW_KS_DIR) && \
 	ks param set ambassador cloud aws --env=$(KF_ENV)
 .PHONY: configure
 
@@ -115,8 +127,8 @@ install:
 	-$(kubectl) create -f oidc-crd.yaml
 	-$(kubectl) create secret generic ambassador-auth-jwt-key --from-literal=jwt-key=qafBTgd27hg0cX11tawDLu0SLsXXiiEW4kl6SC5p4eBwRCr0ejiSBDSdW8mQQwFh2nS0wOXtdWq28DvxEnIFaQ==
 	-$(kubectl) create secret generic ambassador-auth-redis-password --from-literal=redis-password=MH2POuA75acYSvm5RvpOJsAJINI=
-	-$(kubectl) create secret generic ambassador-auth-oidc-provider --from-literal=oidc-provider=$(INGRESS_PROTOCOL)://auth.$(TF_VAR_domain_name)
-	-$(kubectl) create secret generic ambassador-auth-self-url --from-literal=self-url=$(INGRESS_PROTOCOL)://kubeflow.$(TF_VAR_domain_name)/
+	-$(kubectl) create secret generic ambassador-auth-oidc-provider --from-literal=oidc-provider=$(PROTOCOL)://auth.$(TF_VAR_domain_name)
+	-$(kubectl) create secret generic ambassador-auth-self-url --from-literal=self-url=$(PROTOCOL)://$(TF_VAR_url_prefix).$(TF_VAR_domain_name)/
 	-$(kubectl) create secret generic ambassador-auth-client-id --from-literal=client-id=kubeflow-client
 	-$(kubectl) create secret generic ambassador-auth-client-secret --from-literal=client-secret=345t6dfgdfg4-57yDSDfjeuDVQEW
 	-$(kubectl) create -f oidc-deployment.yaml
@@ -178,3 +190,10 @@ uninstall:
 clean:
 	rm -rf .terraform/modules .terraform/plugins $(KUBEFLOW_KS_DIR)
 .PHONY: clean
+
+output:
+	@echo
+	@echo Outputs:
+	@echo ingress_protocol = $(PROTOCOL)
+	@echo
+.PHONY: output
