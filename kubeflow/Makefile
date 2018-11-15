@@ -124,7 +124,7 @@ install:
 	ks apply $(KF_ENV) -c seldon --context=$(TF_VAR_domain_name)
 #	-cd $(KUBEFLOW_KS_DIR) && \
 #	ks apply $(KF_ENV) -c tf-serving --context=$(TF_VAR_domain_name)
-	-$(kubectl) delete -f bootstrapper-rbac.yaml | true
+	-$(kubectl) delete -f bootstrapper-rbac.yaml
 	-$(kubectl) create -f bootstrapper-rbac.yaml
 	-$(kubectl) create -f bootstrapper-install.yaml
 	-$(kubectl) create -f oidc-crd.yaml
