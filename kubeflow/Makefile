@@ -124,6 +124,9 @@ install:
 	ks apply $(KF_ENV) -c seldon --context=$(TF_VAR_domain_name)
 #	-cd $(KUBEFLOW_KS_DIR) && \
 #	ks apply $(KF_ENV) -c tf-serving --context=$(TF_VAR_domain_name)
+	-$(kubectl) delete -f bootstrapper-rbac.yaml | true
+	-$(kubectl) create -f bootstrapper-rbac.yaml
+	-$(kubectl) create -f bootstrapper-install.yaml
 	-$(kubectl) create -f oidc-crd.yaml
 	-$(kubectl) create secret generic ambassador-auth-jwt-key --from-literal=jwt-key=qafBTgd27hg0cX11tawDLu0SLsXXiiEW4kl6SC5p4eBwRCr0ejiSBDSdW8mQQwFh2nS0wOXtdWq28DvxEnIFaQ==
 	-$(kubectl) create secret generic ambassador-auth-redis-password --from-literal=redis-password=MH2POuA75acYSvm5RvpOJsAJINI=
@@ -154,6 +157,8 @@ destroy: plan
 undeploy: init destroy apply fetch configure uninstall
 
 uninstall:
+	-$(kubectl) create -f bootstrapper-rbac.yaml | true
+	-$(kubectl) create -f bootstrapper-uninstall.yaml | true
 	-cd $(KUBEFLOW_KS_DIR) && \
 	ks delete $(KF_ENV) -c ambassador --context=$(TF_VAR_domain_name)
 	-cd $(KUBEFLOW_KS_DIR) && \
