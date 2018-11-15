@@ -63,6 +63,10 @@ parameters:
       - name: image
         value: quay.io/datawire/ambassador:0.40.1
         env: AMBASSADOR_VERSION
+    - name: pipelines
+      parameters:
+      - name: image
+        value: agilestacks/bootstrapper:0.1.2
 
 
 outputs:
@@ -80,6 +84,9 @@ outputs:
   - name: component.kubeflow.tf-job.url
     brief: TF Job Dashboard
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/tfjobs/ui
+  - name: component.kubeflow.pipelines.url
+    brief: Pipelines UI
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/pipeline/
   - name: component.kubeflow.url
     brief: Kubeflow Dashboard
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/

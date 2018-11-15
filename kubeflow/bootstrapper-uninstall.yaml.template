@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: deploy-ml-pipeline-
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: deploy-ml-pipeline
+    spec:
+      serviceAccount: mlpipeline-deploy-admin
+      containers:
+      - name: deploy
+        image: ${component.kubeflow.pipelines.image}
+        imagePullPolicy: 'Always'
+        # Additional parameter available:
+        args: [
+          "--namespace", "${component.kubeflow.namespace}",
+          "--report_usage", "false",
+          "--with_kubeflow", "false",
+          "--deploy_argo", "false",
+          "--uninstall",
+        ]
+      restartPolicy: Never
