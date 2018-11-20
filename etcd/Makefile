@@ -33,12 +33,10 @@ else
 deploy: CLUSTER_ENABLED:=true
 deploy: clean init purge install enable restore wait_etcd_pods_after_restore
 endif
-.PHONY: deploy
 
 init:
 	@mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
-.PHONY: init
 
 wait_crd:
 	@for i in $$(seq 1 60); do \
@@ -99,7 +97,6 @@ backup: unbackup backup_config
 	@ echo Outputs:
 	@ echo component.etcd.snapshot = $$( $(get_crd) | jq -r '.spec.s3.path' )
 	@ echo
-.PHONY: backup
 
 restore_config:
 	$(eval SNAPSHOT_REGION=$(shell $(aws) s3api get-bucket-location --bucket \
@@ -131,12 +128,10 @@ restore: wait_etcd_pods_seed unrestore restore_config
 	@ $(get_crd) | jq .
 	@ test "$$( $(get_crd) | jq -r '.status.succeeded' )" = "true"
 	@ sleep 10
-.PHONY: restore
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: purge
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
@@ -146,7 +141,6 @@ install:
 			--replace \
 			--wait \
 			--values values.yaml
-.PHONY: install
 
 enable: wait_crd
 	$(helm) upgrade \
@@ -158,7 +152,6 @@ enable: wait_crd
 		--wait \
 		$(COMPONENT_NAME) \
 		.
-.PHONY: enable
 
 uncluster:
 	-$(kubectl) get EtcdClusters/$(COMPONENT_NAME) -o=yaml | $(kubectl) delete -f - && \
@@ -168,14 +161,13 @@ uncluster:
 undeploy: init unrestore uncluster
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: undeploy
 
 connect:
 	$(kubectl) run --rm -ti \
 		--env ETCDCTL_API=3 --env ETCDCTL_ENDPOINTS=http://$(COMPONENT_NAME)-client:2379 \
 		etcd-shell --image $(ETCD_IMAGE) --restart=Never -- /bin/sh
-.PHONY: connect
 
 clean:
 	@rm -rf $(HELM_HOME) charts
-.PHONY: clean
+
+include ../Mk/phonies
