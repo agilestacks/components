@@ -1,72 +1,69 @@
 .DEFAULT_GOAL := deploy
 
-export COMPONENT_NAME        ?= postgres-rds
-export DOMAIN_NAME           ?= dev.stacks.delivery
-export TF_VAR_rds_name       ?= postgresql
-export AWS_DEFAULT_REGION    ?= us-east-2
-export TF_LOG                ?= info
-export TF_LOG_PATH           ?= .terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).log
-export TF_OPTS               ?= -no-color
-export TF_UPDATE             ?= -update
+COMPONENT_NAME ?= postgresql-rds
+DOMAIN_NAME    ?= dev.stacks.delivery
 
-export terraform             ?= terraform
+STATE_BUCKET ?= terraform.agilestacks.com
+STATE_REGION ?= us-east-1
 
-export STATE_BUCKET ?= terraform.agilestacks.com
-export STATE_REGION ?= us-east-1
+export AWS_DEFAULT_REGION ?= us-east-2
 
-deploy: init plan apply
+export TF_LOG      ?= info
+export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
+export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
-init:
-	@mkdir -p .terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME)
-	@rm -rf .terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME)/*
-	yes yes | $(terraform) init -get=true $(TF_OPTS) -force-copy  \
-		-backend=true -input=false \
-		-backend-config="bucket=$(STATE_BUCKET)" \
-		-backend-config="region=$(STATE_REGION)" \
-		-backend-config="key=$(DOMAIN_NAME)/postgresql-rds/$(COMPONENT_NAME)/terraform.tfstate" \
-		-backend-config="profile=$(AWS_PROFILE)" \
-		. .terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME)
-.PHONY: init
+export TF_VAR_rds_name ?= postgresql
 
-get:
-	cd .terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME) && \
-		$(terraform) get $(TF_UPDATE)
-.PHONY: get
+terraform   ?= terraform-v0.11
+TF_CLI_ARGS ?= -no-color -input=false
+TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+
+deploy: init import plan apply
+
+init: $(TF_DATA_DIR)
+	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
+        -backend=true -reconfigure \
+        -backend-config="bucket=$(STATE_BUCKET)" \
+        -backend-config="region=$(STATE_REGION)" \
+        -backend-config="key=$(DOMAIN_NAME)/postgresql-rds/$(COMPONENT_NAME)/terraform.tfstate" \
+        -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
-	cd .terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME) && \
-		$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=terraform.tfplan
-.PHONY: plan
+	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+
+refresh:
+	$(terraform) refresh $(TF_CLI_ARGS)
 
 apply:
-	cd .terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME) && \
-		$(terraform) apply $(TF_OPTS) -Xshadow=false terraform.tfplan
-.PHONY: apply
+	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
+
+output:
+	@$(terraform) output $(TF_CLI_ARGS)
 
 backup:
 	cd backup && \
 		mkdir -p .terraform && \
-		$(terraform) init $(TF_OPTS) && \
-		$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 \
+		terraform-v0.9 init $(TF_OPTS) && \
+		terraform-v0.9 plan $(TF_OPTS) -refresh=true -module-depth=-1 \
 			-state=.terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).tfstate \
 			-out=.terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).tfplan && \
-		$(terraform) apply $(TF_OPTS) -Xshadow=false \
+		terraform-v0.9 apply $(TF_OPTS) -Xshadow=false \
 			-state-out=.terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).tfstate \
 			.terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).tfplan
 	@echo
 	@echo Outputs:
 	@echo kind = postgresql-rds
 	@echo
-.PHONY: backup
 
-undeploy: import
-	cd .terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME) && \
-		$(terraform) plan $(TF_OPTS) -destroy -refresh=true -module-depth=-1 -out=terraform.tfplan
-	$(MAKE) apply
-.PHONY: undeploy
+undeploy: init import destroy apply
 
-import: init
-	-cd .terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME) && \
-		terraform import aws_db_instance.postgresql $(TF_VAR_rds_name)
-.PHONY: import
+destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
+destroy: plan
 
+import:
+	-$(terraform) import $(TF_CLI_ARGS) aws_db_instance.postgresql $(TF_VAR_rds_name)
+
+clean:
+	rm -rf .terraform
+
+include ../Mk/phonies
