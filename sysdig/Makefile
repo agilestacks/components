@@ -1,31 +1,28 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   ?= sysdig
-export COMPONENT_NAME      ?= sysdig
-export DOMAIN_NAME         ?= default
-export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+COMPONENT_NAME ?= sysdig
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+NAMESPACE      ?= sysdig
 
+export HELM_HOME ?= $(shell pwd)/.helm
+
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 deploy: clean init fetch purge install output
-.PHONY: deploy
 
 init:
-	@mkdir -p $(HELM_HOME)
-	@$(helm) init --client-only --upgrade
-	@mkdir -p charts
+	@mkdir -p $(HELM_HOME) charts
+	$(helm) init --client-only --upgrade
 
 fetch:
 	$(helm) fetch \
 		--destination charts \
 		--untar stable/sysdig
-.PHONY: fetch
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: purge
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
@@ -35,21 +32,12 @@ install:
 			--replace \
 			--wait \
 			--values values.yaml
-.PHONY: install
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: undeploy
 
 clean:
-	@rm -rf $(HELM_HOME)
-	@rm -rf charts
+	rm -rf $(HELM_HOME) charts
 
-output:
-	@echo Outputs:
-	@echo
-	@echo
-	@echo sysdig agent has been installed successfully.
-.PHONY: output
-
+include ../Mk/phonies
