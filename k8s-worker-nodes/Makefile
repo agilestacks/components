@@ -1,60 +1,55 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= k8s-worker-nodes
+STATE_BUCKET ?= terraform.agilestacks.com
+STATE_REGION ?= us-east-1
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
-CLOUD_BUCKET ?= files.$(TF_VAR_domain)
-
-export TF_VAR_s3_bucket := $(CLOUD_BUCKET)
-export TF_VAR_domain    ?= 'dev.kubernetes.delivery'
+export TF_VAR_domain    ?= dev.kubernetes.delivery
 export TF_VAR_pool_name ?= gpu1
+export TF_VAR_s3_bucket := files.$(TF_VAR_domain)
 
 export TF_LOG      ?= info
-export TF_OPTS     ?= -no-color
-export TF_UPDATE   ?= -update
-export TF_LOG_PATH := .terraform/$(TF_VAR_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_pool_name).log
-TFPLAN             ?= .terraform/$(TF_VAR_domain)/$(notdir $(COMPONENT_NAME))-$(TF_VAR_pool_name).tfplan
+export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain)-$(TF_VAR_pool_name)
+export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
-kubectl   ?= kubectl --context="$(TF_VAR_domain)" --namespace=kube-system
-terraform ?= terraform-v0.11
+kubectl     ?= kubectl --context="$(TF_VAR_domain)" --namespace=kube-system
+terraform   ?= terraform-v0.11
+TF_CLI_ARGS ?= -no-color -input=false
+TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
 deploy: init import plan apply kubernetes
 
-init:
-	@mkdir -p .terraform/$(TF_VAR_domain)
-	$(terraform) init -reconfigure -input=false -get=true -force-copy $(TF_OPTS) \
-		-backend=true \
-		-backend-config="bucket=$(STATE_BUCKET)" \
-		-backend-config="region=$(STATE_REGION)" \
-		-backend-config="key=$(TF_VAR_domain)/k8s-worker-nodes/$(notdir $(COMPONENT_NAME))-$(TF_VAR_pool_name)/terraform.tfstate" \
-		-backend-config="profile=$(AWS_PROFILE)"
-.PHONY: init
+$(TF_DATA_DIR):
+	@rm -rf $@ && mkdir -p $@
 
-get:
-	$(terraform) get $(TF_UPDATE)
-.PHONY: get
+init: $(TF_DATA_DIR)
+	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
+        -backend=true -reconfigure \
+        -backend-config="bucket=$(STATE_BUCKET)" \
+        -backend-config="region=$(STATE_REGION)" \
+        -backend-config="key=$(TF_VAR_domain)/k8s-worker-nodes/$(TF_VAR_pool_name)/terraform.tfstate" \
+        -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
-	$(terraform) plan $(TF_OPTS) \
-		-var cluster_tag=$${TF_VAR_domain/./-} \
-		-refresh=true \
-		-module-depth=-1 \
-		-out=$(TFPLAN)
-.PHONY: plan
+	$(terraform) plan -var cluster_tag=$${TF_VAR_domain/./-} $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+
+refresh:
+	$(terraform) refresh $(TF_CLI_ARGS)
 
 apply:
-	$(terraform) apply $(TF_OPTS) -Xshadow=false $(TFPLAN)
-.PHONY: apply
+	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
 # we should make it a part of stack-k8s-aws? then what about eks?
 kubernetes:
 	$(kubectl) apply -f nvidia-gpu-device-plugin.yml
-.PHONY: kubernetes
+
+output:
+	@$(terraform) output $(TF_CLI_ARGS)
 
 undeploy: init destroy apply
 
-destroy: TF_OPTS=-destroy
+destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
 import:
@@ -62,8 +57,9 @@ import:
 	$(eval WORKER_PROFILE=$(shell echo worker-profile-$(TF_VAR_pool_name)-$(TF_VAR_domain) | cut -c 0-63))
 	$(eval WORKER_ROLE=$(shell echo worker_role-$(TF_VAR_pool_name)-$(TF_VAR_domain)  | cut -c 0-63))
 	$(eval WORKER_POLICY=$(shell echo worker_policy-$(TF_VAR_pool_name)-$(TF_VAR_domain) | cut -c 0-63))
-	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers $(WORKERS) 2>/dev/null
-	-$(terraform) import $(TF_OPTS) aws_iam_instance_profile.worker_profile $(WORKER_PROFILE) 2>/dev/null
-	-$(terraform) import $(TF_OPTS) aws_iam_role.worker_role $(WORKER_ROLE) 2>/dev/null
-	-$(terraform) import $(TF_OPTS) aws_iam_role_policy.worker_policy $(WORKER_POLICY) 2>/dev/null
-.PHONY: import
+	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers $(WORKERS)
+	-$(terraform) import $(TF_OPTS) aws_iam_instance_profile.worker_profile $(WORKER_PROFILE)
+	-$(terraform) import $(TF_OPTS) aws_iam_role.worker_role $(WORKER_ROLE)
+	-$(terraform) import $(TF_OPTS) aws_iam_role_policy.worker_policy $(WORKER_POLICY)
+
+include ../Mk/phonies
