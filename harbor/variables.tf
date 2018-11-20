@@ -1,4 +1,4 @@
-variable "domain_name" {
+variable "domain" {
   type        = "string"
   description = "Domain name associated with R53 hosted zone"
 }

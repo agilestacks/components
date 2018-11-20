@@ -1,40 +1,45 @@
 .DEFAULT_GOAL := deploy
 
-STATE_BUCKET   ?= terraform.agilestacks.com
-STATE_REGION   ?= us-west-1
+STATE_BUCKET ?= terraform.agilestacks.com
+STATE_REGION ?= us-east-1
 
-export TF_OPTS            ?= -no-color
-export TF_UPDATE          ?= -update
-export TF_CLI_ARGS        ?=
-export TF_DATA_DIR        ?= .terraform
+export TF_VAR_domain             ?= dev.kubernetes.delivery
+export TF_VAR_component          ?= harbor
+export TF_VAR_namespace          ?= harbor
+export TF_VAR_service_prefix     ?= svc
+export TF_VAR_nginx_service_name ?= $(TF_VAR_component)-nginx-nginx-ingress-controller
+
+export TF_LOG      ?= info
+export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain)-$(TF_VAR_component)
+export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
-NGINX_CHART ?= stable/nginx-ingress
-NGINX_CHART_VERSION ?= 0.26.0
+NGINX_CHART          ?= stable/nginx-ingress
+NGINX_CHART_VERSION  ?= 0.26.0
 HARBOR_CHART_VERSION ?= 0.3.0
-TIMEOUT     ?= 600
 
-export TF_VAR_nginx_service_name ?= $(TF_VAR_component)-nginx-nginx-ingress-controller
+terraform   ?= terraform-v0.11
+TF_CLI_ARGS ?= -no-color -input=false
+TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-terraform ?= terraform-v0.11
-helm ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
-kubectl ?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
-git ?= git
+helm    ?= helm --kube-context="$(TF_VAR_domain)" --tiller-namespace="kube-system"
+kubectl ?= kubectl --context="$(TF_VAR_domain)" --namespace="$(TF_VAR_namespace)"
+git     ?= git
+
+deploy: init purge harbor nginx zone
+zone: init-tf plan apply
 
 init:
 	-$(kubectl) create namespace $(TF_VAR_namespace)
 	@rm -rf harbor-helm
 	@mkdir -p charts
-	@mkdir -p .terraform
-.PHONY: init
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component) || exit 0
 	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)-nginx$$' && \
 		$(helm) delete --purge $(TF_VAR_component)-nginx || exit 0
-.PHONY: purge
 
 harbor:
 	$(helm) init --client-only --upgrade --wait
@@ -62,34 +67,36 @@ nginx:
 			--values values-nginx.yaml
 .PHONY: nginx
 
-plan:
-	$(terraform) init -get=true -force-copy $(CLI_ARGS) \
+$(TF_DATA_DIR):
+	@rm -rf $@ && mkdir -p $@
+
+init-tf: $(TF_DATA_DIR)
+	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
         -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(TF_VAR_domain_name)/harbor/$(TF_VAR_component)/terraform.tfstate" \
+        -backend-config="key=$(TF_VAR_domain)/harbor/$(TF_VAR_component)/terraform.tfstate" \
         -backend-config="profile=$(AWS_PROFILE)"
-	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan
-.PHONY: plan
+
+plan:
+	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+
+refresh:
+	$(terraform) refresh $(TF_CLI_ARGS)
 
 apply:
-	$(terraform) apply $(TF_OPTS) -auto-approve .terraform/terraform.tfplan
-.PHONY: apply
+	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
-zone: plan apply
+undeploy: init-tf destroy apply delete
 
-clean:
-	@rm -rf .helm
-	@rm -rf .terraform
-	@rm -rf charts
-	@rm -rf harbor-helm
-.PHONY: clean
+destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
+destroy: plan
 
-deploy: init purge harbor nginx zone
-
-undeploy:
-	-$(MAKE) plan TF_OPTS="$(TF_OPTS) -destroy"
-	-$(MAKE) apply
+delete:
 	-$(helm) delete --purge $(TF_VAR_component)-nginx
 	-$(helm) delete --purge $(TF_VAR_component)
-.PHONY: undeploy
+
+clean:
+	@rm -rf .helm .terraform charts harbor-helm
+
+include ../Mk/phonies
