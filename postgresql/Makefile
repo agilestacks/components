@@ -1,35 +1,30 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME      ?= $(shell pwd)/.helm
-export NAMESPACE      ?= postgresql
-export COMPONENT_NAME ?= postgresql
-export DOMAIN_NAME    ?= default
+COMPONENT_NAME ?= postgresql
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+NAMESPACE      ?= postgresql
+CLOUD_KIND     ?= aws
+
+export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-CLOUD_KIND ?= aws
-
 deploy: clean init fetch purge install
-.PHONY: deploy
 
 init:
-	@mkdir -p $(HELM_HOME)
-	@$(helm) init --client-only --upgrade
-	@mkdir -p charts
-.PHONY: init
+	@mkdir -p $(HELM_HOME) charts
+	$(helm) init --client-only --upgrade
 
 fetch:
 	$(helm) fetch \
 		--destination charts \
 		--untar stable/postgresql \
 		--version 0.8.3
-.PHONY: fetch
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: purge
 
 install:
 	$(kubectl) apply -f namespace.yaml
@@ -40,14 +35,12 @@ install:
 			--namespace $(NAMESPACE) \
 			--replace \
 			--values values.yaml
-.PHONY: install
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: undeploy
 
 clean:
-	@rm -rf $(HELM_HOME)
-	@rm -rf charts
-.PHONY: clean
+	rm -rf $(HELM_HOME) charts
+
+include ../Mk/phonies
