@@ -1,42 +1,38 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   ?= vault
-export COMPONENT_NAME      ?= vault
-export TF_VAR_name         ?= test
-export TF_VAR_base_domain  ?= kubernetes.delivery
-export DOMAIN_NAME         ?= $(TF_VAR_name).$(TF_VAR_base_domain)
-export INGRESS_ENABLED     ?= false
-export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-export vault               ?= vault
+COMPONENT_NAME   ?= vault
+DOMAIN_NAME      ?= dev.kubernetes.delivery
+NAMESPACE    	 ?= vault
+INGRESS_ENABLED  ?= false
+SECRET_SHARES    ?= 5
+SECRET_THRESHOLD ?= 3
+VAULT_PORT       ?= 8200
+VAULT_LOCAL_PORT ?= 31321
 
-export SECRET_SHARES       ?= 5
-export SECRET_THRESHOLD    ?= 3
-export VAULT_PORT          ?= 8200
-export VAULT_LOCAL_PORT    ?= 31321
-export VAULT_ADDR          ?= http://127.0.0.1:$(VAULT_LOCAL_PORT)
-export VAULT_SKIP_VERIFY   ?= true
+export VAULT_ADDR        ?= http://127.0.0.1:$(VAULT_LOCAL_PORT)
+export VAULT_SKIP_VERIFY ?= true
+
+export HELM_HOME ?= $(shell pwd)/.helm
+
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+vault   ?= vault
 
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
 
 deploy: clean init purge install sleep connect enable unseal force-disconnect output
-.PHONY: deploy
 
 sleep:
 	@echo Waiting 30sec for Vault pod
 	@sleep 30
-.PHONY: sleep
 
 init:
 	@mkdir -p .vault $(HELM_HOME)
 	@$(helm) init --client-only --upgrade
-.PHONY: init
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: purge
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
@@ -46,7 +42,6 @@ install:
 			--replace \
 			--wait \
 			--values values.yaml
-.PHONY: install
 
 # If Vault is not initialized then we're in first time deploy - initialize and create fresh unseal file.
 #
@@ -79,7 +74,6 @@ enable:
 			fi; \
 		fi; \
 	fi;
-.PHONY: enable
 
 backup:
 	if test ! -f $(UNSEAL_FILE) || jq -e 'has("keys")|not' < $(UNSEAL_FILE); then \
@@ -90,27 +84,24 @@ backup:
 	@echo Outputs:
 	@echo component.vault.unseal.file = $$(base64 < $(UNSEAL_FILE))
 	@echo
-.PHONY: backup
 
 unseal:
 	@for i in $$(seq 1 $(SECRET_THRESHOLD)); do \
-		vault operator unseal `cat $(UNSEAL_FILE) | jq -Mr .keys[$$i]`; \
+		$(vault) operator unseal `cat $(UNSEAL_FILE) | jq -Mr .keys[$$i]`; \
 	done;
 .PHONY: unseal
 
 seal: login
-	vault seal
+	$(vault) seal
 .PHONY: seal
 
 undeploy: init disconnect
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	# rm -f $(UNSEAL_FILE)
-.PHONY: undeploy
 
 login:
-	vault login $(shell cat $(UNSEAL_FILE) | jq -rM .root_token)
-.PHONY: login
+	$(vault) login $(shell cat $(UNSEAL_FILE) | jq -rM .root_token)
 
 connect: disconnect
 	@echo Searching for Vault pod
@@ -135,7 +126,6 @@ connect: disconnect
 	done; \
 	echo "Timeout for pod/$(VAULT_POD)"; \
 	exit 1
-.PHONY: connect
 
 force-disconnect:
 	-@$(MAKE) disconnect
@@ -144,17 +134,17 @@ force-disconnect:
 disconnect:
 	@echo Drop connection to Vault pod
 	-@ps aux | grep -E "kubectl.*port-forward.*$(VAULT_LOCAL_PORT):$(VAULT_PORT)" | grep -v grep | awk '{print $$2}' | xargs kill
-.PHONY: disconnect
 
 clean:
-	-@rm -rf $(HELM_HOME) charts
-.PHONY: clean
+	rm -rf $(HELM_HOME) charts
 
 output:
+	@echo
 	@echo Outputs:
 	@echo root_token=$(shell cat $(UNSEAL_FILE) | jq -rM .root_token )
 	@echo vault_url=http://$(COMPONENT_NAME)-vault.$(NAMESPACE).svc.cluster.local:$(VAULT_PORT)
 	@cat $(UNSEAL_FILE) | jq -Mr '.keys | to_entries | map("unseal_key_" + (.key+1|tostring) + "=" + .value) | .[]'
 	@echo
 	@echo Vault has been installed and initialized successfully.
-.PHONY: output
+
+include ../Mk/phonies
