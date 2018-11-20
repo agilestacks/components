@@ -30,7 +30,6 @@ endif
 	$(kubectl) apply -f rbac-operator.yaml
 	$(kubectl) apply -f deployment.yaml
 	- $(MAKE) wait_up
-.PHONY: deploy
 
 undeploy:
 	- $(kubectl) delete -f deployment.yaml
@@ -48,7 +47,6 @@ endif
 	- $(kubectl) delete configmap script-approvals
 	- $(kubectl) delete configmap init-scripts
 	- $(MAKE) wait_shutdown
-.PHONY: undeploy
 
 wait_complete:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
@@ -98,3 +96,5 @@ wait_shutdown:
 	done; \
 	echo " ERROR timeout $(TIMEOUT)sec"; \
 	exit 1
+
+include ../Mk/phonies
