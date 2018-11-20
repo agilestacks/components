@@ -26,4 +26,4 @@ undeploy:
 	-$(kubectl) delete -f ebs-volume-claim.yaml
 	-$(kubectl) delete -f storage-class.yaml
 
-include ../Mk/phonies
+-include ../Mk/phonies

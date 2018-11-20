@@ -43,4 +43,4 @@ undeploy: init
 clean:
 	rm -rf $(HELM_HOME) charts
 
-include ../Mk/phonies
+-include ../Mk/phonies

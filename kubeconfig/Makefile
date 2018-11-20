@@ -15,4 +15,4 @@ output:
 	@echo kubeconfig = $(abspath .)/result/kubeconfig.$(DOMAIN_NAME)
 	@echo
 
-include ../Mk/phonies
+-include ../Mk/phonies

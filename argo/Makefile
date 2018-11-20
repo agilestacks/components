@@ -27,4 +27,4 @@ output:
 	$(MAKE) -C $(REPO_TYPE) $@
 	@ echo
 
-include ../Mk/phonies
+-include ../Mk/phonies

@@ -147,4 +147,4 @@ output:
 	@echo
 	@echo Vault has been installed and initialized successfully.
 
-include ../Mk/phonies
+-include ../Mk/phonies

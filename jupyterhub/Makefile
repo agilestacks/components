@@ -25,4 +25,4 @@ undeploy:
 	-$(helm) delete $(NAME) --purge
 	-$(kubectl) delete -f storageclass.yaml
 
-include ../Mk/phonies
+-include ../Mk/phonies

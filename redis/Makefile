@@ -78,4 +78,4 @@ undeploy: init
 clean:
 	rm -rf $(HELM_HOME) charts/$(notdir $(HELM_CHART))
 
-include ../Mk/phonies
+-include ../Mk/phonies

@@ -44,4 +44,4 @@ undeploy:
 	-$(kubectl) delete -f es-cerebro.yaml
 	-$(kubectl) delete pvc -l k8s-app=elasticsearch-logging
 
-include ../Mk/phonies
+-include ../Mk/phonies

@@ -21,4 +21,4 @@ undeploy:
 	-$(kubectl) delete -f rbac-minimal.yaml
 	-$(kubectl) delete -f serviceaccount.yaml
 
-include ../Mk/phonies
+-include ../Mk/phonies

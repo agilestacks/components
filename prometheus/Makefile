@@ -61,4 +61,4 @@ undeploy: init clean
 clean:
 	rm -rf $(HELM_HOME)
 
-include ../Mk/phonies
+-include ../Mk/phonies

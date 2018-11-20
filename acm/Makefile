@@ -88,4 +88,4 @@ output:
 clean:
 	rm -rf .venv .terraform
 
-include ../Mk/phonies
+-include ../Mk/phonies
