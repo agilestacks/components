@@ -1,28 +1,25 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME      ?= $(shell pwd)/.helm
-export NAMESPACE      ?= timescaledb
-export COMPONENT_NAME ?= timescaledb
-export DOMAIN_NAME    ?= default
+COMPONENT_NAME ?= timescaledb
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+NAMESPACE      ?= timescaledb
+CLOUD_KIND     ?= aws
+
+export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-CLOUD_KIND ?= aws
-
 deploy: clean init purge install
-.PHONY: deploy
 
 init:
 	@mkdir -p $(HELM_HOME)
-	@$(helm) init --client-only --upgrade
-	@mkdir -p charts
+	$(helm) init --client-only --upgrade
 .PHONY: init
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: purge
 
 install:
 	$(kubectl) apply -f namespace.yaml
@@ -33,13 +30,12 @@ install:
 			--namespace $(NAMESPACE) \
 			--replace \
 			--values values.yaml
-.PHONY: install
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: undeploy
 
 clean:
-	@rm -rf $(HELM_HOME)
-.PHONY: clean
+	rm -rf $(HELM_HOME)
+
+include ../Mk/phonies
