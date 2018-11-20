@@ -26,6 +26,9 @@ parameters:
 
   - name: cloud.vpc.worker.subnet.id
     env: TF_VAR_worker_subnet_id
+  - name: cloud.vpc.worker.subnet.ids
+    env: TF_VAR_worker_subnet_ids
+    empty: allow
   - name: cloud.vpc.worker.sg.id
     env: TF_VAR_worker_sg_id
   - name: cloud.iam.worker.instanceProfile
