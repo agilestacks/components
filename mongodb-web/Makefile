@@ -1,9 +1,10 @@
 .DEFAULT_GOAL := deploy
 
-export DOMAIN_NAME ?= default
-export NAMESPACE   ?= mongodb
+DOMAIN_NAME ?= dev.kubernetes.delivery
+NAMESPACE   ?= mongodb
 
 TIMEOUT ?= 300
+
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy: kubernetes wait
@@ -13,26 +14,26 @@ kubernetes:
 	$(kubectl) apply -f service.yaml
 	$(kubectl) apply -f ingress.yaml
 	$(kubectl) apply -f deployment.yaml
-.PHONY: kubernetes
 
 wait:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
 	$(eval get_pod=$(kubectl) get pods -l 'project=mongodb-dashboard,qualifier=master' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}')
-	@printf "Waiting for MongoDB Dashboard pod is up and running "
+	@echo "Waiting for MongoDB Dashboard pod is up and running"
 
 	@while [ `date +%s` -le "$(timeout)" ]; do \
 		if [[ `$(get_pod)` ]]; then \
-			printf "\ndone\n"; \
+			echo done; \
 			exit 0; \
 		fi; \
 		printf "."; \
 		sleep 8; \
 	done; \
-	printf "\nERROR timeout $(TIMEOUT) sec\n"; \
+	echo "ERROR timeout $(TIMEOUT) sec"; \
 	exit 1
 
 undeploy:
 	-$(kubectl) delete -f ingress.yaml
 	-$(kubectl) delete -f service.yaml
 	-$(kubectl) delete -f deployment.yaml
-.PHONY: undeploy
+
+include ../Mk/phonies
