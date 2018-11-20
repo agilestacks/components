@@ -27,11 +27,13 @@ terraform = '''#
 #
 {% if standalone: %}
 terraform {
-  required_version = ">= 0.9.3"
+  required_version = ">= 0.11.3"
   backend "s3" {}
 }
 
-provider "aws" {}
+provider "aws" {
+  version = "1.41.0"
+}
 
 {% endif %}
 
