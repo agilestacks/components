@@ -1,22 +1,10 @@
 .DEFAULT_GOAL := deploy
 
-export NAME                 ?= dev
-export DOMAIN_NAME          ?= dev.kubernetes.delivery
-export AWS_DEFAULT_REGION   ?= us-east-2
+COMPONENT_NAME ?= spinnaker
+NAME           ?= dev
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+NAMESPACE      ?= spinnaker
 
-export SHELL                := /bin/bash
-export HOME                 ?= /home/spinnaker
-
-export TF_LOG               ?= debug
-export TF_LOG_PATH          ?= .terraform/$(DOMAIN_NAME).log
-export TF_INPUT             := 0
-export TF_OPTS              :=
-export TF_UPDATE            ?= -update
-
-export STATE_BUCKET ?= terraform.agilestacks.com
-export STATE_REGION ?= us-east-1
-
-COMPONENT_NAME       ?= spinnaker
 SLACK_TOKEN          ?=
 INGRESS_PROTOCOL     ?= http
 INGRESS_FQDN         ?= apps.$(DOMAIN_NAME)
@@ -25,7 +13,6 @@ JENKINS_FQDN         ?= jenkins.app.$(DOMAIN_NAME)
 JENKINS_USER         ?= robot
 JENKINS_PASSWORD     ?= password
 SPINNAKER_VERSION    ?= 1.10.0
-NAMESPACE            ?= spinnaker
 AWS_S3_BUCKET        ?= files.$(DOMAIN_NAME)
 AWS_KEYPAIR          ?= agilestacks
 
@@ -36,42 +23,48 @@ AWS_ECR_REGISTRY     := $(subst https://,,$(lastword $(AWS_ECR_LOGIN_STRING)))
 AWS_ACCOUNT_NAME     ?= aws
 K8S_ACCOUNT_NAME     ?= kubernetes
 
-terraform            ?= terraform
-hal 			     ?= hal --color=false
-kubectl 		     ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+STATE_BUCKET ?= terraform.agilestacks.com
+STATE_REGION ?= us-east-1
 
-tf_init:
-	@mkdir -p .terraform/$(DOMAIN_NAME)
-	@rm -rf .terraform/$(DOMAIN_NAME)/*
-	$(terraform) init -get=true $(TF_CMD_OPTS) -force-copy  \
-		-backend=true -input=false \
+export AWS_DEFAULT_REGION ?= us-east-2
+
+export SHELL := /bin/bash
+export HOME  ?= /home/spinnaker
+
+export TF_LOG      ?= info
+export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
+export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
+
+hal         ?= hal --color=false
+kubectl     ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+terraform   ?= terraform-v0.11
+TF_CLI_ARGS ?= -no-color -input=false
+TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+
+$(TF_DATA_DIR):
+	@rm -rf $@ && mkdir -p $@
+
+init: $(TF_DATA_DIR)
+	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
+		-backend=true -reconfigure \
 		-backend-config="bucket=$(STATE_BUCKET)" \
 		-backend-config="region=$(STATE_REGION)" \
 		-backend-config="key=$(DOMAIN_NAME)/spinnaker/$(COMPONENT_NAME)/terraform.tfstate" \
-		-backend-config="profile=$(AWS_PROFILE)" \
-		. .terraform/$(DOMAIN_NAME)
+		-backend-config="profile=$(AWS_PROFILE)"
 
-tf_plan:
-	cd .terraform/$(DOMAIN_NAME) && \
-		$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=terraform.tfplan
-.PHONY: tf_plan
+plan:
+	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
 
-tf_apply:
-	cd .terraform/$(DOMAIN_NAME) && \
-		$(terraform) apply $(TF_OPTS) -Xshadow=false terraform.tfplan
-	@echo
-.PHONY: tf_apply
+refresh:
+	$(terraform) refresh $(TF_CLI_ARGS)
 
-tf_destroy: tf_init
-	cd .terraform/$(DOMAIN_NAME) && \
-		$(terraform) plan $(TF_OPTS) -destroy -refresh=true -module-depth=-1 -out=terraform.tfplan
-	$(MAKE) tf_apply
-.PHONY: tf_destroy
+apply:
+	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
 install:
 	sudo $(SHELL) bin/$(shell uname -s | tr A-Z a-z)/InstallHalyard.sh
 
-tf_output=$(shell cd .terraform/$(DOMAIN_NAME) && $(terraform) output -json | jq -crM .$(1).value)
+tf_output=$(shell $(terraform) output $(TF_CLI_ARGS) -json | jq -crM .$(1).value)
 
 # long deployment name results in
 # $ hal backup create
@@ -131,9 +124,8 @@ endif
 			--username $(JENKINS_USER) \
 			--password
 	$(hal) config ci jenkins enable
-.PHONY: configure
 
-deploy: tf_init tf_plan tf_apply configure
+deploy: init plan apply configure
 	$(hal) config security ui  edit --override-base-url $(INGRESS_PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_FQDN)
 	$(hal) config security api edit --override-base-url $(INGRESS_PROTOCOL)://api.$(COMPONENT_NAME).$(INGRESS_FQDN)
 	$(hal) config storage edit --type redis
@@ -148,16 +140,16 @@ deploy: tf_init tf_plan tf_apply configure
 
 	-tar cf - -C $(HOME)/.hal . | \
 		aws --region=$(STATE_REGION) s3 cp - s3://$(STATE_BUCKET)/$(DOMAIN_NAME)/spinnaker/$(COMPONENT_NAME)/halbackup-0.tar
-	-aws --region=$(STATE_REGION) s3 cp $(HOME)/halbackup*.tar s3://$(STATE_BUCKET)/$(DOMAIN_NAME)/spinnaker/$(COMPONENT_NAME)/
-.PHONY: deploy
+	-aws --region=$(STATE_REGION) s3 cp $(HOME)/halbackup*.tar s3://$(STATE_BUCKET)/$(DOMAIN_NAME)/spinnaker/$(COMPONENT_NAME)/.PHONY: deploy
 
-undeploy:
+destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
+destroy: plan
+
+undeploy: init destroy apply
 	-$(kubectl) delete -f ingress.yaml
 	-$(kubectl) delete namespace "$(NAMESPACE)"
-	@echo Undeploying IAM role
-	$(MAKE) tf_destroy
-.PHONY: undeploy
 
 clean:
-	rm -rf .terraform/$(DOMAIN_NAME)*
-	rm -rf $(HOME)/.hal/$(NAME)
+	rm -rf .terraform $(HOME)/.hal/$(NAME)
+
+include ../Mk/phonies
