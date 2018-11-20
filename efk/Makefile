@@ -1,14 +1,11 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   ?= logs
-export COMPONENT_NAME      ?= efk
-export DOMAIN_NAME         ?= default
+COMPONENT_NAME ?= efk
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+NAMESPACE      ?= logs
+CLOUD_KIND     ?= aws
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-
-CLOUD_KIND ?= aws
 
 deploy:
 	$(kubectl) apply -f namespace.yaml
@@ -31,7 +28,6 @@ deploy:
 	$(kubectl) apply -f es-cerebro.yaml
 	$(kubectl) apply -f kibana-deployment.yaml
 	$(kubectl) apply -f kibana-service.yaml
-.PHONY: deploy
 
 undeploy:
 	-$(kubectl) delete configmap es-config
@@ -47,4 +43,5 @@ undeploy:
 	-$(kubectl) delete -f kibana-service.yaml
 	-$(kubectl) delete -f es-cerebro.yaml
 	-$(kubectl) delete pvc -l k8s-app=elasticsearch-logging
-.PHONY: undeploy
+
+include ../Mk/phonies
