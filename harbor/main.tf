@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 0.11.3"
-  backend          "s3"             {}
+  backend "s3" {}
 }
 
 provider "aws" {
@@ -9,13 +9,13 @@ provider "aws" {
 
 provider "kubernetes" {
   version        = "1.1.10"
-  config_context = "${var.domain_name}"
+  config_context = "${var.domain}"
 }
 
 data "aws_region" "current" {}
 
 data "aws_route53_zone" "ext_zone" {
-  name = "${var.domain_name}"
+  name = "${var.domain}"
 }
 
 data "kubernetes_service" "harbor_nginx" {
