@@ -6,19 +6,17 @@ NAMESPACE      ?= istio-system
 DOMAIN_NAME    ?= default
 ISTIO_VERSION  ?= 1.0.2
 
-kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 deploy: clean init fetch patch namespace purge install usage
 
 namespace:
 	$(kubectl) apply -f namespace.yaml
-.PHONY: namespace
 
 init:
 	@mkdir -p $(HELM_HOME)
 	$(helm) init --client-only --upgrade --wait
-.PHONY: init
 
 # https://github.com/istio/istio/issues/7505
 fetch: istio-$(ISTIO_VERSION)
@@ -38,7 +36,6 @@ purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) && \
 		$(kubectl) get crd -o name | grep -F istio.io | xargs $(kubectl) delete || exit 0
-.PHONY: purge
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
@@ -48,7 +45,6 @@ install:
 			--replace \
 			--wait \
 			--values values.yaml.$(ISTIO_VERSION)
-.PHONY: install
 
 usage:
 	@echo
@@ -56,14 +52,13 @@ usage:
 	@echo kubectl label namespace NAMESPACE istio-injection=enabled
 	@echo https://istio.io/docs/setup/kubernetes/sidecar-injection/
 	@echo
-.PHONY: usage
 
 undeploy:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	-$(kubectl) get crd -o name | grep -F istio.io | xargs $(kubectl) delete
-.PHONY: undeploy
 
 clean:
 	@rm -rf $(HELM_HOME)
-.PHONY: clean
+
+include ../Mk/phonies
