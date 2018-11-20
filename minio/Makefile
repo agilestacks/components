@@ -1,22 +1,23 @@
 .DEFAULT_GOAL := deploy
 
 export HELM_HOME ?= $(shell pwd)/.helm
-COMPONENT_NAME   ?= minio
-NAMESPACE        ?= minio
-DOMAIN_NAME      ?= default
-INGRESS_DOMAIN   ?= localhost
-PROTOCOL         ?= http
-CLOUD            ?= aws
-ALIAS            ?= $(COMPONENT_NAME)
+
+COMPONENT_NAME ?= minio
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+NAMESPACE      ?= minio
+INGRESS_DOMAIN ?= localhost
+PROTOCOL       ?= http
+CLOUD          ?= aws
+ALIAS          ?= $(COMPONENT_NAME)
 
 # hardcoded in helm chart
-SECRET           ?= minio
-ACCESS_KEY_REF   ?= accesskey
-SECRET_KEY_REF   ?= secretkey
+SECRET         ?= minio
+ACCESS_KEY_REF ?= accesskey
+SECRET_KEY_REF ?= secretkey
 
-kubectl          ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm             ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-jq               ?= jq -Ms
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+jq      ?= jq -Ms
 
 CHART_VERSION    ?= 1.6.4
 
@@ -50,18 +51,15 @@ deploy: clean init fetch purge install configure
 init:
 	mkdir -p $(HELM_HOME)
 	@$(helm) init --client-only --upgrade --wait
-.PHONY: init
 
 fetch:
 	$(helm) fetch \
 		--destination charts \
 		--untar stable/minio \
 		--version $(CHART_VERSION)
-.PHONY: fetch
 
 namespace:
 	- $(kubectl) create namespace $(NAMESPACE)
-.PHONY: namespace
 
 $(CLOUD)-storage-class:
 	- $(kubectl) create -f $@.yaml
@@ -70,7 +68,6 @@ $(CLOUD)-storage-class:
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: purge
 
 install: namespace $(CLOUD)-storage-class
 	@ echo Running helm install charts/minio...
@@ -83,7 +80,6 @@ install: namespace $(CLOUD)-storage-class
 			--values values.yaml \
 			--set 'accessKey=$(ACCESS_KEY)' \
 			--set 'secretKey=$(SECRET_KEY)'
-.PHONY: install
 
 configure:
 	@ $(mc) config host add $(ALIAS) \
@@ -91,18 +87,17 @@ configure:
 		$(ACCESS_KEY) $(SECRET_KEY) \
 		S3v4
 	@ $(mc) config host list
-.PHONY: configure
 
 unconfigure:
 	- $(mc) config host rm $(ALIAS)
-.PHONY: unconfigure
 
 undeploy: init unconfigure
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	- $(kubectl) delete pvc $(COMPONENT_NAME)
 	- $(kubectl) delete job $(COMPONENT_NAME)-make-bucket-job
-.PHONY: undeploy
 
 clean:
 	rm -rf $(HELM_HOME) charts
+
+include ../Mk/phonies
