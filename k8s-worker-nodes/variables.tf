@@ -165,8 +165,25 @@ Example:
 EOF
 }
 
+variable "worker_subnet_ids" {
+  type = "string"
+  default = ""
+
+  description = <<EOF
+Subnets where additional worker nodes will be joined.
+This variable overrides worker_subnet_id.
+Example:
+ * `subnet-805f57eb,subnet-0a0b0c0d,...`
+EOF
+}
+
 variable "worker_instance_profile" {
   type = "string"
+
+  description = <<EOF
+An IAM instance profile to use for worker nodes.
+Let use initial worker pool instance profile.
+EOF
 }
 
 variable "cluster_tag" {

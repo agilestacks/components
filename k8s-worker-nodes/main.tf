@@ -111,7 +111,7 @@ resource "aws_autoscaling_group" "workers" {
   max_size             = "${var.worker_count * 3}"
   min_size             = "${var.worker_count}"
   launch_configuration = "${aws_launch_configuration.worker_conf.id}"
-  vpc_zone_identifier  = ["${var.worker_subnet_id}"]
+  vpc_zone_identifier  = ["${split(",", coalesce(var.worker_subnet_ids, var.worker_subnet_id))}"]
   termination_policies = ["ClosestToNextInstanceHour", "default"]
 
   tags = [
