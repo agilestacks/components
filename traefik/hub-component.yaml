@@ -25,6 +25,8 @@ parameters:
     env: STATE_BUCKET
   - name: terraform.bucket.region
     env: STATE_REGION
+  - name: cloud.region
+    env: AWS_DEFAULT_REGION
   - name: cloud.kind
     env: CLOUD_KIND
   - name: dns.domain
