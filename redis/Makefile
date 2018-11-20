@@ -1,16 +1,17 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME           ?= $(shell pwd)/.helm
 COMPONENT_NAME   ?= redis
+DOMAIN_NAME      ?= dev.kubernetes.delivery
 NAMESPACE 	     ?= redis
-DOMAIN_NAME      ?= default
+CLOUD_KIND       ?= aws
 HA_ENABLED       ?= false
 CHART_VERSION    ?= 1.1.15
-kubectl          ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm             ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 HA_CHART_VERSION ?= 2.1.1
 
-CLOUD_KIND ?= aws
+export HELM_HOME           ?= $(shell pwd)/.helm
+
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 ifeq ($(HA_ENABLED),true)
 HELM_CHART=stable/redis-ha
@@ -22,24 +23,20 @@ VALUES_FILE=values.yaml
 endif
 
 deploy: clean init fetch purge install output
-.PHONY: deploy
 
 init:
-	mkdir -p $(HELM_HOME)
-	@$(helm) init --client-only --upgrade
-	@mkdir -p tmp
+	@mkdir -p $(HELM_HOME) charts
+	$(helm) init --client-only --upgrade
 
 fetch:
 	$(helm) fetch \
-			--destination charts \
-			--untar $(HELM_CHART) \
-			--version $(CHART_VERSION)
-.PHONY: fetch
+		--destination charts \
+		--untar $(HELM_CHART) \
+		--version $(CHART_VERSION)
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: purge
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
@@ -53,7 +50,6 @@ install:
 			--wait \
 			--values $(VALUES_FILE) \
 			--version $(CHART_VERSION)
-.PHONY: install
 
 output:
 	@if ! grep '^usePassword: true' values.yaml; then \
@@ -74,14 +70,12 @@ output:
 		sleep 1; \
 	done; \
 	exit 1
-.PHONY: outputs
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: undeploy
 
 clean:
-	rm -rf $(HELM_HOME)
-	rm -rf charts/$(notdir $(HELM_CHART))
-	rm -rf tmp
+	rm -rf $(HELM_HOME) charts/$(notdir $(HELM_CHART))
+
+include ../Mk/phonies
