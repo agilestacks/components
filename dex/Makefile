@@ -31,4 +31,4 @@ undeploy:
 	-$(kubectl) delete -f grpc-server-secret.yaml
 	-$(kubectl) delete -f configmap.yaml
 
-include ../Mk/phonies
+-include ../Mk/phonies

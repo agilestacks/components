@@ -97,4 +97,4 @@ wait_shutdown:
 	echo " ERROR timeout $(TIMEOUT)sec"; \
 	exit 1
 
-include ../Mk/phonies
+-include ../Mk/phonies

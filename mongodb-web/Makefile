@@ -36,4 +36,4 @@ undeploy:
 	-$(kubectl) delete -f service.yaml
 	-$(kubectl) delete -f deployment.yaml
 
-include ../Mk/phonies
+-include ../Mk/phonies

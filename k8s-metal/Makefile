@@ -62,4 +62,4 @@ undeploy: init destroy apply
 destroy: TF_OPTS=-destroy
 destroy: plan
 
-include ../Mk/phonies
+-include ../Mk/phonies

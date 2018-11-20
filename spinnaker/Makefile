@@ -152,4 +152,4 @@ undeploy: init destroy apply
 clean:
 	rm -rf .terraform $(HOME)/.hal/$(NAME)
 
-include ../Mk/phonies
+-include ../Mk/phonies

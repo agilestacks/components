@@ -68,4 +68,4 @@ undeploy: init destroy apply
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
-include ../Mk/phonies
+-include ../Mk/phonies

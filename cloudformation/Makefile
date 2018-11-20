@@ -30,4 +30,4 @@ undeploy:
 	$(aws) cloudformation delete-stack --stack-name $(NAME)
 	$(aws) cloudformation wait stack-delete-complete --stack-name $(NAME)
 
-include ../Mk/phonies
+-include ../Mk/phonies
