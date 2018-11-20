@@ -1,50 +1,58 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= ecr
-DOMAIN_NAME    ?= dev.stacks.delivery
-STATE_BUCKET   ?= terraform.agilestacks.com
-STATE_REGION   ?= us-east-1
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+
+STATE_BUCKET ?= terraform.agilestacks.com
+STATE_REGION ?= us-east-1
 
 export AWS_DEFAULT_REGION ?= us-east-2
-export TF_LOG             ?= debug
-export TF_LOG_PATH        ?= .terraform/$(DOMAIN_NAME).log
-export TF_OPTS            ?= -no-color
-export TF_UPDATE          ?= -update
-export TF_VAR_name        := $(COMPONENT_NAME)
 
-terraform ?= terraform-v0.11
-TFPLAN ?= $(notdir $(COMPONENT_NAME)).tfplan
+export TF_LOG      ?= info
+export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(subst /,-,$(COMPONENT_NAME))
+export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
+
+export TF_VAR_name := $(COMPONENT_NAME)
+
+terraform   ?= terraform-v0.11
+TF_CLI_ARGS ?= -no-color -input=false
+TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
 deploy: init import plan apply
 
-init:
-	@mkdir -p .terraform
-	$(terraform) init -get=true $(TF_CMD_OPTS) -reconfigure -force-copy  \
-		-backend=true -input=false \
-		-backend-config="bucket=$(STATE_BUCKET)" \
-		-backend-config="region=$(STATE_REGION)" \
-		-backend-config="key=$(DOMAIN_NAME)/ecr/$(notdir $(COMPONENT_NAME))/terraform.tfstate" \
-		-backend-config="profile=$(AWS_PROFILE)"
+$(TF_DATA_DIR):
+	@rm -rf $@ && mkdir -p $@
+
+init: $(TF_DATA_DIR)
+	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
+        -backend=true -reconfigure \
+        -backend-config="bucket=$(STATE_BUCKET)" \
+        -backend-config="region=$(STATE_REGION)" \
+        -backend-config="key=$(DOMAIN_NAME)/ecr/$(subst /,-,$(COMPONENT_NAME))/terraform.tfstate" \
+        -backend-config="profile=$(AWS_PROFILE)"
 .PHONY: init
 
-get:
-	$(terraform) get $(TF_UPDATE)
-.PHONY: get
-
 plan:
-	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
-.PHONY: plan
+	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+
+refresh:
+	$(terraform) refresh $(TF_CLI_ARGS)
 
 apply:
-	$(terraform) apply $(TF_OPTS) -Xshadow=false $(TFPLAN)
-.PHONY: apply
+	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
-undeploy: init
-	$(MAKE) plan TF_OPTS=-destroy
-	$(MAKE) apply
-.PHONY: undeploy
+output:
+	@$(terraform) output $(TF_CLI_ARGS)
+
+undeploy: init import destroy apply
+
+destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
+destroy: plan
 
 import:
-	-$(terraform) import $(TF_OPTS) module.ecr.aws_ecr_repository.main $(TF_VAR_name) \
-		2>/dev/null
-.PHONY: import
+	-$(terraform) import $(TF_CLI_ARGS) module.ecr.aws_ecr_repository.main $(TF_VAR_name)
+
+clean:
+	rm -rf .terraform
+
+include ../Mk/phonies
