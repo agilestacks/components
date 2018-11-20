@@ -39,7 +39,6 @@ init:
 		./aws
 	-$(kubectl) create namespace $(TF_VAR_namespace)
 	-ks init kubeflow --context=$(TF_VAR_domain_name) --namespace=$(TF_VAR_namespace) --dir=$(KUBEFLOW_KS_DIR) --api-spec=version:$(K8S_API_SPEC)
-.PHONY: init
 
 fetch:
 	-cd $(KUBEFLOW_KS_DIR) && \
@@ -62,7 +61,6 @@ fetch:
 	ks pkg install kubeflow/seldon
 	-cd $(KUBEFLOW_KS_DIR) && \
 	ks pkg install kubeflow/tf-serving
-.PHONY: fetch
 
 configure:
 	-cd $(KUBEFLOW_KS_DIR) && \
@@ -101,8 +99,6 @@ configure:
 	ks param set ambassador ambassadorAcmCertificateArn $(ACM_CERTIFICATE_ARN) --env=$(KF_ENV)
 	-cd $(KUBEFLOW_KS_DIR) && \
 	ks param set ambassador cloud aws --env=$(KF_ENV)
-.PHONY: configure
-
 
 install:
 	-$(kubectl) apply -f default-storage-class.yaml
@@ -144,12 +140,10 @@ get:
 
 plan:
 	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan ./aws
-.PHONY: plan
 
 apply:
 	$(terraform) apply $(TF_OPTS) -Xshadow=false .terraform/terraform.tfplan
 	@echo
-.PHONY: apply
 
 destroy: TF_OPTS:=-destroy
 destroy: plan
@@ -190,15 +184,14 @@ uninstall:
 	-$(kubectl) delete secret ambassador-auth-self-url | true
 	-$(kubectl) delete secret ambassador-auth-client-id | true
 	-$(kubectl) delete secret ambassador-auth-client-secret | true
-.PHONY: uninstall
 
 clean:
 	rm -rf .terraform/modules .terraform/plugins $(KUBEFLOW_KS_DIR)
-.PHONY: clean
 
 output:
 	@echo
 	@echo Outputs:
 	@echo ingress_protocol = $(PROTOCOL)
 	@echo
-.PHONY: output
+
+include ../Mk/phonies
