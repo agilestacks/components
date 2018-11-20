@@ -1,11 +1,11 @@
 .DEFAULT_GOAL := deploy
 
-JHUB_NAMESPACE ?= jhub
-NAME ?= jhub
+JHUB_NAMESPACE    ?= jhub
+NAME              ?= jhub
 JHUB_HELM_VERSION ?= 0.7.0
-DOMAIN_NAME ?=
+DOMAIN_NAME       ?= dev.kubernetes.delivery
 
-helm ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(JHUB_NAMESPACE)"
 
 deploy:
@@ -19,10 +19,10 @@ deploy:
   		--values config.yaml
 	$(kubectl) apply -f operator-config/role.yaml
 	$(kubectl) apply -f operator-config/jupyterhubnotebook-crd.yaml
-.PHONY: deploy
 
 undeploy:
 	-$(kubectl) delete -f operator-config/jupyterhubnotebook-crd.yaml
 	-$(helm) delete $(NAME) --purge
 	-$(kubectl) delete -f storageclass.yaml
-.PHONY: undeploy
+
+include ../Mk/phonies
