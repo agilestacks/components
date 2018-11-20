@@ -1,30 +1,28 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   ?= prometheus
-export COMPONENT_NAME      ?= prometheus
-export DOMAIN_NAME         ?= default
-export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-export generator		   ?= ./grafana-gen/bin/grafana_dashboards_generate.sh --namespace "$(NAMESPACE)"
+COMPONENT_NAME ?= prometheus
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+NAMESPACE      ?= prometheus
 
-deploy: clean init namespace purge install_operator install_kube_prom output
-.PHONY: deploy
+export HELM_HOME ?= $(shell pwd)/.helm
+
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+
+deploy: clean init namespace purge install_operator install_kube_prom
 
 init:
 	@mkdir -p $(HELM_HOME)
-	@$(helm) init --client-only --upgrade
+	$(helm) init --client-only --upgrade
 
 namespace:
 	-$(kubectl) create namespace $(NAMESPACE)
-.PHONY: namespace
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-kube-prom$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME)-kube-prom || exit 0
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-operator$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME)-operator || exit 0
-.PHONY: purge
 
 install_operator:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-operator$$' || \
@@ -59,14 +57,8 @@ undeploy: init clean
 	$(kubectl) get --namespace $(NAMESPACE) crd/prometheuses.monitoring.coreos.com -o=yaml|$(kubectl) delete -f - || true
 	$(kubectl) get --namespace $(NAMESPACE) crd/prometheusrules.monitoring.coreos.com -o=yaml|$(kubectl) delete -f - || true
 	$(kubectl) get --namespace $(NAMESPACE) crd/servicemonitors.monitoring.coreos.com -o=yaml|$(kubectl) delete -f - || true
-.PHONY: undeploy
 
 clean:
-	@rm -rf $(HELM_HOME)
+	rm -rf $(HELM_HOME)
 
-output:
-	@echo Outputs:
-	@echo
-	@echo Prometheus has been installed successfully.
-.PHONY: output
-
+include ../Mk/phonies
