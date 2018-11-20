@@ -1,11 +1,9 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME      ?= $(shell pwd)/.helm
-export NAMESPACE      ?= kube-system
-export COMPONENT_NAME ?= kubernetes-dashboard
-export DOMAIN_NAME    ?= default
-export kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+DOMAIN_NAME ?= dev.kubernetes.delivery
+NAMESPACE   ?= kube-system
+
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy:
 	$(kubectl) apply -f serviceaccount.yaml
@@ -14,7 +12,6 @@ deploy:
 	$(kubectl) apply -f deployment.yaml
 	$(kubectl) apply -f service.yaml
 	$(kubectl) apply -f ingress.yaml
-.PHONY: deploy
 
 undeploy:
 	-$(kubectl) delete -f ingress.yaml
@@ -23,4 +20,5 @@ undeploy:
 	-$(kubectl) delete -f rbac-view-all.yaml
 	-$(kubectl) delete -f rbac-minimal.yaml
 	-$(kubectl) delete -f serviceaccount.yaml
-.PHONY: undeploy
+
+include ../Mk/phonies
