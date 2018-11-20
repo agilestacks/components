@@ -1,33 +1,32 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME      ?= $(shell pwd)/.helm
-export COMPONENT_NAME ?= selenium
-export NAMESPACE      ?= selenium
-export DOMAIN_NAME    ?= dev.kubernetes.delivery
-export kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+COMPONENT_NAME ?= selenium
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+NAMESPACE      ?= selenium
+
+export HELM_HOME ?= $(shell pwd)/.helm
+
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 HELM_CHART=stable/selenium
 VALUES_FILE=values.yaml
 
 deploy: clean init fetch purge install
-.PHONY: deploy
 
 init:
-	mkdir -p $(HELM_HOME)
-	@$(helm) init --client-only --upgrade
-	@mkdir -p tmp
+	@mkdir -p $(HELM_HOME) charts
+	$(helm) init --client-only --upgrade
+.PHONY: init
 
 fetch:
 	$(helm) fetch \
-			--destination charts \
-			--untar $(HELM_CHART)
-.PHONY: fetch
+		--destination charts \
+		--untar $(HELM_CHART)
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: purge
 
 install:
 	$(kubectl) apply -f namespace.yaml
@@ -40,15 +39,13 @@ install:
 			--replace \
 			--wait \
 			--values $(VALUES_FILE)
-.PHONY: install
 
 undeploy: init
 	-$(kubectl) delete -f ingress.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: undeploy
 
 clean:
-	rm -rf $(HELM_HOME)
-	rm -rf charts/$(notdir $(HELM_CHART))
-	rm -rf tmp
+	rm -rf $(HELM_HOME) charts/$(notdir $(HELM_CHART))
+
+include ../Mk/phonies
