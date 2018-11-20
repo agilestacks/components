@@ -26,12 +26,10 @@ fetch:
 		--destination charts \
 		--untar stable/gitlab-ce
 	bash -e ./replace.sh
-.PHONY: fetch
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: purge
 
 install:
 	# we don't use helm's postgres, we use our own component
@@ -48,13 +46,11 @@ install:
 			--namespace $(NAMESPACE) \
 			--replace \
 			--values values.yaml
-.PHONY: install
 
 undeploy: init
 	bash -e ./undeploy-$(kind).sh
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-.PHONY: undeploy
 
 output:
 	@echo Outputs:
@@ -64,5 +60,6 @@ output:
 	@echo
 
 clean:
-	@rm -rf $(HELM_HOME)
-	@rm -rf charts
+	@rm -rf $(HELM_HOME) charts
+
+include ../Mk/phonies
