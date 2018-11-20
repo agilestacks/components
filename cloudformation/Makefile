@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := deploy
 
-export NAME ?= example
+NAME ?= example
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
@@ -11,6 +11,7 @@ cloudformation-deploy:
 		$(CLOUDFORMATION_DEPLOY_OPTS) \
 		--template-file cloudformation.yaml \
 		--parameter-overrides BucketDescription=$(NAME)
+.PHONY: cloudformation-deploy
 
 deploy: CLOUDFORMATION_DEPLOY_OPTS:=--no-fail-on-empty-changeset
 deploy: cloudformation-deploy
@@ -20,7 +21,6 @@ deploy: cloudformation-deploy
 	@jq -r '.Stacks[0].Outputs[] | .OutputKey + " = " + .OutputValue' $(OUT)
 	@echo
 	-@rm $(OUT)
-.PHONY: deploy
 
 changeset: CLOUDFORMATION_DEPLOY_OPTS:=--no-execute-changeset
 changeset: cloudformation-deploy
@@ -29,4 +29,5 @@ changeset: cloudformation-deploy
 undeploy:
 	$(aws) cloudformation delete-stack --stack-name $(NAME)
 	$(aws) cloudformation wait stack-delete-complete --stack-name $(NAME)
-.PHONY: undeploy
+
+include ../Mk/phonies
