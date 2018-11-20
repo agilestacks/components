@@ -1,9 +1,9 @@
 .DEFAULT_GOAL := deploy
 
-export DOMAIN_NAME ?= default
-export NAMESPACE   ?= dex
+DOMAIN_NAME ?= dev.kubernetes.delivery
+NAMESPACE   ?= dex
 
-export kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy:
 	$(kubectl) apply -f namespace.yaml
@@ -18,7 +18,6 @@ deploy:
 
 	$(kubectl) apply -f auth_v1alpha1_oidc.yaml
 	$(kubectl) apply -f auth-operator.yaml
-.PHONY: deploy
 
 undeploy:
 	-$(kubectl) delete -f auth_v1alpha1_oidc.yaml
@@ -31,4 +30,5 @@ undeploy:
 	-$(kubectl) delete -f grpc-client-secret.yaml
 	-$(kubectl) delete -f grpc-server-secret.yaml
 	-$(kubectl) delete -f configmap.yaml
-.PHONY: undeploy
+
+include ../Mk/phonies
