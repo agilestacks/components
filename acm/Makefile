@@ -47,7 +47,7 @@ refresh:
 apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
-undeploy: init destroy apply
+undeploy: install init destroy apply
 ifeq ($(ACM_DELETE_CERTIFICATE),true)
 undeploy: delete
 endif
