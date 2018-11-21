@@ -4,7 +4,7 @@ metadata:
   name: ${component.kubernetes-dashboard.name}
   namespace: ${component.kubernetes-dashboard.namespace}
   annotations:
-    kubernetes.io/ingress.class: ${component.ingress.kubernetes.ingressClass}
+    kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
   labels:
     provider:  agilestacks.com
     project:   kubernetes
