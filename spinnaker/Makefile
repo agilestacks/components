@@ -140,7 +140,7 @@ deploy: init plan apply configure
 
 	-tar cf - -C $(HOME)/.hal . | \
 		aws --region=$(STATE_REGION) s3 cp - s3://$(STATE_BUCKET)/$(DOMAIN_NAME)/spinnaker/$(COMPONENT_NAME)/halbackup-0.tar
-	-aws --region=$(STATE_REGION) s3 cp $(HOME)/halbackup*.tar s3://$(STATE_BUCKET)/$(DOMAIN_NAME)/spinnaker/$(COMPONENT_NAME)/.PHONY: deploy
+	-aws --region=$(STATE_REGION) s3 cp $(HOME)/halbackup*.tar s3://$(STATE_BUCKET)/$(DOMAIN_NAME)/spinnaker/$(COMPONENT_NAME)/
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
