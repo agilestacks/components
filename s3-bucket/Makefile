@@ -43,7 +43,7 @@ apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
 output:
-	@$(terraform) output $(TF_CLI_ARGS)
+	@$(terraform) output -no-color
 
 undeploy: init destroy apply
 
