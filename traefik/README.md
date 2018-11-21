@@ -65,39 +65,73 @@ lifecycle
              # component.ingress.* outputs
 
 parameters:
+# bind internal Traefik to a standard list of namespaces
 - component: traefik
   name: component.traefik.kubernetes.namespaces
   value: '["default", "kube-public", kube-system", "ingress", "dex", "automation-hub"]'
-  
+
+# for public Traefik we want to install it into
+# Kubernetes context named after DNS domain
 - component: public-ingress
   name: component.traefik.kubernetes.kubeconfigContext
   value: ${stack-k8s-aws:dns.domain}
+  kind: link
+# bind public Traefik to a different namespace
 - component: public-ingress
   name: component.traefik.kubernetes.namespaces
   value: '["applications"]'
+# give it some arbitrary name
 - component: public-ingress
   name: dns.name
+  value: cool-apps
+# and once again (for Helm and Kubernetes resources)
+- component: public-ingress
+  name: component.ingress.name
   value: apps
+# and the domain to root into
 - component: public-ingress
   name: dns.domain
-  value: domain.com
+  value: cool-apps.com
+# ACM TLS certificate ARN
 - component: public-ingress
   name: component.acm.certificateArn
-  value: ...
+  value: arn:aws:acm:...
+
+# optionally
+# the prefixes does not conflict with default Traefik prefixes
+# you can have app/apps here too
+- component: public-ingress
+  name: component.ingress
+  parameters:
+  - name: urlPrefix
+    value: pub
+# if you make it equal to ssoUrlPrefix (apps) then it will
+# be protected by Dex
+  - name: ssoUrlPrefix
+    value: pubs
+
+# dashboard http basic auth if not protected by Dex
+- component: public-ingress
+  name: component.ingress.dashboard.auth
+  # admin/secret
+  value: '{basic: { admin: "$apr1$11TLkGsi$yfpfzk0inznhPal5OE3Fl/"}}'
+
 ```
+
+Traefik will serve under `*.pub/s.domain.com`.
 
 Or, switching ingress controller on `metadata.annotations.kubernetes.io/ingress.class: my-public-apps`:
 
 ```yaml
 parameters:
 - component: public-ingress
-  name: component.ingress.ingressClass
+  name: component.traefik.kubernetes.ingressClass
   value: my-public-apps
 ```
 
-Then every ingress that goes into `applications` namespace (or annotated with `kubernetes.io/ingress.class: my-public-apps`) is controlled by `public-ingress` Traefik. 
+Then every ingress that goes into `applications` namespace (or annotated with `kubernetes.io/ingress.class: my-public-apps`) is controlled by `public-ingress` Traefik. You may also omit namespace parameters if you choose to switch on ingress class.
 
-Even though you might not use Hub component model for your services initially - by using Helm or `kubectl` directly, in case you do then you may want to distinguish multiple `component.ingress.*` outputs. There are two options:
+Even though you might not use Hub component model for your services initially - using Helm or `kubectl` directly instead, in case you do then you may want to distinguish multiple `component.ingress.*` outputs. If deployment order - last component outputs wins - favor your configuration, then you don't need to do anything. Alternatively, there are two options:
 
 1. The exact output is referenced in `hub-component.yaml` parameter `value:` via a prefix `${public-ingress:component.ingress.fqdn}`. This introduces tight coupling.
 2. A mapping is setup at `params.yaml` level:
@@ -106,6 +140,12 @@ parameters:
 - name: component.public-ingress.fqdn
   value: ${public-ingress:component.ingress.fqdn}
   kind: link
+- name: component.ingress.ssoFqdn
+  component: kube-dashboard
+  value: ${public-ingress:component.ingress.fqdn}
+  kind: link
 ```
+
+Traefik component also emit `component.ingress.kubernetes.ingressClass` output for use by components ingress objects.
 
 In future Hub CLI will allow a simplified shadowing / remapping of duplicated outputs.
