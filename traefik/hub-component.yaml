@@ -91,6 +91,9 @@ parameters:
       empty: allow
     - name: kubernetes.ingressClass
       empty: allow
+    - name: kubernetes.kubeconfigContext
+      value: ${dns.domain}
+      env: TF_VAR_kubeconfig_context
 
 outputs:
 - name: component.ingress.fqdn

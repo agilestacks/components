@@ -1,8 +1,9 @@
 .DEFAULT_GOAL := deploy
 
-export TF_VAR_component   ?= traefik
-export TF_VAR_domain_name ?= dev.kubernetes.delivery
-export TF_VAR_namespace   ?= ingress
+export TF_VAR_component          ?= traefik
+export TF_VAR_domain_name        ?= dev.kubernetes.delivery
+export TF_VAR_namespace          ?= ingress
+export TF_VAR_kubeconfig_context ?= $(TF_VAR_domain_name)
 
 CLOUD_KIND          ?= aws
 ACM_CERTIFICATE_ARN ?=
@@ -19,7 +20,7 @@ export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain_name)-$(TF_VAR_component)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
-helm        ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
+helm        ?= helm --kube-context="$(TF_VAR_kubeconfig_context)" --tiller-namespace="kube-system"
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
