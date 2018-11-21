@@ -22,5 +22,3 @@ about: Report a bug encountered while using one of the components
 - Toolbox docker tag:
 - Others:
 
-<!-- DO NOT EDIT BELOW THIS LINE -->
-/kind bug
