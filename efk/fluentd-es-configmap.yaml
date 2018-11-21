@@ -1,7 +1,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: fluentd-es-config-v0.1.5
+  name: fluentd-es-config-v0.1.6
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
@@ -371,6 +371,54 @@ data:
       read_from_head true
       tag kernel
     </source>
+
+    <source>
+      @type tail
+      # audit log path of kube-apiserver
+      path /var/log/kubernetes/kube-apiserver-audit.log
+      pos_file /var/log/kube-audit.pos
+      format json
+      time_key time
+      time_format %Y-%m-%dT%H:%M:%S.%N%z
+      tag audit
+    </source>
+
+    <filter audit>
+      #https://github.com/fluent/fluent-plugin-rewrite-tag-filter/issues/13
+      @type record_transformer
+      enable_ruby
+      <record>
+      namespace ${record["objectRef"].nil? ? "none":(record["objectRef"]["namespace"].nil? ? "none":record["objectRef"]["namespace"])}
+      </record>
+    </filter>
+
+    <match audit>
+      # route audit according to namespace element in context
+      @type rewrite_tag_filter
+      <rule>
+        key namespace
+        pattern ^(.+)
+        tag ${tag}.$1
+      </rule>
+    </match>
+
+    <filter audit.**>
+      @type record_transformer
+      remove_keys namespace
+    </filter>
+
+    <match audit.**>
+      @type forest
+      subtype file
+      remove_prefix audit
+      <template>
+          time_slice_format %Y%m%d%H
+          compress gz
+          path /var/log/kubernetes/kube-apiserver-audit-${tag}.*.log
+          format json
+          include_time_key true
+      </template>
+    </match>
 
   forward.input.conf: |-
     # Takes the messages sent over TCP
