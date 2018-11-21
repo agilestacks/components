@@ -118,7 +118,7 @@ parameters:
 
 ```
 
-Traefik will serve under `*.pub/s.domain.com`.
+Traefik will serve under `*.pub/s.cool-apps.com`.
 
 Or, switching ingress controller on `metadata.annotations.kubernetes.io/ingress.class: my-public-apps`:
 
@@ -129,9 +129,9 @@ parameters:
   value: my-public-apps
 ```
 
-Then every ingress that goes into `applications` namespace (or annotated with `kubernetes.io/ingress.class: my-public-apps`) is controlled by `public-ingress` Traefik. You may also omit namespace parameters if you choose to switch on ingress class.
+Every ingress that goes into `applications` namespace (or annotated with `kubernetes.io/ingress.class: my-public-apps`) is controlled by `public-ingress` Traefik. You may also omit namespace parameters if you choose to switch on ingress class.
 
-Even though you might not use Hub component model for your services initially - using Helm or `kubectl` directly instead, in case you do then you may want to distinguish multiple `component.ingress.*` outputs. If deployment order - last component outputs wins - favor your configuration, then you don't need to do anything. Alternatively, there are two options:
+Even though you might not use Hub component model for your services initially - using Helm or `kubectl` directly instead, in case you do then you may want to distinguish duplicates of `component.ingress.*` outputs. If deployment order - last component outputs wins - favor your configuration, then you don't need to do anything. Alternatively, there are two options:
 
 1. The exact output is referenced in `hub-component.yaml` parameter `value:` via a prefix `${public-ingress:component.ingress.fqdn}`. This introduces tight coupling.
 2. A mapping is setup at `params.yaml` level:
