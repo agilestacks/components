@@ -12,13 +12,18 @@ provider "kubernetes" {
   config_context = "${var.kubeconfig_context}"
 }
 
+provider "null" {
+  version = "1.0.0"
+}
+
 data "google_dns_managed_zone" "ext_zone" {
   name = "${var.name}"
 }
 
 data "kubernetes_service" "traefik" {
   metadata {
-    name      = "${var.component}"
+    # https://github.com/helm/charts/blob/master/stable/traefik/templates/_helpers.tpl
+    name      = "${var.component == "traefik" ? "traefik" : "${var.component}-traefik"}"
     namespace = "${var.namespace}"
   }
 }

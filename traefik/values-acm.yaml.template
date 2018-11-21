@@ -42,7 +42,7 @@ kubernetes:
   # endpoint:
   namespaces: ${component.traefik.kubernetes.namespaces}
   labelSelector: ${component.traefik.kubernetes.labelSelector}
-  ingressClass:  ${component.traefik.kubernetes.ingressClass}
+  ingressClass: ${component.traefik.kubernetes.ingressClass}
   # ingressEndpoint:
   #   hostname: "localhost"
   #   ip: "127.0.0.1"
@@ -251,11 +251,11 @@ dashboard:
     labels:
       provider:  agilestacks.com
       project:   ingress
-      component: traefik-dashboard
+      component: ${component.ingress.name}-traefik-dashboard
     annotations:
       agilestacks.com/stack-component: Traefik
-      kubernetes.io/ingress.class: traefik
-  auth: {}
+      kubernetes.io/ingress.class: ${component.traefik.kubernetes.ingressClass}
+  auth: ${component.ingress.dashboard.auth}
     # basic:
     #   username: password
   statistics: {}
@@ -280,8 +280,8 @@ service:
   labels:
     provider:  agilestacks.com
     project:   ingress
-    component: traefik
-    kubernetes.io/name: Traefik
+    component: ${component.ingress.name}
+    kubernetes.io/name: Traefik-${component.ingress.name}
     kubernetes.io/cluster-service: "true"
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
