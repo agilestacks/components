@@ -64,7 +64,7 @@ apply:
 install:
 	sudo $(SHELL) bin/$(shell uname -s | tr A-Z a-z)/InstallHalyard.sh
 
-tf_output=$(shell $(terraform) output $(TF_CLI_ARGS) -json | jq -crM .$(1).value)
+tf_output=$(shell $(terraform) output -no-color -json | jq -crM .$(1).value)
 
 # long deployment name results in
 # $ hal backup create

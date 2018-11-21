@@ -21,7 +21,7 @@ terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-deploy: init plan apply output
+deploy: init plan apply
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
@@ -44,7 +44,7 @@ apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
 output:
-	@$(terraform) output $(TF_CLI_ARGS)
+	@$(terraform) output -no-color
 
 undeploy: init destroy apply
 

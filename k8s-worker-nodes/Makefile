@@ -45,7 +45,7 @@ kubernetes:
 	$(kubectl) apply -f nvidia-gpu-device-plugin.yml
 
 output:
-	@$(terraform) output $(TF_CLI_ARGS)
+	@$(terraform) output -no-color
 
 undeploy: init destroy apply
 
