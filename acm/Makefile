@@ -29,7 +29,7 @@ deploy: install cert init plan apply wait output
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
-init: $(TF_DATA_DIR)
+init: $(TF_DATA_DIR) $(TF_GENERATED_DIR)/generated.tf
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
@@ -66,11 +66,13 @@ install: .venv
 
 cert:
 	$(python) main.py request $(DOMAIN_NAME) $(ADDITIONAL_NAMES)
+.PHONY: cert
+
+$(TF_GENERATED_DIR)/generated.tf:
 	@mkdir -p $(TF_GENERATED_DIR)
 	$(python) main.py gen $(DOMAIN_NAME) \
 		--standalone \
 		--save-to $(TF_GENERATED_DIR)/generated.tf
-.PHONY: cert
 
 wait: .venv
 	$(python) main.py wait $(DOMAIN_NAME) --timeout $(TIMEOUT)
