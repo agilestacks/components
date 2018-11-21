@@ -12,6 +12,10 @@ provider "kubernetes" {
   config_context = "${var.kubeconfig_context}"
 }
 
+provider "null" {
+  version = "1.0.0"
+}
+
 data "aws_region" "current" {}
 
 data "aws_route53_zone" "ext_zone" {
@@ -20,7 +24,8 @@ data "aws_route53_zone" "ext_zone" {
 
 data "kubernetes_service" "traefik" {
   metadata {
-    name      = "${var.component}"
+    # https://github.com/helm/charts/blob/master/stable/traefik/templates/_helpers.tpl
+    name      = "${var.component == "traefik" ? "traefik" : "${var.component}-traefik"}"
     namespace = "${var.namespace}"
   }
 }
