@@ -51,7 +51,7 @@ endif
 wait_complete:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
 	$(eval get_job=$(kubectl) get --output=json -f job-nfs-mkdirs.yaml)
-	@ printf 'Waiting for job to finish'
+	@ echo 'Waiting for job to finish'
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
 		if [ `$(get_job) | jq -M '.status.succeeded or .status.failed'` == 'true' ]; then \
 			printf ' done\n---\n'; \
@@ -68,7 +68,7 @@ wait_up:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
 	$(eval count=$(shell $(kubectl) get pods --no-headers --output=json -l 'project=jenkins,qualifier=master' --output=json | jq -M '.items[0].spec.containers | length'))
 	$(eval get_pod=$(kubectl) get pods --no-headers -l 'project=jenkins,qualifier=master' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}')
-	@ printf "Waiting for Jenkins pod up and running [container count: $(count)]"
+	@ echo "Waiting for Jenkins pod up and running [container count: $(count)]"
 
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
 		if [[ `$(get_pod) | wc -w | xargs` -eq '$(count)' ]]; then \
@@ -84,7 +84,7 @@ wait_up:
 wait_shutdown:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
 	$(eval get_pod=$(kubectl) get pods --no-headers -l 'project=jenkins,qualifier=master' --output=json)
-	@ printf "Waiting for Jenkins pod to terminate"
+	@ echo "Waiting for Jenkins pod to terminate"
 
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
 		if [[ -z `$(get_pod) | jq -c '.items[].spec.containers'` ]]; then \
