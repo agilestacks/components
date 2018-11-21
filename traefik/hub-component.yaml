@@ -85,6 +85,12 @@ parameters:
       value: '{}'
     - name: kubernetes.tolerations
       value: '[]'
+    - name: kubernetes.namespaces
+      value: '[]'
+    - name: kubernetes.labelSelector
+      empty: allow
+    - name: kubernetes.ingressClass
+      empty: allow
 
 outputs:
 - name: component.ingress.fqdn
