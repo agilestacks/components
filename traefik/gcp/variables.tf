@@ -8,6 +8,10 @@ variable "domain_name" {
   description = "Domain name associated with Google DNS managed zone"
 }
 
+variable "kubeconfig_context" {
+  type = "string"
+}
+
 variable "namespace" {
   type = "string"
   default = "ingress"

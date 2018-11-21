@@ -3,6 +3,10 @@ variable "domain_name" {
   description = "Domain name associated with R53 hosted zone"
 }
 
+variable "kubeconfig_context" {
+  type = "string"
+}
+
 variable "namespace" {
   type = "string"
   default = "ingress"

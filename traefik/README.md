@@ -70,6 +70,9 @@ parameters:
   value: '["default", "kube-public", kube-system", "ingress", "dex", "automation-hub"]'
   
 - component: public-ingress
+  name: component.traefik.kubernetes.kubeconfigContext
+  value: ${stack-k8s-aws:dns.domain}
+- component: public-ingress
   name: component.traefik.kubernetes.namespaces
   value: '["applications"]'
 - component: public-ingress
