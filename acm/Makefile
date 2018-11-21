@@ -78,8 +78,8 @@ wait: .venv
 test:
 	python test_main.py
 
-output: CERTIFICATE_ARN:=$(shell $(python) main.py arn $(DOMAIN_NAME))
 output:
+	$(eval CERTIFICATE_ARN:=$(shell $(python) main.py arn $(DOMAIN_NAME)))
 	@echo
 	@echo Outputs:
 	@echo certificate_arn=$(CERTIFICATE_ARN)
