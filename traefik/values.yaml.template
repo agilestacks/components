@@ -41,7 +41,6 @@ tolerations: ${component.traefik.kubernetes.tolerations}
 kubernetes:
   # endpoint:
   namespaces: ${component.traefik.kubernetes.namespaces}
-  # - default
   labelSelector: ${component.traefik.kubernetes.labelSelector}
   ingressClass:  ${component.traefik.kubernetes.ingressClass}
   # ingressEndpoint:
