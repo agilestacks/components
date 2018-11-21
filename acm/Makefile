@@ -72,7 +72,7 @@ cert:
 		--save-to $(TF_GENERATED_DIR)/generated.tf
 .PHONY: cert
 
-wait: venv
+wait: .venv
 	$(python) main.py wait $(DOMAIN_NAME) --timeout $(TIMEOUT)
 
 test:
