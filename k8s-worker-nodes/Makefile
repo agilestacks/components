@@ -54,12 +54,6 @@ destroy: plan
 
 import:
 	$(eval WORKERS=$(shell echo workers-$(TF_VAR_pool_name)-$(TF_VAR_domain) | cut -c 0-63))
-	$(eval WORKER_PROFILE=$(shell echo worker-profile-$(TF_VAR_pool_name)-$(TF_VAR_domain) | cut -c 0-63))
-	$(eval WORKER_ROLE=$(shell echo worker_role-$(TF_VAR_pool_name)-$(TF_VAR_domain)  | cut -c 0-63))
-	$(eval WORKER_POLICY=$(shell echo worker_policy-$(TF_VAR_pool_name)-$(TF_VAR_domain) | cut -c 0-63))
 	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers $(WORKERS)
-	-$(terraform) import $(TF_OPTS) aws_iam_instance_profile.worker_profile $(WORKER_PROFILE)
-	-$(terraform) import $(TF_OPTS) aws_iam_role.worker_role $(WORKER_ROLE)
-	-$(terraform) import $(TF_OPTS) aws_iam_role_policy.worker_policy $(WORKER_POLICY)
 
 -include ../Mk/phonies
