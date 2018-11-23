@@ -22,7 +22,7 @@ parameters:
   - name: component.postgresql
     parameters:
     - name:  name
-      value: postgresql
+      value: ${hub.stackName}-${dns.name}-${hub.componentName}
       env:   COMPONENT_NAME
     - name:  namespace
       value: postgresql
