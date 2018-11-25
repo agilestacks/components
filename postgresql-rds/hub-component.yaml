@@ -18,12 +18,12 @@ parameters:
   parameters:
   - name: name
     brief: Component name
-    value: postgresql-rds
+    value: ${hub.stackName}-${dns.name}-${hub.componentName}
     env: COMPONENT_NAME
   - name: rds.name
     kind: user
     brief: RDS database instance name
-    value: ${dns.name}
+    value: ${hub.stackName}-${dns.name}-${hub.componentName}
     env: TF_VAR_rds_name
   - name: database
     value: agilestacks
@@ -42,11 +42,11 @@ parameters:
   - name: rds.snapshot
     empty: allow
     env: TF_VAR_snapshot_identifier
-  - name: rds.skipSnapshot
+  - name: rds.skipFinalSnapshot
     value: true
     env: TF_VAR_skip_final_snapshot
-  - name: rds.final_snapshot
-    value: ${dns.name}-final-snapshot
+  - name: rds.finalSnapshotName
+    value: ${hub.stackName}-${dns.name}-${hub.componentName}-final-snapshot
     env: TF_VAR_final_snapshot_identifier
 - name: terraform.bucket.name
   env: STATE_BUCKET
