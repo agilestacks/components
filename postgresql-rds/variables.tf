@@ -16,10 +16,6 @@ variable "storage_type" {
 
 variable "vpc_id" {}
 
-variable "database_identifier" {
-  default = ""
-}
-
 variable "rds_name" {}
 
 variable "database_name" {

@@ -59,7 +59,7 @@ resource "aws_db_instance" "postgresql" {
   allocated_storage          = "${var.allocated_storage}"
   engine                     = "postgres"
   engine_version             = "${var.engine_version}"
-  identifier                 = "${coalesce("${var.database_identifier}", "${var.rds_name}")}"
+  identifier                 = "${var.rds_name}"
   instance_class             = "${var.instance_type}"
   storage_type               = "${var.storage_type}"
   name                       = "${var.database_name}"
@@ -172,4 +172,3 @@ resource "aws_db_instance" "postgresql" {
 
 #   alarm_actions = ["${var.alarm_actions}"]
 # }
-
