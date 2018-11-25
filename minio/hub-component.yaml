@@ -27,7 +27,6 @@ parameters:
   - name: cloud.kind
     env: CLOUD
   - name: dns.domain
-    brief: DNS domain
     env: DOMAIN_NAME
   - name: component.ingress
     parameters:
@@ -35,35 +34,27 @@ parameters:
       value: http
       env: PROTOCOL
   - name: component.nats
+    empty: allow
     parameters:
     - name: fqdn
-      empty: allow
     - name: username
-      empty: allow
     - name: password
-      empty: allow
   - name: component.postgresql
+    empty: allow
     parameters:
     - name: host
-      empty: allow
     - name: port
-      empty: allow
     - name: user
-      empty: allow
     - name: password
-      empty: allow
     - name: database
-      empty: allow
   - name: component.redis
+    empty: allow
     parameters:
     - name: host
       value: localhost
-      empty: allow
     - name: port
       value: 6379
-      empty: allow
     - name: password
-      empty: allow
   - name: component.minio
     parameters:
     - name: namespace
