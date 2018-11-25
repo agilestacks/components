@@ -18,12 +18,12 @@ parameters:
   parameters:
   - name: name
     brief: Component name
-    value: ${hub.stackName}-${dns.name}-${hub.componentName}
+    value: ${dns.domain}-${dns.name}-${hub.componentName}
     env: COMPONENT_NAME
   - name: rds.name
     kind: user
     brief: RDS database instance name
-    value: ${hub.stackName}-${dns.name}-${hub.componentName}
+    value: ${dns.domain}-${dns.name}-${hub.componentName}
     env: TF_VAR_rds_name
   - name: database
     value: agilestacks
@@ -46,7 +46,7 @@ parameters:
     value: true
     env: TF_VAR_skip_final_snapshot
   - name: rds.finalSnapshotName
-    value: ${hub.stackName}-${dns.name}-${hub.componentName}-final-snapshot
+    value: ${dns.domain}-${dns.name}-${hub.componentName}-final
     env: TF_VAR_final_snapshot_identifier
 - name: terraform.bucket.name
   env: STATE_BUCKET
