@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name:      natsboard
+  name:      ${component.nats.name}-natsboard
   namespace: ${component.nats.namespace}
   labels:
     provider:  agilestacks.com
