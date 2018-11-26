@@ -15,12 +15,17 @@ data "aws_subnet_ids" "selected" {
   vpc_id = "${data.aws_vpc.selected.id}"
 }
 
+locals {
+  rds_name = "${replace(var.rds_name, "/[^[:alnum:]-]/", "-")}"
+  final_snapshot_identifier = "${replace(var.final_snapshot_identifier, "/[^[:alnum:]-]/", "-")}"
+}
+
 resource "aws_db_subnet_group" "all" {
-  name_prefix = "${var.rds_name}"
+  name_prefix = "${local.rds_name}"
   subnet_ids  = ["${data.aws_subnet_ids.selected.ids}"]
 
   tags {
-    Name = "${var.rds_name}-all-subnets"
+    Name = "${local.rds_name}-all-subnets"
   }
 }
 
@@ -28,7 +33,7 @@ resource "aws_security_group" "default" {
   vpc_id = "${data.aws_vpc.selected.id}"
 
   tags {
-    Name = "${var.rds_name}-db"
+    Name = "${local.rds_name}-db"
   }
 
   ingress {
@@ -59,7 +64,7 @@ resource "aws_db_instance" "postgresql" {
   allocated_storage          = "${var.allocated_storage}"
   engine                     = "postgres"
   engine_version             = "${var.engine_version}"
-  identifier                 = "${var.rds_name}"
+  identifier                 = "${local.rds_name}"
   instance_class             = "${var.instance_type}"
   storage_type               = "${var.storage_type}"
   name                       = "${var.database_name}"
@@ -69,7 +74,7 @@ resource "aws_db_instance" "postgresql" {
   backup_window              = "${var.backup_window}"
   maintenance_window         = "${var.maintenance_window}"
   auto_minor_version_upgrade = "${var.auto_minor_version_upgrade}"
-  final_snapshot_identifier  = "${var.final_snapshot_identifier}"
+  final_snapshot_identifier  = "${local.final_snapshot_identifier}"
   skip_final_snapshot        = "${var.skip_final_snapshot}"
   copy_tags_to_snapshot      = "${var.copy_tags_to_snapshot}"
   multi_az                   = "${var.multi_availability_zone}"
@@ -86,12 +91,12 @@ resource "aws_db_instance" "postgresql" {
   }
 
   tags {
-    Name = "${var.rds_name}-rds"
+    Name = "${local.rds_name}-rds"
   }
 }
 
 # resource "aws_cloudwatch_metric_alarm" "database_cpu" {
-#   alarm_name          = "alarm${var.rds_name}DatabaseServerCPUUtilization"
+#   alarm_name          = "alarm${local.rds_name}DatabaseServerCPUUtilization"
 #   alarm_description   = "Database server CPU utilization"
 #   comparison_operator = "GreaterThanThreshold"
 #   evaluation_periods  = "1"
@@ -112,7 +117,7 @@ resource "aws_db_instance" "postgresql" {
 
 
 # resource "aws_cloudwatch_metric_alarm" "database_disk_queue" {
-#   alarm_name          = "alarm${var.rds_name}DatabaseServerDiskQueueDepth"
+#   alarm_name          = "alarm${local.rds_name}DatabaseServerDiskQueueDepth"
 #   alarm_description   = "Database server disk queue depth"
 #   comparison_operator = "GreaterThanThreshold"
 #   evaluation_periods  = "1"
@@ -133,7 +138,7 @@ resource "aws_db_instance" "postgresql" {
 
 
 # resource "aws_cloudwatch_metric_alarm" "database_disk_free" {
-#   alarm_name          = "alarm${var.rds_name}DatabaseServerFreeStorageSpace"
+#   alarm_name          = "alarm${local.rds_name}DatabaseServerFreeStorageSpace"
 #   alarm_description   = "Database server free storage space"
 #   comparison_operator = "LessThanThreshold"
 #   evaluation_periods  = "1"
@@ -154,7 +159,7 @@ resource "aws_db_instance" "postgresql" {
 
 
 # resource "aws_cloudwatch_metric_alarm" "database_memory_free" {
-#   alarm_name          = "alarm${var.rds_name}DatabaseServerFreeableMemory"
+#   alarm_name          = "alarm${local.rds_name}DatabaseServerFreeableMemory"
 #   alarm_description   = "Database server freeable memory"
 #   comparison_operator = "LessThanThreshold"
 #   evaluation_periods  = "1"
