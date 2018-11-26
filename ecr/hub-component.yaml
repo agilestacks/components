@@ -17,7 +17,7 @@ parameters:
 - name: component.ecr
   parameters:
   - name: name
-    value: ${dns.domain}-${dns.name}/${hub.componentName}
+    value: ${dns.domain}/${dns.name}/${hub.componentName}
     env: COMPONENT_NAME
 - name: cloud.region
   env: AWS_DEFAULT_REGION
