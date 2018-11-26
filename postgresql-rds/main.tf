@@ -81,7 +81,7 @@ resource "aws_db_instance" "postgresql" {
   port                       = "${var.database_port}"
   vpc_security_group_ids     = ["${aws_security_group.default.id}"]
   db_subnet_group_name       = "${aws_db_subnet_group.all.name}"
-  parameter_group_name       = "${var.parameter_group}"
+ #parameter_group_name       = "${var.parameter_group}"
   storage_encrypted          = "${var.storage_encrypted}"
 
   snapshot_identifier = "${var.snapshot_identifier}"
