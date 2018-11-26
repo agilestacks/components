@@ -64,7 +64,7 @@ destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
 import:
-	-$(terraform) import $(TF_CLI_ARGS) aws_db_instance.postgresql $(TF_VAR_rds_name)
+	-$(terraform) import $(TF_CLI_ARGS) aws_db_instance.postgresql $$(echo $(TF_VAR_rds_name) | sed -e 's/[^[:alnum:]-]/-/g')
 
 clean:
 	rm -rf .terraform
