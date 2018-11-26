@@ -70,9 +70,9 @@ variable "storage_encrypted" {
   default = false
 }
 
-variable "parameter_group" {
-  default = "default.postgres9.6"
-}
+# variable "parameter_group" {
+#   default = "default.postgres9.6"
+# }
 
 # variable "alarm_cpu_threshold" {
 #   default = "85"
