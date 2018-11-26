@@ -21,7 +21,6 @@ parameters:
     value: ${dns.domain}-${dns.name}-${hub.componentName}
     env: COMPONENT_NAME
   - name: rds.name
-    kind: user
     brief: RDS database instance name
     value: ${dns.domain}-${dns.name}-${hub.componentName}
     env: TF_VAR_rds_name
