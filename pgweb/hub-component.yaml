@@ -24,10 +24,10 @@ parameters:
   - name: component.pgweb
     parameters:
     - name: name
-      value: ${hub.stackName}-${dns.name}-${hub.componentName}
+      value: pgweb-${dns.name}-${hub.componentName}
       env: COMPONENT_NAME
     - name: ingress.urlPrefix
-      value: ${hub.stackName}-${dns.name}-${hub.componentName}
+      value: pgweb-${dns.name}-${hub.componentName}
     - name: ingress.path
       value: /
   - name: component.postgresql

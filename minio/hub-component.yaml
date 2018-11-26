@@ -58,10 +58,10 @@ parameters:
   - name: component.minio
     parameters:
     - name: namespace
-      value: minio-${hub.stackName}-${dns.name}-${hub.componentName}
+      value: minio-${dns.name}-${hub.componentName}
       env: NAMESPACE
     - name: name
-      value: ${hub.stackName}-${dns.name}-${hub.componentName}
+      value: minio-${dns.name}-${hub.componentName}
       env: COMPONENT_NAME
     - name: region
       value: us-east-1

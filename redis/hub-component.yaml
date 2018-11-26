@@ -37,7 +37,7 @@ parameters:
       value: redis
     - name: name
       env: COMPONENT_NAME
-      value: ${hub.stackName}-${dns.name}-${hub.componentName}
+      value: redis-${dns.name}-${hub.componentName}
     - name: image
       value: bitnami/redis:4.0.9
     - name: requests.memory

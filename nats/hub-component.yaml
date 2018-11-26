@@ -21,7 +21,7 @@ parameters:
 - name: component.nats
   parameters:
   - name: name
-    value: ${hub.stackName}-${dns.name}-${hub.componentName}
+    value: nats-${dns.name}-${hub.componentName}
     env: COMPONENT_NAME
   - name: namespace
     # primary consumer is argo
