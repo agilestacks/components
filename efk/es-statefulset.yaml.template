@@ -54,7 +54,7 @@ metadata:
   namespace: ${component.efk.namespace}
   labels:
     k8s-app: elasticsearch-logging
-    version: v6.4.3
+    version: v6.5.1
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
 spec:
@@ -63,12 +63,12 @@ spec:
   selector:
     matchLabels:
       k8s-app: elasticsearch-logging
-      version: v6.4.3
+      version: v6.5.1
   template:
     metadata:
       labels:
         k8s-app: elasticsearch-logging
-        version: v6.4.3
+        version: v6.5.1
         es-role: master
         kubernetes.io/cluster-service: "true"
     spec:
@@ -142,7 +142,7 @@ spec:
       initContainers:
       - name: fixup-volume
         image: alpine:3.6
-        command: ['/bin/ash', '-c', 'chown -R 1000:1000 /data']
+        command: ['/bin/ash', '-c', 'mkdir /data/elasticsearch && mkdir /data/log && chown -R 1000:1000 /data']
         volumeMounts:
         - name: elasticsearch-data
           mountPath: /data

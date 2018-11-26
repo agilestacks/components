@@ -36,9 +36,9 @@ parameters:
     - name:  ingress.kibanaUrlPrefix
       value: kibana
     - name:  kibana.version
-      value: 6.4.3
+      value: 6.5.1
     - name:  elastic.version
-      value: 6.4.3
+      value: 6.5.1
     - name: elastic.masters
       value: 1
       # (number of master nodes / 2) + 1

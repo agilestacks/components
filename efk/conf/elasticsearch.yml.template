@@ -13,7 +13,8 @@ discovery:
     minimum_master_nodes: ${component.efk.elastic.quorum}
 
 path:
-  logs: /var/log/
+  logs: /data/log
+  data: /data/elasticsearch
 
 
 bootstrap.memory_lock: false
