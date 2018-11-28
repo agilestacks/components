@@ -37,16 +37,24 @@ parameters:
     empty: allow
     parameters:
     - name: fqdn
+      empty: allow
     - name: username
+      empty: allow
     - name: password
+      empty: allow
   - name: component.postgresql
     empty: allow
     parameters:
     - name: host
+      empty: allow
     - name: port
+      empty: allow
     - name: user
+      empty: allow
     - name: password
+      empty: allow
     - name: database
+      empty: allow
   - name: component.redis
     empty: allow
     parameters:
@@ -141,7 +149,10 @@ outputs:
     value: ${component.ingress.protocol}://${component.minio.endpoint.ingress}
   - name: component.minio.secret.name
     brief: Kubenetes secret that holds access and secret key info
-    value: minio
+    fromTfVar: secret_name
+  - name: component.minio.namespace
+    brief: Secret namespace
+    fromTfVar: secret_namespace
   - name: component.minio.secret.accessKeyRef
     brief: Kubenetes secret data field that holds Access Key9
     value: accesskey

@@ -11,7 +11,7 @@ CLOUD          ?= aws
 ALIAS          ?= $(COMPONENT_NAME)
 
 # hardcoded in helm chart
-SECRET         ?= minio
+SECRET         := $(COMPONENT_NAME)-$(NAMESPACE)-minio
 ACCESS_KEY_REF ?= accesskey
 SECRET_KEY_REF ?= secretkey
 
@@ -99,5 +99,11 @@ undeploy: init unconfigure
 
 clean:
 	rm -rf $(HELM_HOME) charts
+
+output:
+	@ echo
+	@ echo Outputs:
+	@ echo secret_name = $(SECRET)
+	@ echo secret_namespace = $(NAMESPACE)
 
 -include ../Mk/phonies
