@@ -9,9 +9,10 @@ INGRESS_DOMAIN ?= localhost
 PROTOCOL       ?= http
 CLOUD          ?= aws
 ALIAS          ?= $(COMPONENT_NAME)
+DOMAIN         ?= minio
 
 # hardcoded in helm chart
-SECRET         := $(COMPONENT_NAME)-$(NAMESPACE)-minio
+SECRET         := minio-$(DOMAIN)-minio
 ACCESS_KEY_REF ?= accesskey
 SECRET_KEY_REF ?= secretkey
 
