@@ -26,6 +26,8 @@ lifecycle:
 parameters:
   - name: cloud.kind
     env: CLOUD
+  - name: dns.name
+    env: DOMAIN
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.ingress
@@ -132,10 +134,6 @@ parameters:
       env: CHART_VERSION
 
 outputs:
-  - name: component.bucket.endpoint
-    value: http://${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.service.port}
-  - name: component.bucket.name
-    value: ${component.minio.default.bucket.name}
   - name: component.minio.service.host
     brief: Bucket endpoint for reference by other service
     value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local
@@ -170,6 +168,10 @@ outputs:
     value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.service.port}
   - name: component.bucket.endpoint
     value: ${component.minio.name}.${component.minio.ingress.baseDomain}
+  - name: component.bucket.secret.name
+    fromTfVar: secret_name
+  - name: component.bucket.secret.namespace
+    fromTfVar: secret_namespace
   - name: component.bucket.secret.accessKeyRef
     value: accesskey
   - name: component.bucket.secret.secretKeyRef
