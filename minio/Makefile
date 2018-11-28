@@ -46,7 +46,7 @@ ifeq ($(SECRET_KEY),)
 	SECRET_KEY := $(or $(secret_val),$(random))
 endif
 
-deploy: clean init fetch purge install configure
+deploy: clean init fetch purge install configure output
 
 init:
 	mkdir -p $(HELM_HOME)

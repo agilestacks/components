@@ -170,10 +170,6 @@ outputs:
     value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.service.port}
   - name: component.bucket.endpoint
     value: ${component.minio.name}.${component.minio.ingress.baseDomain}
-  - name: component.bucket.secret.name
-    value: minio
-  - name: component.bucket.secret.namespace
-    value: ${component.minio.namespace}
   - name: component.bucket.secret.accessKeyRef
     value: accesskey
   - name: component.bucket.secret.secretKeyRef
