@@ -11,8 +11,8 @@ CLOUD          ?= aws
 ALIAS          ?= $(COMPONENT_NAME)
 DOMAIN         ?= minio
 
-# hardcoded in helm chart
-SECRET         := minio-$(DOMAIN)-minio
+# secret-name has been driven by fullnameOverride in helm chart
+SECRET         := $(COMPONENT_NAME)
 ACCESS_KEY_REF ?= accesskey
 SECRET_KEY_REF ?= secretkey
 
@@ -80,7 +80,8 @@ install: namespace $(CLOUD)-storage-class
 			--wait \
 			--values values.yaml \
 			--set 'accessKey=$(ACCESS_KEY)' \
-			--set 'secretKey=$(SECRET_KEY)'
+			--set 'secretKey=$(SECRET_KEY)' \
+			--set 'fullnameOverride=$(SECRET)'
 
 configure:
 	@ $(mc) config host add $(ALIAS) \
