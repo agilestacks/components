@@ -45,7 +45,7 @@ output:
 
 backup:
 	cd backup && \
-		mkdir -p .terraform && \
+		mkdir -p $(TF_DATA_DIR) && \
 		terraform-v0.9 init $(TF_OPTS) && \
 		terraform-v0.9 plan $(TF_OPTS) -refresh=true -module-depth=-1 \
 			-state=.terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).tfstate \
