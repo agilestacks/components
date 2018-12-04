@@ -13,6 +13,7 @@ requires:
   - tiller
 
 parameters:
+  - name: component.ingress.protocol
   - name: component.ingress.ssoFqdn
   - name: component.postgresql.namespace
     brief: Kubernetes namespace to install into
@@ -45,4 +46,4 @@ templates:
 
 outputs:
   - name: component.pgweb.url
-    value: http://${component.pgweb.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.pgweb.ingress.urlPrefix}.${component.ingress.ssoFqdn}
