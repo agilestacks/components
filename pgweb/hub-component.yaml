@@ -16,7 +16,7 @@ parameters:
   - name: component.ingress.ssoFqdn
   - name: component.postgresql.namespace
     brief: Kubernetes namespace to install into
-    value: default
+    value: postgresql
     env: NAMESPACE
   - name: dns.domain
     brief: DNS domain
