@@ -39,24 +39,16 @@ parameters:
     empty: allow
     parameters:
     - name: fqdn
-      empty: allow
     - name: username
-      empty: allow
     - name: password
-      empty: allow
   - name: component.postgresql
     empty: allow
     parameters:
     - name: host
-      empty: allow
     - name: port
-      empty: allow
     - name: user
-      empty: allow
     - name: password
-      empty: allow
     - name: database
-      empty: allow
   - name: component.redis
     empty: allow
     parameters:
