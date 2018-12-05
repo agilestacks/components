@@ -60,10 +60,10 @@ parameters:
   - name: component.minio
     parameters:
     - name: namespace
-      value: minio-${dns.name}-${hub.componentName}
+      value: ${dns.name}-${hub.componentName}
       env: NAMESPACE
     - name: name
-      value: minio-${dns.name}-${hub.componentName}
+      value: minio
       env: COMPONENT_NAME
     - name: region
       value: us-east-1
@@ -141,7 +141,6 @@ outputs:
     brief: Kubenetes secret that holds access and secret key info
     fromTfVar: secret_name
   - name: component.minio.namespace
-    brief: Secret namespace
     fromTfVar: secret_namespace
   - name: component.minio.secret.accessKeyRef
     brief: Kubenetes secret data field that holds Access Key9

@@ -5,6 +5,7 @@ ENDPOINT    ?= localhost:9000
 SECRET_NAME ?= minio
 CONFIGMAP   ?= workflow-controller-configmap
 INGRESS_PORTOCOL ?= http
+NAMESPACE   ?= minio
 kubectl     ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy: install output
