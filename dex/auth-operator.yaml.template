@@ -175,7 +175,7 @@ spec:
           value: ${component.ingress.protocol}
         - name: APROXY_DEX_NAMESPACE
           value: ${component.dex.namespace}
-        image: agilestacks/auth-operator:0.0.4
+        image: agilestacks/auth-operator:0.0.5
         imagePullPolicy: Always
         name: manager
         ports:
