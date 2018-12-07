@@ -1,0 +1,12 @@
+apiVersion: auth.agilestacks.com/v1alpha1
+kind: Oidc
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: oidc-ambassador
+spec:
+  id: kubeflow-client
+  secret: 345t6dfgdfg4-57yDSDfjeuDVQEW
+  redirectURIs:
+  - ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/login/oidc
+  name: 'Kubeflow AI framework'

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root version="2">
+	<Server>
+		<Name>Wowza Streaming Engine</Name>
+		<Description>Wowza Streaming Engine is robust, customizable, and scalable server software that powers reliable streaming of high-quality video and audio to any device, a
+nywhere.</Description>
+		<RESTInterface>
+			<Enable>true</Enable>
+			<IPAddress>*</IPAddress>
+			<Port>8087</Port>
+			<!-- none, basic, digest, remotehttp, digestfile -->
+			<AuthenticationMethod>digest</AuthenticationMethod>
+			<DiagnosticURLEnable>true</DiagnosticURLEnable>
+			<SSLConfig>
+				<Enable>false</Enable>
+				<KeyStorePath></KeyStorePath>
+				<KeyStorePassword></KeyStorePassword>
+				<KeyStoreType>JKS</KeyStoreType>
+				<SSLProtocol>TLS</SSLProtocol>
+				<Algorithm>SunX509</Algorithm>
+				<CipherSuites></CipherSuites>
+				<Protocols></Protocols>
+			</SSLConfig>
+			<IPWhiteList>*</IPWhiteList>
+			<IPBlackList></IPBlackList>
+			<EnableXMLFile>false</EnableXMLFile>
+			<DocumentationServerEnable>false</DocumentationServerEnable>
+			<DocumentationServerPort>8089</DocumentationServerPort>
+			<!-- none, basic, digest, remotehttp, digestfile -->
+			<DocumentationServerAuthenticationMethod>digest</DocumentationServerAuthenticationMethod>
+			<Properties>
+			</Properties>
+		</RESTInterface>
+		<CommandInterface>
+			<HostPort>
+				<ProcessorCount>${com.wowza.wms.TuningAuto}</ProcessorCount>
+				<IpAddress>*</IpAddress>
+				<Port>8083</Port>
+			</HostPort>
+		</CommandInterface>
+		<AdminInterface>
+			<!-- Objects exposed through JMX interface: Server, VHost, VHostItem, Application, ApplicationInstance, MediaCaster, Module, Client, MediaStream, SharedObject, A
+cceptor, IdleWorker -->
+			<ObjectList>Server,VHost,VHostItem,Application,ApplicationInstance,MediaCaster,Module,IdleWorker</ObjectList>
+		</AdminInterface>
+		<Stats>
+			<Enable>true</Enable>
+		</Stats>
+		<!-- JMXUrl: service:jmx:rmi://localhost:8084/jndi/rmi://localhost:8085/jmxrmi -->
+		<JMXRemoteConfiguration>
+			<Enable>false</Enable>
+			<IpAddress>localhost</IpAddress> <!--changed for default install. <IpAddress>localhost</IpAddress>--> <!--changed for default install. <IpAddress>localhost</IpAddress>--> <!--changed for default install. <IpAddress>localhost</IpAddress>--> <!--changed for default install. <IpAddress>localhost</IpAddress>-->
+			<RMIServerHostName>localhost</RMIServerHostName> <!--changed for default install. <RMIServerHostName>localhost</RMIServerHostName>--> <!--changed for default install. <RMIServerHostName>localhost</RMIServerHostName>--> <!--changed for default install. <RMIServerHostName>localhost</RMIServerHostName>--> <!--changed for default install. <RMIServerHostName>localhost</RMIServerHostName>-->
+			<RMIConnectionPort>8084</RMIConnectionPort>
+			<RMIRegistryPort>8085</RMIRegistryPort>
+			<Authenticate>true</Authenticate>
+			<PasswordFile>${com.wowza.wms.ConfigHome}/conf/jmxremote.password</PasswordFile>
+			<AccessFile>${com.wowza.wms.ConfigHome}/conf/jmxremote.access</AccessFile>
+			<SSLSecure>false</SSLSecure>
+		</JMXRemoteConfiguration>
+		<UserAgents>Shockwave Flash|CFNetwork|MacNetwork/1.0 (Macintosh)</UserAgents>
+		<Streams>
+			<DefaultStreamPrefix>mp4</DefaultStreamPrefix>
+		</Streams>
+		<ServerListeners>
+			<ServerListener>
+				<BaseClass>com.wowza.wms.mediacache.impl.MediaCacheServerListener</BaseClass>
+			</ServerListener>
+			<!--
+			<ServerListener>
+				<BaseClass>com.wowza.wms.plugin.loadbalancer.ServerListenerLoadBalancerListener</BaseClass>
+			</ServerListener>
+			-->
+			<!--
+			<ServerListener>
+				<BaseClass>com.wowza.wms.plugin.loadbalancer.ServerListenerLoadBalancerSender</BaseClass>
+			</ServerListener>
+			-->
+		</ServerListeners>
+		<VHostListeners>
+			<!--
+			<VHostListener>
+				<BaseClass></BaseClass>
+			</VHostListener>
+			-->
+		</VHostListeners>
+		<HandlerThreadPool>
+			<PoolSize>${com.wowza.wms.TuningAuto}</PoolSize>
+		</HandlerThreadPool>
+		<TransportThreadPool>
+			<PoolSize>${com.wowza.wms.TuningAuto}</PoolSize>
+		</TransportThreadPool>
+		<RTP>
+			<DatagramStartingPort>6970</DatagramStartingPort>
+			<DatagramPortSharing>false</DatagramPortSharing>
+		</RTP>
+		<Manager>
+			<!-- Properties defined are used by the Manager -->
+			<Properties>
+			</Properties>
+		</Manager>
+		<Transcoder>
+			<PluginPaths>
+				<QuickSync></QuickSync>
+			</PluginPaths>
+		</Transcoder>
+		<!-- Properties defined here will be added to the IServer.getProperties() collection -->
+		<Properties>
+		</Properties>
+	</Server>
+</Root>

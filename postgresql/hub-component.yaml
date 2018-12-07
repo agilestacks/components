@@ -1,0 +1,53 @@
+---
+version: 1
+kind: component
+meta:
+  name: postgresql
+  brief: PostgreSQL
+  source:
+    dir: ../../components/postgresql
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+provides:
+  - postgresql
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: cloud.kind
+    env: CLOUD_KIND
+  - name: component.postgresql
+    parameters:
+    - name:  name
+      value: postgresql-${dns.name}-${hub.componentName}
+      env:   COMPONENT_NAME
+    - name:  namespace
+      value: postgresql
+      env:   NAMESPACE
+    - name:  user
+    - name:  password
+    - name:  database
+    - name:  volumeType
+      value: gp2
+      # conditional defaults?
+      # value: pd-ssd
+    - name:  volumeSize
+      value: 8Gi
+    - name:  storageClass
+      value: ${cloud.kind}-storage
+    - name:  port
+      value: 5432
+
+outputs:
+- name: component.postgresql.host
+  value: ${component.postgresql.name}-postgresql.${component.postgresql.namespace}.svc.cluster.local
+- name: component.postgresql.port
+- name: component.postgresql.user
+- name: component.postgresql.namespace
+
+templates:
+  files:
+    - "*.template"

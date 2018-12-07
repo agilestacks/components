@@ -1,0 +1,11 @@
+artifactRepository:
+  s3:
+    bucket: ${component.bucket.name}
+    endpoint: ${component.bucket.endpoint}
+    insecure: true
+    accessKeySecret:
+      name: ${component.bucket.secret.name}
+      key: ${component.bucket.secret.accessKeyRef}
+    secretKeySecret:
+      name: ${component.bucket.secret.name}
+      key: ${component.bucket.secret.secretKeyRef}

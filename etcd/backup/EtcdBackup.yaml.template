@@ -1,0 +1,12 @@
+apiVersion: "etcd.database.coreos.com/v1beta2"
+kind: "EtcdBackup"
+metadata:
+  name: {{COMPONENT_NAME}}-{{TS}}
+spec:
+  etcdEndpoints: ["http://{{COMPONENT_NAME}}-client:2379"]
+  storageType: S3
+  s3:
+    # The format of "path" must be: "<s3-bucket-name>/<path-to-backup-file>"
+    # e.g: "mybucket/etcd.backup" -- without s3:// prefix
+    path: {{BACKUP_BUCKET}}/{{DOMAIN_NAME}}/backup/etcd/{{COMPONENT_NAME}}/{{TS}}
+    awsSecret: {{AWS_SECRET_NAME}}

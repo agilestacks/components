@@ -1,0 +1,31 @@
+---
+version: 1
+kind: component
+meta:
+  name: kubeconfig
+  brief: Create Kubeconfig
+  source:
+      dir: ../../components/kubeconfig
+
+requires:
+  - kubernetes
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: kubernetes.api
+    parameters:
+    - name: endpoint
+    - name: caCert
+    - name: clientCert
+    - name: clientKey
+    - name: namespace
+      value: kube-system
+
+outputs:
+- name: kubernetes.api.kubeconfig
+  fromTfVar: kubeconfig
+
+templates:
+  files:
+    - "*.template"

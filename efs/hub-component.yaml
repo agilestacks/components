@@ -1,0 +1,47 @@
+---
+version: 1
+kind: component
+meta:
+  name: efs
+  brief: EFS component
+  source:
+    dir: ../../components/efs
+
+requires:
+- aws
+provides:
+- nfs
+
+parameters:
+- name: component.efs
+  parameters:
+  - name: name
+    value: ${dns.domain}
+    env: COMPONENT_NAME
+  - name: subnet
+    value: ${cloud.vpc.worker.subnet.id}
+    env: TF_VAR_subnet
+  - name: sgs
+    value: "${cloud.vpc.master.sg.id},${cloud.vpc.worker.sg.id}"
+    env: TF_VAR_sgs
+  - name: performanceMode
+    value: generalPurpose    # maxIO
+    env: TF_VAR_performance_mode
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: bin.terraform
+  value: terraform-v0.11
+  env: terraform
+- name: terraform.bucket
+  parameters:
+  - name: name
+    env: STATE_BUCKET
+  - name: region
+    env: STATE_REGION
+
+outputs:
+- name: nfs.server
+  brief: NFS (EFS) server endpoint
+  fromTfVar: efs_endpoint

@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${component.nats.name}-natsboard
+  namespace: ${component.nats.namespace}
+  labels:
+    provider:  agilestacks.com
+    component: ${component.nats.name}
+    app: ${component.nats.name}-natsboard
+  annotations:
+    agilestacks.com/stack-component: Nats
+spec:
+  rules:
+  - host: ${component.nats.name}.${component.ingress.ssoFqdn}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ${component.nats.name}-natsboard
+          servicePort: 3000

@@ -1,0 +1,175 @@
+---
+version: 1
+kind: component
+meta:
+  name: minio
+  brief: Private cloud storage
+  source:
+      dir: ../../components/minio
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+
+provides:
+  - minio
+  - bucket
+
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
+  - configure
+  - unconfigure
+
+parameters:
+  - name: cloud.kind
+    env: CLOUD
+  - name: dns.name
+    env: DOMAIN
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.ingress
+    parameters:
+    - name: protocol
+      value: http
+      env: PROTOCOL
+  - name: component.nats
+    empty: allow
+    parameters:
+    - name: fqdn
+    - name: username
+    - name: password
+  - name: component.postgresql
+    empty: allow
+    parameters:
+    - name: host
+    - name: port
+    - name: user
+    - name: password
+    - name: database
+  - name: component.redis
+    empty: allow
+    parameters:
+    - name: host
+      value: localhost
+    - name: port
+      value: 6379
+    - name: password
+  - name: component.minio
+    parameters:
+    - name: namespace
+      value: ${dns.name}-${hub.componentName}
+      env: NAMESPACE
+    - name: name
+      value: minio
+      env: COMPONENT_NAME
+    - name: region
+      value: us-east-1
+    - name: accessKey
+      value: ""
+      empty: allow
+      env: ACCESS_KEY
+    - name: secretKey
+      value: ""
+      empty: allow
+      env: SECRET_KEY
+    - name: replicas
+      value: 4
+    - name: mode
+      value: standalone
+    - name: service.port
+      value: 9000
+    - name:  volumeType
+      value: gp2
+    - name: storageClass
+      value: ${cloud.kind}-minio-buckets
+    - name: storageSize
+      value: 20Gi
+    - name: postgresql.enabled
+      value: false
+    - name: postgresql.table
+      value: bucket-events
+      empty: allow
+    - name: nats.enabled
+      value: false
+    - name: nats.subject
+      value: bucketevents
+    - name: default.bucket.enabled
+      value: true
+    - name: default.bucket.name
+      value: default
+    - name: default.bucket.policy
+      value: public
+    - name: ingress.baseDomain
+      value: ${component.ingress.fqdn}
+      env: INGRESS_DOMAIN
+    - name: webhook
+      parameters:
+      - name: enabled
+        value: false
+    - name: redis
+      parameters:
+      - name: enabled
+        value: false
+      - name: format
+        value: "access"
+      - name: key
+        value: "fileEvents"
+    - name: image.name
+      value: minio/minio
+    - name: image.tag
+      value: RELEASE.2018-09-01T00-38-25Z
+    - name: chart.version
+      value: 1.6.5
+      env: CHART_VERSION
+
+outputs:
+  - name: component.minio.service.host
+    brief: Bucket endpoint for reference by other service
+    value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local
+  - name: component.minio.service.port
+    value: ${component.minio.service.port}
+  - name: component.minio.endpoint.ingress
+    brief: External minio endpoint
+    value: ${component.minio.name}.${component.minio.ingress.baseDomain}
+  - name: component.minio.endpoint.url
+    brief: Minio UI
+    value: ${component.ingress.protocol}://${component.minio.endpoint.ingress}
+  - name: component.minio.secret.name
+    brief: Kubenetes secret that holds access and secret key info
+    fromTfVar: secret_name
+  - name: component.minio.namespace
+    fromTfVar: secret_namespace
+  - name: component.minio.secret.accessKeyRef
+    brief: Kubenetes secret data field that holds Access Key9
+    value: accesskey
+  - name: component.minio.secret.secretKeyRef
+    brief: Kubenetes secret data field that holds Secret Key
+    value: secretkey
+  - name: component.minio.arn
+    value: arn:minio:sqs:${component.minio.region}:1:nats
+  - name: component.minio.region
+    value: ${component.minio.region}
+  - name: component.bucket.name
+    brief: Name of the default bucket
+    value: ${component.minio.default.bucket.name}
+  - name: component.bucket.endpoint.internal
+    value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.service.port}
+  - name: component.bucket.endpoint
+    value: ${component.minio.name}.${component.minio.ingress.baseDomain}
+  - name: component.bucket.secret.name
+    fromTfVar: secret_name
+  - name: component.bucket.secret.namespace
+    fromTfVar: secret_namespace
+  - name: component.bucket.secret.accessKeyRef
+    value: accesskey
+  - name: component.bucket.secret.secretKeyRef
+    value: secretkey
+  - name: component.minio.nats.subject
+    brief: NATS subject used for minio events publishing
+
+templates:
+  files:
+    - "*.template"

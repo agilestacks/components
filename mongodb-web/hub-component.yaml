@@ -1,0 +1,65 @@
+---
+version: 1
+kind: component
+meta:
+  name: mongodb-web
+  brief: MongoDB Web Client
+  source:
+    dir: ../../components/mongodb-web
+
+requires:
+  - kubernetes
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.ingress.ssoFqdn
+  - name: component.ingress.protocol
+  - name: component.mongodb.namespace
+    brief: Kubernetes namespace to install into
+    env: NAMESPACE
+  - name: component.mongodb-web
+    parameters:
+    - name: name
+      value: mongodb-web
+      env: COMPONENT_NAME
+    - name: ingress.urlPrefix
+      value: ${hub.componentName}
+    - name: ingress.path
+      value: /
+    - name: image
+      value: agilestacks/mongodb-dashboard
+    - name: imageWaitForPort
+      value: agilestacks/wait-for-port
+    - name: port
+      value: 80
+    - name: host
+      value: 0.0.0.0
+    - name: password
+      empty: allow
+    - name: locale
+      value: en
+    - name: basePath
+      empty: allow
+    - name: monitoring
+      value: 'on'
+    - name: connectionName
+      value: database
+    - name: waitTimeout
+      value: 300
+      empty: allow
+  - name: component.mongodb
+    parameters:
+    - name: host
+    - name: user
+    - name: password
+    - name: port
+    - name: database
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.mongodb-web.url
+    value: ${component.ingress.protocol}://${component.mongodb-web.ingress.urlPrefix}.${component.ingress.ssoFqdn}

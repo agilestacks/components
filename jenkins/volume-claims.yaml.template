@@ -1,0 +1,41 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: workspace-volume
+  namespace: ${component.jenkins.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   jenkins
+    qualifier: workspace
+spec:
+  selector:
+    matchLabels:
+      provider:  agilestacks.com
+      project:   jenkins
+      qualifier: workspace
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jobs-volume
+  namespace: ${component.jenkins.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   jenkins
+    qualifier: jobs
+spec:
+  selector:
+    matchLabels:
+      provider:  agilestacks.com
+      project:   jenkins
+      qualifier: jobs
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

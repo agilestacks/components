@@ -1,0 +1,48 @@
+#!/bin/bash
+
+ELB=$1
+
+ROOT_PASSWORD=$(kubectl -n gitlab get secret gitlab-ce-gitlab-ce -o json | jq -Mr '.data["gitlab-root-password"]' | base64 -D)
+
+# curl into an IP but tell the load-balancer we want a domain
+# this lets us issue requests to a domain when the DNS hasn't propagated yet
+curl_host() {
+    HOST=$1
+    URL=$2
+    shift 2
+    curl -k --header "Host: $HOST" "${URL}" $*
+}
+
+check_gitlab() {
+    kubectl -n gitlab get pods | grep gitlab-ce-gitlab-ce | grep "1/1"
+}
+
+BOT_NAME=gitbot
+
+count=0
+while ! check_gitlab
+do
+   echo "waiting for the gitlab-ce pod to come online. -- ${count} seconds"
+   count=$((count+1))
+   sleep 1
+done
+
+# resolve ip address on alpine
+IP=$(ping -q -c 1 -t 1  $ELB 2> /dev/null | grep PING | sed -e "s/).*//" | sed -e "s/.*(//" | head -n1)
+echo $ELB resolved to $IP
+
+TOKEN=
+while [ -z "$TOKEN" ]
+do
+    TOKEN=$(curl_host "git.{{dns.domain}}" "https://${IP}/api/v3/session" --data "login=root&password=$ROOT_PASSWORD" | jq -Mr .private_token)
+    if [ -z "$TOKEN" ]; then
+        echo "Failed to log into gitlab-ce. Service is still unavailable. Retrying ..."
+	sleep 1
+    fi
+done
+
+if [ $TOKEN == "null" ]; then
+    echo "Failed to log into gitlab-ce"
+fi
+
+curl_host "git.{{dns.domain}}" "https://${IP}/api/v4/users" --data "username=${BOT_NAME}&email=${BOT_NAME}@{{dns.domain}}&password=${GITBOT_PASSWORD}&private_token=${TOKEN}&name=testbot&admin=true"

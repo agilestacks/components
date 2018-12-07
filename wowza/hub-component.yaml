@@ -1,0 +1,51 @@
+---
+version: 1
+kind: component
+meta:
+  name: wowza
+  brief: Wowza Streaming Engine
+  source:
+    dir: ../../components/wowza
+
+requires:
+  - kubernetes
+
+provides:
+  - wowza
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.wowza
+    parameters:
+    - name:  name
+      value: wowza
+      env:   COMPONENT_NAME
+    - name:  namespace
+      brief: Kubernetes namespace to install into
+      value: wowza
+      env:   NAMESPACE
+    - name:  ingress.urlPrefix
+      value: streaming
+    - name:  streamPrefix
+      value: svc
+    - name:  license
+      value: ET1E4-jQYfa-DRDEy-KExpf-C9TdU-ADKE8-9wWWdNmWCxEQ
+    - name:  image
+      value: wowzamedia/wowza-streaming-engine-linux
+    - name:  version
+      value: 4.7.4
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.wowza.url
+    brief: Wowza URL
+    value: http://wowza.${component.wowza.ingress.urlPrefix}.${component.ingress.fqdn}/enginemanager
+  - name: component.wowza.name
+  - name: component.wowza.namespace
+  - name: component.wowza.streamPrefix
+

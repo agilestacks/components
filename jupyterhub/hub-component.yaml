@@ -1,0 +1,46 @@
+---
+version: 1
+kind: component
+meta:
+  name: jupyterhub
+  brief: Multi-user server for Jupyter notebooks.
+  source:
+    dir: ../../components/jupyterhub 
+
+requires:
+  - kubernetes
+  - ingress
+provides:
+  - jupyterhub
+
+parameters:
+- name: component.ingress.fqdn
+- name: component.ingress.protocol 
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.jupyterhub
+  parameters:
+  - name: name
+    value: jupyterhub
+    env: NAME
+  - name: namespace
+    value: jhub
+    env: JHUB_NAMESPACE
+  - name: helmVersion
+    value: 0.7.0
+    env: JHUB_HELM_VERSION
+  - name: storageClassName
+    value: jupyterhub-storage-class
+  - name: operator.image
+    value: agilestacks/jupyter-operator
+  - name: default.notebook.image
+    value: jupyterhub/k8s-singleuser-sample:0.7.0      
+
+outputs:
+- name: component.jupyterhub.url
+  brief: JupyterHub URL
+  value: ${component.ingress.protocol}://${component.jupyterhub.name}.${component.ingress.fqdn} 
+
+templates:
+  files:
+  - "*.template"

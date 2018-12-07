@@ -1,0 +1,29 @@
+{{- if .Values.backend.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-pg-adapter
+  namespace: prometheus
+  labels:
+    app: prometheus-pg-adapter
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-pg-adapter
+  template:
+    metadata:
+      labels:
+        app: prometheus-pg-adapter
+    spec:
+      containers:
+      - name: prometheus-pg-adapter
+        image: timescale/prometheus-postgresql-adapter
+        args: 
+        - "-pg.host={{- .Values.backend.timescaledb.name -}}.{{- .Values.backend.timescaledb.namespace -}}"
+#        - "-pg.prometheus-log-samples" <-- debug log uses a ton of cpu/disk
+        - "-pg.user={{- .Values.backend.timescaledb.user -}}"
+        - "-pg.password={{- .Values.backend.timescaledb.password -}}"
+        - "-pg.database={{- .Values.backend.timescaledb.database -}}"
+        ports:
+        - containerPort: 9201
+{{- end -}}

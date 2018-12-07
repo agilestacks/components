@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${component.wowza.name}
+  namespace: ${component.wowza.namespace}
+  labels:
+    component: ${component.wowza.name}
+spec:
+  selector:
+    component: ${component.wowza.name}
+  ports:
+  - name: rtmp
+    protocol: TCP
+    port: 1935
+  - name: manager
+    protocol: TCP
+    port: 8088
+  - name: restapi
+    protocol: TCP
+    port: 8087

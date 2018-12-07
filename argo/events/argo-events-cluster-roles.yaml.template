@@ -1,0 +1,30 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argo-events-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argo-events-cluster-role
+subjects:
+- kind: ServiceAccount
+  name: argo-events-sa
+  namespace: ${component.argo.namespace}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argo-events-cluster-role
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+# - apiGroups: ["argoproj.io"]
+#   resources: ["sensors"]
+#   verbs: ["get", "list", "watch", "update", "patch"]
+# - apiGroups: ["argoproj.io"]
+#   resources: ["workflows"]
+#   verbs: ["create", "delete"]
+# - apiGroups: [""]
+#   resources: ["configmaps", "secrets", "pods"]
+#   verbs: ["get", "watch", "list", "patch"]

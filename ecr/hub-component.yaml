@@ -1,0 +1,47 @@
+---
+version: 1
+kind: component
+meta:
+  name: ecr
+  brief: ECR component
+  source:
+    dir: ../../components/ecr
+
+requires:
+  - aws
+provides:
+  - docker-registry
+  - ecr
+
+parameters:
+- name: component.ecr
+  parameters:
+  - name: name
+    value: ${dns.domain}/${dns.name}/${hub.componentName}
+    env: COMPONENT_NAME
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
+- name: dns.domain
+  env:  DOMAIN_NAME
+- name: bin.terraform
+  value: terraform-v0.11
+  env: terraform
+- name: terraform.bucket
+  parameters:
+  - name: name
+    env: STATE_BUCKET
+  - name: region
+    env: STATE_REGION
+
+outputs:
+- name: component.docker.registry.kind
+  value: ecr
+- name: component.docker.image
+  brief: Docker image of this component
+  fromTfVar: repository_url
+- name: component.ecr.image
+  brief: Docker image of this component
+  fromTfVar: repository_url
+- name: component.ecr.registry_id
+  brief: ECR registry id
+  fromTfVar: registry_id

@@ -1,0 +1,17 @@
+description: Object-relational database management system (ORDBMS) with an emphasis
+  on extensibility and on standards-compliance.
+engine: gotpl
+home: https://www.timescaledb.com/
+icon: https://www.timescale.com/img/logo-horizontal.svg
+keywords:
+- timescaledb
+- postgres
+- database
+- sql
+maintainers:
+- name: rrichardson
+name: timescaledb
+sources:
+- https://github.com/timescale/pg_prometheus
+- https://github.com/timescale/timescaledb
+version: 0.8.0

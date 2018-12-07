@@ -1,0 +1,33 @@
+---
+version: 1
+kind: component
+meta:
+  name: acm
+  brief: TLS certificates with AWS Certificate Manager
+  source:
+    dir: ../../components/acm
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.acm.additionalNames
+  empty: allow
+  env: ADDITIONAL_NAMES
+- name: component.acm.deleteCert
+  env: ACM_DELETE_CERTIFICATE
+  value: false
+- name: component.acm.timeout
+  env: TIMEOUT
+  value: 1200
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.region
+  env: STATE_REGION
+- name: cloud.region
+  kind: user
+  env: AWS_DEFAULT_REGION
+
+outputs:
+- name: component.acm.certificateArn
+  brief: ACM Certificate ARN
+  fromTfVar: certificate_arn

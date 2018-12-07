@@ -1,0 +1,64 @@
+---
+version: 1
+kind: component
+meta:
+  name: dex
+  brief: Dex OIDC and OAuth2 provider
+  source:
+      dir: ../../components/dex
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+
+parameters:
+  - name: component.ingress.ssoUrlPrefix
+  - name: component.ingress.protocol
+  - name: component.dex.oidcIssuerFqdn
+    value: auth.${dns.domain}
+  - name: component.dex.namespace
+    brief: Kubernetes namespace to install into
+    value: kube-system
+    env: NAMESPACE
+  - name: component.dex.image
+    value: agilestacks/dex:v2.12.0
+  - name: component.dex.saml.id
+    value: saml
+  - name: component.dex.saml.name
+    value: "Okta with SAML"
+  - name: component.dex.saml.usernameAttr
+    value: name
+  - name: component.dex.saml.emailAttr
+    value: email
+  - name: component.dex.saml.groupsAttr
+    value: groups
+  - name: component.dex.okta.issuer
+    value: https://dev-458481.oktapreview.com
+  - name: component.dex.okta.clientId
+    value: unknown
+  - name: component.dex.okta.clientSecret
+    value: unknown
+  - name: component.dex.authproxy.image
+    value: agilestacks/oauth2_proxy:v2.3
+  - name: component.dex.authproxy.emailDomain
+    value: "'*'"
+  - name: component.dex.authproxy.cookieExpire
+    value: "'8h0m0s'"
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: TF_VAR_name
+  - name: terraform.bucket
+    parameters:
+    - name: name
+    - name: region
+
+outputs:
+  - name: component.dex.issuer
+    value: ${component.ingress.protocol}://${component.dex.oidcIssuerFqdn}
+
+templates:
+  files:
+    - "*.yaml.template"
+

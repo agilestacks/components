@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${component.nats.name}-monitor
+  namespace: ${component.nats.namespace}
+  labels:
+    provider:  agilestacks.com
+    component: ${component.nats.name}
+    app: ${component.nats.name}-monitor
+  annotations:
+    agilestacks.com/stack-component: Nats
+spec:
+  rules:
+  - host: raw.${component.nats.name}.${component.ingress.ssoFqdn}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ${component.nats.name}-nats-monitoring
+          servicePort: ${component.nats.monitor.port}

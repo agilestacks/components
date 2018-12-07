@@ -1,0 +1,92 @@
+  apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    name:      mongodb-dashboard
+    namespace: ${component.mongodb.namespace}
+    labels:
+      provider:  agilestacks.com
+      project:   mongodb-dashboard
+      component: mongodb-web
+      qualifier: master
+  spec:
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+    template:
+      metadata:
+        name:      mongodb-dashboard
+        namespace: ${component.mongodb.namespace}
+        labels:
+          provider:  agilestacks.com
+          project:   mongodb-dashboard
+          component: mongodb-web
+          qualifier: master
+      spec:
+        securityContext:
+          runAsUser: 0
+        initContainers:
+        - name: wait-for-port
+          image: ${component.mongodb-web.imageWaitForPort}
+          imagePullPolicy: Always
+          env:
+            - name: HOST
+              value: ${component.mongodb.host}
+            - name: PORT
+              value: '${component.mongodb.port}'
+            - name: DEFAULT_PORT
+              value: '27017'
+            - name: WAIT_TIMEOUT
+              value: '${component.mongodb-web.waitTimeout}'
+            - name: PORT_NAME
+              value: 'mongodb port'
+
+        containers:
+        - name: mongodb-dashboard
+          image: ${component.mongodb-web.image}
+          env:
+            - name: PORT
+              value: '${component.mongodb-web.port}'
+            - name: HOST
+              value: ${component.mongodb-web.host}
+            - name: PASSWORD
+              value: '${component.mongodb-web.password}'
+            - name: LOCALE
+              value: ${component.mongodb-web.locale}
+            - name: CONTEXT
+              value: ${component.mongodb-web.basePath}
+            - name: MONITORING
+              value: '${component.mongodb-web.monitoring}'
+            - name: CONN_NAME
+              value: ${component.mongodb-web.connectionName}
+            - name: DB_HOST
+              value: ${component.mongodb.host}
+            - name: DB_USERNAME
+              value: ${component.mongodb.user}
+            - name: DB_PASSWORD
+              value: '${component.mongodb.password}'
+            - name: DB_PORT
+              value: '${component.mongodb.port}'
+            - name: DB_NAME
+              value: ${component.mongodb.database}
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "300m"
+            limits:
+              memory: "3Gi"
+              cpu: "600m"
+          imagePullPolicy: Always
+          ports:
+          - name: http
+            containerPort: ${component.mongodb-web.port}
+          readinessProbe:
+            httpGet:
+              path: ${component.mongodb-web.basePath}
+              port: ${component.mongodb-web.port}
+          livenessProbe:
+            timeoutSeconds: 3
+            initialDelaySeconds: 420
+            failureThreshold: 30
+            httpGet:
+              path: ${component.mongodb-web.basePath}
+              port: ${component.mongodb-web.port}

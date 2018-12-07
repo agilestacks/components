@@ -1,0 +1,50 @@
+---
+version: 1
+kind: component
+meta:
+  name: sysdig
+  brief: sysdig monitor
+  source:
+      dir: ../../components/sysdig
+
+requires:
+  - kubernetes
+provides:
+  - sysdig
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.sysdig
+    parameters:
+    - name:  name
+      value: sysdig
+      env:   COMPONENT_NAME
+    - name:  version
+      brief: sysdig agent version
+      value: "latest"
+    - name:  namespace
+      brief: Kubernetes namespace to install into
+      value: sysdig
+      env:   NAMESPACE
+    - name: clusterName
+      value: ""
+    - name:  rbac.install
+      value: true
+    - name:  license
+      value: "83c6bb73-95b4-44f1-9729-bfbf7d1726db"
+    - name:  agentTags
+      brief: Key-value agent tags following the format "key:val,key2:val2"
+      empty: allow
+    - name:  resources.limits.memory
+      value: "768Mi"
+    - name:  resources.requests.memory
+      value: "512Mi"
+    - name:  resources.limits.cpu
+      value: "500m"
+    - name:  resources.requests.cpu
+      value: "100m"
+
+templates:
+  files:
+    - "*.template"

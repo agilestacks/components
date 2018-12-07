@@ -1,0 +1,76 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: ${component.wowza.name}
+  namespace: ${component.wowza.namespace}
+  labels:
+    provider: agilestacks.com
+    project: wowza
+    component: ${component.wowza.name}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: ${component.wowza.name}
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        component: ${component.wowza.name}
+    spec:
+      containers:
+      - name: ${component.wowza.name}
+        image: ${component.wowza.image}:${component.wowza.version}
+        command: ["/sbin/entrypoint.sh"]
+        imagePullPolicy: Always
+        env:
+          - name: WSE_MGR_USER
+            valueFrom:
+              secretKeyRef:
+                name: wowza
+                key: user
+          - name: WSE_MGR_PASS
+            valueFrom:
+              secretKeyRef:
+                name: wowza
+                key: pass
+          - name: WSE_LIC
+            value: ${component.wowza.license}
+          - name: WSE_IP_PARAM
+            value: svc.${dns.domain}
+        volumeMounts:
+        - mountPath: /usr/local/WowzaStreamingEngine/conf/Server.xml
+          name: configs
+          subPath: serverxml
+        - mountPath: /usr/local/WowzaStreamingEngine/conf/log4j.properties
+          name: configs
+          subPath: log4j
+        - mountPath: /usr/local/dvr
+          name: wowza-data
+        ports:
+        - name: rtmp
+          containerPort: 1935
+          protocol: TCP
+        - name: manager
+          containerPort: 8088
+          protocol: TCP
+        - name: restapi
+          containerPort: 8087
+          protocol: TCP
+      initContainers:
+      - name: chown-volume
+        image: alpine:3.7
+        command: ['/bin/ash', '-c', 'chown -R 1000:1000 /usr/local/dvr']
+        volumeMounts:
+        - name: wowza-data
+          mountPath: /usr/local/dvr
+      volumes:
+      - name: configs
+        configMap:
+          name: configs
+      - name: wowza-data
+        persistentVolumeClaim:
+          claimName: wowza-data
+

@@ -1,0 +1,66 @@
+---
+version: 1
+kind: component
+meta:
+  name: k8s-gke
+  brief: GKE Kubernetes adapter
+  source:
+    dir: ../../components/k8s-gke
+
+requires:
+  - gcp
+  - gcs
+provides:
+  - kubernetes
+
+lifecycle:
+  readyConditions:
+    - dns: ${kubernetes.api.endpoint}
+      url: https://${kubernetes.api.endpoint}/api/v1/
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: cloud.region
+    env: GCP_REGION
+  - name: cloud.zone
+    env: GCP_ZONE
+  - name: cloud.gcp.project
+    env: GCP_PROJECT
+  - name: kubernetes.gke.cluster
+    env: GKE_CLUSTER
+  # - name: kubernetes.api.endpoint
+  #   env: TF_VAR_api_endpoint
+  # - name: kubernetes.api.namespace
+  #   value: kube-system
+  - name: kubernetes.flavor
+    value: gke
+
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+
+outputs:
+  - name: dns.domain
+  - name: dns.name
+    fromTfVar: dns_name
+  - name: dns.baseDomain
+    fromTfVar: dns_base_domain
+  - name: cloud.bucket
+    brief: GCP bucket used as file storage for current cluster
+    fromTfVar: gcs_bucket
+  - name: docker.registry
+    brief: Docker repository of k8s-gke GCP project
+    fromTfVar: gcr_repository
+
+  - name: kubernetes.flavor
+  - name: kubernetes.gke.cluster
+  - name: kubernetes.api.endpoint
+    fromTfVar: api_endpoint
+  - name: kubernetes.api.caCert
+    fromTfVar: api_ca_crt
+  - name: kubernetes.api.clientCert
+    fromTfVar: api_client_crt
+  - name: kubernetes.api.clientKey
+    fromTfVar: api_client_key

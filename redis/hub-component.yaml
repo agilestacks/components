@@ -1,0 +1,96 @@
+---
+version: 1
+kind: component
+meta:
+  name: redis
+  brief: Redis in-memory data structure store
+  source:
+      dir: ../../components/redis
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: cloud.kind
+    env: CLOUD_KIND
+  - name: component.redis
+    parameters:
+    - name: persistence
+      brief: true if persistence enabled
+      value: "true"
+    - name: storageClass
+      value: "${cloud.kind}-storage"
+    - name: volumeType
+      value: gp2
+    - name: volumeSize
+      value: 8Gi
+    - name: usePassword
+      value: "false"
+    - name: password
+      empty: allow
+    - name: namespace
+      env: NAMESPACE
+      value: redis
+    - name: name
+      env: COMPONENT_NAME
+      value: redis-${dns.name}-${hub.componentName}
+    - name: image
+      value: bitnami/redis:4.0.9
+    - name: requests.memory
+      value: 256Mi
+    - name: requests.cpu
+      value: 100m
+    - name: ha
+      parameters:
+      - name: enabled
+        value: "false"
+        env: HA_ENABLED
+      - name: image
+        value: gcr.io/google_containers/redis:v1
+      - name: master
+        value: 1
+      - name: slave
+        value: 1
+      - name: sentinel
+        value: 3
+      - name: master.requests.memory
+        value: 200Mi
+      - name: master.requests.cpu
+        value: 100m
+      - name: master.limits.memory
+        value: 700Mi
+      - name: slave.requests.memory
+        value: 200Mi
+      - name: slave.requests.cpu
+        value: 100m
+      - name: slave.limits.memory
+        value: 200Mi
+      - name: sentinel.requests.memory
+        value: 200Mi
+      - name: sentinel.requests.cpu
+        value: 100m
+      - name: sentinel.limits.memory
+        value: 200Mi
+      - name: chart.version
+        value: 2.1.1
+        env: HA_CHART_VERSION
+    - name: chart.version
+      value: 1.1.15
+      env: CHART_VERSION
+outputs:
+  - name: component.redis.host
+    value: ${component.redis.name}-redis.${component.redis.namespace}.svc.cluster.local
+  - name: component.redis.port
+    value: "6379"
+  - name: component.redis.url
+    value: redis://${component.redis.name}-redis.${component.redis.namespace}.svc.cluster.local:6379
+  - name: component.redis.password
+    fromTfVar: password/base64
+
+templates:
+  files:
+    - "*.template"

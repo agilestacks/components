@@ -1,0 +1,49 @@
+---
+version: 1
+kind: component
+meta:
+  name: pgweb
+  brief: PostgreSQL Web Client
+  source:
+    dir: ../../components/postgresql
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+
+parameters:
+  - name: component.ingress.protocol
+  - name: component.ingress.ssoFqdn
+  - name: component.postgresql.namespace
+    brief: Kubernetes namespace to install into
+    value: postgresql
+    env: NAMESPACE
+  - name: dns.domain
+    brief: DNS domain
+    env: DOMAIN_NAME
+  - name: component.pgweb
+    parameters:
+    - name: name
+      value: pgweb-${dns.name}-${hub.componentName}
+      env: COMPONENT_NAME
+    - name: ingress.urlPrefix
+      value: pgweb-${dns.name}-${hub.componentName}
+    - name: ingress.path
+      value: /
+  - name: component.postgresql
+    parameters:
+    - name: host
+    - name: user
+    - name: password
+    - name: port
+      value: "5432"
+    - name: database
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.pgweb.url
+    value: ${component.ingress.protocol}://${component.pgweb.ingress.urlPrefix}.${component.ingress.ssoFqdn}

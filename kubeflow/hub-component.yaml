@@ -1,0 +1,98 @@
+---
+version: 1
+kind: component
+meta:
+  name: kubeflow
+  brief:
+  source:
+    dir: ../../components/kubeflow
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - kubeflow
+
+parameters:
+  - name: component.ingress.protocol
+  - name: component.acm.certificateArn
+    empty: allow
+    env: ACM_CERTIFICATE_ARN
+  - name: kubernetes.api.endpoint
+    env: K8S_API_SERVER
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+  - name: dns.domain
+    env: TF_VAR_domain_name
+  - name: dns.name
+    env: TF_VAR_name
+  - name: component.kubeflow
+    parameters:
+    - name:  name
+      value: kubeflow
+      env: TF_VAR_component
+    - name: namespace
+      value: kubeflow
+      env: TF_VAR_namespace
+    - name: version
+      value: v0.3.2
+      env: KUBEFLOW_VERSION
+    - name:  urlPrefix
+      value: kubeflow.svc
+      env: TF_VAR_url_prefix
+    - name: apiSpec
+      value: v1.11.4
+      env: K8S_API_SPEC
+    - name: environment
+      value: cloud
+      env: KF_ENV
+    - name: githubToken
+      value: ""
+      env: GITHUB_TOKEN
+      empty: allow
+    - name: argo
+      parameters:
+      - name: version
+        value: v2.2.1
+        env: ARGO_VERSION
+    - name: ambassador
+      parameters:
+      - name: image
+        value: quay.io/datawire/ambassador:0.40.1
+        env: AMBASSADOR_VERSION
+    - name: pipelines
+      parameters:
+      - name: image
+        value: agilestacks/bootstrapper:0.1.2
+
+
+outputs:
+  - name: component.kubeflow.ambassador.protocol
+    fromTfVar: ingress_protocol
+  - name: component.kubeflow.ambassador.url
+    brief: Ambassador Diagnostics
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/ambassador/v0/diag
+  - name: component.kubeflow.argo.url
+    brief: Argo UI
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/argo/
+  - name: component.kubeflow.jupyterhub.url
+    brief: Jupyter Hub Admin panel
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/hub/
+  - name: component.kubeflow.tf-job.url
+    brief: TF Job Dashboard
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/tfjobs/ui
+  - name: component.kubeflow.pipelines.url
+    brief: Pipelines UI
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/pipeline/
+  - name: component.kubeflow.url
+    brief: Kubeflow Dashboard
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/
+
+
+
+templates:
+  files:
+    - "*.template"

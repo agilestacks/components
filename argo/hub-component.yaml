@@ -1,0 +1,137 @@
+---
+version: 1
+kind: component
+meta:
+  name: argo
+  brief: The workflow engine for Kubernetes
+  source:
+    dir: ../../components/argo
+
+requires:
+  - kubernetes
+  - ingress
+provides:
+  - argo
+  - argo-events
+
+parameters:
+- name: component.ingress.protocol
+  env: INGRESS_PORTOCOL
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.region
+  env: STATE_REGION
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: cloud.region
+  kind: user
+  env: AWS_DEFAULT_REGION
+- name: component.bucket
+  parameters:
+  - name: name
+    value: argo-default
+    env: BUCKET
+  - name: endpoint
+    empty: allow
+    env: ENDPOINT
+  - name: secret.name
+    empty: allow
+    env: SECRET_NAME
+  - name: secret.namespace
+    empty: allow
+    env: SECRET_NAMESPACE
+  - name: secret.accessKeyRef
+    value: accessKey
+    env: ACCESS_KEY_REF
+  - name: secret.secretKeyRef
+    value: secretKey
+    env: SECRET_KEY_REF
+  - name: bucket.region
+    value: ${terraform.bucket.region}
+    env: TF_VAR_bucket_region
+  - name: insecure
+    value: "true"
+  - name: keyPrefix
+    empty: allow
+
+- name: component.argo
+  parameters:
+  - name: name
+    value: argo
+    env: TF_VAR_component
+  - name: version
+    value: v2.2.0
+  - name: namespace
+    value: argoproj
+    env: NAMESPACE
+  - name: repo.type
+    value: minio
+    env: REPO_TYPE
+  - name: repo.bucket.name
+    value: default
+    env: TF_VAR_bucket_name
+  - name: ingress.baseDomain
+    value: ${component.ingress.ssoFqdn}
+    type: link
+  - name: events.webhook.service.name
+    value: webhook
+  - name: events.webhook.service.port
+    value: 7070
+  - name: events.webhook.service.type
+    value: ClusterIP
+  - name: serviceAccount
+    value: argo
+    # value: LoadBalancer
+outputs:
+- name: component.argo.serviceAccount
+  brief: Service account associated with argo
+- name: component.argo.repo.secret.name
+  brief: Kubenetes secret that holds access and secret key info
+  fromTfVar: secret_name
+- name: component.argo.repo.secret.accessKeyRef
+  value: component.bucket.secret.accessKeyRef
+  brief: Kubenetes secret data field that holds Access Key Id
+- name: component.argo.repo.secret.secretKeyRef
+  value: component.bucket.secret.secretKeyRef
+  brief: Kubenetes secret data field that holds Secret Key
+- name: component.argo.repo.type
+  brief: Currently supported s3 or minio
+- name: component.argo.repo.bucket.name
+  value: ${component.bucket.name}
+  brief: Argo backend bucket name
+- name: component.argo.repo.bucket.region
+  value: ${cloud.region}
+  brief: Argo backend bucket region
+- name: component.argo.repo.bucket.endpoint
+  brief: Argo backend bucket service endpoint
+  fromTfVar: endpoint
+- name: component.argo.repo.bucket.insecure
+  fromTfVar: insecure
+  brief: Argo backend bucket insecure
+- name: component.argo.repo.bucket.keyPrefix
+  value: component.bucket.keyPrefix
+  brief: Argo backend bucket key
+- name: component.argo.repo.iam.username
+  brief: Name of the IAM user who have access to artifacts repository
+  fromTfVar: iam_user_name
+- name: component.argo.repo.iam.arn
+  brief: ARN of the IAM user who have access to artifacts repository
+  fromTfVar: iam_user_arn
+- name: component.argo.ingress
+  brief: URL to connect to argo-ui
+  value: ${component.argo.name}.${component.argo.ingress.baseDomain}
+- name: component.argo.url
+  brief: Argo UI
+  value: ${component.ingress.protocol}://${component.argo.ingress}
+- name: component.argo.namespace
+  brief: Namespace where Argo has been installed
+- name:  component.argo.events.webhook.service.url
+  value: webhook.${component.argo.namespace}.svc.cluster.local:7070
+- name:  component.argo.events.webhook.service.name
+- name:  component.argo.events.webhook.service.port
+
+templates:
+  files:
+  - "*.template"
+  - "events/*.template"
+  - "minio/*.template"

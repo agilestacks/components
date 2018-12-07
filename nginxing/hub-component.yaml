@@ -1,0 +1,65 @@
+---
+version: 1
+kind: component
+meta:
+  name: nginxing
+  brief: Nginx ingress Controller
+  source:
+      dir: ../../components/nginxing
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+provides:
+  - nginxing
+
+parameters:
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+  - name: dns.domain
+    env: TF_VAR_domain_name
+  - name: cloud.kind
+    env: CLOUD_KIND
+  - name: component.wowza.namespace
+  - name: component.wowza.name
+  - name: component.wowza.streamPrefix
+  - name: component.nginxing
+    parameters:
+    - name:  name
+      value: nginxing
+      env:   TF_VAR_component
+    - name:  version
+      brief: nginx-ingress version
+      value: "0.12.0"
+    - name:  image.repository
+      value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
+    - name:  image.pullPolicy
+      value: IfNotPresent
+    - name:  replicaCount
+      value: 1
+    - name:  urlPrefix
+      value: ${component.wowza.streamPrefix}
+      env:   TF_VAR_url_prefix
+    - name:  namespace
+      value: nginx-ingress
+      env:   TF_VAR_namespace
+    - name:  chart
+      value: stable/nginx-ingress
+      env:   CHART
+    - name:  chart.version
+      value: 0.13.1
+      env:   CHART_VERSION
+    - name:  bin.terraform
+      value: terraform-v0.11
+      env:   terraform
+
+outputs:
+- name: component.nginxing.fqdn
+  brief: FQDN of ingress
+  fromTfVar: ingress_fqdn
+
+templates:
+  files: ["values.yaml.template"]

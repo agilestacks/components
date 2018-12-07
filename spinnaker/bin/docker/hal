@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Start Halyard
+# docker run -p 8084:8084 -p 9000:9000 --name halyard -ti -v ~/.hal:/home/spinnaker/.hal -v ~/.aws:/home/spinnaker/.aws -v ~/.kube:/home/spinnaker/.kube gcr.io/spinnaker-marketplace/halyard:stable
+
+docker exec -it halyard bash /usr/local/bin/hal "$@"

@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: jenkins
+  namespace: ${component.jenkins.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   jenkins
+  annotations:
+    agilestacks.com/stack-component: Jenkins
+spec:
+  rules:
+  - host: ${component.jenkins.namespace}.${component.ingress.ssoFqdn}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: jenkins
+          servicePort: 8080

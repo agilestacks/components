@@ -1,0 +1,24 @@
+harborAdminPassword: ${component.harbor.password}
+selfRegistration: "off"
+externalProtocol: https
+ingress:
+  hosts:
+    core: ${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+    notary: notary.${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+  enabled: true
+  tls:
+    enabled: false
+persistence:
+  enabled: false
+redis:
+  master:
+    persistence:
+      enabled: false 
+externalURL: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+externalPort: 
+registry:
+  storage:
+    type: s3
+    s3: 
+      region: ${component.s3.region}
+      bucket: ${component.s3.bucket} 

@@ -1,0 +1,93 @@
+---
+version: 1
+kind: component
+meta:
+  name: vault
+  brief: Vault is A Tool for Managing Secrets
+  source:
+    dir: ../../components/vault
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+provides:
+  - vault
+
+lifecycle:
+  verbs:
+    - deploy
+    - undeploy
+    - connect
+    - login
+    - disconnect
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.ingress.fqdn
+  - name: component.etcd.url
+    # TODO temporary until etcd component is redeployed everywhere to provide url output
+    value: http://${component.etcd.name}-client.${component.etcd.namespace}.svc.cluster.local:2379
+  - name: component.vault
+    parameters:
+    - name:  name
+      value: vault
+      env:   COMPONENT_NAME
+    - name:  version
+      brief: Vault version
+      value: 0.9.6
+    - name:  image.repository
+      value: vault
+    - name:  image.pullPolicy
+      value: IfNotPresent
+    - name:  replicaCount
+      value: 1
+    - name:  resources.limits.memory
+      value: "128Mi"
+    - name:  namespace
+      brief: Kubernetes namespace to install into
+      value: vault
+      env:   NAMESPACE
+    - name:  port
+      brief: Port to listen on
+      value: 8200
+      env:   VAULT_PORT
+    - name:  ingress.enabled
+      brief: Deploy ingress for vault
+      env:   INGRESS_ENABLED
+      value: false
+    - name:  ipaddress
+      value: "0.0.0.0"
+    - name:  tls.disabled
+      value: 1
+    - name:  etcd.api
+      value: "v3"
+    - name:  seal.keys
+      value: "5"
+      env:   SECRET_SHARES
+    - name:  seal.threshold
+      value: "3"
+      env:   SECRET_THRESHOLD
+    - name:  unseal.file
+      empty: allow
+
+outputs:
+- name: component.vault.url
+  fromTfVar: vault_url
+- name: component.vault.token.root
+  fromTfVar: root_token
+- name: component.vault.unseal.key1
+  fromTfVar: unseal_key_1
+- name: component.vault.unseal.key2
+  fromTfVar: unseal_key_2
+- name: component.vault.unseal.key3
+  fromTfVar: unseal_key_3
+- name: component.vault.unseal.key4
+  fromTfVar: unseal_key_4
+- name: component.vault.unseal.key5
+  fromTfVar: unseal_key_5
+
+templates:
+  files:
+    - "*.template"

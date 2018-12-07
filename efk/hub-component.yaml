@@ -1,0 +1,57 @@
+---
+version: 1
+kind: component
+meta:
+  name: efk
+  brief: Elasticsearch Fluentd and Kibana
+  source:
+    dir: ../../components/efk
+
+requires:
+  - kubernetes
+
+provides:
+  - efk
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: cloud.kind
+    env: CLOUD_KIND
+  - name: component.ingress.ssoFqdn
+  - name: component.ingress.protocol
+  - name: component.efk
+    parameters:
+    - name:  name
+      value: efk
+      env:   COMPONENT_NAME
+    - name:  namespace
+      brief: Kubernetes namespace to install into
+      value: logs
+      env:   NAMESPACE
+    - name: storageClass
+      value: "${cloud.kind}-storage"
+    - name:  ingress.urlPrefix
+      value: logs
+    - name:  ingress.kibanaUrlPrefix
+      value: kibana
+    - name:  kibana.version
+      value: 6.5.1
+    - name:  elastic.version
+      value: 6.5.1
+    - name: elastic.masters
+      value: 1
+      # (number of master nodes / 2) + 1
+    - name: elastic.quorum
+      value: 1
+
+
+templates:
+  files:
+    - "*.template"
+    - "conf/*.template"
+
+outputs:
+  - name: component.efk.url
+    brief: Kibana Dashboard
+    value: ${component.ingress.protocol}://${component.efk.ingress.kibanaUrlPrefix}.${component.ingress.ssoFqdn}

@@ -1,0 +1,46 @@
+---
+version: 1
+kind: component
+meta:
+  name: spot-term-notifier
+  brief: Spot instance termination notifier
+  source:
+    dir: ../../components/spot-term-notifier
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+provides:
+  - spot-term-notifier
+
+lifecycle:
+  verbs:
+    - deploy
+    - undeploy
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.spot-term-notifier
+    parameters:
+    - name:  name
+      value: spot-term-notifier
+      env:   COMPONENT_NAME
+    - name:  version
+      brief: spot-term-notifier version
+      value: 1.12.0-1
+    - name:  image.repository
+      value: kubeaws/kube-spot-termination-notice-handler
+    - name:  image.pullPolicy
+      value: IfNotPresent
+    - name:  namespace
+      brief: Kubernetes namespace to install into
+      value: spot-term-notifier
+      env:   NAMESPACE
+    - name: slackUrl
+      value: https://hooks.slack.com/services/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
+
+templates:
+  files:
+    - "*.template"

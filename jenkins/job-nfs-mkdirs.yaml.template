@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nfs-mkdirs
+  namespace: ${component.jenkins.namespace}
+spec:
+  backoffLimit: 1
+  activeDeadlineSeconds: 600
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: mkdir
+        image: busybox
+        command:
+        - mkdir
+        - -p
+        - /mnt/nfs/jenkins/jobs
+        - /mnt/nfs/jenkins/workspace
+        - /mnt/nfs/jenkins/etc
+        volumeMounts:
+        - name: nfs
+          mountPath: "/mnt/nfs"
+          readOnly: false
+      volumes:
+      - name: nfs
+        nfs:
+          server: ${nfs.server}
+          path: "/"

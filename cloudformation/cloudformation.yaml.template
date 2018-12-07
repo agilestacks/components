@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  BucketDescription:
+    Type: String
+Resources:
+  Bucket${dns.name}:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      Tags:
+        - Key: Description
+          Value: !Ref BucketDescription
+Outputs:
+  S3BucketName:
+    Value: !Ref Bucket${dns.name}

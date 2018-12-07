@@ -1,0 +1,88 @@
+---
+version: 1
+kind: component
+meta:
+  name: etcd
+  brief: etcd distributed key value store
+  source:
+      dir: ../../components/etcd
+
+requires:
+  - aws
+  - kubernetes
+  - helm
+  - tiller
+provides:
+  - etcd
+
+lifecycle:
+  verbs:
+    - deploy
+    - undeploy
+    - backup
+    - restore
+
+parameters:
+  - name: cloud.region
+    env:  AWS_DEFAULT_REGION
+  - name: dns.domain
+    env:  DOMAIN_NAME
+  - name: component.etcd
+    parameters:
+    - name:  namespace
+      brief: Kubernetes namespace to install into
+      value: etcd-cluster
+      env:   NAMESPACE
+    - name:  name
+      value: etcd-cluster
+      env:   COMPONENT_NAME
+    - name:  operator.version
+      brief: etcd-operator version
+      value: v0.9.2
+    - name:  cluster.enabled
+      brief: Start etcd cluster
+      value: true
+      env:   CLUSTER_ENABLED
+    - name:  cluster.size
+      value: 3
+      env:   ETCD_CLUSTER_SIZE
+    - name:  cluster.version
+      brief: etcd version
+      value: v3.2.24
+      env:   ETCD_VERSION
+    - name:  cluster.heartbeatInterval
+      value: 200
+    - name:  cluster.electionTimeout
+      value: 2000
+    - name:  backup.bucket
+      value: ${terraform.bucket.name}
+      env:   BACKUP_BUCKET
+    - name:  backup.region
+      value: ${terraform.bucket.region}
+      env:   BACKUP_REGION
+    - name:  backup.enabled
+      brief: Enable backups
+      value: false
+      env:   BACKUP_ENABLED
+    - name:  restore.enabled
+      brief: Enable restore
+      value: false
+      env:   RESTORE_ENABLED
+    - name:  cluster.awssecret
+      value: awsetcd
+      env:   AWS_SECRET_NAME
+    - name:  cluster.backupInterval
+      value: 7200
+    - name:  cluster.maxBackups
+      value: 24
+    - name:  snapshot
+      empty: allow
+      env:   RESTORE_SNAPSHOT
+
+outputs:
+  - name: component.etcd.url
+    value: http://${component.etcd.name}-client.${component.etcd.namespace}.svc.cluster.local:2379
+
+templates:
+  files:
+    - "*.template"

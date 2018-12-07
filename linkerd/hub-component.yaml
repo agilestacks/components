@@ -1,0 +1,39 @@
+---
+version: 1
+kind: component
+meta:
+  name: linkerd
+  brief: Linkerd service mesh from Bayonet
+  source:
+      dir: ../../components/linkerd
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+
+parameters:
+  - name: component.linkerd
+    parameters:
+    - name: namespace
+      value: ingress
+      env: NAMESPACE
+    - name: image
+      value: buoyantio/linkerd
+    - name: version
+      value: 0.9.1
+  - name: cloud.region
+    kind: user
+    env: AWS_REGION
+  - name: cloud.bucket
+    brief: Bucket for Spinnaker. Coming from basestack
+  - name: dns.domain
+    brief: DNS domain
+    env: DOMAIN_NAME
+  - name: docker.registry
+    brief: DNS domain
+    env: DOCKER_REGISTRY
+
+templates:
+  files:
+    - "*.template"

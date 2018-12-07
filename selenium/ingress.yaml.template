@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: selenium
+  namespace: ${component.selenium.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   selenium
+  annotations:
+    agilestacks.com/stack-component: Selenium
+spec:
+  rules:
+  - host: ${component.selenium.name}.${component.selenium.ingress.url}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ${component.selenium.name}-selenium-hub
+          servicePort: ${component.selenium.port}

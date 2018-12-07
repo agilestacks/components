@@ -1,0 +1,28 @@
+{{- if .Values.networkPolicy.enabled }}
+kind: NetworkPolicy
+apiVersion: {{ template "timescaledb.networkPolicy.apiVersion" . }}
+metadata:
+  name: "{{ template "timescaledb.fullname" . }}"
+  labels:
+    app: {{ template "timescaledb.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  podSelector:
+    matchLabels:
+      app: "{{ template "timescaledb.fullname" . }}"
+  ingress:
+    # Allow inbound connections
+    - ports:
+      - port: 5432
+    {{- if not .Values.networkPolicy.allowExternal }}
+      from:
+      - podSelector:
+          matchLabels:
+            {{ template "timescaledb.fullname" . }}-client: "true"
+    {{- end }}
+    # Allow prometheus scrapes
+    - ports:
+      - port: 9187
+{{- end }}

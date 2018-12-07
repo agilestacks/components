@@ -1,0 +1,19 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgresql-data-volume
+  labels:
+    provider:  agilestacks.com
+    project:   postgresql
+spec:
+  selector:
+    matchLabels:
+      provider:  agilestacks.com
+      project:   postgresql
+      instance:  "${hub.componentName}"
+      storage:   local
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

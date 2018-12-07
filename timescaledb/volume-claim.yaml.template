@@ -1,0 +1,19 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: timescaledb-data-volume
+  labels:
+    provider:  agilestacks.com
+    project:   timescaledb
+spec:
+  selector:
+    matchLabels:
+      provider:  agilestacks.com
+      project:   timescaledb
+      instance:  "${hub.componentName}"
+      storage:   local
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

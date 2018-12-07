@@ -1,0 +1,84 @@
+---
+version: 1
+kind: component
+meta:
+  name: spinnaker
+  brief: Spinnaker CD Server
+  source:
+      dir: ../../components/spinnaker
+
+requires:
+  - kubernetes
+
+parameters:
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+  - name: cloud.region
+    kind: user
+    env: AWS_DEFAULT_REGION
+  - name: cloud.sshKey
+    value: agilestacks
+    env: AWS_KEYPAIR
+  - name: cloud.bucket
+    brief: Bucket for Spinnaker. Created by platform
+    env: AWS_S3_BUCKET
+  - name: dns.name
+    env: NAME
+  - name: dns.domain
+    brief: DNS domain
+    env: DOMAIN_NAME
+  - name: component.ingress.fqdn
+    env: INGRESS_FQDN
+  - name: component.ingress.protocol
+    env: INGRESS_PROTOCOL
+  - name: component.spinnaker
+    parameters:
+    - name: name
+      value: spinnaker
+      env: COMPONENT_NAME
+    - name: namespace
+      brief: Kubernetes namespace to install into
+      value: spinnaker
+      env: NAMESPACE
+    - name: version
+      value: 1.10.0
+      env: SPINNAKER_VERSION
+    - name: aws.assume_role
+      value: ${cloud.role.worker}
+      env: AWS_ASSUME_ROLE
+    - name: aws.keypair
+      value: ${cloud.sshKey}
+      env: AWS_KEY_PAIR
+    - name: slack.botToken
+      empty: allow
+      env: SLACK_TOKEN
+    - name: aws.accountName
+      value: aws
+      env: AWS_ACCOUNT_NAME
+    - name: kubernetes.accountName
+      value: kubernetes
+      env: K8S_ACCOUNT_NAME
+  - name: component.jenkins
+    parameters:
+    - name: fqdn
+      value: unknown
+      env: JENKINS_FQDN
+    - name: internal.url
+      value: unknown
+      env: JENKINS_ADDRESS
+    - name: serviceaccount.user
+      value: robot
+      env: JENKINS_USER
+    - name: serviceaccount.password
+      value: robot
+      env: JENKINS_PASSWORD
+
+outputs:
+- name:  component.spinnaker.fqdn
+  value: ${component.spinnaker.name}.${component.ingress.fqdn}
+
+templates:
+  files:
+    - "*.template"

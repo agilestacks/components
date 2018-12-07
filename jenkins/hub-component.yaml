@@ -1,0 +1,78 @@
+---
+version: 1
+kind: component
+meta:
+  name: jenkins
+  brief: Jenkins CI Server
+  source:
+    dir: components/jenkins
+
+requires:
+  - kubernetes
+provides:
+  - jenkins
+  - ci
+
+parameters:
+- name: component.ingress
+  parameters:
+  - name: fqdn
+  - name: ssoFqdn
+  - name: protocol
+- name: component.jenkins
+  parameters:
+  - name: namespace
+    value: jenkins
+    env: NAMESPACE
+  - name: image
+    value: docker.io/agilestacks/jenkins:2.89.6
+  - name: admin.user
+    value: admin
+  - name: admin.password
+    value: secret
+  - name: serviceaccount.user
+    value: robot
+  - name: serviceaccount.password
+    value: supersecret
+  - name: wait.timeout
+    value: 300
+    env: TIMEOUT
+  - name: initGroovy.gitRepo
+    value: https://github.com/agilestacks/jenkins.git
+  - name: initGroovy.subPath
+    value: init.groovy.d
+  - name: operator.image
+    value: docker.io/agilestacks/jenkins-operator:latest
+- name: cloud.region
+  kind: user
+  env: AWS_REGION
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: nfs.server
+  brief: NFS server for NFS volumes
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.region
+  env: STATE_REGION
+
+outputs:
+- name:  component.jenkins.serviceaccount.user
+  value: ${component.jenkins.serviceaccount.user}
+- name:  component.jenkins.serviceaccount.password
+  value: ${component.jenkins.serviceaccount.password}
+- name:  component.jenkins.internal.host
+  value: jenkins.${component.jenkins.namespace}.svc.cluster.local
+- name:  component.jenkins.internal.port
+  value: 8080
+- name:  component.jenkins.internal.url
+  value: http://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
+- name:  component.jenkins.fqdn # for Spinnaker
+  value: ${component.jenkins.namespace}.${component.ingress.ssoFqdn}
+- name:  component.jenkins.url
+  value: ${component.ingress.protocol}://${component.jenkins.fqdn}
+- name:  component.jenkins.blueOcean.url
+  value: ${component.ingress.protocol}://${component.jenkins.fqdn}/blue
+
+templates:
+  files:
+    - "*.template"

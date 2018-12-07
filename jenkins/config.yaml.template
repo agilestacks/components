@@ -1,0 +1,20 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: cluster-info
+  namespace: ${component.jenkins.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   jenkins
+    qualifier: env-config
+data:
+  CLUSTER_ID: ${dns.domain}
+  AWS_REGION: ${cloud.region}
+  DOMAIN_NAME: ${dns.domain}
+  JENKINS_HOST: ${component.jenkins.namespace}.${component.ingress.ssoFqdn}
+  JENKINS_URL: ${component.ingress.protocol}://${component.jenkins.namespace}.${component.ingress.ssoFqdn}
+  INGRESS_FQDN: ${component.ingress.fqdn}
+  INGRESS_SSO_FQDN: ${component.jenkins.namespace}.${component.ingress.ssoFqdn}
+  JENKINS_NAMESPACE: ${component.jenkins.namespace}
+  STATE_BUCKET: ${terraform.bucket.name}
+  STATE_REGION: ${terraform.bucket.region}

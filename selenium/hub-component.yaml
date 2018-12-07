@@ -1,0 +1,137 @@
+---
+version: 1
+kind: component
+meta:
+  name: redis
+  brief: Selenium Grid to run Acceptance Tests
+  source:
+      dir: ../../components/selenium
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+
+parameters:
+  - name: component.ingress.protocol
+  - name: dns.domain
+    brief: DNS domain
+    env: DOMAIN_NAME
+  - name: component.selenium
+    parameters:
+    - name: name
+      env: COMPONENT_NAME
+      value: selenium
+    - name: port
+      value: 4444
+    - name: image
+      value: selenium/hub
+    - name: version
+      value: 3.8.1
+    - name: namespace
+      value: selenium
+      env: NAMESPACE
+    - name: javaOpts
+      value: -Xmx400m
+    - name: ingress.url
+      value: ${component.ingress.ssoFqdn}
+    - name: cpu
+      value: .0
+    - name: ram
+      value: 512Mi
+    - name: chrome
+      parameters:
+      - name: image
+        value: selenium/node-chrome
+      - name: version
+        value: 3.8.1
+      - name: enabled
+        value: false
+      - name: replicas
+        value: 1
+      - name: javaOpts
+        value: -Xmx900m
+      - name: screen.width
+        value: 1280
+      - name: screen.height
+        value: 1024
+      - name: cpu
+        value: .0
+      - name: ram
+        value: 512Mi
+
+    - name: chromeDebug
+      parameters:
+      - name: image
+        value: selenium/node-chrome-debug
+      - name: version
+        value: 3.8.1
+      - name: enabled
+        value: false
+      - name: replicas
+        value: 1
+      - name: javaOpts
+        value: -Xmx900m
+      - name: screen.width
+        value: 1280
+      - name: screen.height
+        value: 1024
+      - name: cpu
+        value: .0
+      - name: ram
+        value: 512Mi
+
+    - name: firefox
+      parameters:
+      - name: image
+        value: selenium/node-firefox
+      - name: version
+        value: 3.8.1
+      - name: enabled
+        value: false
+      - name: replicas
+        value: 1
+      - name: javaOpts
+        value: -Xmx900m
+      - name: screen.width
+        value: 1280
+      - name: screen.height
+        value: 1024
+      - name: cpu
+        value: .0
+      - name: ram
+        value: 512Mi
+
+    - name: firefoxDebug
+      parameters:
+      - name: image
+        value: selenium/node-firefox-debug
+      - name: version
+        value: 3.8.1
+      - name: enabled
+        value: false
+      - name: replicas
+        value: 1
+      - name: javaOpts
+        value: -Xmx900m
+      - name: screen.width
+        value: 1280
+      - name: screen.height
+        value: 1024
+      - name: cpu
+        value: .0
+      - name: ram
+        value: 512Mi
+
+outputs:
+  - name: component.selenium.serviceName
+    value: ${component.selenium.name}-selenium
+  - name: component.selenium.host
+    value: ${component.selenium.name}-selenium.${component.selenium.namespace}.svc.cluster.local
+  - name: component.selenium.port
+  - name: component.selenium.url
+    value: ${component.ingress.protocol}://${component.selenium.name}.${component.selenium.ingress.url}
+
+templates:
+  files:
+    - "*.template"

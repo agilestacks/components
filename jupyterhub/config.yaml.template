@@ -1,0 +1,90 @@
+proxy:
+  secretToken: fd35f6d4ccd5a33b8f82a15f29c918becaf1089e6346023b3bb7c116f7f0bcbb
+  service:
+    type: ClusterIP
+hub:
+  db:
+    pvc:
+      storageClassName: ${component.jupyterhub.storageClassName}
+  services:
+    hub-operator:
+      apiToken: 0319f12cdf215c0706be3805e0a1f52702f6f5e8fb8e1c0b3a3a888833900f37 
+      admin: true
+  extraConfig:
+    hub-operator: |
+      import os
+      import sys
+      import yaml
+      from tornado import web
+      from kubespawner import KubeSpawner
+      from traitlets import (
+        Unicode
+      )
+      class OperatorSpawner(KubeSpawner):
+        def _expand_user_properties(self, template):
+            if self.name:
+                servername = '-{}'.format(self.name)
+            else:
+                servername = ''
+            safe_username = self.user.name
+            return template.format(
+                userid=self.user.id,
+                username=safe_username,
+                unescaped_username=safe_username,
+                legacy_escape_username=safe_username,
+                servername=servername,
+                unescaped_servername=servername
+            )        
+        def get_args(self):
+            args = [
+                '--ip=0.0.0.0',
+                '--port=%i' % self.port,
+                '--NotebookApp.base_url=%s' % self.server.base_url,
+                '--NotebookApp.token=%s' % self.user_options['token'],
+                '--NotebookApp.trust_xheaders=True'
+            ]
+            return args + self.args
+        def get_env(self):
+            env = super().get_env()
+            env['GITHUB_REPO'] = self.user_options['github_repo']
+            env['GITHUB_TOKEN'] = self.user_options['github_token']
+            return env
+        def start(self):
+            if 'image' not in self.user_options:
+              self.image_spec = '${component.jupyterhub.default.notebook.image}'
+            else:
+              if self.user_options['image'] == '':
+                self.image_spec = '${component.jupyterhub.default.notebook.image}'
+              else:  
+                self.image_spec = self.user_options['image']
+            return super().start()
+      c.JupyterHub.spawner_class = OperatorSpawner   
+  extraContainers:
+    - name: hub-operator
+      image: ${component.jupyterhub.operator.image}
+      imagePullPolicy: Always
+      env:
+        - name: JHUB_API_TOKEN
+          value: 0319f12cdf215c0706be3805e0a1f52702f6f5e8fb8e1c0b3a3a888833900f37
+singleuser:
+  lifecycleHooks:
+    postStart:
+      exec:
+        command: ["/bin/sh","-c","/tmp/.gitinit.sh"]
+  cmd: jupyter-notebook
+  storage:
+    dynamic:
+      storageClass: ${component.jupyterhub.storageClassName}      
+debug:
+  enabled: false
+ingress:
+  enabled: true
+  hosts: ['${component.jupyterhub.name}.${component.ingress.fqdn}']
+# do not destroy notebook pod automatically, let application user decide when to destroy it
+cull:
+  enabled: false   
+auth:
+  type: custom
+  custom:
+    # disable login (users created exclusively via API)
+    className: nullauthenticator.NullAuthenticator  

@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mongodb-dashboard
+  namespace: ${component.mongodb.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   mongodb-dashboard
+  annotations:
+    agilestacks.com/stack-component: MongoDB Web Client
+spec:
+  rules:
+  - host: ${component.mongodb-web.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: mongodb-dashboard
+          servicePort: ${component.mongodb-web.port}
