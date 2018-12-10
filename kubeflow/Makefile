@@ -5,11 +5,11 @@ export TF_VAR_component    	?= kubeflow
 export TF_VAR_domain_name  	?= dev.kubernetes.delivery
 export TF_VAR_url_prefix	?= svc
 export kubectl      		?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
-export KUBEFLOW_VERSION		?= v0.3.2
+export KUBEFLOW_VERSION		?= v0.3.4
 export KUBEFLOW_KS_DIR	    ?= ks-app
 export ARGO_VERSION			?= v2.2.1
-export AMBASSADOR_VERSION   ?= quay.io/datawire/ambassador:0.40.1
-export K8S_API_SPEC			?= v1.11.4
+export AMBASSADOR_VERSION   ?= quay.io/datawire/ambassador:0.40.2
+export K8S_API_SPEC			?= v1.12.3
 export K8S_API_SERVER		?=
 export KF_ENV				?= cloud
 
@@ -38,7 +38,7 @@ init:
 		-backend-config="profile=$(AWS_PROFILE)" \
 		./aws
 	-$(kubectl) create namespace $(TF_VAR_namespace)
-	-ks init kubeflow --context=$(TF_VAR_domain_name) --namespace=$(TF_VAR_namespace) --dir=$(KUBEFLOW_KS_DIR) --api-spec=version:$(K8S_API_SPEC)
+	-ks init kubeflow --context=$(TF_VAR_domain_name) --namespace=$(TF_VAR_namespace) --dir=$(KUBEFLOW_KS_DIR)
 
 fetch:
 	-cd $(KUBEFLOW_KS_DIR) && \

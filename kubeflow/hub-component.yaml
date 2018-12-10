@@ -38,13 +38,13 @@ parameters:
       value: kubeflow
       env: TF_VAR_namespace
     - name: version
-      value: v0.3.2
+      value: v0.3.4
       env: KUBEFLOW_VERSION
     - name:  urlPrefix
       value: kubeflow.svc
       env: TF_VAR_url_prefix
     - name: apiSpec
-      value: v1.11.4
+      value: v1.12.3
       env: K8S_API_SPEC
     - name: environment
       value: cloud
