@@ -16,6 +16,7 @@ spec:
         # Additional parameter available:
         args: [
           "--namespace", "${component.kubeflow.namespace}",
+          "--platform", "aws",
           "--report_usage", "false",
           "--with_kubeflow", "false",
           "--deploy_argo", "false",
