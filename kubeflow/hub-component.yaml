@@ -61,12 +61,12 @@ parameters:
     - name: ambassador
       parameters:
       - name: image
-        value: quay.io/datawire/ambassador:0.40.1
+        value: quay.io/datawire/ambassador:0.40.2
         env: AMBASSADOR_VERSION
     - name: pipelines
       parameters:
       - name: image
-        value: agilestacks/bootstrapper:0.1.2
+        value: agilestacks/bootstrapper:0.1.4
 
 
 outputs:
