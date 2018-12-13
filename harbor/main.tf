@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 0.11.3"
-  backend "s3" {}
+  backend          "s3"             {}
 }
 
 provider "aws" {
@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  version        = "1.1.10"
+  version        = "1.2.0"
   config_context = "${var.domain}"
 }
 
