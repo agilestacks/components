@@ -1,0 +1,34 @@
+---
+version: 1
+kind: component
+meta:
+  name: cert-manager
+  brief: cert-manager messaging system
+  source:
+    dir: ../../components/cert-manager
+
+requires:
+  - kubernetes
+provides:
+  - cert-manager
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.cert-manager
+  parameters:
+  - name: name
+    value: cert-manager
+    env: COMPONENT_NAME
+  - name: namespace
+    # primary consumer is argo
+    value: cert-manager
+    env: NAMESPACE
+  - name: issuer-email
+    value: admin@superhub.io
+    env: EMAIL
+
+outputs: [] 
+templates:
+  files:
+  - "*.template"
