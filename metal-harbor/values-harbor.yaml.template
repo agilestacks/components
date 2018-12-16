@@ -1,0 +1,46 @@
+harborAdminPassword: ${component.harbor.password}
+selfRegistration: "off"
+externalProtocol: https
+ingress:
+  enabled: true
+  hosts:
+    core: core.harbor.domain
+    notary: notary.harbor.domain
+  annotations:
+    kubernetes.io/ingress.class: "nginx"    
+    certmanager.k8s.io/issuer: "letsencrypt-prod"
+    certmanager.k8s.io/acme-challenge-type: http01
+  tls:
+    enabled: true
+      secretName: ""
+
+ingress:
+  hosts:
+    core: ${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+    notary: notary.${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+  enabled: true
+  tls:
+    enabled: false
+persistence:
+  enabled: true
+  persistentVolumeClaim:
+    registry:
+      storageClass: spinny-storage
+    chartmuseum:
+      storageClass: spinny-storage
+    database:
+      storageClass: spinny-storage
+    redis:
+      storageClass: spinny-storage
+redis:
+  master:
+    persistence:
+      enabled: true
+externalURL: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+externalPort: 
+registry:
+  storage:
+    type: filesystem
+    filesystem:
+      rootdirectory: /var/lib/registry
+
