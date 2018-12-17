@@ -1,0 +1,109 @@
+
+imagePullPolicy: &image_pull_policy IfNotPresent
+persistence_enabled: &persistence_enabled true
+harborAdminPassword: ${component.harbor.password}
+selfRegistration: "off"
+externalProtocol: https
+ingress:
+  enabled: true
+  annotations:
+    ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    kubernetes.io/ingress.class: "nginx"    
+    certmanager.k8s.io/issuer: "letsencrypt-prod"
+    certmanager.k8s.io/acme-challenge-type: http01
+  tls:
+    enabled: true
+    secretName: "harbor-tls-cert"
+  hosts:
+    core: ${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+    notary: notary.${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+persistence:
+  enabled: true
+  persistentVolumeClaim:
+    registry:
+      storageClass: spinny-storage
+    chartmuseum:
+      storageClass: spinny-storage
+    database:
+      storageClass: spinny-storage
+    redis:
+      storageClass: spinny-storage
+redis:
+  master:
+    persistence:
+      enabled: true
+externalURL: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+externalPort: 
+registry:
+  storage:
+    type: filesystem
+    filesystem:
+      rootdirectory: /var/lib/registry
+  volumes:
+    data:
+      storageClass: spinny-storage
+      size: 100Gi
+      accessMode: ReadWriteOnce
+
+database:
+  # if external database is used, set "type" to "external"
+  # and fill the connection informations in "external" section
+  type: internal
+  internal:
+    image:
+      repository: goharbor/harbor-db
+      tag: v1.6.0
+      pullPolicy: 
+    # the superuser password of database
+    password: "F^G&C*R("
+    volumes:
+      data:
+        storageClass: "hybrid-storage"
+        accessMode: ReadWriteOnce
+        size: 10Gi
+    # resources:
+    #  requests:
+    #    memory: 256Mi
+    #    cpu: 100m
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+
+chartmuseum:
+  enabled: true
+  image:
+    repository: goharbor/chartmuseum-photon
+    tag: v0.7.1-v1.6.0
+    pullPolicy: *image_pull_policy
+  volumes:
+    data:
+      # existingClaim: ""
+      storageClass: hybrid-storage
+      accessMode: ReadWriteOnce
+      size: 5Gi
+  # resources:
+  #  requests:
+  #    memory: 256Mi
+  #    cpu: 100m
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+redis:
+  # if external Redis is used, set "external.enabled" to "true"
+  # and fill the connection informations in "external" section.
+  # or the internal Redis will be used
+  usePassword: false
+  password: "changeit"
+  cluster:
+    enabled: false
+  master:
+    persistence:
+      enabled: *persistence_enabled
+      storageClass: "hybrid-storage"
+      accessMode: ReadWriteOnce
+      size: 10Gi
+  persistence:
+    # existingClaim:
+

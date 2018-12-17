@@ -70,4 +70,4 @@ templates:
   files:
   # - "*.template"
   - "aws/*.template"
-  # - "hybrid/*.template"
+  - "hybrid/*.template"
