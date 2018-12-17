@@ -8,6 +8,7 @@ export TF_VAR_component          ?= harbor
 export TF_VAR_namespace          ?= harbor
 export TF_VAR_service_prefix     ?= svc
 export TF_VAR_nginx_service_name ?= $(TF_VAR_component)-nginx-nginx-ingress-controller
+export TF_VAR_pull_secret ?= $(TF_VAR_component)-pull-secret
 
 export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain)-$(TF_VAR_component)
@@ -28,6 +29,7 @@ kubectl ?= kubectl --context="$(TF_VAR_domain)" --namespace="$(TF_VAR_namespace)
 git     ?= git
 
 deploy: init purge harbor nginx zone
+
 zone: init-tf plan apply
 
 init:
