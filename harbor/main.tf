@@ -12,6 +12,12 @@ provider "kubernetes" {
   config_context = "${var.domain}"
 }
 
+locals {
+  dockerconfigjson = <<EOS
+    {"auths":{"https://${var.component}.${var.service_prefix}.${var.domain}":{"username":"${var.username}","password":"${var.password}"}}}
+EOS
+}
+
 data "aws_region" "current" {}
 
 data "aws_route53_zone" "ext_zone" {
@@ -25,6 +31,7 @@ data "kubernetes_service" "harbor_nginx" {
   }
 }
 
+
 resource "aws_route53_record" "dns_app_ext" {
   zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
   name    = "${var.component}.${var.service_prefix}"
@@ -35,6 +42,19 @@ resource "aws_route53_record" "dns_app_ext" {
   lifecycle {
     ignore_changes = ["records", "ttl"]
   }
+}
+
+resource "kubernetes_secret" "pull_secret" {
+  metadata {
+    name = "${var.pull_secret}"
+    namespace = "${var.namespace}"
+  }
+
+  data {
+    ".dockerconfigjson" = "${trimspace(local.dockerconfigjson)}"
+  }
+
+  type = "kubernetes.io/dockerconfigjson"
 }
 
 resource "null_resource" "drop_elb" {
