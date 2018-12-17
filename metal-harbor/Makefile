@@ -8,7 +8,6 @@ export TF_VAR_component          ?= harbor
 export TF_VAR_namespace          ?= harbor
 export TF_VAR_service_prefix     ?= svc
 export TF_VAR_nginx_service_name ?= $(TF_VAR_component)-nginx-nginx-ingress-controller
-export TF_VAR_pull_secret ?= $(TF_VAR_component)-pull-secret
 
 export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain)-$(TF_VAR_component)
@@ -29,7 +28,6 @@ kubectl ?= kubectl --context="$(TF_VAR_domain)" --namespace="$(TF_VAR_namespace)
 git     ?= git
 
 deploy: init purge harbor nginx zone
-
 zone: init-tf plan apply
 
 init:
@@ -81,13 +79,13 @@ init-tf: $(TF_DATA_DIR)
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+	-$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
 
 refresh:
-	$(terraform) refresh $(TF_CLI_ARGS)
+	-$(terraform) refresh $(TF_CLI_ARGS)
 
 apply:
-	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
+	-$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
 undeploy: init-tf destroy apply delete
 

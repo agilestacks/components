@@ -19,16 +19,3 @@ variable "service_prefix" {
 variable "nginx_service_name" {
   type = "string"
 }
-
-variable "pull_secret" {
-  type = "string"
-}
-
-variable "username" {
-  type = "string"
-  default = "admin"
-}
-
-variable "password" {
-  type = "string"
-}

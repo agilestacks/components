@@ -18,9 +18,6 @@ parameters:
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
-- name: component.s3.bucket
-- name: component.s3.region  
-- name: component.acm.certificateArn
 - name: terraform.bucket.region
   env: STATE_REGION
 - name: terraform.bucket.name
@@ -38,21 +35,12 @@ parameters:
     env: TF_VAR_service_prefix
   - name: password
     value: Harbor12345
-    env: TF_VAR_harbor_password
-  - name: user
-    value: admin
-    env: TF_VAR_username
-  - name: password
-    value: Harbor12345
-    env: TF_VAR_password
   - name: nginx.image.repository  
     value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
   - name: nginx.version
     value: 0.12.0
 
 outputs:
-- name: component.harbor.pullSecret
-  fromTfVar: pull_secret
 - name: component.harbor.url
   brief: Harbor URL
   value: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain} 
