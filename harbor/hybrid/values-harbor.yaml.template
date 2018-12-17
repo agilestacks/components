@@ -43,7 +43,7 @@ registry:
   volumes:
     data:
       storageClass: spinny-storage
-      size: 100Gi
+      size: 900Gi
       accessMode: ReadWriteOnce
 
 database:
