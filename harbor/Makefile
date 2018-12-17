@@ -20,6 +20,8 @@ NGINX_CHART          ?= stable/nginx-ingress
 NGINX_CHART_VERSION  ?= 0.26.0
 HARBOR_CHART_VERSION ?= 0.3.0
 
+CLOUD_KIND ?= aws
+
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
@@ -53,7 +55,7 @@ harbor:
 			--namespace $(TF_VAR_namespace) \
 			--wait \
 			--version $(HARBOR_CHART_VERSION) \
-			--values values-harbor.yaml
+			--values $(CLOUD_KIND)/values-harbor.yaml
 .PHONY: harbor
 
 nginx:
@@ -66,13 +68,14 @@ nginx:
 			--namespace $(TF_VAR_namespace) \
 			--wait \
 			--version $(NGINX_CHART_VERSION) \
-			--values values-nginx.yaml
+			--values $(CLOUD_KIND)/values-nginx.yaml
 .PHONY: nginx
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
 init-tf: $(TF_DATA_DIR)
+	cp $(CLOUD_KIND)/ignored.tf $(CLOUD_KIND).tf
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
@@ -97,6 +100,7 @@ destroy: plan
 delete:
 	-$(helm) delete --purge $(TF_VAR_component)-nginx
 	-$(helm) delete --purge $(TF_VAR_component)
+	@rm -f $(CLOUD_KIND).tf
 
 clean:
 	@rm -rf .helm .terraform charts harbor-helm

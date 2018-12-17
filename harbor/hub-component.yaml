@@ -18,6 +18,8 @@ parameters:
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
+- name: cloud.kind
+  env: CLOUD_KIND
 - name: component.s3.bucket
 - name: component.s3.region  
 - name: component.acm.certificateArn
