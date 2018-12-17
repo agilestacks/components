@@ -134,3 +134,8 @@ argo/install.yaml
 argo/minio/configmap.yaml
 jupyterhub/config.yaml
 jupyterhub/storageclass.yaml
+harbor/aws/values-harbor.yam
+harbor/aws/values-nginx.yam
+harbor/hybrid/values-harbor.yam
+harbor/hybrid/values-nginx.yam
+
