@@ -184,15 +184,10 @@ controller:
       http: http
       https: http
 
-    type: LoadBalancer
-
-    # type: NodePort
-    # nodePorts:
-    #   http: 32080
-    #   https: 32443
+    type: NodePort
     nodePorts:
-      http: ""
-      https: ""
+      http: 3080
+      https: 3443
 
   extraContainers: []
   ## Additional containers to be added to the controller pod.
