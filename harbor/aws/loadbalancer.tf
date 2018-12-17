@@ -1,6 +1,17 @@
-resource "null_resource" "drop_elb" {
-  count = "${var.external_vpc_id == "" ? 0 : length(var.external_worker_subnets)}"
 
+resource "aws_route53_record" "dns_app_ext" {
+  zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
+  name    = "${var.component}.${var.service_prefix}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${data.kubernetes_service.harbor_nginx.load_balancer_ingress.0.hostname}"]
+
+  lifecycle {
+    ignore_changes = ["records", "ttl"]
+  }
+}
+
+resource "null_resource" "drop_elb" {
   provisioner "local-exec" {
     when       = "destroy"
     on_failure = "continue"

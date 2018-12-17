@@ -28,6 +28,9 @@ parameters:
     empty: allow
   - name: endpoint
     empty: allow
+- name: component.ingress.static_ip
+  env: TF_VAR_ingress_static_ip
+  empty: allow
 - name: component.acm.certificateArn
   empty: allow
 - name: terraform.bucket.region
@@ -45,9 +48,6 @@ parameters:
   - name: servicePrefix
     value: svc
     env: TF_VAR_service_prefix
-  - name: password
-    value: Harbor12345
-    env: TF_VAR_harbor_password
   - name: user
     value: admin
     env: TF_VAR_username
@@ -68,4 +68,6 @@ outputs:
 
 templates:
   files:
-  - "*.template"
+  # - "*.template"
+  - "aws/*.template"
+  # - "hybrid/*.template"
