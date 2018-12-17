@@ -14,13 +14,10 @@ provides:
 
 parameters:
 - name: dns.domain
-  env: TF_VAR_domain_name
+  env: TF_VAR_domain
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
-- name: component.s3.bucket
-- name: component.s3.region  
-- name: component.acm.certificateArn
 - name: terraform.bucket.region
   env: STATE_REGION
 - name: terraform.bucket.name

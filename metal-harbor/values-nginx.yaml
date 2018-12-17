@@ -4,8 +4,8 @@
 controller:
   name: controller
   image:
-    repository: ${component.harbor.nginx.image.repository}
-    tag: ${component.harbor.nginx.version}
+    repository: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
+    tag: 0.12.0
     pullPolicy: IfNotPresent
 
   config: {}
@@ -34,7 +34,7 @@ controller:
   ## Must be <namespace>/<service_name>
   ##
 
-  defaultBackendService: "${component.harbor.namespace}/${component.harbor.name}-${component.harbor.name}-ui"
+  defaultBackendService: "harbor/harbor-harbor-ui"
 
   ## Election ID to use for status update
   ##
@@ -184,10 +184,15 @@ controller:
       http: http
       https: http
 
-    type: NodePort
+    type: LoadBalancer
+
+    # type: NodePort
+    # nodePorts:
+    #   http: 32080
+    #   https: 32443
     nodePorts:
-      http: 3090
-      https: 3443
+      http: ""
+      https: ""
 
   extraContainers: []
   ## Additional containers to be added to the controller pod.

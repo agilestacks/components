@@ -1,23 +1,25 @@
 
 imagePullPolicy: &image_pull_policy IfNotPresent
 persistence_enabled: &persistence_enabled true
-harborAdminPassword: ${component.harbor.password}
+harborAdminPassword: Harbor12345
 selfRegistration: "off"
 externalProtocol: https
 ingress:
   enabled: true
   annotations:
+    ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     kubernetes.io/ingress.class: "nginx"    
-    certmanager.k8s.io/issuer: "letsencrypt-prod"
+    certmanager.k8s.io/issuer: "letsencrypt-staging"
     certmanager.k8s.io/acme-challenge-type: http01
   tls:
     enabled: true
     secretName: "harbor-tls-cert"
   hosts:
-    core: ${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
-    notary: notary.${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+    core: harbor.svc.lab.ssic.superhub.io
+    notary: notary.harbor.svc.lab.ssic.superhub.io
 persistence:
   enabled: true
   persistentVolumeClaim:
@@ -33,7 +35,7 @@ redis:
   master:
     persistence:
       enabled: true
-externalURL: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+externalURL: https://harbor.svc.lab.ssic.superhub.io
 externalPort: 
 registry:
   storage:
