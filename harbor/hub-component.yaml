@@ -20,9 +20,16 @@ parameters:
   env: AWS_DEFAULT_REGION
 - name: cloud.kind
   env: CLOUD_KIND
-- name: component.s3.bucket
-- name: component.s3.region  
+- name: component.s3
+  parameters: 
+  - name: bucket
+    empty: allow
+  - name: region
+    empty: allow
+  - name: endpoint
+    empty: allow
 - name: component.acm.certificateArn
+  empty: allow
 - name: terraform.bucket.region
   env: STATE_REGION
 - name: terraform.bucket.name
