@@ -28,7 +28,7 @@ parameters:
     empty: allow
   - name: endpoint
     empty: allow
-- name: component.ingress.static_ip
+- name: component.ingress.staticIp
   env: TF_VAR_ingress_static_ip
   empty: allow
 - name: component.acm.certificateArn
