@@ -182,11 +182,11 @@ controller:
 
     targetPorts:
       http: http
-      https: http
+      https: https
 
     type: NodePort
     nodePorts:
-      http: 3090
+      http: 3080
       https: 3443
 
   extraContainers: []
