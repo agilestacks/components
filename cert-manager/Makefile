@@ -31,8 +31,8 @@ install: namespace
 .PHONY: install
 
 deploy: init purge install
-	$(kubectl) apply -f prod-issuer.yaml 
-	$(kubectl) apply -f staging-issuer.yaml
+	$(kubectl) --namespace=cert-manager apply -f prod-issuer.yaml 
+	$(kubectl) --namespace=cert-manager apply -f staging-issuer.yaml
 .PHONY: deploy
 
 undeploy: purge

@@ -56,6 +56,8 @@ harbor:
 			--wait \
 			--version $(HARBOR_CHART_VERSION) \
 			--values values-harbor.yaml
+	$(kubectl) -n $(TF_VAR_namespace) apply -f prod-issuer.yaml
+	$(kubectl) -n $(TF_VAR_namespace) apply -f staging-issuer.yaml
 .PHONY: harbor
 
 nginx:

@@ -58,6 +58,11 @@ parameters:
     value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
   - name: nginx.version
     value: 0.12.0
+- name: component.cert-manager
+  parameters:
+  - name: issuer-email
+    value: admin@superhub.io
+    env: EMAIL
 
 outputs:
 - name: component.harbor.pullSecret
