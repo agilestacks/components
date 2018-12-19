@@ -21,29 +21,9 @@ variable "base_domain" {
   type        = "string"
 }
 
-variable "bucket" {
-  description = "S3 bucket name"
-  type        = "string"
-}
-
 variable "api_ip" {
   description = "API endpoint IP address"
   type        = "string"
-}
-
-# S3
-
-locals {
-  default_bucket = "files.${var.name}.${var.base_domain}"
-}
-
-resource "aws_s3_bucket" "files" {
-  bucket = "${coalesce(var.bucket, local.default_bucket)}"
-  acl = "private"
-  force_destroy = true
-  lifecycle {
-    ignore_changes = ["*"]
-  }
 }
 
 # DNS
@@ -74,10 +54,6 @@ resource "aws_route53_record" "api" {
 }
 
 # outputs
-
-output "s3_bucket" {
-  value = "${aws_s3_bucket.files.bucket}"
-}
 
 output "api_endpoint_a" {
   value = "${aws_route53_record.api.fqdn}"

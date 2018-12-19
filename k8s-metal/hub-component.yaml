@@ -50,8 +50,6 @@ outputs:
     fromTfVar: dns_base_domain
   - name: cloud.kind
   - name: cloud.region
-  - name: cloud.bucket
-    fromTfVar: s3_bucket
 
   - name: kubernetes.flavor
   - name: kubernetes.api.endpoint
