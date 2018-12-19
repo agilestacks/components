@@ -23,9 +23,6 @@ parameters:
   - name: acl
     value: private
     env: ACL
-- name: cloud.region
-  kind: user
-  env: AWS_DEFAULT_REGION
 
 outputs:
 - name: component.s3.bucket
