@@ -11,6 +11,8 @@ CLOUD          ?= aws
 ALIAS          ?= $(COMPONENT_NAME)
 DOMAIN         ?= minio
 
+DEFAULT_BUCKET ?= default
+
 # secret-name has been driven by fullnameOverride in helm chart
 SECRET         := $(COMPONENT_NAME)
 ACCESS_KEY_REF ?= accesskey
@@ -47,7 +49,7 @@ ifeq ($(SECRET_KEY),)
 	SECRET_KEY := $(or $(secret_val),$(random))
 endif
 
-deploy: clean init fetch purge install configure output
+deploy: clean init fetch purge install configure nats-event output
 
 init:
 	mkdir -p $(HELM_HOME)
@@ -61,6 +63,9 @@ fetch:
 
 namespace:
 	- $(kubectl) create namespace $(NAMESPACE)
+
+nats-event:
+	$(mc) event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
 
 $(CLOUD)-storage-class:
 	- $(kubectl) create -f $@.yaml
