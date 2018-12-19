@@ -93,7 +93,7 @@ parameters:
       value: bucket-events
       empty: allow
     - name: nats.enabled
-      value: false
+      value: true
     - name: nats.subject
       value: bucketevents
     - name: default.bucket.enabled
