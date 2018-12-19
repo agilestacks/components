@@ -34,7 +34,8 @@ parameters:
   - name: replicas
     value: 1
   - name: chart.version
-    value: '0.1.1'
+    value: '2.0.1'
+    # value: '0.1.1'
     env: CHART_VERSION
   - name: natsboard.image
     value: agilestacks/natsboard:latest
