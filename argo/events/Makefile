@@ -27,8 +27,10 @@ login:
 	cat $(REGISTRY_PASS) | docker login --username agilestacks --password-stdin
 .PHONY: login
 
-compile: $(GOPATH) $(GOBIN) login
-	go get github.com/argoproj/argo-events
+compile: $(GOPATH) $(GOBIN) 
+	mkdir -p .$(GOPATH)/src/github.com/argoproj/
+	git clone https://github.com/argoproj/argo-events.git $(GOPATH)/src/github.com/argoproj/argo-events
+#	go get github.com/argoproj/argo-events
 	go get -u github.com/golang/dep/cmd/dep
 	cd $(GOPATH)/src/github.com/argoproj/argo-events && $(GOBIN)/dep ensure -vendor-only
 	$(MAKE) -C $(GOPATH)/src/github.com/argoproj/argo-events clean all all-images IMAGE_PREFIX=$(IMAGE_PREFIX) DOCKER_PUSH=true
