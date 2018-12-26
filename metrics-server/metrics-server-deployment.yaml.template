@@ -31,6 +31,9 @@ spec:
       - name: ${component.metrics-server.name}
         image: k8s.gcr.io/metrics-server-amd64:${component.metrics-server.version}
         imagePullPolicy: Always
+        command:
+        - /metrics-server
+        - --kubelet-insecure-tls
         volumeMounts:
         - name: tmp-dir
           mountPath: /tmp
