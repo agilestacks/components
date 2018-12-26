@@ -94,7 +94,7 @@ parameters:
     - name: kubernetes.labelSelector
       empty: allow
     - name: kubernetes.ingressClass
-      empty: allow
+      value: '""'
     - name: kubernetes.kubeconfigContext
       value: ${dns.domain}
       env: TF_VAR_kubeconfig_context
