@@ -3,3 +3,4 @@ oidc-crd.yaml
 bootstrapper-rbac.yaml
 bootstrapper-install.yaml
 bootstrapper-uninstall.yaml
+default-storage-class.yaml

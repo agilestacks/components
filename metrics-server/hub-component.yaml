@@ -1,0 +1,34 @@
+---
+version: 1
+kind: component
+meta:
+  name: metrics-server
+  brief: Kubernetes Metrics server
+  source:
+    dir: ../../components/metrics-server
+
+requires:
+  - kubernetes
+
+provides:
+  - metrics-server
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.metrics-server
+    parameters:
+    - name:  name
+      value: metrics-server
+      env:   COMPONENT_NAME
+    - name:  namespace
+      brief: Kubernetes namespace to install into
+      value: kube-system
+      env:   NAMESPACE
+    - name:  version
+      brief: Metrics Server version
+      value: v0.3.1
+
+templates:
+  files:
+    - "*.template"
