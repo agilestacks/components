@@ -73,6 +73,7 @@ $(TF_GENERATED_DIR)/generated.tf:
 	$(python) main.py gen $(DOMAIN_NAME) \
 		--standalone \
 		--save-to $(TF_GENERATED_DIR)/generated.tf
+.PHONY: $(TF_GENERATED_DIR)/generated.tf
 
 wait: .venv
 	$(python) main.py wait $(DOMAIN_NAME) --timeout $(TIMEOUT)
