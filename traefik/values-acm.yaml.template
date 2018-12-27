@@ -257,7 +257,7 @@ dashboard:
       component: ${component.ingress.name}-traefik-dashboard
     annotations:
       agilestacks.com/stack-component: Traefik
-      kubernetes.io/ingress.class: ${component.traefik.kubernetes.ingressClass}
+      kubernetes.io/ingress.class: "${component.traefik.kubernetes.ingressClass}"
   auth: ${component.ingress.dashboard.auth}
     # basic:
     #   username: password
