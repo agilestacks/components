@@ -40,6 +40,12 @@ parameters:
   - name: natsboard.image
     value: agilestacks/natsboard:latest
     # value: urashidmalik/natsboard:latest
+- name: component.minio
+  parameters:
+  - name: nats.enabled
+    value: true
+  - name: nats.subject
+    value: bucketevents
 outputs:
 - name:  component.nats.client.fqdn
   value: ${component.nats.name}-nats-client.${component.nats.namespace}.svc.cluster.local:${component.nats.port}

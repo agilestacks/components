@@ -39,16 +39,24 @@ parameters:
     empty: allow
     parameters:
     - name: fqdn
+      empty: allow
     - name: username
+      empty: allow
     - name: password
+      empty: allow
   - name: component.postgresql
     empty: allow
     parameters:
     - name: host
+      empty: allow
     - name: port
+      empty: allow
     - name: user
+      empty: allow
     - name: password
+      empty: allow
     - name: database
+      empty: allow
   - name: component.redis
     empty: allow
     parameters:
@@ -60,8 +68,8 @@ parameters:
   - name: component.minio
     parameters:
     - name: namespace
-      value: argoproj
-      # value: ${dns.name}-${hub.componentName}
+      # value: argoproj
+      value: ${dns.name}-${hub.componentName}
       env: NAMESPACE
     - name: name
       value: minio
@@ -94,9 +102,9 @@ parameters:
       value: bucket-events
       empty: allow
     - name: nats.enabled
-      value: true
+      value: false
     - name: nats.subject
-      value: bucketevents
+      empty: allow
     - name: default.bucket.enabled
       value: true
     - name: default.bucket.name
