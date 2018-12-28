@@ -49,7 +49,11 @@ ifeq ($(SECRET_KEY),)
 	SECRET_KEY := $(or $(secret_val),$(random))
 endif
 
-deploy: clean init fetch purge install configure nats-event output
+ifeq ($(NATS_ENABLED),)
+	MINIO_NOTIFICATIONS += nats-notifications
+endif
+
+deploy: clean init fetch purge install configure $(MINIO_NOTIFICATIONS) output
 
 init:
 	mkdir -p $(HELM_HOME)
@@ -64,7 +68,7 @@ fetch:
 namespace:
 	- $(kubectl) create namespace $(NAMESPACE)
 
-nats-event:
+nats-notifications:
 	$(mc) event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
 
 $(CLOUD)-storage-class:

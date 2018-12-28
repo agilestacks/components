@@ -103,6 +103,7 @@ parameters:
       empty: allow
     - name: nats.enabled
       value: false
+      env: NATS_ENABLED
     - name: nats.subject
       empty: allow
     - name: default.bucket.enabled
