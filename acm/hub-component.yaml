@@ -31,3 +31,5 @@ outputs:
 - name: component.acm.certificateArn
   brief: ACM Certificate ARN
   fromTfVar: certificate_arn
+- name: component.acm.url
+  value: https://${cloud.region}.console.aws.amazon.com/acm/home
