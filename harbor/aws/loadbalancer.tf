@@ -3,7 +3,19 @@ resource "aws_route53_record" "dns_app_ext" {
   zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
   name    = "${var.component}.${var.service_prefix}"
   type    = "CNAME"
-  ttl     = "300"
+  ttl     = "30"
+  records = ["${data.kubernetes_service.harbor_nginx.load_balancer_ingress.0.hostname}"]
+
+  lifecycle {
+    ignore_changes = ["records", "ttl"]
+  }
+}
+
+resource "aws_route53_record" "notary" {
+  zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
+  name    = "notary.${var.component}.${var.service_prefix}"
+  type    = "CNAME"
+  ttl     = "30"
   records = ["${data.kubernetes_service.harbor_nginx.load_balancer_ingress.0.hostname}"]
 
   lifecycle {

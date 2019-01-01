@@ -32,6 +32,9 @@ deploy: init purge harbor nginx zone
 
 zone: init-tf plan apply
 
+$(HELM_HOME):
+	mkdir -p $@
+
 namespace:
 	- $(kubectl) create namespace $(TF_VAR_namespace)
 
@@ -45,12 +48,12 @@ purge:
 	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)-nginx$$' && \
 		$(helm) delete --purge $(TF_VAR_component)-nginx || exit 0
 
-harbor:
+harbor: $(HELM_HOME)
 	$(helm) init --client-only --upgrade --wait
-	$(git) clone --single-branch -b $(HARBOR_CHART_VERSION) https://github.com/goharbor/harbor-helm
-	$(helm) dependency update harbor-helm
+	- $(git) clone --depth 1 -b $(HARBOR_CHART_VERSION) https://github.com/goharbor/harbor-helm $(HELM_HOME)/harbor
+	$(helm) dependency update $(HELM_HOME)/harbor
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
-		$(helm)	install harbor-helm \
+		$(helm)	install $(HELM_HOME)/harbor \
 		    --name $(TF_VAR_component) \
 			--namespace $(TF_VAR_namespace) \
 			--wait \
