@@ -12,7 +12,7 @@ export AMBASSADOR_VERSION   ?= quay.io/datawire/ambassador:0.40.2
 export K8S_API_SPEC			?= v1.12.3
 export K8S_API_SERVER		?=
 export KF_ENV				?= cloud
-
+export TF_DATA_DIR          := .terraform
 
 terraform ?= terraform-v0.11
 ks := cd $(KUBEFLOW_KS_DIR) && ks
@@ -27,13 +27,13 @@ deploy: clean init fetch configure install get plan apply output
 namespace:
 	- $(kubectl) create namespace $(TF_VAR_namespace)
 
-.terraform:
+$(TF_DATA_DIR):
 	mkdir -p $@
 
-ks: namespace
-	- ks init kubeflow --context=$(TF_VAR_domain_name) --namespace=$(TF_VAR_namespace) --dir=$(KUBEFLOW_KS_DIR)
+$(KUBEFLOW_KS_DIR): namespace
+	- ks init kubeflow --context=$(TF_VAR_domain_name) --namespace=$(TF_VAR_namespace) --dir=$@
 
-init: .terraform
+init: $(TF_DATA_DIR) $(KUBEFLOW_KS_DIR)
 	$(terraform) init $(TF_OPTS) \
 		-get=true -reconfigure -force-copy  \
 		-backend=true -input=false \
@@ -45,7 +45,7 @@ init: .terraform
 	
 fetch:
 	- $(ks) env rm default
-	- $(ks) registry add kubeflow $(CURRDIR)/kubeflow-$(KUBEFLOW_VERSION)/kubeflow
+	- $(ks) registry add kubeflow "$(shell pwd)/kubeflow-$(KUBEFLOW_VERSION)/kubeflow"
 	- $(ks) pkg install kubeflow/argo
 	- $(ks) pkg install kubeflow/core
 	- $(ks) pkg install kubeflow/examples
@@ -142,7 +142,7 @@ uninstall:
 	- $(kubectl) delete secret ambassador-auth-client-secret | true
 
 clean:
-	rm -rf .terraform/modules .terraform/plugins $(KUBEFLOW_KS_DIR)
+	rm -rf $(TF_DATA_DIR)/modules $(TF_DATA_DIR)/plugins $(KUBEFLOW_KS_DIR)
 
 output:
 	@echo
