@@ -16,6 +16,7 @@ provides:
 
 parameters:
   - name: component.ingress.protocol
+    env: PROTOCOL
   - name: component.acm.certificateArn
     empty: allow
     env: ACM_CERTIFICATE_ARN
@@ -71,7 +72,7 @@ parameters:
 
 outputs:
   - name: component.kubeflow.ambassador.protocol
-    fromTfVar: ingress_protocol
+    fromTfVar: protocol
   - name: component.kubeflow.ambassador.url
     brief: Ambassador Diagnostics
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/ambassador/v0/diag
