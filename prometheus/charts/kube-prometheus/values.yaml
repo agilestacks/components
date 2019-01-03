@@ -16,12 +16,18 @@ deployKubeControllerManager: True
 # Kube state
 deployKubeState: True
 
+# Traefik
+deployTraefik: True
+
+# Cluster Autoscaler
+deployAutoscaler: True
+
 ## If true, create & use RBAC resources resp. Pod Security Policies
 ##
 global:
   rbacEnable: true
   pspEnable: true
-  
+
   # Reference to one or more secrets to be used when pulling images
   imagePullSecrets: []
   #  - name: "image-pull-secret"
