@@ -75,6 +75,13 @@ enable:
 		fi; \
 	fi;
 
+mount: login
+	@if ! $(vault) secrets list | grep ^secret/; then \
+		echo "Enable KV v1 secrets"; \
+		$(vault) secrets enable -version=1 -path=secret -description='Secrets v1' kv; \
+	fi
+.PHONY: mount
+
 backup:
 	if test ! -f $(UNSEAL_FILE) || jq -e 'has("keys")|not' < $(UNSEAL_FILE); then \
 		$(HUB) render restore/unseal-outputs.json.template && \
