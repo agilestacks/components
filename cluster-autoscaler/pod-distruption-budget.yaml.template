@@ -1,0 +1,12 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app: ${component.cluster-autoscaler.name}
+  name: ${component.cluster-autoscaler.name}
+spec:
+  selector:
+    matchLabels:
+      app: ${component.cluster-autoscaler.name}
+  maxUnavailable: 1
+  # minAvailable: 2
