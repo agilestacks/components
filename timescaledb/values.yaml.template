@@ -1,5 +1,5 @@
 image: "timescale/pg_prometheus"
-imageTag: "master"
+imageTag: "0.2.1"
 
 postgresUser: '${component.timescaledb.user}'
 postgresPassword: '${component.timescaledb.password}'
