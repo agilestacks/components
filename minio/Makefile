@@ -49,7 +49,7 @@ ifeq ($(SECRET_KEY),)
 	SECRET_KEY := $(or $(secret_val),$(random))
 endif
 
-ifeq ($(NATS_ENABLED),)
+ifeq ($(NATS_ENABLED),true)
 	MINIO_NOTIFICATIONS += nats-notifications
 endif
 
