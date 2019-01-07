@@ -14,13 +14,25 @@ provides:
 
 parameters:
 - name: dns.domain
-  env: TF_VAR_domain_name
+  env: TF_VAR_domain
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
-- name: component.s3.bucket
-- name: component.s3.region  
+- name: cloud.kind
+  env: CLOUD_KIND
+- name: component.s3
+  parameters: 
+  - name: bucket
+    empty: allow
+  - name: region
+    empty: allow
+  - name: endpoint
+    empty: allow
+- name: component.ingress.staticIp
+  env: TF_VAR_ingress_static_ip
+  empty: allow
 - name: component.acm.certificateArn
+  empty: allow
 - name: terraform.bucket.region
   env: STATE_REGION
 - name: terraform.bucket.name
@@ -36,18 +48,31 @@ parameters:
   - name: servicePrefix
     value: svc
     env: TF_VAR_service_prefix
+  - name: user
+    value: admin
+    env: TF_VAR_username
   - name: password
     value: Harbor12345
+    env: TF_VAR_password
   - name: nginx.image.repository  
     value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
   - name: nginx.version
     value: 0.12.0
+- name: component.cert-manager
+  parameters:
+  - name: issuer-email
+    value: admin@superhub.io
+    env: EMAIL
 
 outputs:
+- name: component.harbor.pullSecret
+  fromTfVar: pull_secret
 - name: component.harbor.url
   brief: Harbor URL
   value: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain} 
 
 templates:
   files:
-  - "*.template"
+  # - "*.template"
+  - "aws/*.template"
+  - "hybrid/*.template"

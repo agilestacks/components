@@ -20,7 +20,6 @@ export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
 export TF_VAR_name        := $(NAME)
 export TF_VAR_base_domain := $(BASE_DOMAIN)
-export TF_VAR_bucket      ?= files.$(DOMAIN_NAME)
 export TF_VAR_api_ip      := $(API_IP)
 
 terraform   ?= terraform-v0.11

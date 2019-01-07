@@ -25,8 +25,6 @@ parameters:
   - name: cloud.region
     kind: user
     env: AWS_REGION
-  - name: cloud.bucket
-    brief: Bucket for Spinnaker. Coming from basestack
   - name: dns.domain
     brief: DNS domain
     env: DOMAIN_NAME

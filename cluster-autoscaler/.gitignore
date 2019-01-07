@@ -1,0 +1,5 @@
+deployment.yaml
+pod-distruption-budget.yaml
+rbac.yaml
+service-account.yaml
+

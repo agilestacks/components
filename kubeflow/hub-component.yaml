@@ -16,6 +16,7 @@ provides:
 
 parameters:
   - name: component.ingress.protocol
+    env: PROTOCOL
   - name: component.acm.certificateArn
     empty: allow
     env: ACM_CERTIFICATE_ARN
@@ -44,7 +45,7 @@ parameters:
       value: kubeflow.svc
       env: TF_VAR_url_prefix
     - name: apiSpec
-      value: v1.12.3
+      value: v1.12.4
       env: K8S_API_SPEC
     - name: environment
       value: cloud
@@ -71,7 +72,7 @@ parameters:
 
 outputs:
   - name: component.kubeflow.ambassador.protocol
-    fromTfVar: ingress_protocol
+    fromTfVar: protocol
   - name: component.kubeflow.ambassador.url
     brief: Ambassador Diagnostics
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/ambassador/v0/diag

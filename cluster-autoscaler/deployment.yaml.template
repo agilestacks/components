@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${component.cluster-autoscaler.name}
+  namespace: ${component.cluster-autoscaler.namespace}
+  labels:
+    app: ${component.cluster-autoscaler.name}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${component.cluster-autoscaler.name}
+  template:
+    metadata:
+      labels:
+        app: ${component.cluster-autoscaler.name}
+    spec:
+      serviceAccountName: ${component.cluster-autoscaler.name}
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      containers:
+        - image: k8s.gcr.io/cluster-autoscaler:${component.cluster-autoscaler.version}
+          name: ${component.cluster-autoscaler.name}
+          resources:
+            limits:
+              cpu: 0
+              memory: 0
+            requests:
+              cpu: 0
+              memory: 0
+          command:
+            - ./cluster-autoscaler
+            - --v=4
+            - --stderrthreshold=info
+            - --cloud-provider=${cloud.kind}
+            - --skip-nodes-with-local-storage=false
+            - --nodes=${component.cluster-autoscaler.asg.minSize}:${component.cluster-autoscaler.asg.maxSize}:${component.cluster-autoscaler.asg.name}
+          env:
+            - name: AWS_REGION
+              value: ${component.cluster-autoscaler.cloud.region}
+          volumeMounts:
+            - name: ssl-certs
+              mountPath: /etc/ssl/certs/ca-certificates.crt
+              readOnly: true
+          imagePullPolicy: "Always"
+      volumes:
+        - name: ssl-certs
+          hostPath:
+            path: "/etc/ssl/certs/ca-certificates.crt"

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ template "exporter-autoscaler.name" . }}
+    component: cluster-autoscaler
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+  name: {{ template "exporter-autoscaler.fullname" . }}
+  namespace: kube-system
+spec:
+  clusterIP: None
+  ports:
+    - port: 8085
+      protocol: TCP
+      targetPort: 8085
+      name: http
+  selector:
+    app: cluster-autoscaler
+  type: ClusterIP

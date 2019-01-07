@@ -5,3 +5,7 @@ output "ingress_fqdn" {
 output "load_balancer" {
   value = "${data.kubernetes_service.harbor_nginx.load_balancer_ingress.0.hostname}"
 }
+
+output "pull_secret" {
+  value = "${var.pull_secret}"
+}

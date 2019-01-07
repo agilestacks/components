@@ -21,8 +21,8 @@ parameters:
   - name: cloud.sshKey
     value: agilestacks
     env: AWS_KEYPAIR
-  - name: cloud.bucket
-    brief: Bucket for Spinnaker. Created by platform
+  - name: component.s3.bucket
+    brief: Bucket for Spinnaker. Created by s3-bucket
     env: AWS_S3_BUCKET
   - name: dns.name
     env: NAME

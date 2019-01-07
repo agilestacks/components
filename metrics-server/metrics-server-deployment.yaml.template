@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ${component.metrics-server.name}
+  namespace: ${component.metrics-server.namespace}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ${component.metrics-server.name}
+  namespace: ${component.metrics-server.namespace}
+  labels:
+    k8s-app: ${component.metrics-server.name}
+spec:
+  selector:
+    matchLabels:
+      k8s-app: ${component.metrics-server.name}
+  template:
+    metadata:
+      name: ${component.metrics-server.name}
+      labels:
+        k8s-app: ${component.metrics-server.name}
+    spec:
+      serviceAccountName: ${component.metrics-server.name}
+      volumes:
+      # mount in tmp so we can safely use from-scratch images and/or read-only containers
+      - name: tmp-dir
+        emptyDir: {}
+      containers:
+      - name: ${component.metrics-server.name}
+        image: k8s.gcr.io/metrics-server-amd64:${component.metrics-server.version}
+        imagePullPolicy: Always
+        command:
+        - /metrics-server
+        - --kubelet-insecure-tls
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp
+

@@ -1,6 +1,6 @@
 ## Default values for Traefik
 image: traefik
-imageTag: 1.7.4
+imageTag: ${component.traefik.app.version}
 ## can switch the service type to NodePort if required
 serviceType: ${component.ingress.kubernetes.serviceType}
 loadBalancerIP:
@@ -8,6 +8,9 @@ loadBalancerIP:
 whiteListSourceRange: []
 externalTrafficPolicy: Cluster
 replicas: 1
+# startupArguments:
+#   - "--ping"
+#   - "--ping.entrypoint=http"
 
 podDisruptionBudget: {}
   # maxUnavailable: 1
@@ -15,10 +18,10 @@ podDisruptionBudget: {}
 
 # rootCAs: []
 
-cpuRequest: 200m
-memoryRequest: 20Mi
-cpuLimit: 400m
-memoryLimit: 40Mi
+cpuRequest: 0
+memoryRequest: 0
+cpuLimit: 0
+memoryLimit: 0
 debug:
   enabled: false
 
@@ -254,7 +257,7 @@ dashboard:
       component: ${component.ingress.name}-traefik-dashboard
     annotations:
       agilestacks.com/stack-component: Traefik
-      kubernetes.io/ingress.class: ${component.traefik.kubernetes.ingressClass}
+      kubernetes.io/ingress.class: "${component.traefik.kubernetes.ingressClass}"
   auth: ${component.ingress.dashboard.auth}
     # basic:
     #   username: password
@@ -319,6 +322,9 @@ rbac:
 metrics:
   prometheus:
     enabled: false
+    ## If true, prevents exposing port 8080 on the main Traefik service, reserving
+    ## it to the dashboard service only
+    restrictAccess: true
     # buckets: [0.1,0.3,1.2,5]
   datadog:
     enabled: false
@@ -329,6 +335,9 @@ metrics:
     # address: localhost:8125
     # pushinterval: 10s
 deployment:
+  # labels to add to the pod container metadata
+  # podLabels:
+  #   key: value
   # podAnnotations:
   #   key: value
   hostPort:
@@ -339,7 +348,7 @@ sendAnonymousUsage: false
 tracing:
   enabled: false
   serviceName: traefik
-  # backend: choices are jaeger, zipkin
+  # backend: choices are jaeger, zipkin, datadog
   # jaeger:
   #   localAgentHostPort: "127.0.0.1:6831"
   #   samplingServerURL: http://localhost:5778/sampling
@@ -350,3 +359,7 @@ tracing:
   #   debug: false
   #   sameSpan: false
   #   id128bit: true
+  # datadog:
+  #   localAgentHostPort: "127.0.0.1:8126"
+  #   debug: false
+  #   globalTag: ""

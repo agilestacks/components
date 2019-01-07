@@ -58,6 +58,7 @@ dependencies:
   - name: exporter-traefik
     version: 0.0.1
     repository: file://charts/exporter-traefik
+    condition: deployTraefik
 
   - name: exporter-argo
     version: 0.0.1
@@ -66,3 +67,8 @@ dependencies:
   - name: prom-pg-adapter
     version: 0.0.1
     repository: file//charts/pg-adapter
+
+  - name: exporter-autoscaler
+    version: 0.0.1
+    repository: file://charts/exporter-autoscaler
+    condition: deployAutoscaler

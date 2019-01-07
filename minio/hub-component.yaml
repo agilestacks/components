@@ -39,16 +39,24 @@ parameters:
     empty: allow
     parameters:
     - name: fqdn
+      empty: allow
     - name: username
+      empty: allow
     - name: password
+      empty: allow
   - name: component.postgresql
     empty: allow
     parameters:
     - name: host
+      empty: allow
     - name: port
+      empty: allow
     - name: user
+      empty: allow
     - name: password
+      empty: allow
     - name: database
+      empty: allow
   - name: component.redis
     empty: allow
     parameters:
@@ -60,6 +68,7 @@ parameters:
   - name: component.minio
     parameters:
     - name: namespace
+      # value: argoproj
       value: ${dns.name}-${hub.componentName}
       env: NAMESPACE
     - name: name
@@ -94,12 +103,14 @@ parameters:
       empty: allow
     - name: nats.enabled
       value: false
+      env: NATS_ENABLED
     - name: nats.subject
-      value: bucketevents
+      empty: allow
     - name: default.bucket.enabled
       value: true
     - name: default.bucket.name
       value: default
+      env: DEFAULT_BUCKET
     - name: default.bucket.policy
       value: public
     - name: ingress.baseDomain
@@ -122,7 +133,8 @@ parameters:
     - name: image.tag
       value: RELEASE.2018-09-01T00-38-25Z
     - name: chart.version
-      value: 1.6.5
+      value: 2.2.0
+      # value: 1.6.5
       env: CHART_VERSION
 
 outputs:
@@ -141,6 +153,8 @@ outputs:
     brief: Kubenetes secret that holds access and secret key info
     fromTfVar: secret_name
   - name: component.minio.namespace
+    fromTfVar: secret_namespace
+  - name: component.bucket.namespace
     fromTfVar: secret_namespace
   - name: component.minio.secret.accessKeyRef
     brief: Kubenetes secret data field that holds Access Key9
