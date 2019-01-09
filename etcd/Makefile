@@ -1,10 +1,8 @@
 .DEFAULT_GOAL := deploy
 
-export AWS_DEFAULT_REGION  ?= us-east-2
-export HELM_HOME           ?= $(shell pwd)/.helm
-export NAMESPACE    	   ?= etcd-cluster
 export COMPONENT_NAME      ?= etcd-cluster
 export DOMAIN_NAME         ?= dev.kubernetes.delivery
+export NAMESPACE    	   ?= etcd-cluster
 export BACKUP_BUCKET       ?= terraform.agilestacks.com
 export ETCD_IMAGE          ?= quay.io/coreos/etcd
 export ETCD_VERSION        ?= v3.2.24
@@ -13,6 +11,9 @@ export CLUSTER_ENABLED     ?= false
 export BACKUP_ENABLED      ?= false
 export RESTORE_ENABLED     ?= false
 export AWS_SECRET_NAME     ?= awsetcd
+
+export AWS_DEFAULT_REGION  ?= us-east-2
+export HELM_HOME           ?= $(shell pwd)/.helm
 
 RESTORE_SNAPSHOT ?=
 export TS        := $(shell date +"%Y-%m-%d-%H-%M-%S")
