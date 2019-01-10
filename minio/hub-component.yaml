@@ -38,8 +38,6 @@ parameters:
   - name: component.nats
     empty: allow
     parameters:
-    - name: fqdn
-      empty: allow
     - name: username
       empty: allow
     - name: password
@@ -68,11 +66,10 @@ parameters:
   - name: component.minio
     parameters:
     - name: namespace
-      # value: argoproj
-      value: ${dns.name}-${hub.componentName}
+      value: argoproj
       env: NAMESPACE
     - name: name
-      value: minio
+      value: ${dns.name}-${hub.componentName}
       env: COMPONENT_NAME
     - name: region
       value: us-east-1
@@ -100,6 +97,8 @@ parameters:
       value: false
     - name: postgresql.table
       value: bucket-events
+      empty: allow
+    - name: nats.client.fqdn
       empty: allow
     - name: nats.enabled
       value: false

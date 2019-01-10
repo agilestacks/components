@@ -21,10 +21,9 @@ parameters:
 - name: component.nats
   parameters:
   - name: name
-    value: nats-${dns.name}-${hub.componentName}
+    value: ${dns.name}-${hub.componentName}
     env: COMPONENT_NAME
   - name: namespace
-    # primary consumer is argo
     value: argoproj
     env: NAMESPACE
   - name: port
@@ -41,12 +40,6 @@ parameters:
     value: agilestacks/natsboard:latest
     # value: urashidmalik/natsboard:latest
 outputs:
-- name:  component.nats.client.fqdn
-  value: ${component.nats.name}-nats-client.${component.nats.namespace}.svc.cluster.local:${component.nats.port}
-- name:  component.nats.fqdn
-  value: ${component.nats.client.fqdn}
-- name:  component.nats.monitor.fqdn
-  value: ${component.nats.name}-nats-monitoring.${component.nats.namespace}.svc.cluster.local:${component.nats.monitor.port}
 - name:  component.nats.monitor.ingress
   value: ${component.nats.name}.${component.ingress.ssoFqdn}
 - name:  component.nats.monitor.url
@@ -54,7 +47,9 @@ outputs:
 - name:  component.minio.nats.enabled
   value: true
 - name:  component.minio.nats.subject
-  value: bucketevents  
+  value: bucketevents
+- name: component.minio.nats.client.fqdn
+  value: ${component.nats.name}-nats-client.${component.nats.namespace}.svc.cluster.local:${component.nats.port}    
 templates:
   files:
   - "*.template"
