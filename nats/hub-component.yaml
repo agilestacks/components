@@ -24,7 +24,7 @@ parameters:
     value: ${dns.name}-${hub.componentName}
     env: COMPONENT_NAME
   - name: namespace
-    value: argoproj
+    value: nats
     env: NAMESPACE
   - name: port
     value: 4222
@@ -34,11 +34,9 @@ parameters:
     value: 1
   - name: chart.version
     value: '2.0.1'
-    # value: '0.1.1'
     env: CHART_VERSION
   - name: natsboard.image
     value: agilestacks/natsboard:latest
-    # value: urashidmalik/natsboard:latest
 outputs:
 - name:  component.nats.monitor.ingress
   value: ${component.nats.name}.${component.ingress.ssoFqdn}
