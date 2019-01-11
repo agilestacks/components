@@ -19,14 +19,16 @@ Examples: `stable`, `beta`, `alpha`
 EOF
 }
 
-variable "container_linux_version" {
-  type    = "string"
+variable "container_linux_version_gpu" {
+  type = "string"
+
   default = "1855.4.0"
 
   description = <<EOF
-(optional) The Container Linux version to use. Set to `latest` to select the latest available version for the selected update channel.
+(optional) The Container Linux version to use for GPU enabled instances from the selected update channel.
+For regular instances the latest version from the selected update channel will be used.
 
-Examples: `latest`, `1465.6.0`
+Examples: `1465.6.0`
 EOF
 }
 
@@ -166,7 +168,7 @@ EOF
 }
 
 variable "worker_subnet_ids" {
-  type = "string"
+  type    = "string"
   default = ""
 
   description = <<EOF
