@@ -64,19 +64,12 @@ data "ignition_config" "main" {
   ]
 }
 
-data "external" "version" {
-  program = ["sh", "-c", "curl https://${var.container_linux_channel}.release.core-os.net/amd64-usr/current/version.txt | sed -n 's/COREOS_VERSION=\\(.*\\)$/{\"version\": \"\\1\"}/p'"]
-}
-
-locals {
-  json    = "${jsonencode(data.external.version.*.result)}"
-  version = "${replace(local.json, "/.*\"version\":\"(.*)\".*/", "$1")}"
-}
-
 data "aws_ami" "coreos_ami" {
+  most_recent = true
+
   filter {
     name   = "name"
-    values = ["CoreOS-${var.container_linux_channel}-${local.worker_instance_gpu == "true" ? var.container_linux_version_gpu : local.version}-*"]
+    values = ["CoreOS-${var.container_linux_channel}-${local.worker_instance_gpu == "true" ? format("%s-%s",var.container_linux_version_gpu,"*") : "*"}"]
   }
 
   filter {
