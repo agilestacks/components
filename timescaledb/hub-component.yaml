@@ -43,9 +43,13 @@ parameters:
     - name:  port
       value: 5432
     - name: cpu
-      value: 500m
+      value: 2 
     - name: memory
-      value: 500Mi
+      value: 2Gi
+    - name: main.storageClass
+      value: hybrid-storage
+    - name: tablespace.storageClass
+      value: spinny-storage
 
 outputs:
 - name: component.timescaledb.host

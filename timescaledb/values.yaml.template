@@ -1,6 +1,12 @@
 image: "timescale/pg_prometheus"
 imageTag: "0.2.1"
 
+initTablespaces:
+  image: eigenrick/pg-node
+  imageTag: latest
+  
+hyperTableName: metrics
+
 postgresUser: '${component.timescaledb.user}'
 postgresPassword: '${component.timescaledb.password}'
 postgresDatabase: '${component.timescaledb.database}'
@@ -8,19 +14,23 @@ postgresInitdbArgs:
 
 persistence:
   enabled: true
-  # existingClaim:
 
-  ## database data Persistent Volume Storage Class
-  ## If defined, storageClassName: <storageClass>
-  ## If set to "-", storageClassName: "", which disables dynamic provisioning
-  ## If undefined (the default) or set to null, no storageClassName spec is
-  ##   set, choosing the default provisioner if it's exists  (gp2 on AWS, standard on
-  ##   GKE, AWS & OpenStack)
-  ##
-  storageClass: ${component.timescaledb.storageClass}
-  accessMode: ReadWriteOnce
-  size: ${component.timescaledb.volumeSize}
-  subPath: "timescaledb-db"
+  main:
+    storageClass: ${component.timescaledb.main.storageClass}
+    accessMode: ReadWriteOnce
+    size: ${component.timescaledb.volumeSize}
+    subPath: "timescaledb-db"
+
+  tablespaces:
+    storageClass: ${component.timescaledb.tablespace.storageClass}
+    size: ${component.timescaledb.volumeSize}
+    disks:
+    - disk0
+    - disk1
+    - disk2
+    - disk3
+    - disk4
+    - disk5
 
 metrics:
   enabled: true
