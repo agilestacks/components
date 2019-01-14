@@ -51,3 +51,7 @@ parameters:
     - name: poolName
       env: TF_VAR_pool_name
       value: gpu3
+    - name: asgTags
+      env: TF_VAR_autoscaling_group_extra_tags
+      value: '[ { key = "k8s.io/cluster-autoscaler/enabled", value = "true", propagate_at_launch = true } ]'
+      empty: allow
