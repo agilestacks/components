@@ -1,3 +1,4 @@
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,7 +8,7 @@ data:
     db:
       table: {{ .Values.hyperTableName }}
       paths:
-{{- range $name := .Value.persistence.tablespaces.paths }}
+{{- range $name := .Values.persistence.tablespaces.disks }}
       - "/mnt/data/{{- $name -}}"
 {{- end }}
 
@@ -45,7 +46,7 @@ data:
 
     for (let path of paths) {
       client.query(`SELECT attach_tablespace('${path}', '${tablename}', if_not_attached => true);`, (err, res) => {
-	console.log(err ? err.stack : res.rows[0].message) // Hello World!
+        console.log(err ? err.stack : res.rows[0].message) // Hello World!
       });
     }
 

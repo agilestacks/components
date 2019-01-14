@@ -29,6 +29,7 @@ install:
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--replace \
+			--debug \
 			--values values.yaml
 
 undeploy: init

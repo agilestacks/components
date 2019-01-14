@@ -1,4 +1,6 @@
-apiVersion: extensions/v1beta1
+{{- $root := . -}}
+
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ template "timescaledb.fullname" . }}
@@ -99,7 +101,7 @@ spec:
 {{ toYaml .Values.metrics.resources | indent 10 }}
 {{- end }}
       - name: init-tablespaces
-        image: "{{ .Values.init_tablespaces.image }}:{{ .Values.init_tablespaces.imageTag }}"
+        image: "{{ .Values.initTablespaces.image }}:{{ .Values.initTablespaces.imageTag }}"
         imagePullPolicy: {{ default "" .Values.imagePullPolicy | quote }}
         env:
         - name: POSTGRES_USER
@@ -135,13 +137,13 @@ spec:
       resources:
         requests:
           storage: {{ .Values.persistence.main.size }}
-{{- range $name := .Values.persitence.tablespaces.disks }}
+{{- range $name := .Values.persistence.tablespaces.disks }}
   - metadata:
       name: {{- $name -}}
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: {{ .Values.persistence.tablespaces.storageClass }}
+      storageClassName: {{ $root.Values.persistence.tablespaces.storageClass }}
       resources:
         requests:
-          storage: {{ .Values.persistence.tablespaces.size }}
-{{- end}}
+          storage: {{ $root.Values.persistence.tablespaces.size }}
+{{- end }}
