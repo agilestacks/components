@@ -28,17 +28,33 @@ parameters:
     empty: allow
   - name: endpoint
     empty: allow
+- name: component.minio
+  parameters:
+  - name: default.bucket.name
+    empty: allow
+  - name: region
+    empty: allow
+  - name: accessKey
+    empty: allow
+  - name: secretKey
+    empty: allow
+  - name: service.host
+    empty: allow    
 - name: component.ingress.staticIp
   env: TF_VAR_ingress_static_ip
   empty: allow
+- name: component.ingress.protocol  
 - name: component.acm.certificateArn
   empty: allow
 - name: terraform.bucket.region
-  env: STATE_REGION
+  env: STATE_REGION  
 - name: terraform.bucket.name
   env: STATE_BUCKET  
 - name: component.harbor
   parameters:
+  - name: storage
+    env: STORAGE_KIND
+    empty: allow  
   - name: name
     value: harbor
     env: TF_VAR_component
@@ -69,10 +85,10 @@ outputs:
   fromTfVar: pull_secret
 - name: component.harbor.url
   brief: Harbor URL
-  value: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain} 
+  value: ${component.ingress.protocol}://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain} 
 
 templates:
   files:
-  # - "*.template"
-  - "aws/*.template"
+  - "aws/s3/*.template"
+  - "aws/minio/*.template"  
   - "hybrid/*.template"

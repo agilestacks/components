@@ -15,6 +15,8 @@ export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain)-$(TF_VAR_component)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
 export HELM_HOME ?= $(shell pwd)/.helm
+export CLOUD_KIND  ?= aws
+export STORAGE_KIND ?= s3
 
 NGINX_CHART          ?= stable/nginx-ingress
 NGINX_CHART_VERSION  ?= 0.26.0
@@ -58,7 +60,7 @@ harbor: $(HELM_HOME)
 			--namespace $(TF_VAR_namespace) \
 			--wait \
 			--version $(HARBOR_CHART_VERSION) \
-			--values values-harbor.yaml
+			--values $(STORAGE_KIND)/values-harbor.yaml
 .PHONY: harbor
 
 nginx:
