@@ -89,6 +89,7 @@ outputs:
 
 templates:
   files:
+  - "aws/*.template" 
   - "aws/s3/*.template"
   - "aws/minio/*.template"  
   - "hybrid/*.template"
