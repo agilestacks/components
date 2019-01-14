@@ -17,7 +17,9 @@ parameters:
   - name: dns.domain
     env: DOMAIN_NAME
   - name: cloud.kind
-    env: CLOUD_KIND
+  - name: cloud.region
+  - name: dns.name
+  - name: dns.baseDomain
   - name: component.cluster-autoscaler
     parameters:
     - name:  name
@@ -29,14 +31,8 @@ parameters:
       env:   NAMESPACE
     - name:  version
       value: v1.12.1
-    - name: cloud.region
-      value: us-east-1
-    - name: asg.name
-      value: workers-stack-dev.superhub.io
-    - name: asg.minSize
-      value: 2
-    - name: asg.maxSize
-      value: 6
+    - name: asgTag
+      value: k8s.io/cluster-autoscaler/enabled
 
 templates:
   files:
