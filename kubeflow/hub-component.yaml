@@ -50,10 +50,6 @@ parameters:
     - name: environment
       value: cloud
       env: KF_ENV
-    - name: githubToken
-      value: ""
-      env: GITHUB_TOKEN
-      empty: allow
     - name: argo
       parameters:
       - name: version
