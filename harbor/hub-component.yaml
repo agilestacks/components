@@ -40,7 +40,7 @@ parameters:
   - name: default.bucket.name
     value: default
 - name: component.bucket.endpoint
-
+  empty: allow
 
 - name: component.ingress.staticIp
   env: TF_VAR_ingress_static_ip
@@ -58,7 +58,7 @@ parameters:
     env: STORAGE_KIND
     empty: allow  
   - name: name
-    value: harbor
+    value: ${dns.name}-${hub.componentName}
     env: TF_VAR_component
   - name: namespace
     value: harbor
