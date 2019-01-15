@@ -20,6 +20,7 @@ parameters:
   env: AWS_DEFAULT_REGION
 - name: cloud.kind
   env: CLOUD_KIND
+
 - name: component.s3
   parameters: 
   - name: bucket
@@ -30,8 +31,6 @@ parameters:
     empty: allow
 - name: component.minio
   parameters:
-  - name: default.bucket.name
-    empty: allow
   - name: region
     empty: allow
   - name: accessKey
@@ -39,7 +38,12 @@ parameters:
   - name: secretKey
     empty: allow
   - name: service.host
-    empty: allow    
+    empty: allow
+  - name: service.port
+    empty: allow
+  - name: default.bucket.name
+    value: default
+
 - name: component.ingress.staticIp
   env: TF_VAR_ingress_static_ip
   empty: allow

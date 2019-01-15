@@ -24,4 +24,5 @@ registry:
       bucket: ${component.minio.default.bucket.name}
       accesskey: ${component.minio.accessKey}
       secretkey: ${component.minio.secretKey}
-      regionendpoint: ${component.minio.service.host}
+      regionendpoint: '${component.minio.service.host}:${component.minio.service.port}'
+
