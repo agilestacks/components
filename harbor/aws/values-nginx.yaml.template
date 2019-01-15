@@ -34,7 +34,7 @@ controller:
   ## Must be <namespace>/<service_name>
   ##
 
-  defaultBackendService: "${component.harbor.namespace}/${component.harbor.name}-${component.harbor.name}-ui"
+  defaultBackendService: "${component.harbor.namespace}/${component.harbor.name}-harbor-ui"
 
   ## Election ID to use for status update
   ##
