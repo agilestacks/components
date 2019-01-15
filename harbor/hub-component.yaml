@@ -37,12 +37,10 @@ parameters:
     empty: allow
   - name: secretKey
     empty: allow
-  - name: service.host
-    empty: allow
-  - name: service.port
-    empty: allow
   - name: default.bucket.name
     value: default
+- name: component.bucket.endpoint
+
 
 - name: component.ingress.staticIp
   env: TF_VAR_ingress_static_ip
