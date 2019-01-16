@@ -51,9 +51,12 @@ purge:
 		$(helm) delete --purge $(TF_VAR_component)-nginx || exit 0
 
 harbor: $(HELM_HOME)
+	- $(kubectl) create -f aws-storage-class.yaml
 	$(helm) init --client-only --upgrade --wait
 	- $(git) clone --depth 1 -b $(HARBOR_CHART_VERSION) https://github.com/goharbor/harbor-helm $(HELM_HOME)/harbor
 	$(helm) dependency update $(HELM_HOME)/harbor
+	cp registry-dpl.yaml $(HELM_HOME)/harbor/templates/registry
+	cp chartmuseum-dpl.yaml $(HELM_HOME)/harbor/templates/chartmuseum
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm)	install $(HELM_HOME)/harbor \
 		    --name $(TF_VAR_component) \

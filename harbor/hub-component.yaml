@@ -76,6 +76,8 @@ parameters:
     value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
   - name: nginx.version
     value: 0.12.0
+  - name: storageClass
+    value: harbor-storage-class
 - name: component.cert-manager
   parameters:
   - name: issuer-email

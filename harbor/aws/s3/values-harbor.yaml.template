@@ -8,14 +8,18 @@ ingress:
   enabled: true
   tls:
     enabled: false
+
 persistence:
-  enabled: false
+  enabled: true
+
 redis:
   master:
     persistence:
-      enabled: false 
+      enabled: false
+
 externalURL: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
 externalPort: 
+
 registry:
   storage:
     type: s3
@@ -23,4 +27,12 @@ registry:
       region: ${component.s3.region}
       bucket: ${component.s3.bucket}
       
+database:
+  type: internal
+  internal:
+    volumes:
+      data:
+        storageClass: "${component.harbor.storageClass}"
+        accessMode: ReadWriteOnce
+        size: 10Gi   
       

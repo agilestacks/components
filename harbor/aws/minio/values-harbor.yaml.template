@@ -8,14 +8,18 @@ ingress:
   enabled: true
   tls:
     enabled: false
+
 persistence:
-  enabled: false
+  enabled: true
+
 redis:
   master:
     persistence:
-      enabled: false 
+      enabled: false
+
 externalURL: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
-externalPort: 
+externalPort:
+
 registry:
   storage:
     type: s3
@@ -26,3 +30,11 @@ registry:
       secretkey: ${component.minio.secretKey}
       regionendpoint: ${component.ingress.protocol}://${component.bucket.endpoint}
 
+database:
+  type: internal
+  internal:
+    volumes:
+      data:
+        storageClass: "${component.harbor.storageClass}"
+        accessMode: ReadWriteOnce
+        size: 10Gi
