@@ -39,7 +39,7 @@ parameters:
       value: kubeflow
       env: TF_VAR_namespace
     - name: version
-      value: v0.3.4
+      value: v0.4.0
       env: KUBEFLOW_VERSION
     - name:  urlPrefix
       value: kubeflow.svc
@@ -63,7 +63,7 @@ parameters:
     - name: pipelines
       parameters:
       - name: image
-        value: agilestacks/bootstrapper:0.1.4
+        value: agilestacks/bootstrapper:0.1.7
 
 
 outputs:
