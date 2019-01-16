@@ -15,10 +15,21 @@ spec:
     metadata:
       labels:
         k8s-app: ${component.kubernetes-dashboard.name}
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+        seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
     spec:
+      priorityClassName: system-cluster-critical
       containers:
       - name: ${component.kubernetes-dashboard.name}
         image: gcr.io/google_containers/kubernetes-dashboard-amd64:${component.kubernetes-dashboard.version}
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
         ports:
         - containerPort: 9090
           protocol: TCP
@@ -27,6 +38,7 @@ spec:
           # If not specified, Dashboard will attempt to auto discover the API server and connect
           # to it. Uncomment only if the default does not work.
           # - --apiserver-host=http://my-address:port
+          - --disable-settings-authorizer=true
         volumeMounts:
           # Create on-disk volume to store exec logs
         - mountPath: /tmp
@@ -45,3 +57,5 @@ spec:
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
