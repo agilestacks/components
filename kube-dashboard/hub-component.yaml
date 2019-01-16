@@ -37,7 +37,7 @@ parameters:
     - name:  ingress.path
       value: /
     - name:  rbac.kind
-      value: admin
+      value: read-only
       env:   RBAC_KIND
 
 templates:
