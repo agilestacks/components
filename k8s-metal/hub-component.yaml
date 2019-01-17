@@ -55,8 +55,11 @@ outputs:
   - name: kubernetes.api.endpoint
     fromTfVar: api_endpoint
   - name: kubernetes.api.caCert
+    kind: secret/certificate
   - name: kubernetes.api.clientCert
+    kind: secret/certificate
   - name: kubernetes.api.clientKey
+    kind: secret/privateKey
 
 templates:
   files:

@@ -59,6 +59,7 @@ outputs:
   - name: kubernetes.flavor
   - name: kubernetes.api.endpoint
   - name: kubernetes.api.caCert
+    kind: secret/certificate
   - name: kubernetes.eks.cluster
 
 templates:
