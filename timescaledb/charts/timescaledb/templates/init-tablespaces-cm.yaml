@@ -1,54 +1,30 @@
-
+{{- $tableName := .Values.hyperTableName -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: tsdb-tablespaces
 data:
-  config.yml: |
-    db:
-      table: {{ .Values.hyperTableName }}
-      paths:
+  init_tablespaces.sh: |
+    #!/bin/bash
+  
+    #give these to pg
+    echo "changing perms of /mnt/data"
+    chown -R 70:70 /mnt/data/
+    # wait for the metrics hypertable to be created
+    echo "checking for metrics table"
+    psql -c "SELECT to_regclass('public.{{- $tableName -}}_values');"
+    while [ $? -ne 0 ]; do
+      echo "waiting for metrics table"
+      sleep 2
+      psql -c "SELECT to_regclass('public.{{- $tableName -}}_values');"
+    done
+    
+    echo "metrics table present, attaching tablespaces"
+    #then map in the tablespaces
 {{- range $name := .Values.persistence.tablespaces.disks }}
-      - "/mnt/data/{{- $name -}}"
+      psql -c "CREATE TABLESPACE {{ $name }} LOCATION '/mnt/data/{{- $name -}}'" || true
+      psql -c "SELECT attach_tablespace('{{- $name -}}', '{{- $tableName -}}_values', if_not_attached => true)"
 {{- end }}
+    echo "Done!"
 
-  init_tablespaces.js: |
-    #!/usr/bin/env node
-
-    const yaml = require('js-yaml');
-    const fs   = require('fs');
-    const { Client } = require('pg')
-
-    const CONFIGFILE='/config.yml';
-    const client = new Client()
-
-    let doc;
-    let paths; 
-    let tablename;
-     
-    // Get document, or throw exception on error
-    try {
-      doc = yaml.safeLoad(fs.readFileSync(CONFIGFILE, 'utf8'));
-      paths = ['db']['paths'];
-      tablename = ['db']['table'];
-
-    } catch (e) {
-      console.log(e);
-      process.exit(111);
-    }
-
-    try {
-      client.connect();
-    } catch (e) {
-      console.log(e);
-      process.exit(111);
-    }
-
-    for (let path of paths) {
-      client.query(`SELECT attach_tablespace('${path}', '${tablename}', if_not_attached => true);`, (err, res) => {
-        console.log(err ? err.stack : res.rows[0].message) // Hello World!
-      });
-    }
-
-    client.end()
-
+    sleep infinity

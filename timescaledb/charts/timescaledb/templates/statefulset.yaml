@@ -73,6 +73,9 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 10 }}
         volumeMounts:
+        - name: tablespaces
+          mountPath: "/init_ts" 
+          readOnly: true
         - name: main
           mountPath: /var/lib/timescaledb/data/pgdata
           subPath: {{ .Values.persistence.subPath }}
@@ -101,20 +104,34 @@ spec:
 {{ toYaml .Values.metrics.resources | indent 10 }}
 {{- end }}
       - name: init-tablespaces
-        image: "{{ .Values.initTablespaces.image }}:{{ .Values.initTablespaces.imageTag }}"
+        image: postgres
+        restartPolicy: Never
         imagePullPolicy: {{ default "" .Values.imagePullPolicy | quote }}
+        securityContext:
+          privileged: true
         env:
+        - name: PGHOST
+          valueFrom: { fieldRef: { fieldPath: status.podIP } }
         - name: POSTGRES_USER
           value: {{ default "postgres" .Values.postgresUser | quote }}
         - name: PGUSER
           value: {{ default "postgres" .Values.postgresUser | quote }}
         - name: POSTGRES_DB
           value: {{ default "" .Values.postgresDatabase | quote }}
-        args: ["/init_ts/create_tablespaces.js"]
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "timescaledb.fullname" . }}
+              key: postgres-password
+        args: ["/bin/bash", "/init_ts/init_tablespaces.sh"]
         volumeMounts:
           - name: tablespaces
             mountPath: "/init_ts" 
             readOnly: true
+{{- range $name := .Values.persistence.tablespaces.disks }}
+          - name: {{ $name }}
+            mountPath: /mnt/data/{{- $name -}}
+{{- end }}
       volumes:
       - name: tablespaces
         configMap:
@@ -139,7 +156,7 @@ spec:
           storage: {{ .Values.persistence.main.size }}
 {{- range $name := .Values.persistence.tablespaces.disks }}
   - metadata:
-      name: {{- $name -}}
+      name: {{ $name }}
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: {{ $root.Values.persistence.tablespaces.storageClass }}

@@ -37,7 +37,7 @@ parameters:
       # conditional defaults?
       # value: pd-ssd
     - name:  volumeSize
-      value: 800Gi
+      value: 800G
     - name:  storageClass
       value: ${cloud.kind}-storage
     - name:  port

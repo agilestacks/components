@@ -248,9 +248,9 @@ spec:
           args:
           - --cluster-resource-namespace=$(POD_NAMESPACE)
           - --leader-election-namespace=$(POD_NAMESPACE)
-          - --require-annotations=false
+          - --require-annotations=${component.cert-manager.require-annotations}
           - --default-issuer-kind=ClusterIssuer
-          - --default-issuer-name=letsencrypt-prod
+          - --default-issuer-name=${component.cert-manager.default-issuer}
           env:
           - name: POD_NAMESPACE
             valueFrom:

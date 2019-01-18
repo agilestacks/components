@@ -18,7 +18,7 @@ persistence:
   main:
     storageClass: ${component.timescaledb.main.storageClass}
     accessMode: ReadWriteOnce
-    size: ${component.timescaledb.volumeSize}
+    size: 20G
     subPath: "timescaledb-db"
 
   tablespaces:

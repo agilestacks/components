@@ -27,7 +27,12 @@ parameters:
   - name: issuer-email
     value: admin@superhub.io
     env: EMAIL
-
+  - name: require-annotations
+    value: false
+  - name: default-issuer
+    value: letsencrypt-prod
+  - name: issuer-admin
+    value: admin@superhub.io
 outputs: [] 
 templates:
   files:
