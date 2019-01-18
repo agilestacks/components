@@ -1,0 +1,49 @@
+imagePullPolicy: &image_pull_policy IfNotPresent
+persistence_enabled: &persistence_enabled true
+harborAdminPassword: ${component.harbor.password}
+selfRegistration: "off"
+externalProtocol: https
+ingress:
+  enabled: true
+  annotations:
+    ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    kubernetes.io/ingress.class: "nginx"    
+    certmanager.k8s.io/issuer: "letsencrypt-prod"
+    certmanager.k8s.io/acme-challenge-type: http01
+  tls:
+    enabled: true
+    secretName: "harbor-tls-cert"
+  hosts:
+    core: ${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+    notary: notary.${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+
+persistence:
+  enabled: true
+
+redis:
+  master:
+    persistence:
+      enabled: false
+
+externalURL: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+externalPort:
+
+registry:
+  storage:
+    type: s3
+    s3: 
+      region: ${component.minio.region}
+      bucket: ${component.minio.default.bucket.name}
+      accesskey: ${component.minio.accessKey}
+      secretkey: ${component.minio.secretKey}
+      regionendpoint: ${component.ingress.protocol}://${component.bucket.endpoint}
+
+database:
+  type: internal
+  internal:
+    volumes:
+      data:
+        storageClass: "hybrid-storage"
+        accessMode: ReadWriteOnce
+        size: 10Gi

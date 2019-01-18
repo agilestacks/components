@@ -97,4 +97,5 @@ templates:
   - "aws/s3/*.template"
   - "aws/minio/*.template"  
   - "aws/local/*.template"
-  - "hybrid/*.template"
+  - "hybrid/local/*.template"
+  - "hybrid/minio/*.template"
