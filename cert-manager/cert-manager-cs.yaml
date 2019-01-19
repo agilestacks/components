@@ -191,7 +191,7 @@ spec:
       serviceAccountName: cert-manager-webhook
       containers:
         - name: webhook
-          image: "quay.io/jetstack/cert-manager-webhook:canary"
+          image: "eigenrick/cert-manager-webhook:canary"
           imagePullPolicy: Always
           args:
           - --v=12
@@ -243,11 +243,14 @@ spec:
       serviceAccountName: cert-manager
       containers:
         - name: cert-manager
-          image: "quay.io/jetstack/cert-manager-controller:canary"
+          image: "eigenrick/cert-manager-controller:canary"
           imagePullPolicy: Always
           args:
           - --cluster-resource-namespace=$(POD_NAMESPACE)
           - --leader-election-namespace=$(POD_NAMESPACE)
+          - --require-annotations=false
+          - --default-issuer-kind=ClusterIssuer
+          - --default-issuer-name=letsencrypt-prod
           env:
           - name: POD_NAMESPACE
             valueFrom:

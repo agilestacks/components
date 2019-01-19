@@ -60,7 +60,10 @@ outputs:
     fromTfVar: api_endpoint
   - name: kubernetes.api.caCert
     fromTfVar: api_ca_crt
+    kind: secret/certificate
   - name: kubernetes.api.clientCert
     fromTfVar: api_client_crt
+    kind: secret/certificate
   - name: kubernetes.api.clientKey
     fromTfVar: api_client_key
+    kind: secret/privateKey

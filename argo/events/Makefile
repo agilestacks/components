@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := deploy
 
-TF_VAR_namespace ?= argoproj
+NAMESPACE ?= argoproj
 DOMAIN_NAME      ?= dev.stacks.delivery
 
 export GOPATH := $(realpath .)/.go
@@ -50,10 +50,8 @@ deploy: namespace
 undeploy:
 	- $(kubectl) delete -f sensor-controller-deployment.yaml
 	- $(kubectl) delete -f sensor-controller-configmap.yaml
-	- $(kubectl) delete -f sensor-crd.yaml
 	- $(kubectl) delete -f gateway-controller-deployment.yaml
 	- $(kubectl) delete -f gateway-controller-configmap.yaml
-	- $(kubectl) delete -f gateway-crd.yaml
 	- $(kubectl) delete -f argo-events-cluster-roles.yaml
 	- $(kubectl) delete -f argo-events-sa.yaml
 .PHONY: undeploy

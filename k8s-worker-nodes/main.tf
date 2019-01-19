@@ -18,27 +18,32 @@ data "aws_s3_bucket_object" "bootstrap_script" {
 
 locals {
   gpu_instance_types = [
-    "p2.xlarge",
-    "p2.8xlarge",
-    "p2.16xlarge",
     "p3.2xlarge",
     "p3.8xlarge",
     "p3.16xlarge",
+    "p3dn.24xlarge",
+    "p2.xlarge",
+    "p2.8xlarge",
+    "p2.16xlarge",
+    "g3s.xlarge",
     "g3.4xlarge",
     "g3.8xlarge",
-    "g3.16xlarge"
+    "g3.16xlarge",
   ]
+
   worker_instance_gpu = "${contains(local.gpu_instance_types, var.worker_instance_type)}"
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
-  bucket       = "${var.s3_bucket}"
-  key          = "k8s-worker-nodes/${var.pool_name}/ignition_worker.json"
-  content      = "${local.worker_instance_gpu ?
+  bucket = "${var.s3_bucket}"
+  key    = "k8s-worker-nodes/${var.pool_name}/ignition_worker.json"
+
+  content = "${local.worker_instance_gpu ?
     replace(data.aws_s3_bucket_object.bootstrap_script.body,
       "--node-labels=node-role.kubernetes.io/node",
       "--node-labels=node-role.kubernetes.io/node,gpu=true") :
     data.aws_s3_bucket_object.bootstrap_script.body}"
+
   content_type = "text/json"
   acl          = "private"
 }
@@ -51,7 +56,6 @@ data "ignition_systemd_unit" "nvidia" {
 
 data "ignition_config" "main" {
   append {
-    # https://github.com/terraform-providers/terraform-provider-ignition/issues/12
     source = "${format("s3://%s/%s",
       "${var.s3_bucket}",
       "k8s-worker-nodes/${var.pool_name}/ignition_worker.json")}"
@@ -63,9 +67,11 @@ data "ignition_config" "main" {
 }
 
 data "aws_ami" "coreos_ami" {
+  most_recent = true
+
   filter {
     name   = "name"
-    values = ["CoreOS-${var.container_linux_channel}-${var.container_linux_version}-*"]
+    values = ["CoreOS-${var.container_linux_channel}-${local.worker_instance_gpu == "true" ? format("%s-%s",var.container_linux_version_gpu,"*") : "*"}"]
   }
 
   filter {

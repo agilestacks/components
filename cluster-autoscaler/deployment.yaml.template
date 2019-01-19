@@ -37,10 +37,11 @@ spec:
             - --stderrthreshold=info
             - --cloud-provider=${cloud.kind}
             - --skip-nodes-with-local-storage=false
-            - --nodes=${component.cluster-autoscaler.asg.minSize}:${component.cluster-autoscaler.asg.maxSize}:${component.cluster-autoscaler.asg.name}
+            - --expander=least-waste
+            - --node-group-auto-discovery=asg:tag=${component.cluster-autoscaler.asgTag},kubernetes.io/cluster/${dns.name}-${dns.baseDomain}
           env:
             - name: AWS_REGION
-              value: ${component.cluster-autoscaler.cloud.region}
+              value: ${cloud.region}
           volumeMounts:
             - name: ssl-certs
               mountPath: /etc/ssl/certs/ca-certificates.crt

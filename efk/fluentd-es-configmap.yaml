@@ -1,7 +1,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: fluentd-es-config-v0.1.6
+  name: fluentd-es-config-v0.2.0
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
@@ -141,6 +141,39 @@ data:
       max_bytes 500000
       max_lines 1000
     </match>
+
+    # Concatenate multi-line logs
+    <filter **>
+      @id filter_concat
+      @type concat
+      key message
+      multiline_end_regexp /\n$/
+      separator ""
+    </filter>
+
+    # Enriches records with Kubernetes metadata
+    <filter kubernetes.**>
+      @id filter_kubernetes_metadata
+      @type kubernetes_metadata
+    </filter>
+
+    # Fixes json fields in Elasticsearch
+    <filter kubernetes.**>
+      @id filter_parser
+      @type parser
+      key_name log
+      reserve_data true
+      remove_key_name_field true
+      <parse>
+        @type multi_format
+        <pattern>
+          format json
+        </pattern>
+        <pattern>
+          format none
+        </pattern>
+      </parse>
+    </filter>
 
   system.input.conf: |-
     # Example:
@@ -319,7 +352,7 @@ data:
     <source>
       @id journald-container-runtime
       @type systemd
-      matches [{ "_SYSTEMD_UNIT": "{{ container_runtime }}.service" }]
+      matches [{ "_SYSTEMD_UNIT": "{{ fluentd_container_runtime_service }}.service" }]
       <storage>
         @type local
         persistent true
@@ -423,6 +456,7 @@ data:
   forward.input.conf: |-
     # Takes the messages sent over TCP
     <source>
+      @id forward
       @type forward
     </source>
 
@@ -430,15 +464,18 @@ data:
     # Prometheus Exporter Plugin
     # input plugin that exports metrics
     <source>
+      @id prometheus
       @type prometheus
     </source>
 
     <source>
+      @id monitor_agent
       @type monitor_agent
     </source>
 
     # input plugin that collects metrics from MonitorAgent
     <source>
+      @id prometheus_monitor
       @type prometheus_monitor
       <labels>
         host ${hostname}
@@ -447,6 +484,7 @@ data:
 
     # input plugin that collects metrics for output plugin
     <source>
+      @id prometheus_output_monitor
       @type prometheus_output_monitor
       <labels>
         host ${hostname}
@@ -455,6 +493,7 @@ data:
 
     # input plugin that collects metrics for in_tail plugin
     <source>
+      @id prometheus_tail_monitor
       @type prometheus_tail_monitor
       <labels>
         host ${hostname}
@@ -462,41 +501,29 @@ data:
     </source>
 
   output.conf: |-
-    # Enriches records with Kubernetes metadata
-    <filter kubernetes.**>
-      @type kubernetes_metadata
-    </filter>
-
-    # Concatenate multi-line logs
-    <filter **>
-      @type concat
-      key message
-      multiline_end_regexp /\n$/
-      separator ""
-    </filter>
-
-    <match **>
-      @id elasticsearch
-      @type elasticsearch
-      @log_level info
-      type_name fluentd
-      include_tag_key true
-      host "#{ENV['ELASTICSEARCH_HOST']}"
-      port "#{ENV['ELASTICSEARCH_PORT']}"
-      user "#{ENV['ELASTICSEARCH_USERNAME']}"
-      password "#{ENV['ELASTICSEARCH_PASSWORD']}"
-      logstash_format true
-      <buffer>
-        @type file
-        path /var/log/fluentd-buffers/kubernetes.system.buffer
-        flush_mode interval
-        retry_type exponential_backoff
-        flush_thread_count 2
-        flush_interval 5s
-        retry_forever
-        retry_max_interval 30
-        chunk_limit_size 2M
-        queue_limit_length 8
-        overflow_action block
-      </buffer>
-    </match>
+      <match **>
+        @id elasticsearch
+        @type elasticsearch
+        @log_level info
+        type_name _doc
+        include_tag_key true
+        host "#{ENV['ELASTICSEARCH_HOST']}"
+        port "#{ENV['ELASTICSEARCH_PORT']}"
+        user "#{ENV['ELASTICSEARCH_USERNAME']}"
+        password "#{ENV['ELASTICSEARCH_PASSWORD']}"
+        logstash_format true
+        log_es_400_reason true
+        <buffer>
+          @type file
+          path /var/log/fluentd-buffers/kubernetes.system.buffer
+          flush_mode interval
+          retry_type exponential_backoff
+          flush_thread_count 8
+          flush_interval 5s
+          retry_forever
+          retry_max_interval 30
+          chunk_limit_size 2M
+          queue_limit_length 32
+          overflow_action block
+        </buffer>
+      </match>

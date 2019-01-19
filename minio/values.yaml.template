@@ -173,7 +173,7 @@ minioConfig:
     autoDeleted: false
   nats:
     enable: ${component.minio.nats.enabled}
-    address: "${component.nats.fqdn}"
+    address: "${component.minio.nats.client.fqdn}"
     subject: "${component.minio.nats.subject}"
     username: "${component.nats.username}"
     password: "${component.nats.password}"

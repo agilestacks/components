@@ -1,0 +1,56 @@
+harborAdminPassword: ${component.harbor.password}
+selfRegistration: "off"
+externalProtocol: https
+ingress:
+  hosts:
+    core: ${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+    notary: notary.${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+  enabled: true
+  tls:
+    enabled: false
+
+persistence:
+  enabled: true
+
+redis:
+  master:
+    persistence:
+      enabled: false
+
+externalURL: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+externalPort:
+
+registry:
+  storage:
+    type: filesystem
+    filesystem:
+      rootdirectory: /var/lib/registry
+  volumes:
+    data:
+      storageClass: "${component.harbor.storageClass}"
+      size: 900Gi
+      accessMode: ReadWriteOnce
+
+database:
+  type: internal
+  internal:
+    volumes:
+      data:
+        storageClass: "${component.harbor.storageClass}"
+        accessMode: ReadWriteOnce
+        size: 10Gi
+
+chartmuseum:
+  enabled: true
+  image:
+    repository: goharbor/chartmuseum-photon
+    tag: v0.7.1-v1.6.0
+    pullPolicy: IfNotPresent
+  volumes:
+    data:
+      storageClass: "${component.harbor.storageClass}"
+      accessMode: ReadWriteOnce
+      size: 5Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

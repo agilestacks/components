@@ -62,7 +62,7 @@ parameters:
   - name: version
     value: v2.2.0
   - name: namespace
-    value: argoproj
+    value: ${dns.name}-${hub.componentName}
     env: NAMESPACE
   - name: repo.type
     value: minio
@@ -119,7 +119,7 @@ outputs:
   fromTfVar: iam_user_arn
 - name: component.argo.ingress
   brief: URL to connect to argo-ui
-  value: ${component.argo.name}.${component.argo.ingress.baseDomain}
+  value: ${component.argo.namespace}.${component.argo.ingress.baseDomain}
 - name: component.argo.url
   brief: Argo UI
   value: ${component.ingress.protocol}://${component.argo.ingress}

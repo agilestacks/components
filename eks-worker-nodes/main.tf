@@ -17,6 +17,8 @@ locals {
     "p3.2xlarge",
     "p3.8xlarge",
     "p3.16xlarge",
+    "p3dn.24xlarge",
+    "g3s.xlarge",
     "g3.4xlarge",
     "g3.8xlarge",
     "g3.16xlarge"

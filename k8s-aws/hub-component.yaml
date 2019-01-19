@@ -53,8 +53,11 @@ outputs:
     value: k8s-aws
   - name: kubernetes.api.endpoint
   - name: kubernetes.api.caCert
+    kind: secret/certificate
   - name: kubernetes.api.clientCert
+    kind: secret/certificate
   - name: kubernetes.api.clientKey
+    kind: secret/privateKey
 
 templates:
   files:

@@ -53,7 +53,7 @@ destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
 import:
-	$(eval WORKERS=$(shell echo workers-$(TF_VAR_pool_name)-$(TF_VAR_domain) | cut -c 0-63))
+	$(eval WORKERS=$(shell echo workers-$(TF_VAR_pool_name)-$(TF_VAR_domain) | cut -c 1-63))
 	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers $(WORKERS)
 
 -include ../Mk/phonies

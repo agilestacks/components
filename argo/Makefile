@@ -11,6 +11,7 @@ namespace:
 
 deploy: namespace
 	$(MAKE) -C $(REPO_TYPE) $@
+	-$(kubectl) apply -f crd.yaml
 	$(kubectl) apply -f install.yaml
 	$(kubectl) apply -f ingress.yaml
 	- $(kubectl) create rolebinding default-admin --clusterrole=admin --serviceaccount=$(NAMESPACE):default

@@ -18,6 +18,8 @@ deployKubeScheduler: True
 deployKubeControllerManager: True
 deployKubeState: True
 deployExporterNode: true
+deployTraefik: True
+deployAutoscaler: True
 
 
 ##Custom Labels to be added to Prometheus Rules ConfigMap

@@ -37,15 +37,19 @@ parameters:
       # conditional defaults?
       # value: pd-ssd
     - name:  volumeSize
-      value: 800Gi
+      value: 800G
     - name:  storageClass
       value: ${cloud.kind}-storage
     - name:  port
       value: 5432
     - name: cpu
-      value: 500m
+      value: 2 
     - name: memory
-      value: 500Mi
+      value: 2Gi
+    - name: main.storageClass
+      value: hybrid-storage
+    - name: tablespace.storageClass
+      value: spinny-storage
 
 outputs:
 - name: component.timescaledb.host

@@ -12,6 +12,7 @@ export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain)-$(TF_VAR_component)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 export HELM_HOME   ?= $(shell pwd)/.helm
 export CLOUD_KIND  ?= aws
+export STORAGE_KIND ?= s3
 
 deploy:
 	$(MAKE) -C $(CLOUD_KIND) $@ 

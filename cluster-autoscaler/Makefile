@@ -3,7 +3,6 @@
 COMPONENT_NAME ?= cluster-autoscaler
 DOMAIN_NAME    ?= dev.dev.superhub.io
 NAMESPACE      ?= kube-system
-CLOUD_KIND     ?= aws
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
