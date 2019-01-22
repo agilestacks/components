@@ -17,6 +17,6 @@ echo zone = \$($meta/placement/availability-zone)
 echo vpc = \$($macs/\${mac}vpc-id)
 echo vpc_cidr_block = \$($macs/\${mac}vpc-ipv4-cidr-block)
 echo worker_subnet_id = \$($macs/\${mac}subnet-id)
-echo worker_sg_id = \$($macs/\${mac}security-group-ids | head -)
+echo worker_sg_id = \$($macs/\${mac}security-group-ids | head -1)
 echo
 "
