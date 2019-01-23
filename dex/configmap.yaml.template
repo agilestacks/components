@@ -29,6 +29,10 @@ data:
         userInfoURI: ${component.dex.okta.issuer}/oauth2/v1/userinfo
     oauth2:
       skipApprovalScreen: true
+    expiry:
+      signingKeys: "6h"
+      idTokens: "24h"
+      authRequests: "3h"
     staticClients:
     - id: agilestacks-console
       redirectURIs: []
