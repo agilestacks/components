@@ -98,7 +98,7 @@ parameters:
   value: arn:aws:acm:...
 
 # optionally
-# the prefixes does not conflict with default Traefik prefixes
+# these prefixes does not conflict with default Traefik prefixes
 # you can have app/apps here too
 - component: public-ingress
   name: component.ingress
@@ -115,7 +115,6 @@ parameters:
   name: component.ingress.dashboard.auth
   # admin/secret
   value: '{basic: { admin: "$apr1$11TLkGsi$yfpfzk0inznhPal5OE3Fl/"}}'
-
 ```
 
 Traefik will serve under `*.pub/s.cool-apps.com`.
@@ -130,6 +129,14 @@ parameters:
 ```
 
 Every ingress that goes into `applications` namespace (or annotated with `kubernetes.io/ingress.class: my-public-apps`) is controlled by `public-ingress` Traefik. You may also omit namespace parameters if you choose to switch on ingress class.
+
+### No Traefik Dashboard
+
+When `component.traefik.kubernetes.namespaces` option is used you may get 404 HTTP error visiting Traefik Dashboard URL. The problem is that public ingress Traefik might be installed in the namespace is does not _oversee_. By default Traefik installs into `ingress` namespace that is managed by default Traefik. Public ingress Traefik cannot not see it’s own ingress object / route. There are two options:
+1. In case you segregate controllers both on ingress class and namespace, then add `ingress` namespace to `component.traefik.kubernetes.namespaces` of `public-ingress`. It won’t conflict with default Traefik because of `ingressClass`.
+2. Otherwise install public ingress into some of the namespaces it oversees or in it’s own namespace. The parameter controlling namespace to install into is `component.ingress.namespace`.
+
+### Hub parameters
 
 Even though you might not use Hub component model for your services initially - using Helm or `kubectl` directly instead, in case you do then you may want to distinguish duplicates of `component.ingress.*` outputs. If deployment order - last component outputs wins - favor your configuration, then you don't need to do anything. Alternatively, there are two options:
 
@@ -146,6 +153,6 @@ parameters:
   kind: link
 ```
 
-Traefik component also emit `component.ingress.kubernetes.ingressClass` output for use by components ingress objects.
+Traefik component also emit `component.ingress.kubernetes.ingressClass` output for use by component's ingress objects. As the value might be empty, you need to double-quote `""` it in templates, ie. `kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"`.
 
 In future Hub CLI will allow a simplified shadowing / remapping of duplicated outputs.
