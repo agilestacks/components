@@ -385,7 +385,7 @@ prometheus:
 
   ## How long to retain metrics
   ##
-  retention: 24h
+  retention: ${component.prometheus.retention}
 
   ## Prefix used to register routes, overriding externalUrl route.
   ## Useful for proxies that rewrite URLs.
