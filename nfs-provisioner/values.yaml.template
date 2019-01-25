@@ -1,4 +1,4 @@
-# Default values for nfs-client-provisioner.
+# Default values for nfs-provisioner-provisioner.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -11,12 +11,12 @@ image:
   pullPolicy: IfNotPresent
 
 nfs:
-  server: ${component.nfs-client.nfs.server}
-  path: ${component.nfs-client.nfs.path}
-  mountOptions: ${component.nfs-client.nfs.mountOptions}
+  server: ${component.nfs-provisioner.nfs.server}
+  path: ${component.nfs-provisioner.nfs.path}
+  mountOptions: ${component.nfs-provisioner.nfs.mountOptions}
 
 metrics:
-  port: ${component.nfs-client.metrics.port}
+  port: ${component.nfs-provisioner.metrics.port}
 
 # For creating the StorageClass automatically:
 storageClass:
@@ -31,13 +31,13 @@ storageClass:
 
   # Set a StorageClass name
   # Ignored if storageClass.create is false
-  name: ${component.nfs-client.storageClass.name}
+  name: ${component.nfs-provisioner.storageClass.name}
 
   # Allow volume to be expanded dynamically
-  allowVolumeExpansion: ${component.nfs-client.storageClass.allowVolumeExpansion}
+  allowVolumeExpansion: ${component.nfs-provisioner.storageClass.allowVolumeExpansion}
 
   # Method used to reclaim an obsoleted volume
-  reclaimPolicy: ${component.nfs-client.storageClass.reclaimPolicy}
+  reclaimPolicy: ${component.nfs-provisioner.storageClass.reclaimPolicy}
 
   # When set to false your PVs will not be archived by the provisioner upon deletion of the PVC.
   archiveOnDelete: true

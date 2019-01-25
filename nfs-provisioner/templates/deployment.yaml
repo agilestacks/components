@@ -48,9 +48,9 @@ spec:
               value: {{ .Values.nfs.server }}
             - name: NFS_PATH
               value: {{ .Values.nfs.path }}
-          {{- if .Values.metrics.port != 0 -}}
-          args: ["--metrics-port", "{{- .Values.metrics.port -}}"]
-          {{- end -}}
+          {{- if .Values.metrics.port }}
+          args: ["--metrics-port", "{{ .Values.metrics.port }}"]
+          {{- end }}
           {{- with .Values.resources }}
           resources:
 {{ toYaml . | indent 12 }}

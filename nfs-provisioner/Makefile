@@ -6,8 +6,8 @@ export NAMESPACE           ?= kube-system
 export DOMAIN_NAME         ?= kubernetes-admin@kubernetes
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-deploy: clean init fetch install post_install
-	$(kubectl) apply -f namespace.yaml
+
+deploy: clean init install
 .PHONY: deploy
 
 init:
