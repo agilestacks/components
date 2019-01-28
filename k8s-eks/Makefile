@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= k8s-eks
-DOMAIN_NAME    ?= eks.kubernetes.delivery
+DOMAIN_NAME    ?= eks.dev.superhub.io
 NAME           := $(shell echo $(DOMAIN_NAME) | cut -d. -f1)
 BASE_DOMAIN    := $(shell echo $(DOMAIN_NAME) | cut -d. -f2-)
 
@@ -18,11 +18,12 @@ export TF_VAR_name         := $(NAME)
 export TF_VAR_base_domain  := $(BASE_DOMAIN)
 export TF_VAR_api_endpoint ?= BEEF.yl4.us-east-2.eks.amazonaws.com
 
+kubectl     ?= kubectl --context=$(DOMAIN_NAME)
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-deploy: init plan apply output
+deploy: init plan apply automation-hub output
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
@@ -53,6 +54,10 @@ vars: vpc
 	$(eval export AWS_DEFAULT_REGION := $(shell grep -E '^region =' $(DOMAIN_NAME).log | awk '{print $$3}'))
 	$(eval VPC_ID := $(shell grep -E '^vpc =' $(DOMAIN_NAME).log | awk '{print $$3}'))
 .PHONY: vars
+
+automation-hub:
+	$(kubectl) apply -f automation-hub.yaml
+.PHONY: automation-hub
 
 output: vpc
 	@cat $(DOMAIN_NAME).log

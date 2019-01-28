@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ template "nfs-client-provisioner.name" . }}
+    component: nfs-client-provisioner
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+  name: {{ template "nfs-client-provisioner.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  clusterIP: None
+  ports:
+    - name: http-metrics
+      port: {{ .Values.metrics.port }}
+      protocol: TCP
+      targetPort: {{ .Values.metrics.port }}
+  selector:
+    app: {{ template "nfs-client-provisioner.fullname" . }}
+  type: ClusterIP

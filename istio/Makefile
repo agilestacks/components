@@ -4,7 +4,7 @@ HELM_HOME      ?= ./.helm
 COMPONENT_NAME ?= istio
 NAMESPACE      ?= istio-system
 DOMAIN_NAME    ?= default
-ISTIO_VERSION  ?= 1.0.2
+ISTIO_VERSION  ?= 1.0.5
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
@@ -26,10 +26,11 @@ istio-$(ISTIO_VERSION):
 		tar xz istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio
 
 # https://github.com/istio/istio/pull/7625
+# https://github.com/istio/istio/blob/master/install/kubernetes/helm/subcharts/servicegraph/templates/ingress.yaml
 patch:
-	@sed -i~ -e 's/serviceName: .*/serviceName: servicegraph/' \
-		istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/charts/servicegraph/templates/ingress.yaml
-	@rm istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/charts/servicegraph/templates/ingress.yaml~
+	-@sed -i~ -e 's/serviceName: .*/serviceName: servicegraph/' \
+			istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/charts/servicegraph/templates/ingress.yaml && \
+		rm -f istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/charts/servicegraph/templates/ingress.yaml~
 .PHONY: patch
 
 purge:

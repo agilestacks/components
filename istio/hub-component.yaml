@@ -26,11 +26,14 @@ parameters:
       value: istio-system
       env: NAMESPACE
     - name: version.release
-      value: 1.0.2
+      value: 1.0.5
       env: ISTIO_VERSION
+    - name: version.repository
+     #value: docker.io/istio
+      value: gcr.io/istio-release
     - name: version.image
-      value: 1.0.2
-     #value: release-1.0-latest-daily
+     #value: 1.0.5
+      value: release-1.0-latest-daily
     - name: tracing.enabled
       value: false
     - name: prometheus.enabled

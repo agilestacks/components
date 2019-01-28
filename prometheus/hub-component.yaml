@@ -41,6 +41,8 @@ parameters:
       value: prometheus
     - name:  ingress.path
       value: /
+    - name: retention
+      value: 15d
     - name: backend.enabled
       value: false
     - name: backend.timescaledb.name

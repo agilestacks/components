@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: automation-hub
+  labels:
+    name: automation-hub
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: automation-hub
+  namespace: automation-hub
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: automation-hub
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: automation-hub
+  namespace: automation-hub

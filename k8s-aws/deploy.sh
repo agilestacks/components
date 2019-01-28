@@ -5,25 +5,18 @@ kubectl_run="kubectl --context=$DOMAIN_NAME run --rm -ti k8s-aws-shell --image b
 meta='wget -qO - http://169.254.169.254/latest/meta-data'
 macs="$meta/network/interfaces/macs"
 
-zone=$($kubectl_run "$meta/placement/availability-zone")
-region=$(echo $zone | sed -e 's/.$//')
-vpc=$($kubectl_run "$macs/\$($macs | head -1)vpc-id")
-cidr=$($kubectl_run "$macs/\$($macs | head -1)vpc-ipv4-cidr-block")
-subnet=$($kubectl_run "$macs/\$($macs | head -1)subnet-id")
-sg=$($kubectl_run "$macs/\$($macs | head -1)security-group-ids | head -1")
-
-name=$(echo $DOMAIN_NAME | cut -d. -f1)
-domain=$(echo $DOMAIN_NAME | cut -d. -f2-)
-
 set +x
 
+$kubectl_run "
+mac=\$($macs | head -1)
 echo Outputs:
-echo dns_name = $name
-echo dns_base_domain = $domain
-echo region = $region
-echo zone = $zone
-echo vpc = $vpc
-echo vpc_cidr_block = $cidr
-echo worker_subnet_id = $subnet
-echo worker_sg_id = $sg
+echo dns_name = \$(echo $DOMAIN_NAME | cut -d. -f1)
+echo dns_base_domain = \$(echo $DOMAIN_NAME | cut -d. -f2-)
+echo region = \$($meta/placement/availability-zone | sed -e 's/.$//')
+echo zone = \$($meta/placement/availability-zone)
+echo vpc = \$($macs/\${mac}vpc-id)
+echo vpc_cidr_block = \$($macs/\${mac}vpc-ipv4-cidr-block)
+echo worker_subnet_id = \$($macs/\${mac}subnet-id)
+echo worker_sg_id = \$($macs/\${mac}security-group-ids | head -1)
 echo
+"
