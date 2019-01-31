@@ -85,6 +85,20 @@ Example: `[ { key = "foo", value = "bar", propagate_at_launch = true } ]`
 EOF
 }
 
+variable "autoscaling_group_max_size" {
+  type    = "string"
+  default = "6"
+
+  description = "The maximum size of the auto scale group."
+}
+
+variable "autoscaling_group_min_size" {
+  type    = "string"
+  default = "0"
+
+  description = "The minimum size of the auto scale group."
+}
+
 variable "worker_root_volume_type" {
   type        = "string"
   default     = "gp2"

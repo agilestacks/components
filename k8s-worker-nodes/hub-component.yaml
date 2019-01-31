@@ -55,3 +55,9 @@ parameters:
       env: TF_VAR_autoscaling_group_extra_tags
       value: '[ { key = "k8s.io/cluster-autoscaler/enabled", value = "true", propagate_at_launch = true } ]'
       empty: allow
+    - name: asgMaxSize
+      value: 6
+      env: TF_VAR_autoscaling_group_max_size
+    - name: asgMinSize
+      value: 0
+      env: TF_VAR_autoscaling_group_min_size
