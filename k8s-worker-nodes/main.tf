@@ -113,9 +113,8 @@ resource "aws_launch_configuration" "worker_conf" {
 
 resource "aws_autoscaling_group" "workers" {
   name                 = "${substr(format("workers-%s-%s",var.pool_name,var.domain),0,min(63, length(format("workers-%s-%s",var.pool_name,var.domain))))}"
-  desired_capacity     = "${var.worker_count}"
-  max_size             = "${var.worker_count * 3}"
-  min_size             = "${var.worker_count}"
+  max_size             = "${var.autoscaling_group_max_size}"
+  min_size             = "${var.autoscaling_group_min_size}"
   launch_configuration = "${aws_launch_configuration.worker_conf.id}"
   vpc_zone_identifier  = ["${split(",", coalesce(var.worker_subnet_ids, var.worker_subnet_id))}"]
   termination_policies = ["ClosestToNextInstanceHour", "default"]
