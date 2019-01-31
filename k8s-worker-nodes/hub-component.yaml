@@ -45,7 +45,7 @@ parameters:
     - name: spotPrice
       env: TF_VAR_worker_spot_price
       value: 5
-    - name: containerLinuxVersion
+    - name: containerLinuxVersionGpu
       env: TF_VAR_container_linux_version_gpu
       value: 1855.4.0
     - name: poolName
