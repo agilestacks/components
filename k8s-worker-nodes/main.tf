@@ -1,10 +1,10 @@
 terraform {
   required_version = ">= 0.11.3"
-  backend          "s3"             {}
+  backend "s3" {}
 }
 
 provider "aws" {
-  version = "~> 1.30"
+  version = "1.57.0"
 }
 
 provider "ignition" {
