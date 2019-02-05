@@ -35,9 +35,6 @@ parameters:
 
   - name: component.k8s-worker-nodes
     parameters:
-    - name: count
-      env: TF_VAR_worker_count
-      value: 1
     - name: size
       env: TF_VAR_worker_instance_type
       value: r4.large
@@ -47,3 +44,13 @@ parameters:
     - name: poolName
       env: TF_VAR_pool_name
       value: gpu1
+    - name: asgTags
+      env: TF_VAR_autoscaling_group_extra_tags
+      value: '[ { key = "k8s.io/cluster-autoscaler/enabled", value = "true", propagate_at_launch = true } ]'
+      empty: allow
+    - name: asgMaxSize
+      value: 6
+      env: TF_VAR_autoscaling_group_max_size
+    - name: asgMinSize
+      value: 0
+      env: TF_VAR_autoscaling_group_min_size
