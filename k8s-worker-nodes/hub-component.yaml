@@ -57,3 +57,12 @@ parameters:
     - name: maxCount
       value: 1
       env: TF_VAR_pool_max_count
+    - name: volume.size
+      env: TF_VAR_root_volume_size
+      value: 30
+    - name: volume.type
+      env: TF_VAR_root_volume_type
+      value: gp2
+    - name: volume.iops
+      env: TF_VAR_root_volume_iops
+      value: 100
