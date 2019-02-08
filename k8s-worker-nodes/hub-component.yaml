@@ -22,39 +22,38 @@ parameters:
   - name: terraform.bucket.region
     env: STATE_REGION
   - name: dns.domain
-    env: TF_VAR_domain
+    env: DOMAIN_NAME
 
-  - name: cloud.vpc.worker.subnet.id
-    env: TF_VAR_worker_subnet_id
   - name: cloud.vpc.worker.subnet.ids
-    env: TF_VAR_worker_subnet_ids
+    env: SUBNET_IDS
     empty: allow
   - name: cloud.vpc.worker.sg.id
-    env: TF_VAR_worker_sg_id
+    env: SG_IDS
   - name: cloud.iam.worker.instanceProfile
-    env: TF_VAR_worker_instance_profile
+    env: TF_VAR_instance_profile
 
   - name: component.k8s-worker-nodes
     parameters:
     - name: size
-      env: TF_VAR_worker_instance_type
-      value: g3.4xlarge
+      env: TF_VAR_instance_type
+      value: t3.small
     - name: spotPrice
-      env: TF_VAR_worker_spot_price
-      value: 5
+      env: TF_VAR_spot_price
+      empty: allow
     - name: containerLinuxVersionGpu
       env: TF_VAR_container_linux_version_gpu
       value: 1855.4.0
-    - name: poolName
-      env: TF_VAR_pool_name
-      value: gpu3
-    - name: asgTags
-      env: TF_VAR_autoscaling_group_extra_tags
-      value: '[ { key = "k8s.io/cluster-autoscaler/enabled", value = "true", propagate_at_launch = true } ]'
-      empty: allow
-    - name: asgMaxSize
-      value: 6
-      env: TF_VAR_autoscaling_group_max_size
-    - name: asgMinSize
-      value: 0
-      env: TF_VAR_autoscaling_group_min_size
+    - name: shortName
+      value: pool-1
+    - name: name
+      kind: link
+      env: TF_VAR_name
+      value: ${component.k8s-worker-nodes.shortName}-${dns.domain}
+    - name: autoscale.enabled
+      value: false
+    - name: count
+      value: 1
+      env: TF_VAR_pool_count
+    - name: maxCount
+      value: 1
+      env: TF_VAR_pool_max_count
