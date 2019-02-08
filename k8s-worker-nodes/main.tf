@@ -49,14 +49,18 @@ locals {
     }
   ]
 
-  autoscaling_tags = [
-    "${local.default_tags}",
-    {
-      key                 = "k8s.io/cluster-autoscaler/enabled",
-      value               = "true",
-      propagate_at_launch = true
-    }
-  ]
+  # TODO: change this when will use terraform >=0.12
+  tags = {
+    default_tags     = "${local.default_tags}"
+    autoscaling_tags = [
+      "${local.default_tags}",
+      {
+        key                 = "k8s.io/cluster-autoscaler/enabled",
+        value               = "true",
+        propagate_at_launch = true
+      }
+    ]
+  }
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
@@ -145,7 +149,9 @@ resource "aws_autoscaling_group" "workers" {
   vpc_zone_identifier  = "${var.subnet_ids}"
   termination_policies = ["ClosestToNextInstanceHour", "default"]
 
-  tags = "${var.autoscale_enabled == "true" ? local.autoscaling_tags : local.default_tags}"
+  # Because of https://github.com/hashicorp/terraform/issues/12453 conditional operator cannot be used with list values
+  # TODO: change this when will use terraform >=0.12
+  tags = "${local.tags[var.autoscale_enabled == "true" ? "autoscaling_tags" : "default_tags"]}"
 
   lifecycle {
     create_before_destroy = true
