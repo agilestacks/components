@@ -46,29 +46,21 @@ variable "ec2_ami_override" {
   description = "(optional) AMI override for all nodes. Example: `ami-foobar123`."
 }
 
-# variable "autoscaling_group_extra_tags" {
-#   type    = "list"
-#   default = []
-
-#   description = <<EOF
-# (optional) Extra AWS tags to be applied to created autoscaling group resources.
-# This is a list of maps having the keys `key`, `value` and `propagate_at_launch`.
-
-# Example: `[ { key = "foo", value = "bar", propagate_at_launch = true } ]`
-# EOF
-# }
+variable "autoscale_enabled" {
+  type        = "string"
+  default     = "false"
+  description = "Enable autoscaling by adding special auto scale group tags"
+}
 
 variable "pool_max_count" {
-  type    = "string"
-  default = "1"
-
+  type        = "string"
+  default     = "1"
   description = "The maximum size of the auto scale group."
 }
 
 variable "pool_count" {
-  type    = "string"
-  default = "1"
-
+  type        = "string"
+  default     = "1"
   description = "The minimum size of the auto scale group."
 }
 

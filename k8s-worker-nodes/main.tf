@@ -32,7 +32,7 @@ locals {
   ]
 
   name1 = "worker-${var.name}"
-  name2 = "${substring(local.name1, 0, min(length(local.name1),63))}"
+  name2 = "${substr(local.name1, 0, min(length(local.name1),63))}"
 
   instance_gpu = "${contains(local.gpu_instance_types, var.instance_type)}"
 
@@ -51,10 +51,10 @@ locals {
 
   autoscaling_tags = [
     "${local.default_tags}",
-    { 
-      key                 = "k8s.io/cluster-autoscaler/enabled", 
-      value               = "true", 
-      propagate_at_launch = true 
+    {
+      key                 = "k8s.io/cluster-autoscaler/enabled",
+      value               = "true",
+      propagate_at_launch = true
     }
   ]
 }
@@ -118,7 +118,7 @@ resource "aws_launch_configuration" "worker_conf" {
   instance_type        = "${var.instance_type}"
   image_id             = "${coalesce(var.ec2_ami_override, data.aws_ami.coreos_ami.image_id)}"
   key_name             = "${var.keypair}"
-  security_groups      = ["${var.sg_id}"]
+  security_groups      = ["${var.sg_ids}"]
   iam_instance_profile = "${var.instance_profile}"
   user_data            = "${data.ignition_config.main.rendered}"
   spot_price           = "${var.spot_price}"

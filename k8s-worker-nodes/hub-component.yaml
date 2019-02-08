@@ -51,6 +51,7 @@ parameters:
       value: ${component.k8s-worker-nodes.shortName}-${dns.domain}
     - name: autoscale.enabled
       value: false
+      env: TF_VAR_autoscale_enabled
     - name: count
       value: 1
       env: TF_VAR_pool_count
