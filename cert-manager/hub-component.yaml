@@ -21,7 +21,6 @@ parameters:
     value: cert-manager
     env: COMPONENT_NAME
   - name: namespace
-    # primary consumer is argo
     value: cert-manager
     env: NAMESPACE
   - name: issuer-email
@@ -31,9 +30,10 @@ parameters:
     value: false
   - name: default-issuer
     value: letsencrypt-prod
+   #value: letsencrypt-staging
   - name: issuer-admin
     value: admin@superhub.io
-outputs: [] 
+
 templates:
   files:
   - "*.template"
