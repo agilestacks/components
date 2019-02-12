@@ -20,4 +20,10 @@ spec:
         backend:
           serviceName: {{ template "fullname" . }}
           servicePort: {{default "80" .Values.service.port }}
+{{- if .Values.ingress.ssl }}
+  tls:
+    - hosts:
+      - {{ .Values.ingress.fqdn | quote }}
+      secretName: {{ template "fullname" . }}-tls
+{{- end }}
 {{- end }}
