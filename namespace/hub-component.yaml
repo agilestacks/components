@@ -1,0 +1,19 @@
+---
+version: 1
+kind: component
+meta:
+  name: namespace
+  brief: Plain Kubernetes namespace
+  source:
+    dir: ../../components/namespace
+
+parameters:
+- name: dns.domain
+  env:  DOMAIN_NAME
+- name: component.namespace
+  parameters:
+  - name: name
+
+templates:
+  files:
+  - "*.yaml.template"
