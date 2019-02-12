@@ -1,0 +1,6 @@
+dashboard:
+  ingress:
+    tls:
+      - hosts:
+        - ${component.ingress.ssoUrlPrefix}.${dns.domain}
+        secretName: ${component.ingress.name}-tls

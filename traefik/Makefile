@@ -7,6 +7,7 @@ export TF_VAR_kubeconfig_context ?= $(TF_VAR_domain_name)
 
 CLOUD_KIND          ?= aws
 ACM_CERTIFICATE_ARN ?=
+SSL_ENABLED         ?= false
 CHART_VERSION       ?= 1.52.1
 CHART               ?= stable/traefik
 
@@ -26,11 +27,16 @@ TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
 ifneq (,$(ACM_CERTIFICATE_ARN))
-	VALUES_FILE=values-acm.yaml
-	PROTOCOL=https
+	VALUES_FILE:=values-acm.yaml
+	PROTOCOL:=https
 else
-	VALUES_FILE=values.yaml
-	PROTOCOL=http
+	VALUES_FILE:=values.yaml
+ifeq (true,$(SSL_ENABLED))
+	PROTOCOL:=https
+	DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
+else
+	PROTOCOL:=http
+endif
 endif
 
 deploy: clean init fetch patch purge install plan output apply
@@ -84,6 +90,7 @@ install:
 			--replace \
 			--wait \
 			--values $(VALUES_FILE) \
+			$(DASHBOARD_VALUES_FILE) \
 			--version $(CHART_VERSION); \
 	else \
 		$(MAKE) upgrade; \
@@ -94,6 +101,7 @@ upgrade:
 		--namespace $(TF_VAR_namespace) \
 		--wait \
 		--values $(VALUES_FILE) \
+		$(DASHBOARD_VALUES_FILE) \
 		--version $(CHART_VERSION)
 
 plan:
@@ -112,7 +120,8 @@ output:
 	@echo ingress_protocol = $(PROTOCOL)
 	@echo
 
-undeploy: init destroy apply uninstall
+# undeploy: init destroy apply uninstall
+undeploy: uninstall
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
