@@ -56,7 +56,7 @@ parameters:
   parameters:
   - name: storage
     env: STORAGE_KIND
-    empty: allow  
+    value: local  
   - name: name
     value: ${dns.name}-${hub.componentName}
     env: TF_VAR_component
@@ -83,13 +83,14 @@ parameters:
   - name: issuer-email
     value: admin@superhub.io
     env: EMAIL
+- name: component.ingress.fqdn
 
 outputs:
 - name: component.harbor.pullSecret
   fromTfVar: pull_secret
 - name: component.harbor.url
   brief: Harbor URL
-  value: ${component.ingress.protocol}://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain} 
+  value: ${component.ingress.protocol}://${component.harbor.name}.${component.ingress.fqdn}
 
 templates:
   files:

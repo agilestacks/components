@@ -124,3 +124,10 @@ harbor/aws/values-harbor.yam
 harbor/aws/values-nginx.yam
 harbor/hybrid/values-harbor.yam
 harbor/hybrid/values-nginx.yam
+harbor/aws/aws-storage-class.yaml
+harbor/aws/ingress-notary.yaml
+harbor/aws/local/values-harbor.yaml
+harbor/aws/minio/values-harbor.yaml
+harbor/aws/s3/values-harbor.yaml
+harbor/hybrid/local/values-harbor.yaml
+harbor/hybrid/minio/values-harbor.yaml

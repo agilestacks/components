@@ -4,10 +4,8 @@ STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1
 
 export TF_VAR_domain             ?= dev.kubernetes.delivery
-export TF_VAR_component          ?= harbor
+export TF_VAR_component 		 ?= harbor
 export TF_VAR_namespace          ?= harbor
-export TF_VAR_service_prefix     ?= svc
-export TF_VAR_nginx_service_name ?= $(TF_VAR_component)-nginx-nginx-ingress-controller
 export TF_VAR_pull_secret ?= $(TF_VAR_component)-pull-secret
 
 export TF_LOG      ?= info
@@ -20,7 +18,7 @@ export STORAGE_KIND ?= s3
 
 NGINX_CHART          ?= stable/nginx-ingress
 NGINX_CHART_VERSION  ?= 0.26.0
-HARBOR_CHART_VERSION ?= 0.3.0
+HARBOR_CHART_VERSION ?= 1.0.0
 
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
@@ -30,33 +28,27 @@ helm    ?= helm --kube-context="$(TF_VAR_domain)" --tiller-namespace="kube-syste
 kubectl ?= kubectl --context="$(TF_VAR_domain)" --namespace="$(TF_VAR_namespace)"
 git     ?= git
 
-deploy: init purge harbor nginx zone
+deploy: init harbor init-tf plan-tf apply-tf
 
-zone: init-tf plan apply
+undeploy: init-tf destroy-tf apply-tf delete	
 
 $(HELM_HOME):
 	mkdir -p $@
 
 namespace:
-	- $(kubectl) create namespace $(TF_VAR_namespace)
+	-$(kubectl) create namespace $(TF_VAR_namespace)
 
 init: namespace
 	@rm -rf harbor-helm
 	@mkdir -p charts
 
-purge:
-	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
-		$(helm) delete --purge $(TF_VAR_component) || exit 0
-	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)-nginx$$' && \
-		$(helm) delete --purge $(TF_VAR_component)-nginx || exit 0
-
 harbor: $(HELM_HOME)
-	- $(kubectl) create -f aws-storage-class.yaml
+	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
+		$(helm) delete --purge $(TF_VAR_component) || exit 0	
+	-$(kubectl) create -f aws-storage-class.yaml
 	$(helm) init --client-only --upgrade --wait
-	- $(git) clone --depth 1 -b $(HARBOR_CHART_VERSION) https://github.com/goharbor/harbor-helm $(HELM_HOME)/harbor
+	-$(git) clone --depth 1 -b $(HARBOR_CHART_VERSION) https://github.com/goharbor/harbor-helm $(HELM_HOME)/harbor
 	$(helm) dependency update $(HELM_HOME)/harbor
-	cp registry-dpl.yaml $(HELM_HOME)/harbor/templates/registry
-	cp chartmuseum-dpl.yaml $(HELM_HOME)/harbor/templates/chartmuseum
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
 		$(helm)	install $(HELM_HOME)/harbor \
 		    --name $(TF_VAR_component) \
@@ -64,20 +56,10 @@ harbor: $(HELM_HOME)
 			--wait \
 			--version $(HARBOR_CHART_VERSION) \
 			--values $(STORAGE_KIND)/values-harbor.yaml
+	$(kubectl) apply -f ingress.yaml
+	$(kubectl) apply -f ingress-notary.yaml		
 .PHONY: harbor
 
-nginx:
-	$(helm) fetch \
-		--destination charts \
-		--untar $(NGINX_CHART)
-	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)-nginx$$' || \
-		$(helm) install charts/$(notdir $(NGINX_CHART)) \
-			--name $(TF_VAR_component)-nginx \
-			--namespace $(TF_VAR_namespace) \
-			--wait \
-			--version $(NGINX_CHART_VERSION) \
-			--values values-nginx.yaml
-.PHONY: nginx
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
@@ -90,22 +72,21 @@ init-tf: $(TF_DATA_DIR)
         -backend-config="key=$(TF_VAR_domain)/harbor/$(TF_VAR_component)/terraform.tfstate" \
         -backend-config="profile=$(AWS_PROFILE)"
 
-plan:
+plan-tf:
 	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+
+apply-tf:
+	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
 refresh:
 	$(terraform) refresh $(TF_CLI_ARGS)
 
-apply:
-	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
+destroy-tf: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
+destroy-tf: plan-tf
 
-undeploy: init-tf destroy apply delete
-
-destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
-destroy: plan
-
-delete:
-	-$(helm) delete --purge $(TF_VAR_component)-nginx
+delete: 
+	-$(kubectl) delete -f ingress-notary.yaml	
+	-$(kubectl) delete -f ingress.yaml
 	-$(helm) delete --purge $(TF_VAR_component)
 	@rm -f $(CLOUD_KIND).tf
 
