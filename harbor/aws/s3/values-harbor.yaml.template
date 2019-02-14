@@ -32,7 +32,7 @@ expose:
       agilestacks.com/stack-component: ${component.harbor.name}
   clusterIP:
     # The name of ClusterIP service
-    name: harbor
+    name: ${component.harbor.name}
     ports:
       # The service port Harbor listens on when serving with HTTP
       httpPort: 80
