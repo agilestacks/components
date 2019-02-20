@@ -5,18 +5,22 @@ STATE_REGION ?= us-east-1
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
-export TF_VAR_domain    ?= dev.kubernetes.delivery
+export DOMAIN_NAME      ?= default
 export TF_VAR_pool_name ?= gpu1
-export TF_VAR_s3_bucket := files.$(TF_VAR_domain)
+export TF_VAR_s3_bucket := files.$(DOMAIN_NAME)
 
 export TF_LOG      ?= info
-export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain)-$(TF_VAR_pool_name)
+export TF_DATA_DIR ?= .terraform/$(TF_VAR_name)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
-kubectl     ?= kubectl --context="$(TF_VAR_domain)" --namespace=kube-system
+kubectl     ?= kubectl --context="$(DOMAIN_NAME)" --namespace=kube-system
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+
+export TF_VAR_subnet_ids := $(shell echo -n '$(SUBNET_IDS)' | tr ',' ' ' | xargs | jq -cRM 'split(" ")') 
+export TF_VAR_sg_ids     := $(shell echo -n '$(SG_IDS)' | tr ',' ' ' | xargs | jq -cRM 'split(" ")') 
+
 
 deploy: init import plan apply kubernetes
 
@@ -28,7 +32,7 @@ init: $(TF_DATA_DIR)
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
         -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(TF_VAR_domain)/k8s-worker-nodes/$(TF_VAR_pool_name)/terraform.tfstate" \
+        -backend-config="key=$(DOMAIN_NAME)/k8s-worker-nodes/$(TF_VAR_name)/terraform.tfstate" \
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
@@ -53,7 +57,7 @@ destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
 import:
-	$(eval WORKERS=$(shell echo workers-$(TF_VAR_pool_name)-$(TF_VAR_domain) | cut -c 1-63))
-	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers $(WORKERS)
+	$(eval worker=$(shell echo worker-$(TF_VAR_name) | cut -c 1-63))
+	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers $(worker)
 
 -include ../Mk/phonies

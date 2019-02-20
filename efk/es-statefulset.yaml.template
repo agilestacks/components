@@ -159,5 +159,5 @@ spec:
         - ReadWriteOnce
       resources:
         requests:
-          storage: 10Gi
+          storage: ${component.efk.storageSize}
       storageClassName: ${component.efk.storageClass}

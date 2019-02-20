@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "1.41.0"
+  version = "1.57.0"
 }
 
 locals {
@@ -77,22 +77,23 @@ resource "aws_launch_configuration" "node" {
 }
 
 resource "aws_autoscaling_group" "nodes" {
-  desired_capacity     = "${var.worker_count}"
   launch_configuration = "${aws_launch_configuration.node.id}"
-  max_size             = 16
-  min_size             = 1
+  max_size             = "${var.autoscaling_group_max_size}"
+  min_size             = "${var.autoscaling_group_min_size}"
   name                 = "eks-node-${local.name2}"
   vpc_zone_identifier  = ["${split(",", var.worker_subnet_ids)}"]
 
-  tag {
-    key                 = "Name"
-    value               = "eks-node-${local.name2}"
-    propagate_at_launch = true
-  }
-
-  tag {
-    key                 = "kubernetes.io/cluster/${var.cluster_name}"
-    value               = "owned"
-    propagate_at_launch = true
-  }
+  tags = [
+    {
+      key                 = "Name"
+      value               = "eks-node-${local.name2}"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "kubernetes.io/cluster/${var.cluster_name}"
+      value               = "owned"
+      propagate_at_launch = true
+    },
+    "${var.autoscaling_group_extra_tags}",
+  ]
 }

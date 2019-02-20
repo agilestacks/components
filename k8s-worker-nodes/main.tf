@@ -1,10 +1,10 @@
 terraform {
   required_version = ">= 0.11.3"
-  backend          "s3"             {}
+  backend "s3" {}
 }
 
 provider "aws" {
-  version = "~> 1.30"
+  version = "1.57.0"
 }
 
 provider "ignition" {
@@ -31,14 +31,42 @@ locals {
     "g3.16xlarge",
   ]
 
-  worker_instance_gpu = "${contains(local.gpu_instance_types, var.worker_instance_type)}"
+  name1 = "worker-${var.name}"
+  name2 = "${substr(local.name1, 0, min(length(local.name1),63))}"
+
+  instance_gpu = "${contains(local.gpu_instance_types, var.instance_type)}"
+
+  default_tags = [
+    {
+      key                 = "Name"
+      value               = "${local.name2}"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "kubernetes.io/cluster/${var.cluster_tag}"
+      value               = "owned"
+      propagate_at_launch = true
+    }
+  ]
+
+  # TODO: change this when will use terraform >=0.12
+  tags = {
+    default_tags     = "${local.default_tags}"
+    autoscaling_tags = [
+      "${local.default_tags}",
+      {
+        key                 = "k8s.io/cluster-autoscaler/enabled",
+        value               = "true",
+        propagate_at_launch = true
+      }
+    ]
+  }
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
-  bucket = "${var.s3_bucket}"
-  key    = "k8s-worker-nodes/${var.pool_name}/ignition_worker.json"
-
-  content = "${local.worker_instance_gpu ?
+  bucket  = "${var.s3_bucket}"
+  key     = "k8s-worker-nodes/${var.name}/ignition_worker.json"
+  content = "${local.instance_gpu ?
     replace(data.aws_s3_bucket_object.bootstrap_script.body,
       "--node-labels=node-role.kubernetes.io/node",
       "--node-labels=node-role.kubernetes.io/node,gpu=true") :
@@ -50,7 +78,7 @@ resource "aws_s3_bucket_object" "bootstrap_script" {
 
 data "ignition_systemd_unit" "nvidia" {
   name    = "nvidia.service"
-  enabled = "${local.worker_instance_gpu}"
+  enabled = "${local.instance_gpu}"
   content = "${file("nvidia.service")}"
 }
 
@@ -58,7 +86,7 @@ data "ignition_config" "main" {
   append {
     source = "${format("s3://%s/%s",
       "${var.s3_bucket}",
-      "k8s-worker-nodes/${var.pool_name}/ignition_worker.json")}"
+      "k8s-worker-nodes/${var.name}/ignition_worker.json")}"
   }
 
   systemd = [
@@ -71,7 +99,7 @@ data "aws_ami" "coreos_ami" {
 
   filter {
     name   = "name"
-    values = ["CoreOS-${var.container_linux_channel}-${local.worker_instance_gpu == "true" ? format("%s-%s",var.container_linux_version_gpu,"*") : "*"}"]
+    values = ["CoreOS-${var.container_linux_channel}-${local.instance_gpu == "true" ? format("%s-%s",var.container_linux_version_gpu,"*") : "*"}"]
   }
 
   filter {
@@ -91,13 +119,13 @@ data "aws_ami" "coreos_ami" {
 }
 
 resource "aws_launch_configuration" "worker_conf" {
-  instance_type        = "${var.worker_instance_type}"
+  instance_type        = "${var.instance_type}"
   image_id             = "${coalesce(var.ec2_ami_override, data.aws_ami.coreos_ami.image_id)}"
   key_name             = "${var.keypair}"
-  security_groups      = ["${var.worker_sg_id}"]
-  iam_instance_profile = "${var.worker_instance_profile}"
+  security_groups      = ["${var.sg_ids}"]
+  iam_instance_profile = "${var.instance_profile}"
   user_data            = "${data.ignition_config.main.rendered}"
-  spot_price           = "${var.worker_spot_price}"
+  spot_price           = "${var.spot_price}"
 
   lifecycle {
     create_before_destroy = true
@@ -105,43 +133,34 @@ resource "aws_launch_configuration" "worker_conf" {
   }
 
   root_block_device {
-    volume_type = "${var.worker_root_volume_type}"
-    volume_size = "${var.worker_root_volume_size}"
-    iops        = "${var.worker_root_volume_type == "io1" ? var.worker_root_volume_iops : 0}"
+    volume_type = "${var.root_volume_type}"
+    volume_size = "${var.root_volume_size}"
+    iops        = "${var.root_volume_type == "io1" ? var.root_volume_iops : 0}"
   }
 }
 
 resource "aws_autoscaling_group" "workers" {
-  name                 = "${substr(format("workers-%s-%s",var.pool_name,var.domain),0,min(63, length(format("workers-%s-%s",var.pool_name,var.domain))))}"
-  desired_capacity     = "${var.worker_count}"
-  max_size             = "${var.worker_count * 3}"
-  min_size             = "${var.worker_count}"
+  name                 = "${local.name2}"
+  # if autoscale not enabled then pool_max_size is 1 (default)
+  max_size             = "${max(var.pool_max_count, var.pool_count)}"
+  min_size             = "${var.pool_count}"
+  desired_capacity     = "${var.pool_count}"
   launch_configuration = "${aws_launch_configuration.worker_conf.id}"
-  vpc_zone_identifier  = ["${split(",", coalesce(var.worker_subnet_ids, var.worker_subnet_id))}"]
+  vpc_zone_identifier  = "${var.subnet_ids}"
   termination_policies = ["ClosestToNextInstanceHour", "default"]
 
-  tags = [
-    {
-      key                 = "Name"
-      value               = "worker-${var.pool_name}-${var.domain}"
-      propagate_at_launch = true
-    },
-    {
-      key                 = "kubernetes.io/cluster/${var.cluster_tag}"
-      value               = "owned"
-      propagate_at_launch = true
-    },
-    "${var.autoscaling_group_extra_tags}",
-  ]
+  # Because of https://github.com/hashicorp/terraform/issues/12453 conditional operator cannot be used with list values
+  # TODO: change this when will use terraform >=0.12
+  tags = "${local.tags[var.autoscale_enabled == "true" ? "autoscaling_tags" : "default_tags"]}"
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = ["tag"]
+    ignore_changes        = ["tags"]
   }
 }
 
 resource "aws_autoscaling_attachment" "workers" {
-  count                  = "${length(var.worker_load_balancers)}"
+  count                  = "${length(var.load_balancers)}"
   autoscaling_group_name = "${aws_autoscaling_group.workers.name}"
-  elb                    = "${var.worker_load_balancers[count.index]}"
+  elb                    = "${var.load_balancers[count.index]}"
 }

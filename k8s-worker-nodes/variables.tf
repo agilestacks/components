@@ -1,13 +1,3 @@
-variable "worker_count" {
-  type    = "string"
-  default = "1"
-
-  description = <<EOF
-The number of worker nodes to be created.
-This applies only to cloud platforms.
-EOF
-}
-
 variable "container_linux_channel" {
   type    = "string"
   default = "stable"
@@ -38,13 +28,13 @@ variable "keypair" {
   description = "Name of an SSH key located within the AWS region. Example: coreos-user."
 }
 
-variable "worker_instance_type" {
+variable "instance_type" {
   type        = "string"
   default     = "r4.large"
   description = "Instance size for the worker node(s). Example: `t2.small`."
 }
 
-variable "worker_spot_price" {
+variable "spot_price" {
   type        = "string"
   default     = "0.06"
   description = "Spot request price. Empty for on-demand"
@@ -56,48 +46,37 @@ variable "ec2_ami_override" {
   description = "(optional) AMI override for all nodes. Example: `ami-foobar123`."
 }
 
-variable "worker_extra_sg_ids" {
-  type    = "list"
-  default = []
-
-  description = <<EOF
-(optional) List of additional security group IDs for worker nodes.
-
-Example: `["sg-51530134", "sg-b253d7cc"]`
-EOF
+variable "autoscale_enabled" {
+  type        = "string"
+  default     = "false"
+  description = "Enable autoscaling by adding special auto scale group tags"
 }
 
-variable "extra_tags" {
-  type        = "map"
-  default     = {}
-  description = "(optional) Extra AWS tags to be applied to created resources."
+variable "pool_max_count" {
+  type        = "string"
+  default     = "1"
+  description = "The maximum size of the auto scale group."
 }
 
-variable "autoscaling_group_extra_tags" {
-  type    = "list"
-  default = []
-
-  description = <<EOF
-(optional) Extra AWS tags to be applied to created autoscaling group resources.
-This is a list of maps having the keys `key`, `value` and `propagate_at_launch`.
-
-Example: `[ { key = "foo", value = "bar", propagate_at_launch = true } ]`
-EOF
+variable "pool_count" {
+  type        = "string"
+  default     = "1"
+  description = "The minimum size of the auto scale group."
 }
 
-variable "worker_root_volume_type" {
+variable "root_volume_type" {
   type        = "string"
   default     = "gp2"
   description = "The type of volume for the root block device of worker nodes."
 }
 
-variable "worker_root_volume_size" {
+variable "root_volume_size" {
   type        = "string"
   default     = "30"
   description = "The size of the volume in gigabytes for the root block device of worker nodes."
 }
 
-variable "worker_root_volume_iops" {
+variable "root_volume_iops" {
   type    = "string"
   default = "100"
 
@@ -107,7 +86,7 @@ Ignored if the volume type is not io1.
 EOF
 }
 
-variable "worker_load_balancers" {
+variable "load_balancers" {
   type    = "list"
   default = []
 
@@ -120,12 +99,8 @@ Example:
 EOF
 }
 
-variable "domain" {
-  type        = "string"
-  description = "Domain of the stack"
-}
 
-variable "pool_name" {
+variable "name" {
   type = "string"
 
   description = <<EOF
@@ -147,39 +122,20 @@ Example:
 EOF
 }
 
-variable "worker_sg_id" {
-  type = "string"
-
-  description = <<EOF
-Security group where additional worker nodes will be joined.
-Example:
- * `sg-a7c955cb`
-EOF
+variable "sg_ids" {
+  type = "list"
+  default = []
+  description = "Security group ids"
 }
 
-variable "worker_subnet_id" {
-  type = "string"
+variable "subnet_ids" {
+  type    = "list"
+  default = []
 
-  description = <<EOF
-Subnet where additional worker nodes will be joined.
-Example:
- * `subnet-805f57eb`
-EOF
+  description = "Subnets where additional worker nodes will be joined."
 }
 
-variable "worker_subnet_ids" {
-  type    = "string"
-  default = ""
-
-  description = <<EOF
-Subnets where additional worker nodes will be joined.
-This variable overrides worker_subnet_id.
-Example:
- * `subnet-805f57eb,subnet-0a0b0c0d,...`
-EOF
-}
-
-variable "worker_instance_profile" {
+variable "instance_profile" {
   type = "string"
 
   description = <<EOF

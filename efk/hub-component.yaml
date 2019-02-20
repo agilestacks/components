@@ -31,6 +31,8 @@ parameters:
       env:   NAMESPACE
     - name: storageClass
       value: "${cloud.kind}-storage"
+    - name: storageSize
+      value: 10Gi
     - name:  ingress.urlPrefix
       value: logs
     - name:  ingress.kibanaUrlPrefix

@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= postgresql-rds
-DOMAIN_NAME    ?= dev.stacks.delivery
+DOMAIN_NAME    ?= dev.superhub.io
 
 STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1
@@ -17,6 +17,7 @@ export TF_VAR_rds_name ?= postgresql
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+TFSTATE     := $(TF_DATA_DIR)/terraform.tfstate
 
 deploy: init import plan apply
 
@@ -43,16 +44,15 @@ apply:
 output:
 	@$(terraform) output -no-color
 
+# removing TF_DATA_DIR to prevent Terraform from destroying previous db snapshot recorded into state
+# setting -state explicitly due to Terraform putting .tfstate file in cwd despite TF_DATA_DIR
 backup:
 	cd backup && \
+		rm -rf $(TF_DATA_DIR) && \
 		mkdir -p $(TF_DATA_DIR) && \
-		terraform-v0.9 init $(TF_OPTS) && \
-		terraform-v0.9 plan $(TF_OPTS) -refresh=true -module-depth=-1 \
-			-state=.terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).tfstate \
-			-out=.terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).tfplan && \
-		terraform-v0.9 apply $(TF_OPTS) -Xshadow=false \
-			-state-out=.terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).tfstate \
-			.terraform/$(TF_VAR_rds_name).$(DOMAIN_NAME).tfplan
+		$(terraform) init -get=true -force-copy -reconfigure $(TF_CLI_ARGS) && \
+		$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -state=$(TFSTATE) -out=$(TFPLAN) && \
+		$(terraform) apply $(TF_CLI_ARGS) -auto-approve -state-out=$(TFSTATE) $(TFPLAN)
 	@echo
 	@echo Outputs:
 	@echo kind = postgresql-rds

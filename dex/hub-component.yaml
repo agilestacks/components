@@ -15,6 +15,9 @@ requires:
 parameters:
   - name: component.ingress.ssoUrlPrefix
   - name: component.ingress.protocol
+  - name: component.ingress.ssl.enabled
+    empty: allow
+    env: SSL_ENABLED
   - name: component.dex.oidcIssuerFqdn
     value: auth.${dns.domain}
   - name: component.dex.namespace
@@ -61,4 +64,3 @@ outputs:
 templates:
   files:
     - "*.yaml.template"
-

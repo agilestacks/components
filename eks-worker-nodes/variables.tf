@@ -1,13 +1,3 @@
-variable "worker_count" {
-  type    = "string"
-  default = "1"
-
-  description = <<EOF
-The number of worker nodes to be created.
-This applies only to cloud platforms.
-EOF
-}
-
 variable "keypair" {
   type        = "string"
   default     = "agilestacks"
@@ -91,4 +81,30 @@ variable "worker_instance_profile" {
 variable "cluster_name" {
   type        = "string"
   description = "EKS cluster name"
+}
+
+variable "autoscaling_group_extra_tags" {
+  type    = "list"
+  default = []
+
+  description = <<EOF
+(optional) Extra AWS tags to be applied to created autoscaling group resources.
+This is a list of maps having the keys `key`, `value` and `propagate_at_launch`.
+
+Example: `[ { key = "foo", value = "bar", propagate_at_launch = true } ]`
+EOF
+}
+
+variable "autoscaling_group_max_size" {
+  type    = "string"
+  default = "6"
+
+  description = "The maximum size of the auto scale group."
+}
+
+variable "autoscaling_group_min_size" {
+  type    = "string"
+  default = "0"
+
+  description = "The minimum size of the auto scale group."
 }

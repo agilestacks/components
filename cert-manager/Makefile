@@ -6,10 +6,10 @@ DOMAIN_NAME     ?= default
 kubectl         ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 namespace:
-	- $(kubectl) create namespace $(NAMESPACE)
+	-$(kubectl) create namespace $(NAMESPACE)
 .PHONY: namespace
 
-init: 
+init:
 	@ echo "this space intentionally left blank"
 .PHONY: init
 
@@ -31,10 +31,9 @@ deploy: init purge install
 	{ \
 	until $(kubectl) apply -f prod-cluster-issuer.yaml; do sleep 5; done; \
 	}
-	$(kubectl) --namespace=cert-manager apply -f staging-issuer.yaml
+	$(kubectl) --namespace=cert-manager apply -f staging-cluster-issuer.yaml
 .PHONY: deploy
 
 undeploy: purge
 	@ echo "undeploying cert-manager"
 .PHONY: undeploy
-

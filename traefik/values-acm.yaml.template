@@ -259,6 +259,7 @@ acme:
 dashboard:
   enabled: ${component.ingress.dashboard}
   domain: ${component.ingress.ssoUrlPrefix}.${dns.domain}
+  # serviceType: ClusterIP
   service: {}
     # annotations:
     #   key: value
@@ -303,6 +304,7 @@ service:
     kubernetes.io/name: Traefik-${component.ingress.name}
     kubernetes.io/cluster-service: "true"
   annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "${component.acm.certificateArn}"
     # Changed from "http" to default "tcp", to mitigate ELB doesn't supporting websocket on L7 level
@@ -379,3 +381,18 @@ tracing:
   #   localAgentHostPort: "127.0.0.1:8126"
   #   debug: false
   #   globalTag: ""
+
+## Create HorizontalPodAutoscaler object.
+##
+# autoscaling:
+#   minReplicas: 1
+#   maxReplicas: 10
+#   metrics:
+#   - type: Resource
+#     resource:
+#       name: cpu
+#       targetAverageUtilization: 60
+#   - type: Resource
+#     resource:
+#       name: memory
+#       targetAverageUtilization: 60

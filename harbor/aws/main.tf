@@ -3,10 +3,6 @@ terraform {
   backend          "s3"             {}
 }
 
-provider "aws" {
-  version = "1.41.0"
-}
-
 provider "kubernetes" {
   version        = "1.2.0"
   config_context = "${var.domain}"
@@ -18,22 +14,9 @@ locals {
 EOS
 }
 
-data "aws_region" "current" {}
-
-data "aws_route53_zone" "ext_zone" {
-  name = "${var.domain}"
-}
-
-data "kubernetes_service" "harbor_nginx" {
-  metadata {
-    name      = "${var.nginx_service_name}"
-    namespace = "${var.namespace}"
-  }
-}
-
 resource "kubernetes_secret" "pull_secret" {
   metadata {
-    name = "${var.pull_secret}"
+    name      = "${var.pull_secret}"
     namespace = "${var.namespace}"
   }
 
@@ -43,4 +26,3 @@ resource "kubernetes_secret" "pull_secret" {
 
   type = "kubernetes.io/dockerconfigjson"
 }
-

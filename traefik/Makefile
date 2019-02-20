@@ -7,6 +7,7 @@ export TF_VAR_kubeconfig_context ?= $(TF_VAR_domain_name)
 
 CLOUD_KIND          ?= aws
 ACM_CERTIFICATE_ARN ?=
+SSL_ENABLED         ?= false
 CHART_VERSION       ?= 1.52.1
 CHART               ?= stable/traefik
 
@@ -26,14 +27,19 @@ TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
 ifneq (,$(ACM_CERTIFICATE_ARN))
-	VALUES_FILE=values-acm.yaml
-	PROTOCOL=https
+	VALUES_FILE:=values-acm.yaml
+	PROTOCOL:=https
 else
-	VALUES_FILE=values.yaml
-	PROTOCOL=http
+	VALUES_FILE:=values.yaml
+ifeq (true,$(SSL_ENABLED))
+	PROTOCOL:=https
+	DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
+else
+	PROTOCOL:=http
+endif
 endif
 
-deploy: clean init fetch purge install plan output apply
+deploy: clean init fetch patch purge install plan output apply
 
 ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
 STATE_BACKEND_CONFIG := -backend-config="key=$(TF_VAR_domain_name)/traefik/$(TF_VAR_component)/terraform.tfstate" \
@@ -64,6 +70,14 @@ fetch:
 		--untar $(CHART) \
 		--version $(CHART_VERSION)
 
+# https://github.com/helm/charts/commit/0488c623ee045c90ac3d34a6e7803b3da83a2f62#diff-7085afc89c71e92e4515de4fe9ca0260
+# https://github.com/agilestacks/auth-operator/commit/a47a74dd75bf8133cf514f430581db2ca3a1fe00#diff-310eef67e361cf942a183144b1451b0bR166
+patch:
+	-@sed -i~ -e 's/servicePort: dashboard-http/servicePort: 80/' \
+			charts/traefik/templates/dashboard-ingress.yaml && \
+		rm -f charts/traefik/templates/dashboard-ingress.yaml~
+.PHONY: patch
+
 purge:
 	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
 		$(helm) delete --purge $(TF_VAR_component) || exit 0
@@ -76,6 +90,7 @@ install:
 			--replace \
 			--wait \
 			--values $(VALUES_FILE) \
+			$(DASHBOARD_VALUES_FILE) \
 			--version $(CHART_VERSION); \
 	else \
 		$(MAKE) upgrade; \
@@ -86,6 +101,7 @@ upgrade:
 		--namespace $(TF_VAR_namespace) \
 		--wait \
 		--values $(VALUES_FILE) \
+		$(DASHBOARD_VALUES_FILE) \
 		--version $(CHART_VERSION)
 
 plan:
@@ -104,7 +120,8 @@ output:
 	@echo ingress_protocol = $(PROTOCOL)
 	@echo
 
-undeploy: init destroy apply uninstall
+# undeploy: init destroy apply uninstall
+undeploy: uninstall
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan

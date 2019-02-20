@@ -270,6 +270,7 @@ acme:
 dashboard:
   enabled: ${component.ingress.dashboard}
   domain: ${component.ingress.ssoUrlPrefix}.${dns.domain}
+  # serviceType: ClusterIP
   service: {}
     # annotations:
     #   key: value
@@ -314,6 +315,8 @@ service:
     kubernetes.io/name: Traefik-${component.ingress.name}
     kubernetes.io/cluster-service: "true"
   annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
     api.service.kubernetes.io/path: ${component.ingress.urlPrefix}.${dns.domain}
 gzip:
   enabled: true
@@ -383,3 +386,18 @@ tracing:
   #   localAgentHostPort: "127.0.0.1:8126"
   #   debug: false
   #   globalTag: ""
+
+## Create HorizontalPodAutoscaler object.
+##
+# autoscaling:
+#   minReplicas: 1
+#   maxReplicas: 10
+#   metrics:
+#   - type: Resource
+#     resource:
+#       name: cpu
+#       targetAverageUtilization: 60
+#   - type: Resource
+#     resource:
+#       name: memory
+#       targetAverageUtilization: 60

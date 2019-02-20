@@ -26,7 +26,7 @@ terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-deploy: init plan apply output
+deploy: init plan apply automation-hub output
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
@@ -47,6 +47,10 @@ refresh:
 
 apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
+
+automation-hub:
+	$(kubectl) apply -f automation-hub.yaml
+.PHONY: automation-hub
 
 output:
 	@echo
