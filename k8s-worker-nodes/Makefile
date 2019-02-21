@@ -36,7 +36,7 @@ init: $(TF_DATA_DIR)
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
-	$(terraform) plan -var cluster_tag=$${TF_VAR_domain/./-} $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+	$(terraform) plan -var cluster_tag=$${DOMAIN_NAME/./-} $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
 
 refresh:
 	$(terraform) refresh $(TF_CLI_ARGS)
