@@ -26,6 +26,10 @@ spec:
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ template "timescaledb.fullname" . }}
         image: "{{ .Values.image }}:{{ .Values.imageTag }}"
@@ -125,11 +129,6 @@ spec:
               key: postgres-password
         args: ["/bin/bash", "/init_ts/init_tablespaces.sh"]
         volumeMounts:
-          {{- if ge .Values.resources.requests.cpu 8 }}
-          - name: big-pg-conf
-            mountPath: /var/lib/timescaledb/data/pgdata/postgresql.conf
-            subPath: "postgresql.conf"
-          {{- end }}
           - name: tablespaces
             mountPath: "/init_ts" 
             readOnly: true
@@ -138,11 +137,6 @@ spec:
             mountPath: /mnt/data/{{- $name -}}
 {{- end }}
       volumes:
-      {{- if ge .Values.resources.requests.cpu 8 }}
-      - name: pg-conf
-        configMap:
-          name: big-pg-conf
-      {{- end }}
       - name: tablespaces
         configMap:
           name: tsdb-tablespaces         

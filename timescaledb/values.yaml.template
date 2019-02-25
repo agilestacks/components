@@ -1,4 +1,4 @@
-image: "timescale/pg_prometheus"
+image: "agilestacks/pg_prometheus"
 imageTag: "0.2.1"
 
 initTablespaces:
@@ -18,7 +18,7 @@ persistence:
   main:
     storageClass: ${component.timescaledb.main.storageClass}
     accessMode: ReadWriteOnce
-    size: 20G
+    size: 400G
     subPath: "timescaledb-db"
 
   tablespaces:
