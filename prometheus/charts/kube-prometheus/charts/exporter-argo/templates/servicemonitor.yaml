@@ -23,8 +23,8 @@ spec:
       - "kube-system"
   endpoints:
   - port: http-metrics
-    interval: 3s
+    interval: 30s
     bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
   - port: telemetry
-    interval: 3s
+    interval: 30s
     bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token

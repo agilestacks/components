@@ -1,0 +1,9 @@
+
+prometheus:
+  remoteRead:
+    - url: http://prometheus-postgres-adapter:9201/read
+
+  remoteWrite:
+    - url: http://prometheus-postgres-adapter:9201/write
+      write_relabel_configs:
+

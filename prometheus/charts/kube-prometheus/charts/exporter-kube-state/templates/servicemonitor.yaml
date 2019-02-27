@@ -23,5 +23,5 @@ spec:
       - {{ .Release.Namespace | quote }}
   endpoints:
   - port: {{ .Values.kube_state_metrics.service.name }}
-    interval: 15s
+    interval: 30s
     honorLabels: true

@@ -364,17 +364,13 @@ prometheus:
 
   ## The remote_read spec configuration for Prometheus.
   ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#remotereadspec
-  remoteRead:
-    - url: http://prometheus-postgres-adapter:9201/read
+  remoteRead: []
     # remoteRead:
     #   - url: http://remote1/read
 
   ## The remote_write spec configuriation for Prometheus.
   ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#remotewritespec
-  remoteWrite:
-    - url: http://prometheus-postgres-adapter:9201/write
-    # remoteWrite:
-    #   - url: http://remote1/push
+  remoteWrite: []
 
   ## Resource limits & requests
   ## Ref: https://kubernetes.io/docs/user-guide/compute-resources/

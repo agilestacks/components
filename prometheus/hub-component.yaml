@@ -42,7 +42,7 @@ parameters:
     - name:  ingress.path
       value: /
     - name: retention
-      value: 15d
+      value: 8d
     - name: backend.enabled
       value: false
     - name: backend.timescaledb.name

@@ -23,7 +23,7 @@ spec:
       - "default"
   endpoints:
   - port: https
-    interval: 15s
+    interval: 30s
     scheme: https
     tlsConfig:
       caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
