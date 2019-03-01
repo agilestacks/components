@@ -13,8 +13,9 @@ provider "kubernetes" {
 }
 
 locals {
+  service_url = "https://${var.component}.${var.service_prefix}.${var.domain}"
   dockerconfigjson = <<EOS
-    {"auths":{"https://${var.component}.${var.service_prefix}.${var.domain}":{"username":"${var.username}","password":"${var.password}"}}}
+    {"auths":{"${local.service_url}":{"username":"${var.username}","password":"${var.password}"}}}
 EOS
 }
 
