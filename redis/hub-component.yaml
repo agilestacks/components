@@ -28,6 +28,18 @@ parameters:
       value: gp2
     - name: volumeSize
       value: 8Gi
+    - name: metrics.enabled
+      value: false
+    - name: serviceMonitor.enabled
+      value: false
+    - name: serviceMonitor.namespace
+      value: prometheus
+    - name: cluster.enabled
+      value: true
+    - name: cluster.slaveCount
+      value: 1
+    - name: networkPolicy
+      value: false
     - name: usePassword
       value: "false"
     - name: password
@@ -38,8 +50,10 @@ parameters:
     - name: name
       env: COMPONENT_NAME
       value: redis-${dns.name}-${hub.componentName}
-    - name: image
-      value: bitnami/redis:4.0.9
+    - name: image.repository
+      value: bitnami/redis
+    - name: image.tag
+      value: 4.0.13
     - name: requests.memory
       value: 256Mi
     - name: requests.cpu
@@ -79,7 +93,7 @@ parameters:
         value: 2.1.1
         env: HA_CHART_VERSION
     - name: chart.version
-      value: 1.1.15
+      value: 6.1.4
       env: CHART_VERSION
 outputs:
   - name: component.redis.host

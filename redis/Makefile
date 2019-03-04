@@ -5,7 +5,7 @@ DOMAIN_NAME      ?= dev.kubernetes.delivery
 NAMESPACE 	     ?= redis
 CLOUD_KIND       ?= aws
 HA_ENABLED       ?= false
-CHART_VERSION    ?= 1.1.15
+CHART_VERSION    ?= 6.1.4
 HA_CHART_VERSION ?= 2.1.1
 
 export HELM_HOME           ?= $(shell pwd)/.helm
