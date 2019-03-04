@@ -63,13 +63,9 @@ parameters:
       - name: enabled
         value: "false"
         env: HA_ENABLED
-      - name: image
-        value: gcr.io/google_containers/redis:v1
-      - name: master
-        value: 1
-      - name: slave
-        value: 1
-      - name: sentinel
+      - name: image.tag
+        value: 5.0.3-alpine
+      - name: replicas
         value: 3
       - name: master.requests.memory
         value: 200Mi
@@ -77,12 +73,6 @@ parameters:
         value: 100m
       - name: master.limits.memory
         value: 700Mi
-      - name: slave.requests.memory
-        value: 200Mi
-      - name: slave.requests.cpu
-        value: 100m
-      - name: slave.limits.memory
-        value: 200Mi
       - name: sentinel.requests.memory
         value: 200Mi
       - name: sentinel.requests.cpu
@@ -90,7 +80,7 @@ parameters:
       - name: sentinel.limits.memory
         value: 200Mi
       - name: chart.version
-        value: 2.1.1
+        value: 3.3.0
         env: HA_CHART_VERSION
     - name: chart.version
       value: 6.1.4

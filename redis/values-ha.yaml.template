@@ -1,79 +1,169 @@
 ## Configure resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
 ##
-resources:
-  master:
+image:
+  repository: redis
+  tag: ${component.redis.ha.image.tag}
+  pullPolicy: IfNotPresent
+## replicas number for each component
+replicas: ${component.redis.ha.replicas}
+
+## Custom labels for the redis pod
+labels: {}
+
+## Pods Service Account
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+serviceAccount:
+  ## Specifies whether a ServiceAccount should be created
+  ##
+  create: true
+  ## The name of the ServiceAccount to use.
+  ## If not set and create is true, a name is generated using the redis-ha.fullname template
+  # name:
+
+## Role Based Access
+## Ref: https://kubernetes.io/docs/admin/authorization/rbac/
+##
+
+rbac:
+  create: true
+
+## Redis specific configuration options
+redis:
+  port: 6379
+  masterGroupName: mymaster
+  config:
+    ## Additional redis conf options can be added below
+    ## For all available options see http://download.redis.io/redis-stable/redis.conf
+    min-slaves-to-write: 1
+    min-slaves-max-lag: 5   # Value in seconds
+    maxmemory: "0"       # Max memory to use for each redis instance. Default is unlimited.
+    maxmemory-policy: "volatile-lru"  # Max memory policy to use for each redis instance. Default is volatile-lru.
+    # Determines if scheduled RDB backups are created. Default is false.
+    # Please note that local (on-disk) RDBs will still be created when re-syncing with a new slave. The only way to prevent this is to enable diskless replication.
+    save: "900 1"
+    # When enabled, directly sends the RDB over the wire to slaves, without using the disk as intermediate storage. Default is false.
+    repl-diskless-sync: "yes"
+    rdbcompression: "yes"
+    rdbchecksum: "yes"
+
+  ## Custom redis.conf files used to override default settings. If this file is
+  ## specified then the redis.config above will be ignored.
+  # customConfig: |-
+      # Define configuration here
+
+  resources:
     requests:
       memory: ${component.redis.ha.master.requests.memory}
       cpu: ${component.redis.ha.master.requests.cpu}
     limits:
       memory: ${component.redis.ha.master.limits.memory}
-  slave:
-    requests:
-      memory: ${component.redis.ha.slave.requests.memory}
-      cpu: ${component.redis.ha.slave.requests.cpu}
-    limits:
-      memory: ${component.redis.ha.slave.requests.memory}
-  sentinel:
+
+## Sentinel specific configuration options
+sentinel:
+  port: 26379
+  quorum: 2
+  config:
+    ## Additional sentinel conf options can be added below. Only options that
+    ## are expressed in the format simialar to 'sentinel xxx mymaster xxx' will
+    ## be properly templated.
+    ## For available options see http://download.redis.io/redis-stable/sentinel.conf
+    down-after-milliseconds: 10000
+    ## Failover timeout value in milliseconds
+    failover-timeout: 180000
+    parallel-syncs: 5
+
+  ## Custom sentinel.conf files used to override default settings. If this file is
+  ## specified then the sentinel.config above will be ignored.
+  # customConfig: |-
+      # Define configuration here
+
+  resources:
     requests:
       memory: ${component.redis.ha.sentinel.requests.memory}
       cpu: ${component.redis.ha.sentinel.requests.cpu}
     limits:
       memory: ${component.redis.ha.sentinel.limits.memory}
 
+securityContext:
+  runAsUser: 1000
+  fsGroup: 1000
+  runAsNonRoot: true
 
-## Enable persistence using Persistent Volume Claims
-## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
-##
+## Node labels, affinity, and tolerations for pod assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-and-tolerations-beta-feature
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+affinity: |
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app: {{ template "redis-ha.name" . }}
+            release: {{ .Release.Name }}
+        topologyKey: kubernetes.io/hostname
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app:  {{ template "redis-ha.name" . }}
+              release: {{ .Release.Name }}
+          topologyKey: failure-domain.beta.kubernetes.io/zone
+
+# Prometheus exporter specific configuration options
+exporter:
+  enabled: ${component.redis.metrics.enabled}
+  image: oliver006/redis_exporter
+  tag: v0.28.0
+  pullPolicy: IfNotPresent
+
+  # prometheus port & scrape path
+  port: 9121
+  scrapePath: /metrics
+
+  # cpu/memory resource limits/requests
+  resources: {}
+
+  # Additional args for redis exporter
+  extraArgs: {}
+
+podDisruptionBudget: {}
+  # maxUnavailable: 1
+  # minAvailable: 1
+
+## Configures redis with AUTH (requirepass & masterauth conf params)
+auth: ${component.redis.usePassword}
+redisPassword: '${component.redis.password}'
+
+## Use existing secret containing "auth" key (ignores redisPassword)
+# existingSecret:
+
 persistentVolume:
-  ## If true, redis will create/use a Persistent Volume Claim
-  ## If false, use emptyDir
-  ##
   enabled: ${component.redis.persistence}
-
-  ## Redis data Persistent Volume access modes
-  ## Must match those of existing PV or dynamic provisioner
-  ## Ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
-  ##
-  accessModes:
-    - ReadWriteOnce
-
-  ## Redis data Persistent Volume Claim annotations
-  ##
-  annotations: {}
-
-  ## Redis data Persistent Volume existing claim name
-  ## Requires alertmanager.persistentVolume.enabled: true
-  ## If defined, PVC must be created manually before volume will be bound
-  # existingClaim: ""
-
-  ## Redis data Persistent Volume mount root path
-  ##
-  mountPath: /data
-
-  ## alertmanager data Persistent Volume size
-  ##
-  size: ${component.redis.volumeSize}
-
-  ## Redis data Persistent Volume Storage Class
-  ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
-  ## Default: volume.alpha.kubernetes.io/storage-class: default
+  ## redis-ha data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
   ##
   storageClass: "${component.redis.storageClass}"
+  accessModes:
+    - ReadWriteOnce
+  size: ${component.redis.volumeSize}
+  annotations: {}
+init:
+  resources: {}
 
-  ## Subdirectory of redis data Persistent Volume to mount
-  ## Useful if the volume's root directory is not empty
-  ##
-  subPath: ""
+# To use a hostPath for data, set persistentVolume.enabled to false
+# and define hostPath.path.
+# Warning: this might overwrite existing folders on the host system!
+hostPath:
+  ## path is evaluated as template so placeholders are replaced
+  # path: "/data/{{ .Release.Name }}"
 
-## Redis image version
-redis_image: ${component.redis.ha.image}
-
-
-
-## replicas number for each component
-
-replicas:
-  master: ${component.redis.ha.master}
-  slave: ${component.redis.ha.slave}
-  sentinel: ${component.redis.ha.sentinel}
+  # if chown is true, an init-container with root permissions is launched to
+  # change the owner of the hostPath folder to the user defined in the
+  # security context
+  chown: true
