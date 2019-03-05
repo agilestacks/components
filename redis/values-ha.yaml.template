@@ -115,7 +115,7 @@ affinity: |
 exporter:
   enabled: ${component.redis.metrics.enabled}
   image: oliver006/redis_exporter
-  tag: v0.28.0
+  tag: v0.30.0
   pullPolicy: IfNotPresent
 
   # prometheus port & scrape path
@@ -133,8 +133,8 @@ podDisruptionBudget: {}
   # minAvailable: 1
 
 ## Configures redis with AUTH (requirepass & masterauth conf params)
-auth: ${component.redis.usePassword}
-redisPassword: '${component.redis.password}'
+auth: ${component.redis.ha.auth}
+redisPassword: '${component.redis.ha.password}'
 
 ## Use existing secret containing "auth" key (ignores redisPassword)
 # existingSecret:

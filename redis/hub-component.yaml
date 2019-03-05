@@ -41,7 +41,7 @@ parameters:
     - name: networkPolicy
       value: false
     - name: usePassword
-      value: "false"
+      value: true
     - name: password
       empty: allow
     - name: namespace
@@ -67,6 +67,10 @@ parameters:
         value: 5.0.3-alpine
       - name: replicas
         value: 3
+      - name: auth
+        value: false
+      - name: password
+        empty: allow
       - name: master.requests.memory
         value: 200Mi
       - name: master.requests.cpu
