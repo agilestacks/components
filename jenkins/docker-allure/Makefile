@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := build
 
 REGISTRY  ?= docker.io
-VERSION   ?= custom
+VERSION   ?= 2.10.0
 IMAGE     ?= $(REGISTRY)/agilestacks/allure
 CONTAINER ?= allure
 
@@ -20,6 +20,6 @@ run:
 
 push:
 	docker tag  $(IMAGE):$(VERSION) $(IMAGE):latest
-	docker push $(IMAGE):$(VERSION) 
-	docker push $(IMAGE):latest	
+	docker push $(IMAGE):$(VERSION)
+	docker push $(IMAGE):latest
 .PHONY: push
