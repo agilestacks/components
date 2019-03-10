@@ -11,6 +11,7 @@ metadata:
   annotations:
     agilestacks.com/stack-component: pgweb
     kubernetes.io/ingress.class: traefik
+    kubernetes.io/tls-acme: "true"
 spec:
   rules:
   - host: {{ .Values.ingress.fqdn | quote }}
