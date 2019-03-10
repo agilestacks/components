@@ -3,14 +3,14 @@ version: 1
 kind: component
 meta:
   name: cert-manager
-  brief: cert-manager messaging system
+  brief: Automate the management and issuance of TLS certificates
   source:
     dir: ../../components/cert-manager
 
 requires:
-  - kubernetes
+- kubernetes
 provides:
-  - cert-manager
+- cert-manager
 
 parameters:
 - name: dns.domain
@@ -23,16 +23,14 @@ parameters:
   - name: namespace
     value: cert-manager
     env: NAMESPACE
-  - name: issuer-email
+  - name: issuerEmail
     value: admin@superhub.io
-    env: EMAIL
-  - name: require-annotations
-    value: false
-  - name: default-issuer
+  - name: defaultIssuerName
     value: letsencrypt-prod
    #value: letsencrypt-staging
-  - name: issuer-admin
-    value: admin@superhub.io
+  - name: defaultIssuerKind
+    value: ClusterIssuer
+   #value: Issuer
 
 templates:
   files:

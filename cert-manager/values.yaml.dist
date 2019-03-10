@@ -82,9 +82,9 @@ podLabels: {}
 
 nodeSelector: {}
 
-ingressShim:
-  defaultIssuerName: "${component.cert-manager.defaultIssuerName}"
-  defaultIssuerKind: "${component.cert-manager.defaultIssuerKind}"
+ingressShim: {}
+  # defaultIssuerName: ""
+  # defaultIssuerKind: ""
   # defaultACMEChallengeType: ""
   # defaultACMEDNS01ChallengeProvider: ""
 
