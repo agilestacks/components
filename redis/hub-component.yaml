@@ -35,7 +35,7 @@ parameters:
     - name: serviceMonitor.namespace
       value: prometheus
     - name: cluster.enabled
-      value: true
+      value: false
     - name: cluster.slaveCount
       value: 1
     - name: networkPolicy
