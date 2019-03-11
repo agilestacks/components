@@ -91,7 +91,7 @@ parameters:
       env: CHART_VERSION
 outputs:
   - name: component.redis.host
-    value: ${component.redis.name}-redis.${component.redis.namespace}.svc.cluster.local
+    value: ${component.redis.name}-redis-master.${component.redis.namespace}.svc.cluster.local
   - name: component.redis.port
     value: "6379"
   - name: component.redis.url
