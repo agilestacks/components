@@ -13,6 +13,7 @@ parameters:
 - name: component.namespace
   parameters:
   - name: name
+    value: "${hub.componentName}"
 
 templates:
   files:
