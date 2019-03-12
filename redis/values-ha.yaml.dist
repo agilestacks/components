@@ -3,10 +3,10 @@
 ##
 image:
   repository: redis
-  tag: ${component.redis.ha.image.tag}
+  tag: 5.0.3-alpine
   pullPolicy: IfNotPresent
 ## replicas number for each component
-replicas: ${component.redis.ha.replicas}
+replicas: 3
 
 ## Custom labels for the redis pod
 labels: {}
@@ -52,12 +52,12 @@ redis:
   # customConfig: |-
       # Define configuration here
 
-  resources:
-    requests:
-      memory: ${component.redis.ha.master.requests.memory}
-      cpu: ${component.redis.ha.master.requests.cpu}
-    limits:
-      memory: ${component.redis.ha.master.limits.memory}
+  resources: {}
+  #  requests:
+  #    memory: 200Mi
+  #    cpu: 100m
+  #  limits:
+  #    memory: 700Mi
 
 ## Sentinel specific configuration options
 sentinel:
@@ -78,12 +78,12 @@ sentinel:
   # customConfig: |-
       # Define configuration here
 
-  resources:
-    requests:
-      memory: ${component.redis.ha.sentinel.requests.memory}
-      cpu: ${component.redis.ha.sentinel.requests.cpu}
-    limits:
-      memory: ${component.redis.ha.sentinel.limits.memory}
+  resources: {}
+  #  requests:
+  #    memory: 200Mi
+  #    cpu: 100m
+  #  limits:
+  #    memory: 200Mi
 
 securityContext:
   runAsUser: 1000
@@ -113,9 +113,9 @@ affinity: |
 
 # Prometheus exporter specific configuration options
 exporter:
-  enabled: ${component.redis.metrics.enabled}
+  enabled: false
   image: oliver006/redis_exporter
-  tag: v0.30.0
+  tag: v0.28.0
   pullPolicy: IfNotPresent
 
   # prometheus port & scrape path
@@ -133,14 +133,14 @@ podDisruptionBudget: {}
   # minAvailable: 1
 
 ## Configures redis with AUTH (requirepass & masterauth conf params)
-auth: ${component.redis.ha.auth}
-redisPassword: '${component.redis.ha.password}'
+auth: false
+# redisPassword:
 
 ## Use existing secret containing "auth" key (ignores redisPassword)
 # existingSecret:
 
 persistentVolume:
-  enabled: ${component.redis.persistence}
+  enabled: true
   ## redis-ha data Persistent Volume Storage Class
   ## If defined, storageClassName: <storageClass>
   ## If set to "-", storageClassName: "", which disables dynamic provisioning
@@ -148,10 +148,10 @@ persistentVolume:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  storageClass: "${component.redis.storageClass}"
+  # storageClass: "-"
   accessModes:
     - ReadWriteOnce
-  size: ${component.redis.volumeSize}
+  size: 10Gi
   annotations: {}
 init:
   resources: {}

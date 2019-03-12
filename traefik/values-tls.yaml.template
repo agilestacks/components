@@ -1,0 +1,8 @@
+ssl:
+  enabled: true
+  enforced: false
+  # https://docs.traefik.io/configuration/entrypoints/#specify-minimum-tls-version
+  # cipherSuites: []
+  tlsMinVersion: VersionTLS12
+  defaultCert: ${component.ingress.ssl.cert}
+  defaultKey: ${component.ingress.ssl.key}

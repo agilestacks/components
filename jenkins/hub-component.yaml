@@ -25,7 +25,7 @@ parameters:
     value: jenkins
     env: NAMESPACE
   - name: image
-    value: docker.io/agilestacks/jenkins:2.89.6
+    value: docker.io/agilestacks/jenkins:2.150.3
   - name: admin.user
     value: admin
   - name: admin.password
@@ -42,10 +42,10 @@ parameters:
   - name: initGroovy.subPath
     value: init.groovy.d
   - name: operator.image
-    value: docker.io/agilestacks/jenkins-operator:latest
+    value: docker.io/agilestacks/jenkins-operator:stable
 - name: cloud.region
   kind: user
-  env: AWS_REGION
+  env: AWS_DEFAULT_REGION
 - name: dns.domain
   env: DOMAIN_NAME
 - name: nfs.server

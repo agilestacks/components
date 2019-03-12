@@ -28,6 +28,7 @@ upsert.json
 traefik/charts
 traefik/values-acm.yaml
 traefik/values-dashboard.yaml
+traefik/values-tls.yaml
 traefik/values.yaml
 nginxing/charts
 nginxing/values.yaml
@@ -131,3 +132,4 @@ harbor/aws/minio/values-harbor.yaml
 harbor/aws/s3/values-harbor.yaml
 harbor/hybrid/local/values-harbor.yaml
 harbor/hybrid/minio/values-harbor.yaml
+cert-manager/charts/

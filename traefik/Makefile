@@ -7,9 +7,9 @@ export TF_VAR_kubeconfig_context ?= $(TF_VAR_domain_name)
 
 CLOUD_KIND          ?= aws
 ACM_CERTIFICATE_ARN ?=
-SSL_ENABLED         ?= false
 CHART_VERSION       ?= 1.52.1
 CHART               ?= stable/traefik
+HUB_PROVIDES        ?=
 
 STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1
@@ -26,14 +26,18 @@ terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
+VALUES_FILE:=values.yaml
+SSL_ENABLED:=false
 ifneq (,$(ACM_CERTIFICATE_ARN))
-	VALUES_FILE:=values-acm.yaml
 	PROTOCOL:=https
+	ACM_VALUES_FILE:=--values values-acm.yaml
 else
-	VALUES_FILE:=values.yaml
-ifeq (true,$(SSL_ENABLED))
+ifneq (,$(filter cert-manager,$(HUB_PROVIDES)))
 	PROTOCOL:=https
+	TLS_VALUES_FILE:=--values values-tls.yaml
 	DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
+	PROVIDES:=tls-ingress
+	SSL_ENABLED:=true
 else
 	PROTOCOL:=http
 endif
@@ -90,6 +94,8 @@ install:
 			--replace \
 			--wait \
 			--values $(VALUES_FILE) \
+			$(ACM_VALUES_FILE) \
+			$(TLS_VALUES_FILE) \
 			$(DASHBOARD_VALUES_FILE) \
 			--version $(CHART_VERSION); \
 	else \
@@ -101,6 +107,8 @@ upgrade:
 		--namespace $(TF_VAR_namespace) \
 		--wait \
 		--values $(VALUES_FILE) \
+		$(ACM_VALUES_FILE) \
+		$(TLS_VALUES_FILE) \
 		$(DASHBOARD_VALUES_FILE) \
 		--version $(CHART_VERSION)
 
@@ -118,6 +126,8 @@ output:
 	@echo
 	@echo Outputs:
 	@echo ingress_protocol = $(PROTOCOL)
+	@echo ingress_ssl_enabled = $(SSL_ENABLED)
+	@echo provides = $(PROVIDES)
 	@echo
 
 # undeploy: init destroy apply uninstall
