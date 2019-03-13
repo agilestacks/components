@@ -24,6 +24,7 @@ spec:
 {{- if .Values.ingress.ssl }}
   tls:
     - hosts:
+      - {{ .Values.ingress.fqdnBase | quote }}
       - {{ .Values.ingress.fqdn | quote }}
       secretName: {{ template "fullname" . }}-tls
 {{- end }}

@@ -20,5 +20,6 @@ spec:
           servicePort: 80
   tls:
     - hosts:
+      - ${component.ingress.ssoFqdn}
       - ${component.kubernetes-dashboard.ingress.urlPrefix}.${component.ingress.ssoFqdn}
       secretName: ${component.kubernetes-dashboard.name}-tls
