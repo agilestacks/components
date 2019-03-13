@@ -103,8 +103,8 @@ ssl:
   # cipherSuites: []
   # https://docs.traefik.io/configuration/entrypoints/#specify-minimum-tls-version
   # tlsMinVersion: VersionTLS12
-  defaultCert: ${component.ingress.ssl.cert}
-  defaultKey: ${component.ingress.ssl.key}
+  defaultCert:
+  defaultKey:
   # Basic auth to protect all the routes. Can use htpasswd to generate passwords
   # > htpasswd -n -b testuser testpass
   # > testuser:$apr1$JXRA7j2s$LpVns9vsme8FHN0r.aSt11
