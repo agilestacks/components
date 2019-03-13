@@ -124,6 +124,9 @@ parameters:
     empty: allow
     env: ACM_CERTIFICATE_ARN
 
+  - name: component.cert-manager.issuerEmail
+    value: admin@superhub.io
+
   - name: component.traefik
     parameters:
     - name: chart
