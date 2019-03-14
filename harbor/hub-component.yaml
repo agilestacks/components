@@ -88,8 +88,6 @@ parameters:
 outputs:
 - name: component.harbor.pullSecret
   fromTfVar: pull_secret
-- name: component.harbor.serviceUrl
-  fromTfVar: service_url
 - name: component.harbor.url
   brief: Harbor URL
   value: ${component.ingress.protocol}://${component.harbor.name}.${component.ingress.fqdn}
