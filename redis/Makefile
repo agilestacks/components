@@ -59,8 +59,10 @@ output:
 		echo; \
 		exit 0; \
 	fi; \
+	secret=$$(echo $(COMPONENT_NAME) | grep redis); \
+	echo $${secret:=$(COMPONENT_NAME)-redis}; \
 	for i in $$(seq 1 60); do \
-		if password=$$($(kubectl) get secret $(COMPONENT_NAME)-redis -o jsonpath='{.data.redis-password}'); then \
+		if password=$$($(kubectl) get secret $$secret -o jsonpath='{.data.redis-password}'); then \
 			echo; \
 			echo Outputs:; \
 			echo password=$$password; \
