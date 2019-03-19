@@ -22,6 +22,7 @@ export TF_VAR_name        := $(NAME)
 export TF_VAR_base_domain := $(BASE_DOMAIN)
 export TF_VAR_api_fqdn      := $(API_FQDN)
 
+oc ?= oc --context=$(DOMAIN_NAME)
 kubectl     ?= kubectl --context=$(DOMAIN_NAME)
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
@@ -32,10 +33,10 @@ $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
 add-scc:
-	-oc create -f agilestacks-scc.yaml
+	-$(oc) create -f agilestacks-scc.yaml
 
 drop-scc:
-	-oc delete -f agilestacks-scc.yaml			
+	-$(oc) delete -f agilestacks-scc.yaml			
 
 init: $(TF_DATA_DIR)
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \

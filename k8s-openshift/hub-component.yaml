@@ -7,6 +7,8 @@ meta:
   source:
     dir: ../../components/k8s-openshift
 
+requires:
+  - kubectl
 provides:
   - kubernetes
 
@@ -26,7 +28,6 @@ parameters:
     env: API_ENDPOINT
   - name: kubernetes.api.namespace
     value: kube-system
-  - name: kubernetes.api.user
   - name: kubernetes.api.token
   - name: kubernetes.flavor
     value: openshift
@@ -56,9 +57,14 @@ outputs:
     fromTfVar: worker_subnet_id
   - name: cloud.vpc.worker.sg.id
     fromTfVar: worker_sg_id
+  - name: cloud.vpc.master.subnet.id
+    fromTfVar: master_subnet_id
+  - name: cloud.vpc.master.sg.id
+    fromTfVar: master_sg_id    
 
   - name: kubernetes.flavor
   - name: kubernetes.api.endpoint
+  - name: kubernetes.api.token
 
 templates:
   files:
