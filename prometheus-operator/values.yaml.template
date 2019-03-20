@@ -314,7 +314,7 @@ grafana:
   ##
   defaultDashboardsEnabled: true
 
-  adminPassword: prom-operator
+  adminPassword: {{component.promoper.grafana.adminPassword}}
 
   image:
     repository: grafana/grafana

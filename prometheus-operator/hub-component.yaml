@@ -69,6 +69,8 @@ parameters:
       value: true
     - name:  ingress.urlPrefix
       value: grafana
+    - name: adminPassword
+      value: asiPromOp3r
 
 templates:
   extra:
