@@ -43,6 +43,11 @@ undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
+	-$(kubectl) delete crd/alertmanagers.monitoring.coreos.com
+	-$(kubectl) delete crd/prometheuses.monitoring.coreos.com
+	-$(kubectl) delete crd/prometheusrules.monitoring.coreos.com
+	-$(kubectl) delete crd/servicemonitors.monitoring.coreos.com
+
 clean:
 	rm -rf $(HELM_HOME) charts/$(notdir $(HELM_CHART))
 

@@ -25,7 +25,7 @@ parameters:
       value: stable/prometheus-operator
       env: HELM_CHART
     - name: chart.version
-      value: 5.0.0
+      value: 5.0.1
       env: CHART_VERSION
     - name:  name
       value: prometheus-operator
