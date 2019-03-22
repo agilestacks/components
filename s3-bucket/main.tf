@@ -3,6 +3,12 @@ terraform {
   backend "s3" {}
 }
 
+data "aws_region" "current" {}
+
+provider "aws" {
+  version = "1.60.0"
+}
+
 variable "endpoints" {
   type    = "map"
   description = "S3 service endpoints by region"
@@ -26,12 +32,6 @@ variable "endpoints" {
     cn-north-1 = "s3.cn-north-1.amazonaws.com.cn"
     cn-northwest-1 = "s3.cn-northwest-1.amazonaws.com.cn"
   }
-}
-
-data "aws_region" "current" {}
-
-provider "aws" {
-  version = "1.41.0"
 }
 
 variable "name" {

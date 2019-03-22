@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "1.41.0"
+  version = "1.60.0"
 }
 
 variable "name" {
