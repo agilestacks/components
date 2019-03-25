@@ -19,6 +19,8 @@ parameters:
   - name: component.ingress.ssoFqdn
   - name: dns.domain
     env: DOMAIN_NAME
+  - name: component.ingress.kubernetes.ingressClass
+    value: traefik
   - name: component.promoper
     parameters:
     - name: chart
@@ -71,8 +73,24 @@ parameters:
       value: grafana
     - name: adminPassword
       value: asiPromOp3r
+  - name: component.promoper.thanos
+    parameters:
+    - name: version
+      brief: Thanos version
+      value: v0.3.2
+    - name: bucket.name
+      value: thanos-storage
+      env: BUCKET_NAME
+    - name: iam_user
+      value: thanos
+      env: IAM_USER
+    - name: ingress.urlPrefix
+      value: thanos
+
 
 templates:
+  files:
+    - "thanos/*.template"
   extra:
   - kind: mustache
     files:

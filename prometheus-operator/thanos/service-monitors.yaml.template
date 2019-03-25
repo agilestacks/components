@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: thanos-sidecar
+  namespace: ${component.promoper.namespace}
+  labels:
+    release: prometheus-operator
+spec:
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+  selector:
+    matchLabels:
+      app: thanos-sidecar
+

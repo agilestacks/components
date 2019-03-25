@@ -1,3 +1,4 @@
 charts/
 .helm/
 values.yaml
+thanos/*.yaml

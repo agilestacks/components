@@ -1,0 +1,43 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: thanos-compactor
+  labels:
+    app: thanos-compactor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thanos-compactor
+  serviceName: thanos-compactor
+  template:
+    metadata:
+      labels:
+        app: thanos-compactor
+    spec:
+      containers:
+        - name: thanos
+          image: improbable/thanos:${component.promoper.thanos.version}
+          args:
+            - compact
+            - --log.level=debug
+            - --data-dir=/data
+            - --objstore.config=$(OBJSTORE_CONFIG)
+            - --sync-delay=30m
+            - --wait
+          ports:
+            - name: http
+              containerPort: 10902
+          env:
+          - name: OBJSTORE_CONFIG
+            valueFrom:
+              secretKeyRef:
+                name: thanos-objstore-config
+                key: thanos.yaml
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: "1"
+              memory: 1Gi

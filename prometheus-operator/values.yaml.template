@@ -1162,7 +1162,12 @@ prometheus:
     ## This is experimental and may change significantly without backward compatibility in any release.
     ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#thanosspec
     ##
-    thanos: {}
+    thanos:
+      baseImage: improbable/thanos
+      version: {{component.promoper.thanos.version}}
+      objectStorageConfig:
+        key: thanos.yaml
+        name: thanos-objstore-config
 
     ## Containers allows injecting additional containers. This is meant to allow adding an authentication proxy to a Prometheus pod.
     ##  if using proxy extraContainer  update targetPort with proxy container port
