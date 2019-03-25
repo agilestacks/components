@@ -81,6 +81,14 @@ spec:
       - name: operator
         image: ${component.jenkins.operator.image}
         imagePullPolicy: Always
+        env:
+        - name:  JENKINS_URL
+          value: http://localhost:8080
+        readinessProbe:
+          httpGet:
+            path: /status
+            port: 8000
+
       - name: jenkins
         image: ${component.jenkins.image}
         resources:
@@ -99,7 +107,6 @@ spec:
           value: ${cloud.region}
         - name:  ROOT_DOMAIN_NAME
           value: ${dns.domain}
-
         ports:
         - name: http
           containerPort: 8080
@@ -131,6 +138,7 @@ spec:
           httpGet:
             path: /login
             port: 8080
+
       volumes:
         - name: workspace-volume
           persistentVolumeClaim:
