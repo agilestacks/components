@@ -34,6 +34,10 @@ parameters:
     value: ClusterIssuer
    #value: Issuer
 
+outputs:
+- name: component.tls.kind
+  value: letsencrypt
+
 templates:
   files:
   - "*.template"

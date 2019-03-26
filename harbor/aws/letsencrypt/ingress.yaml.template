@@ -7,8 +7,8 @@ metadata:
     project:   harbor
   annotations:
     agilestacks.com/stack-component: Harbor
-    # ingress.kubernetes.io/ssl-redirect: "true"
-    # kubernetes.io/tls-acme: "true"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/tls-acme: "true"
 spec:
   tls:
   - hosts:
