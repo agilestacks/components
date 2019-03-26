@@ -27,7 +27,7 @@ parameters:
       value: stable/prometheus-operator
       env: HELM_CHART
     - name: chart.version
-      value: 5.0.1
+      value: 5.0.3
       env: CHART_VERSION
     - name:  name
       value: prometheus-operator
@@ -51,6 +51,8 @@ parameters:
       value: prometheus
     - name:  ingress.path
       value: /
+    - name: prometheus.replicas
+      value: 1
   - name: component.promoper.alertmanager
     parameters:
     - name:  version

@@ -55,8 +55,8 @@ additionalPrometheusRules: []
 ##
 global:
   rbac:
-    create: true
-    pspEnabled: true
+    create: {{component.promoper.rbac.enabled}}
+    pspEnabled: {{component.promoper.psp.enabled}}
 
   ## Reference to one or more secrets to be used when pulling images
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -263,7 +263,7 @@ alertmanager:
     ## The value "hard" means that the scheduler is *required* to not schedule two replica pods onto the same node.
     ## The value "" will disable pod anti-affinity so that no anti-affinity rules will be configured.
     ##
-    podAntiAffinity: ""
+    podAntiAffinity: "hard"
 
     ## If anti-affinity is enabled sets the topologyKey to use for anti-affinity.
     ## This can be changed to, for example, failure-domain.beta.kubernetes.io/zone
@@ -591,9 +591,9 @@ kubeStateMetrics:
 ##
 kube-state-metrics:
   rbac:
-    create: true
+    create: {{component.promoper.rbac.enabled}}
   podSecurityPolicy:
-    enabled: true
+    enabled: {{component.promoper.psp.enabled}}
 
 ## Deploy node exporter as a daemonset to all nodes
 ##
@@ -1014,7 +1014,7 @@ prometheus:
 
     ## Number of Prometheus replicas desired
     ##
-    replicas: 1
+    replicas: {{component.promoper.prometheus.replicas}}
 
     ## Log level for Prometheus be configured in
     ##
@@ -1037,7 +1037,7 @@ prometheus:
     ## The default value "soft" means that the scheduler should *prefer* to not schedule two replica pods onto the same node but no guarantee is provided.
     ## The value "hard" means that the scheduler is *required* to not schedule two replica pods onto the same node.
     ## The value "" will disable pod anti-affinity so that no anti-affinity rules will be configured.
-    podAntiAffinity: ""
+    podAntiAffinity: "hard"
 
     ## If anti-affinity is enabled sets the topologyKey to use for anti-affinity.
     ## This can be changed to, for example, failure-domain.beta.kubernetes.io/zone
