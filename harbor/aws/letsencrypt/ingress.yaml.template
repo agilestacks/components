@@ -15,7 +15,6 @@ spec:
     - ${component.harbor.name}.${component.ingress.fqdn}
     secretName: ${component.harbor.name}-tls
   rules:
-  # make output target is sensitive to the order of ingress hosts
   - host: ${component.harbor.name}.${component.ingress.fqdn}
     http:
       paths:
@@ -43,10 +42,3 @@ spec:
         backend:
           serviceName: ${component.harbor.name}-harbor-core
           servicePort: 80
-  # - host: notary.${component.harbor.name}.${component.ingress.fqdn}
-  #   http:
-  #     paths:
-  #     - path: /
-  #       backend:
-  #         serviceName: ${component.harbor.name}-harbor-notary-server
-  #         servicePort: 4443

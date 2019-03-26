@@ -7,11 +7,6 @@ metadata:
     project:   harbor
   annotations:
     ingress.kubernetes.io/ssl-redirect: "true"
-    kubernetes.io/tls-acme: "true"
-spec:
-  tls:
-  - hosts:
-    - ${component.harbor.name}.${component.ingress.fqdn}
   rules:
   - host: ${component.harbor.name}.${component.ingress.fqdn}
     http:
