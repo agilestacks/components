@@ -11,7 +11,6 @@ metadata:
   annotations:
     agilestacks.com/stack-component: pgweb
     kubernetes.io/ingress.class: traefik
-    kubernetes.io/tls-acme: "true"
 spec:
   rules:
   - host: {{ .Values.ingress.fqdn | quote }}
@@ -21,11 +20,4 @@ spec:
         backend:
           serviceName: {{ template "fullname" . }}
           servicePort: {{default "80" .Values.service.port }}
-{{- if .Values.ingress.ssl }}
-  tls:
-    - hosts:
-      - {{ .Values.ingress.fqdnBase | quote }}
-      - {{ .Values.ingress.fqdn | quote }}
-      secretName: {{ template "fullname" . }}-tls
-{{- end }}
 {{- end }}

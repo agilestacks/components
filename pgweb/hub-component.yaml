@@ -15,8 +15,6 @@ requires:
 parameters:
   - name: component.ingress.protocol
   - name: component.ingress.ssoFqdn
-  - name: component.ingress.ssl.enabled
-    empty: allow
   - name: component.postgresql.namespace
     brief: Kubernetes namespace to install into
     value: postgresql

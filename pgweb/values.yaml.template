@@ -7,7 +7,6 @@ ingress:
   enabled: true
   ssl: ${component.ingress.ssl.enabled}
   fqdn: ${component.pgweb.ingress.urlPrefix}.${component.ingress.ssoFqdn}
-  fqdnBase: ${component.ingress.ssoFqdn}
   path: ${component.pgweb.ingress.path}
   imageTag: v0.1.1
   imagePullPolicy: IfNotPresent
