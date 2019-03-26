@@ -23,6 +23,7 @@ parameters:
 - name: component.tls.kind
   value: letsencrypt
   env: TLS_KIND
+  empty: allow
 
 - name: component.s3
   parameters:
