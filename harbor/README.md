@@ -32,6 +32,17 @@ Enabled if `cloud.kind: aws` Supports following options
 - `s3` (recommended) - if enabled then images will be stored in s3 (transitive dependency on `s3` component)
 - `minio` (recommended) - if enabled then images will be stored in minio (transitive dependency on `minio` component)
 
+## TLS
+
+TLS is a must for Harbor (or any docker registry). Therefore component supports two options `letsencrypt` and `acm` specified by parameter `component.tls.kind`. So, component expects the following to be provided:
+```yaml
+---
+parameters:
+- name: component.tls.kind
+  value: acm
+  # or value: letsencrypt
+``` 
+
 
 ### Hybrid
 
@@ -43,3 +54,4 @@ Enabled if `cloud.kind: hybrid`. Supports following options
 2. Storage backend (configured via `component.harbor.storage`)
 - `local` - if enabled then harbor will be using `hostPath` persistent volumes (must be preprovisioned by cluster amin)
 - `minio` (recommended) - if enabled then images will be stored in minio (transitive dependency on `minio` component)
+
