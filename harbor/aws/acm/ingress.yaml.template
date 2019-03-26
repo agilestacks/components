@@ -12,7 +12,6 @@ spec:
   tls:
   - hosts:
     - ${component.harbor.name}.${component.ingress.fqdn}
-    secretName: ${component.harbor.name}-tls
   rules:
   - host: ${component.harbor.name}.${component.ingress.fqdn}
     http:

@@ -1,0 +1,21 @@
+persistence:
+  imageChartStorage:
+    # Specify the type of storage: "filesystem", "azure", "gcs", "s3", "swift", 
+    # "oss" and fill the information needed in the corresponding section. The type
+    # must be "filesystem" if you want to use persistent volumes for registry
+    # and chartmuseum
+    type: s3
+      #maxthreads: 100
+    s3: 
+      region: ${component.minio.region}
+      bucket: ${component.minio.default.bucket.name}
+      accesskey: ${component.minio.accessKey}
+      secretkey: ${component.minio.secretKey}
+      regionendpoint: ${component.ingress.protocol}://${component.bucket.endpoint}
+      rootdirectory: /docker/${component.harbor.name}-${dns.domain}
+      #encrypt: false
+      #keyid: mykeyid
+      #secure: true
+      #v4auth: true
+      #chunksize: "5242880"
+      #storageclass: STANDARD

@@ -16,8 +16,8 @@ ingress:
     enabled: true
     secretName: "harbor-tls-cert"
   hosts:
-    core: ${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
-    notary: notary.${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+    core: ${component.harbor.name}.${component.ingress.fqdn}
+    notary: notary.${component.harbor.name}.${component.ingress.fqdn}
 persistence:
   enabled: true
   persistentVolumeClaim:
@@ -33,7 +33,7 @@ redis:
   master:
     persistence:
       enabled: true
-externalURL: https://${component.harbor.name}.${component.harbor.servicePrefix}.${dns.domain}
+externalURL: https://${component.harbor.name}.${component.ingress.fqdn}
 externalPort: 
 registry:
   storage:
