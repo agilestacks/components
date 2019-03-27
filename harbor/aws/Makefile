@@ -18,21 +18,14 @@ git     ?= git
 deploy: clean init namespace storage-class fetch install pull-secret output
 
 undeploy: init delete clean
-	- $(MAKE) -C $(TLS_KIND) undeploy
 	- $(kubectl) delete secret $(PULL_SECRET)
-
-$(HELM_HOME):
-	mkdir -p $@
-
-namespace:
-	- $(kubectl) create namespace $(NAMESPACE)
+	- $(kubectl) delete pvc -l 'app=harbor,release=$(COMPONENT_NAME)'
 
 pull-secret: namespace
-	@ echo "Creating pull secret $(PULL_SECRET) for $(INGRESS_FQDN)"
-	- @ $(kubectl) create secret docker-registry $(PULL_SECRET) \
-		--docker-server=$(INGRESS_FQDN) \
+	- $(kubectl) create secret docker-registry $(PULL_SECRET) \
+		--docker-server=$(COMPONENT_NAME).$(INGRESS_FQDN) \
 		--docker-username=$(ADMIN_USERNAME) \
-		--docker-password=$(ADMIN_PASSWORD)
+		--docker-password="$$ADMIN_PASSWORD"
 
 storage-class: 
 	$(kubectl) apply -f storage-class.yaml
@@ -42,7 +35,6 @@ init: $(HELM_HOME)
 
 fetch:
 	$(git) clone --depth 1 -b $(CHART_VERSION) $(CHART_ORIGIN) $(HELM_HOME)/harbor
-# 	$(helm) dependency update $(HELM_HOME)/harbor	
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
@@ -53,21 +45,26 @@ install:
 			--version $(CHART_VERSION) \
 			--values values.yaml \
 			--values $(TLS_KIND)/values.yaml \
-			--values $(STORAGE_KIND)/values.yaml
-	$(MAKE) -C $(TLS_KIND) deploy
+			--values $(STORAGE_KIND)/values.yaml \
+			--set "harborAdminPassword=$$ADMIN_PASSWORD"
+
+output:
+	@ echo 
+	@ echo Outputs:
+	@ echo pull_secret = $(PULL_SECRET)
+	@ echo
+
+namespace:
+	- $(kubectl) create namespace $(NAMESPACE)
+
+$(HELM_HOME):
+	mkdir -p $@
 
 delete: 
 	- $(helm) delete --purge $(COMPONENT_NAME)
 
 clean:
 	rm -rf $(HELM_HOME)
-
-output:
-	@ echo 
-	@ echo Outputs:
-	@ echo pull_secret = $(PULL_SECRET)
-	@ echo $(shell $(MAKE) -C $(TLS_KIND) output)
-	@ echo
 
 
 -include ../../Mk/phonies
