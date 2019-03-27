@@ -90,7 +90,7 @@ outputs:
   fromTfVar: pull_secret
 - name: component.harbor.url
   brief: Harbor URL
-  fromTfVar: harbor_fqdn
+  fromTfVar: harbor_url
 
 templates:
   files:
