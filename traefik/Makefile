@@ -130,8 +130,7 @@ output:
 	@echo provides = $(PROVIDES)
 	@echo
 
-# undeploy: init destroy apply uninstall
-undeploy: uninstall
+undeploy: init destroy apply uninstall
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
