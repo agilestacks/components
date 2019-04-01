@@ -26,6 +26,8 @@ terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
+STATE_CONTAINER ?= agilestacks
+
 VALUES_FILE:=values.yaml
 SSL_ENABLED:=false
 ifneq (,$(ACM_CERTIFICATE_ARN))
@@ -34,7 +36,7 @@ ifneq (,$(ACM_CERTIFICATE_ARN))
 else
 ifneq (,$(filter cert-manager,$(HUB_PROVIDES)))
 	PROTOCOL:=https
-	TLS_VALUES_FILE:=--values values-tls.yaml
+	TLS_VALUES_FILE:=--values $(CLOUD_KIND)/values-tls.yaml
 	DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
 	PROVIDES:=tls-ingress
 	SSL_ENABLED:=true
@@ -46,13 +48,22 @@ endif
 deploy: clean init fetch patch purge install plan output apply
 
 ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
-STATE_BACKEND_CONFIG := -backend-config="key=$(TF_VAR_domain_name)/traefik/$(TF_VAR_component)/terraform.tfstate" \
+STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
+        		-backend-config="region=$(STATE_REGION)" \
+				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate" \
 				-backend-config="profile=$(AWS_PROFILE)"
 else ifeq ($(CLOUD_KIND),gcp)
-STATE_BACKEND_CONFIG := -backend-config="prefix=$(TF_VAR_domain_name)/traefik/$(TF_VAR_component)" \
+STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
+        		-backend-config="region=$(STATE_REGION)" \
+				-backend-config="prefix=$(TF_VAR_domain_name)/$(TF_VAR_component)" \
 				-backend-config="credentials=$(GOOGLE_APPLICATION_CREDENTIALS)"
+else ifeq ($(CLOUD_KIND),azure)
+STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$${STATE_BUCKET//./}" \
+				-backend-config="container_name=$(STATE_CONTAINER)" \
+				-backend-config="resource_group_name=$(TF_VAR_resource_group_name)" \
+				-backend-config="key=$(DOMAIN_NAME)/$(TF_VAR_component)/terraform.tfstate"
 else
-	$(error cloud.kind / CLOUD_KIND must be one of: aws, gcp, hybrid)
+	$(error cloud.kind / CLOUD_KIND must be one of: aws, gcp, hybrid, azure)
 endif
 
 $(TF_DATA_DIR):
@@ -63,8 +74,6 @@ init: $(TF_DATA_DIR)
 	$(helm) init --client-only --upgrade --wait
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
-        -backend-config="bucket=$(STATE_BUCKET)" \
-        -backend-config="region=$(STATE_REGION)" \
 		$(STATE_BACKEND_CONFIG) \
 		./$(CLOUD_KIND)
 
