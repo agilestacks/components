@@ -22,7 +22,7 @@ parameters:
       env:   COMPONENT_NAME
     - name:  version
       brief: sysdig agent version
-      value: "latest"
+      value: 0.89.4
     - name:  namespace
       brief: Kubernetes namespace to install into
       value: sysdig
@@ -37,7 +37,7 @@ parameters:
       brief: Key-value agent tags following the format "key:val,key2:val2"
       empty: allow
     - name:  resources.limits.memory
-      value: "768Mi"
+      value: "1024Mi"
     - name:  resources.requests.memory
       value: "512Mi"
     - name:  resources.limits.cpu
