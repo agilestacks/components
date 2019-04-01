@@ -10,7 +10,7 @@ metadata:
     heritage: "{{ .Release.Service }}"
   annotations:
     agilestacks.com/stack-component: pgweb
-    kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
+    kubernetes.io/ingress.class: {{ .Values.ingress.class | quote }}
 spec:
   rules:
   - host: {{ .Values.ingress.fqdn | quote }}
