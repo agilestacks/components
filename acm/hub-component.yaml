@@ -28,6 +28,8 @@ parameters:
   env: AWS_DEFAULT_REGION
 
 outputs:
+- name: component.tls.kind
+  value: acm
 - name: component.acm.certificateArn
   brief: ACM Certificate ARN
   fromTfVar: certificate_arn

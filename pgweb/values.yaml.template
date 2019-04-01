@@ -5,9 +5,9 @@ database:
 
 ingress:
   enabled: true
-  ssl: ${component.ingress.ssl.enabled}
   fqdn: ${component.pgweb.ingress.urlPrefix}.${component.ingress.ssoFqdn}
   path: ${component.pgweb.ingress.path}
+  class: "${component.ingress.kubernetes.ingressClass}"
   imageTag: v0.1.1
   imagePullPolicy: IfNotPresent
 service:

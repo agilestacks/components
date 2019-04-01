@@ -13,3 +13,8 @@ spec:
       name: letsencrypt-staging
     # Enable the HTTP-01 challenge provider
     http01: {}
+    dns01:
+      providers:
+      - name: route53
+        route53:
+          region: ${cloud.region}

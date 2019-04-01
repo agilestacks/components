@@ -20,6 +20,10 @@ parameters:
   env: AWS_DEFAULT_REGION
 - name: cloud.kind
   env: CLOUD_KIND
+- name: component.tls.kind
+  value: letsencrypt
+  env: TLS_KIND
+  empty: allow
 
 - name: component.s3
   parameters:
@@ -42,10 +46,14 @@ parameters:
 - name: component.bucket.endpoint
   empty: allow
 
-- name: component.ingress.staticIp
-  env: TF_VAR_ingress_static_ip
-  empty: allow
-- name: component.ingress.protocol
+- name: component.ingress
+  parameters:
+  - name: fqdn
+    env:  INGRESS_FQDN
+  - name: staticIp
+    env: TF_VAR_ingress_static_ip
+    empty: allow
+  - name: protocol
 - name: component.acm.certificateArn
   empty: allow
 - name: terraform.bucket.region
@@ -59,23 +67,15 @@ parameters:
     value: local
   - name: name
     value: ${dns.name}-${hub.componentName}
-    env: TF_VAR_component
+    env: COMPONENT_NAME
   - name: namespace
     value: harbor
-    env: TF_VAR_namespace
-  - name: servicePrefix
-    value: svc
-    env: TF_VAR_service_prefix
+    env: NAMESPACE
   - name: user
     value: admin
-    env: TF_VAR_username
+    env: ADMIN_USERNAME
   - name: password
-    value: Harbor12345
-    env: TF_VAR_password
-  - name: nginx.image.repository
-    value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
-  - name: nginx.version
-    value: 0.12.0
+    env: ADMIN_PASSWORD
   - name: storageClass
     value: harbor-storage-class
 - name: component.cert-manager
@@ -83,22 +83,24 @@ parameters:
   - name: issuer-email
     value: admin@superhub.io
     env: EMAIL
-- name: component.ingress.fqdn
 
 outputs:
 - name: component.harbor.pullSecret
+  brief: Name of the pull secret to access harbor
   fromTfVar: pull_secret
-- name: component.harbor.serviceUrl
-  fromTfVar: service_url
 - name: component.harbor.url
   brief: Harbor URL
-  value: ${component.ingress.protocol}://${component.harbor.name}.${component.ingress.fqdn}
+  fromTfVar: harbor_url
 
 templates:
   files:
-  - "aws/*.template"
-  - "aws/s3/*.template"
-  - "aws/minio/*.template"
+  - "aws/*.template" 
+  - "aws/acm/*.template"
+  - "aws/letsencrypt/*.template"
   - "aws/local/*.template"
+  - "aws/minio/*.template"
+  - "aws/minio/*.template"  
+  - "aws/s3/*.template"
+  - "aws/s3/*.template"
   - "hybrid/local/*.template"
   - "hybrid/minio/*.template"

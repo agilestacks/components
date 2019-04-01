@@ -1,0 +1,19 @@
+persistence:
+  imageChartStorage:
+    # https://github.com/docker/distribution/issues/2313#issuecomment-371977545
+    disableredirect: true
+    type: s3
+      #maxthreads: 100
+    s3: 
+      region: ${component.minio.region}
+      bucket: ${component.minio.default.bucket.name}
+      accesskey: ${component.minio.accessKey}
+      secretkey: ${component.minio.secretKey}
+      regionendpoint: ${component.ingress.protocol}://${component.bucket.endpoint}
+      rootdirectory: /docker/${component.harbor.name}-${dns.domain}
+      #encrypt: false
+      #keyid: mykeyid
+      #secure: true
+      #v4auth: true
+      #chunksize: "5242880"
+      #storageclass: STANDARD

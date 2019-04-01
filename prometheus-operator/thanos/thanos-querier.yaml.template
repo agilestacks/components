@@ -1,0 +1,116 @@
+# This allow us to do
+# SRV lookup: thanos-store-api.default.svc
+apiVersion: v1
+kind: Service
+metadata:
+  name: thanos-store-gateway
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: grpc
+      port: 10901
+      targetPort: grpc
+  selector:
+    thanos-store-api: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: thanos-sidecar
+  name: thanos-sidecar
+  namespace: ${component.promoper.namespace}
+spec:
+  ports:
+  - name: metrics
+    port: 10902
+    protocol: TCP
+    targetPort: 10902
+  - name: grpc
+    port: 10901
+    protocol: TCP
+    targetPort: 10901
+  selector:
+    app: prometheus
+    prometheus: prometheus-operator-prometheus
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-querier
+  labels:
+    app: thanos-querier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thanos-querier
+  template:
+    metadata:
+      labels:
+        app: thanos-querier
+    spec:
+      containers:
+      - name: thanos
+        image: improbable/thanos:${component.promoper.thanos.version}
+        args:
+        - query
+        - --log.level=debug
+        - --query.replica-label=replica
+        - --cluster.disable
+        # Discover local store APIs using DNS SRV.
+        - --store=dnssrv+_grpc._tcp.thanos-store-gateway.${component.promoper.namespace}.svc
+        - --store=dnssrv+_grpc._tcp.thanos-sidecar.${component.promoper.namespace}.svc
+        env:
+        - name: OBJSTORE_CONFIG
+          valueFrom:
+            secretKeyRef:
+              name: thanos-objstore-config
+              key: thanos.yaml
+        ports:
+        - name: http
+          containerPort: 10902
+        - name: grpc
+          containerPort: 10901
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: thanos-querier
+  name: thanos-querier
+spec:
+  ports:
+  - port: 9090
+    protocol: TCP
+    targetPort: http
+    name: http
+  selector:
+    app: thanos-querier
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: thanos-querier
+  namespace: ${component.promoper.namespace}
+  annotations:
+    kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
+  labels:
+    provider:  agilestacks.com
+    project:   kubernetes
+spec:
+  rules:
+  - host: ${component.promoper.thanos.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: thanos-querier
+          servicePort: 9090

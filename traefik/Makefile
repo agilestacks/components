@@ -7,7 +7,7 @@ export TF_VAR_kubeconfig_context ?= $(TF_VAR_domain_name)
 
 CLOUD_KIND          ?= aws
 ACM_CERTIFICATE_ARN ?=
-CHART_VERSION       ?= 1.52.1
+CHART_VERSION       ?= 1.63.1
 CHART               ?= stable/traefik
 HUB_PROVIDES        ?=
 
@@ -130,8 +130,7 @@ output:
 	@echo provides = $(PROVIDES)
 	@echo
 
-# undeploy: init destroy apply uninstall
-undeploy: uninstall
+undeploy: init destroy apply uninstall
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan

@@ -12,7 +12,7 @@ export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(subst /,-,$(COMPONENT_NAME))
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
-export TF_VAR_name := $(COMPONENT_NAME)
+export TF_VAR_name := $(shell echo '$(COMPONENT_NAME)' | tr '[:upper:]' '[:lower:]' | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$$//;s/[[:space:]]/_/g')
 
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
