@@ -20,22 +20,21 @@ resources:
   # a sane defaults ones. If you have more questions or concerns, please refer
   # to Sysdig Support for more info about it
   requests:
-    cpu: ${component.sysdig.resources.requests.cpu}
-    memory: ${component.sysdig.resources.requests.memory}
+    cpu: 100m
+    memory: 512Mi
   limits:
-    cpu: ${component.sysdig.resources.limits.cpu}
-    memory: ${component.sysdig.resources.limits.memory}
-
+    cpu: 200m
+    memory: 1024Mi
 
 rbac:
-    # true here enables creation of rbac resources
-    create: ${component.sysdig.rbac.install}
+  # true here enables creation of rbac resources
+  create: true
 
 serviceAccount:
-    # Create and use serviceAccount resources
-    create: true
-    # Use this value as serviceAccountName
-    name: sysdig-account
+  # Create and use serviceAccount resources
+  create: true
+  # Use this value as serviceAccountName
+  name:
 
 daemonset:
   # Perform rolling updates by default in the DaemonSet agent
@@ -54,29 +53,29 @@ ebpf:
     # Set to false if not running on Google COS
     mountEtcVolume: true
 
-
 sysdig:
     # Required: You need your Sysdig Monitor access key before running agents.
-    accessKey: ${component.sysdig.license}
-    settings:
-     ### Agent tags
-      tags: ${component.sysdig.agentTags}
-     #### Sysdig Software related config ####
-     # Sysdig collector address
-     # collector: 192.168.1.1
-     # Collector TCP port
-     # collector_port: 6666
-     # Whether collector accepts ssl
-     # ssl: true
-     # collector certificate validation
-     # ssl_verify_certificate: true
-     #######################################
-      new_k8s: true
-      k8s_cluster_name: ${component.sysdig.clusterName}
+    # accessKey: ""
+
+  settings: {}
+    ### Agent tags
+    # tags: linux:ubuntu,dept:dev,local:nyc
+    #### Sysdig Software related config ####
+    # Sysdig collector address
+    # collector: 192.168.1.1
+    # Collector TCP port
+    # collector_port: 6666
+    # Whether collector accepts ssl
+    # ssl: true
+    # collector certificate validation
+    # ssl_verify_certificate: true
+    #######################################
+    # new_k8s: true
+    # k8s_cluster_name: production
 
 secure:
-    # true here enables Sysdig Secure: container run-time security & forensics
-    enable: false
+  # true here enables Sysdig Secure: container run-time security & forensics
+  enabled: false
 
 customAppChecks: {}
   # Allow passing custom app checks for Sysdig Agent.
