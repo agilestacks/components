@@ -40,10 +40,10 @@ parameters:
   - name: component.ingress
     parameters:
     - name: urlPrefix
-      value: www
+      value: app
       env: TF_VAR_url_prefix
     - name: ssoUrlPrefix
-      value: swww
+      value: apps
       env: TF_VAR_sso_url_prefix
     - name: name
       env: TF_VAR_component
