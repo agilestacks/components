@@ -84,6 +84,8 @@ spec:
         env:
         - name:  JENKINS_URL
           value: http://localhost:8080
+        - name:  MAX_CONCURRENT_REQS_PER_HOST
+          value: "${component.jenkins.operator.maxConcurrentReqsPerHost}"
         readinessProbe:
           httpGet:
             path: /status
