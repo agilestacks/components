@@ -166,8 +166,6 @@ outputs:
   fromTfVar: sso_ingress_fqdn
 - name: component.ingress.protocol
   fromTfVar: ingress_protocol
-- name: component.ingress.ssl.enabled
-  fromTfVar: ingress_ssl_enabled
 - name: component.ingress.urlPrefix
 - name: component.ingress.ssoUrlPrefix
 - name: component.ingress.kubernetes.ingressClass
