@@ -38,11 +38,11 @@ parameters:
     - name:  ingress.kibanaUrlPrefix
       value: kibana
     - name:  fluentd.version
-      value: v1.3.3
+      value: v1.4.0
     - name:  kibana.version
-      value: 6.5.4
+      value: 6.7.0
     - name:  elastic.version
-      value: 6.5.4
+      value: 6.7.0
     - name: elastic.masters
       value: 1
       # (number of master nodes / 2) + 1
