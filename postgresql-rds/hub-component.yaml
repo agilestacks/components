@@ -41,6 +41,9 @@ parameters:
   - name: rds.snapshot
     empty: allow
     env: TF_VAR_snapshot_identifier
+  - name: rds.multiAz
+    value: false
+    env: TF_VAR_multi_availability_zone
   - name: rds.skipFinalSnapshot
     value: true
     env: TF_VAR_skip_final_snapshot
