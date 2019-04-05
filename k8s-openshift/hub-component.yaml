@@ -8,6 +8,7 @@ meta:
     dir: ../../components/k8s-openshift
 
 requires:
+  - aws
   - kubectl
 provides:
   - kubernetes
@@ -57,10 +58,6 @@ outputs:
     fromTfVar: worker_subnet_id
   - name: cloud.vpc.worker.sg.id
     fromTfVar: worker_sg_id
-  - name: cloud.vpc.master.subnet.id
-    fromTfVar: master_subnet_id
-  - name: cloud.vpc.master.sg.id
-    fromTfVar: master_sg_id    
 
   - name: kubernetes.flavor
   - name: kubernetes.api.endpoint
