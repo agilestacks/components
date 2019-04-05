@@ -21,7 +21,7 @@ parameters:
 - name: cloud.kind
   env: CLOUD_KIND
 - name: component.tls.kind
-  value: letsencrypt
+  value: acm
   env: TLS_KIND
   empty: allow
 
@@ -94,12 +94,12 @@ outputs:
 
 templates:
   files:
-  - "aws/*.template" 
+  - "aws/*.template"
   - "aws/acm/*.template"
   - "aws/letsencrypt/*.template"
   - "aws/local/*.template"
   - "aws/minio/*.template"
-  - "aws/minio/*.template"  
+  - "aws/minio/*.template"
   - "aws/s3/*.template"
   - "aws/s3/*.template"
   - "hybrid/local/*.template"
