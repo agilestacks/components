@@ -38,7 +38,7 @@ parameters:
     - name:  ingress.kibanaUrlPrefix
       value: kibana
     - name:  fluentd.version
-      value: v1.4.0
+      value: v1.4.2
     - name:  kibana.version
       value: 6.5.4
     - name:  elastic.version
