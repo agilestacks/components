@@ -17,6 +17,8 @@ parameters:
   value: us-east-1
 - name: dns.domain
   env: DOMAIN_NAME
+- name: kubernetes.flavor
+  env: KUBE_FLAVOR
 - name: component.cert-manager
   parameters:
   - name: name

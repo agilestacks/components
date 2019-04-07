@@ -5,6 +5,7 @@ DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE 	   ?= cert-manager
 HELM_CHART     ?= stable/cert-manager
 CHART_VERSION  ?= v0.6.6
+KUBE_FLAVOR    ?=
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
@@ -40,6 +41,9 @@ install:
 			--wait \
 			--values values.yaml \
 			--version $(CHART_VERSION)
+ifeq ($(KUBE_FLAVOR),openshift)
+	$(kubectl) apply -f cert-manager-rbac-patch.yaml
+endif
 
 issuer:
 	for i in $$(seq 1 24); do \
