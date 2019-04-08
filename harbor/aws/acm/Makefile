@@ -21,13 +21,14 @@ patch_service:
 		| $(kubectl) replace --wait --force -f -
 	# sleep 30
 
+
 DRYRUN := $(shell $(kubectl) patch service $(COMPONENT_NAME) --patch "$$(cat acm-annotations.yaml)" --dry-run)
 ifeq (,$(findstring "no change","$(DRYRUN)"))
-	echo "NO CHANGE"
-deploy: patch_service wait_elb init plan apply
-else
-deploy: wait_elb init plan apply
+DEPLOY_PREREQS += patch_service
 endif
+DEPLOY_PREREQS := wait_elb init plan apply
+
+deploy: $(DEPLOY_PREREQS)
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
@@ -59,7 +60,7 @@ wait_elb:
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
 		if [ `$(get_svc) | $(jq) '.status.loadBalancer.ingress' | xargs` != "null" ]; then \
 			printf ' done\n---\n'; \
-			$(get_svc) | jq .;\
+			$(get_svc) | jq .status.loadBalancer;\
 			test `$(get_svc) | $(jq) '.status.loadBalancer.ingress' | xargs` != "null" && exit 0; \
 		fi; \
 		printf "."; \
