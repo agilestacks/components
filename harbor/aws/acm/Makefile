@@ -19,14 +19,13 @@ patch_service:
 	$(kubectl) get service $(COMPONENT_NAME) -o json \
 		| $(jq) 'del(.status, .metadata.uid, .metadata.resourceVersion, .metadata.selfLink, .metadata.creationTimestamp, .metadata.annotations."kubectl.kubernetes.io/last-applied-configuration")' \
 		| $(kubectl) replace --wait --force -f -
-	# sleep 30
 
 
 DRYRUN := $(shell $(kubectl) patch service $(COMPONENT_NAME) --patch "$$(cat acm-annotations.yaml)" --dry-run)
 ifeq (,$(findstring "no change","$(DRYRUN)"))
 DEPLOY_PREREQS += patch_service
 endif
-DEPLOY_PREREQS := wait_elb init plan apply
+DEPLOY_PREREQS += wait_elb init plan apply
 
 deploy: $(DEPLOY_PREREQS)
 
