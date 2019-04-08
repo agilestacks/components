@@ -37,6 +37,7 @@ parameters:
   parameters:
   - name: region
     empty: allow
+    env: MINIO_REGION
   - name: accessKey
     empty: allow
   - name: secretKey

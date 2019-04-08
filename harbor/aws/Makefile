@@ -17,11 +17,21 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 git     ?= git
 
-deploy: clean init namespace storage-class fetch install pull-secret output
 
-undeploy: init delete clean
+deploy: clean init namespace storage-class fetch install $(TLS_KIND)-deploy pull-secret output
+
+undeploy: $(TLS_KIND)-undeploy init delete clean
 	- $(kubectl) delete secret $(PULL_SECRET)
 	- $(kubectl) delete pvc -l 'app=harbor,release=$(COMPONENT_NAME)'
+
+$(TLS_KIND)-deploy:
+	test -f $(TLS_KIND)/Makefile \
+		&& $(MAKE) -C $(TLS_KIND) deploy
+
+$(TLS_KIND)-undeploy:
+	- test -f $(TLS_KIND)/Makefile \
+		&& $(MAKE) -C $(TLS_KIND) undeploy
+
 
 pull-secret: namespace
 	- $(kubectl) create secret docker-registry $(PULL_SECRET) \
@@ -29,7 +39,7 @@ pull-secret: namespace
 		--docker-username=$(ADMIN_USERNAME) \
 		--docker-password="$$ADMIN_PASSWORD"
 
-storage-class: 
+storage-class:
 	$(kubectl) apply -f storage-class.yaml
 
 init: $(HELM_HOME)
@@ -48,13 +58,17 @@ install:
 			--values values.yaml \
 			--values $(TLS_KIND)/values.yaml \
 			--values $(STORAGE_KIND)/values.yaml \
-			--set "harborAdminPassword=$$ADMIN_PASSWORD"
+			--set "harborAdminPassword=$$ADMIN_PASSWORD" $(HELM_ARGS) \
 
 output:
-	@ echo 
+	@ echo
 	@ echo Outputs:
 	@ echo pull_secret = $(PULL_SECRET)
+ifeq ("$(TLS_KIND)","acm")
+	@ echo harbor_url = https://$(COMPONENT_NAME).svc.$(DOMAIN_NAME)
+else
 	@ echo harbor_url = https://$(COMPONENT_NAME).$(INGRESS_FQDN)
+endif
 	@ echo
 
 namespace:
@@ -63,7 +77,7 @@ namespace:
 $(HELM_HOME):
 	mkdir -p $@
 
-delete: 
+delete:
 	- $(helm) delete --purge $(COMPONENT_NAME)
 
 clean:

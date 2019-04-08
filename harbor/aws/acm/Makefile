@@ -1,0 +1,69 @@
+.DEFAULT_GOAL := deploy
+
+export TF_VAR_domain       := $(DOMAIN_NAME)
+export TF_VAR_service_name := $(COMPONENT_NAME)
+export TF_VAR_namespace    := $(NAMESPACE)
+export TF_VAR_record       := $(COMPONENT_NAME).srv
+
+kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+jq := jq -cM
+terraform   ?= terraform-v0.11
+
+TF_CLI_ARGS ?= -no-color -input=false
+TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+
+TIMEOUT     ?= 600
+
+patch_service:
+	$(kubectl) patch service $(COMPONENT_NAME) --patch "$$(cat acm-annotations.yaml)"
+	$(kubectl) get service $(COMPONENT_NAME) -o json \
+		| $(jq) 'del(.status, .metadata.uid, .metadata.resourceVersion, .metadata.selfLink, .metadata.creationTimestamp, .metadata.annotations."kubectl.kubernetes.io/last-applied-configuration")' \
+		| $(kubectl) replace --wait --force -f -
+	# sleep 30
+
+DRYRUN := $(shell $(kubectl) patch service $(COMPONENT_NAME) --patch "$$(cat acm-annotations.yaml)" --dry-run)
+ifeq (,$(findstring "no change","$(DRYRUN)"))
+	echo "NO CHANGE"
+deploy: patch_service wait_elb init plan apply
+else
+deploy: wait_elb init plan apply
+endif
+
+$(TF_DATA_DIR):
+	@rm -rf $@ && mkdir -p $@
+
+init: $(TF_DATA_DIR)
+	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
+        -backend=true -reconfigure \
+        -backend-config="bucket=$(STATE_BUCKET)" \
+        -backend-config="region=$(STATE_REGION)" \
+        -backend-config="key=$(DOMAIN_NAME)/harbor/$(COMPONENT_NAME)/terraform.tfstate" \
+        -backend-config="profile=$(AWS_PROFILE)"
+
+plan:
+	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+
+apply:
+	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
+
+destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
+destroy: plan
+
+undeploy: init destroy
+	- $(MAKE) apply
+
+wait_elb:
+	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
+	$(eval get_svc=$(kubectl) get --output=json service $(COMPONENT_NAME))
+	@ echo 'Waiting for $(COMPONENT_NAME) service elb'
+	@ while [ `date +%s` -le "$(timeout)" ]; do \
+		if [ `$(get_svc) | $(jq) '.status.loadBalancer.ingress' | xargs` != "null" ]; then \
+			printf ' done\n---\n'; \
+			$(get_svc) | jq .;\
+			test `$(get_svc) | $(jq) '.status.loadBalancer.ingress' | xargs` != "null" && exit 0; \
+		fi; \
+		printf "."; \
+		sleep 2; \
+	done; \
+	echo " ERROR timeout $(TIMEOUT)sec"; \
+	exit 1
