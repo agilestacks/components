@@ -3,7 +3,7 @@
 DIRNAME := $(notdir $(abspath .))
 IMAGE ?= agilestacks/fluentd-elasticsearch
 CONTAINER ?= fluentd-elasticsearch
-FLUENTD_VERSION ?= v1.4.2
+FLUENTD_VERSION ?= v1.4.1
 DOCKER_BUILD_OTPS := --no-cache  --force-rm "
 
 deploy: build push
