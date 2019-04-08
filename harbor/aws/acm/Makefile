@@ -3,7 +3,7 @@
 export TF_VAR_domain       := $(DOMAIN_NAME)
 export TF_VAR_service_name := $(COMPONENT_NAME)
 export TF_VAR_namespace    := $(NAMESPACE)
-export TF_VAR_record       := $(COMPONENT_NAME).srv
+export TF_VAR_record       := $(COMPONENT_NAME).svc
 
 kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 jq := jq -cM

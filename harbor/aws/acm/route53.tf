@@ -25,11 +25,11 @@ variable "record" {
 }
 
 locals {
-  elb = "${data.kubernetes_service.srv.load_balancer_ingress.0.hostname}"
+  elb = "${data.kubernetes_service.svc.load_balancer_ingress.0.hostname}"
 }
 
 
-data "kubernetes_service" "srv" {
+data "kubernetes_service" "svc" {
   metadata {
     name = "${var.service_name}"
     namespace = "${var.namespace}"
