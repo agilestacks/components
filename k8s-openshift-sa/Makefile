@@ -8,7 +8,7 @@ ASI_ROLE ?= cluster-admin
 
 DOMAIN_NAME ?= metal.kubernetes.delivery
 
-oc ?= oc
+oc ?= oc -n default
 
 account:
 	$(oc) login $(API_ENDPOINT) --token=$(OPENSHIFT_TOKEN)
@@ -16,8 +16,9 @@ account:
 		echo "Account exists"; \
 	else \
 		echo "Creating a new service account for $(ASI_ACCOUNT)..."; \
-		$(oc) create serviceaccount $(ASI_ACCOUNT) -n default; \
+		$(oc) create serviceaccount $(ASI_ACCOUNT); \
 		$(oc) adm policy add-cluster-role-to-user $(ASI_ROLE) -z $(ASI_ACCOUNT); \
+		$(oc) adm policy add-scc-to-user privileged -z $(ASI_ACCOUNT); \
 	fi		 
 .PHONY: account
 
@@ -46,7 +47,7 @@ output:
 deploy: account secret token decode output
 
 undeploy:
-	-oc --context=$(DOMAIN_NAME) delete serviceaccount $(ASI_ACCOUNT) -n default
+	$(oc) --context=$(DOMAIN_NAME) delete serviceaccount $(ASI_ACCOUNT)
 .PHONY: undeploy	
 
 -include ../Mk/phonies
