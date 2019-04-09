@@ -1,20 +1,22 @@
 .DEFAULT_GOAL := deploy
 
 OPENSHIFT_TOKEN ?=
-OPENSHIFT_API_URL ?=
+API_ENDPOINT ?=
 
 ASI_ACCOUNT ?= asi
 ASI_ROLE ?= cluster-admin
 
-oc ?= oc 
+DOMAIN_NAME ?= metal.kubernetes.delivery
+
+oc ?= oc
 
 account:
-	$(oc) login $(OPENSHIFT_API_URL) --token=$(OPENSHIFT_TOKEN)
+	$(oc) login $(API_ENDPOINT) --token=$(OPENSHIFT_TOKEN)
 	@if $(oc) get serviceaccount $(ASI_ACCOUNT) ; then \
-		echo "Account exists";\
+		echo "Account exists"; \
 	else \
 		echo "Creating a new service account for $(ASI_ACCOUNT)..."; \
-		$(oc) create serviceaccount $(ASI_ACCOUNT); \
+		$(oc) create serviceaccount $(ASI_ACCOUNT) -n default; \
 		$(oc) adm policy add-cluster-role-to-user $(ASI_ROLE) -z $(ASI_ACCOUNT); \
 	fi		 
 .PHONY: account
@@ -25,8 +27,13 @@ secret:
 .PHONY: secret
 
 token:
-	$(eval TOKEN=$(shell $(oc) get secret $(SECRET) -o json | jq '.data.token'))
-.PHONY: token	
+	$(eval TOKEN_BASE64=$(shell $(oc) get secret $(SECRET) -o json | \
+		jq '.data.token'))
+.PHONY: token
+
+decode:
+	$(eval TOKEN=$(shell echo $(TOKEN_BASE64) | base64 --decode))
+.PHONY: decode	
 
 output:
 	@echo
@@ -36,10 +43,10 @@ output:
 	@echo
 .PHONY: output
 
-deploy: account secret token output
+deploy: account secret token decode output
 
 undeploy:
-	-oc delete serviceaccount $(ASI_ACCOUNT)
+	-oc --context=$(DOMAIN_NAME) delete serviceaccount $(ASI_ACCOUNT) -n default
 .PHONY: undeploy	
 
 -include ../Mk/phonies

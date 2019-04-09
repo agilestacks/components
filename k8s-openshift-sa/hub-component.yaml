@@ -1,0 +1,26 @@
+---
+version: 1
+kind: component
+meta:
+  name: k8s-openshift-sa
+  brief: Creates ASI Service Account in Openshift & obtains a token
+  source:
+    dir: ../../components/k8s-openshift-sa
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME  
+  - name: kubernetes.api.endpoint
+    env: API_ENDPOINT
+  - name: kubernetes.user.token
+    env: OPENSHIFT_TOKEN
+  - name: kubernetes.sa.name
+    value: asisuperadmin
+    env: ASI_ACCOUNT
+  - name: kubernetes.sa.role
+    value: cluster-admin
+    env: ASI_ROLE
+
+outputs:
+  - name: kubernetes.api.token
+    fromTfVar: sa_token
