@@ -1,0 +1,63 @@
+---
+version: 1
+kind: component
+meta:
+  name: k8s-aks
+  brief: Azure AKS
+  source:
+      dir: ../../components/k8s-aks
+
+requires:
+  - azure
+provides:
+  - kubernetes
+
+lifecycle:
+  verbs:
+    - deploy
+    - undeploy
+  readyConditions:
+    - dns: ${kubernetes.api.endpoint}
+      url: https://${kubernetes.api.endpoint}
+
+parameters:
+  - name: kubernetes.flavor
+    value: k8s-aks
+  - name: cloud.kind
+    value: azure
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: cloud.region
+    env: TF_VAR_location
+  - name: cloud.aksName
+    env: TF_VAR_cluster_name
+  - name: cloud.resourceGroup
+    env: TF_VAR_resource_group_name
+
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+ 
+
+outputs:
+  - name: cloud.kind
+  - name: cloud.region
+  - name: dns.domain
+  - name: dns.name
+    fromTfVar: dns_name
+  - name: dns.baseDomain
+    fromTfVar: dns_base_domain
+  - name: kubernetes.flavor
+  - name: kubernetes.api.host
+    fromTfVar: fqdn
+  - name: kubernetes.api.port
+    value: 443
+  - name: kubernetes.api.endpoint
+    value: ${kubernetes.api.host}:${kubernetes.api.port} 
+  - name: kubernetes.api.caCert
+    fromTfVar: api_ca_crt
+  - name: kubernetes.api.clientCert
+    fromTfVar: api_client_crt
+  - name: kubernetes.api.clientKey
+    fromTfVar: api_client_key
