@@ -5,14 +5,14 @@ meta:
   name: k8s-openshift-sa
   brief: Creates ASI Service Account in Openshift & obtains a token
   source:
-    dir: ../../components/k8s-openshift-sa
+    dir: ../../components/k8s-openshift-config
 
 parameters:
   - name: dns.domain
-    env: DOMAIN_NAME  
+    env: DOMAIN_NAME
   - name: kubernetes.api.endpoint
     env: API_ENDPOINT
-  - name: kubernetes.user.token
+  - name: kubernetes.api.token
     env: OPENSHIFT_TOKEN
   - name: kubernetes.sa.name
     value: asisuperadmin

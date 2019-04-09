@@ -22,21 +22,13 @@ export TF_VAR_name        := $(NAME)
 export TF_VAR_base_domain := $(BASE_DOMAIN)
 export TF_VAR_api_fqdn      := $(API_FQDN)
 
-oc ?= oc --context=$(DOMAIN_NAME)
-kubectl     ?= kubectl --context=$(DOMAIN_NAME)
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-deploy: add-scc init vars plan apply output
+deploy: init vars plan apply output
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
-
-add-scc:
-	-$(oc) create -f agilestacks-scc.yaml
-
-drop-scc:
-	-$(oc) delete -f agilestacks-scc.yaml			
 
 init: $(TF_DATA_DIR)
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
@@ -78,7 +70,7 @@ output:
 	@echo
 .PHONY: output	
 
-undeploy: init vars destroy apply drop-scc
+undeploy: init vars destroy apply 
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan

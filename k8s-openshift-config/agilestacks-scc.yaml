@@ -13,15 +13,13 @@ apiVersion: security.openshift.io/v1
 defaultAddCapabilities: null
 fsGroup:
   type: RunAsAny
-groups:
-- system:authenticated
 kind: SecurityContextConstraints
+priority: 100
 metadata:
   annotations:
     kubernetes.io/description: Agilestacks SCC
   creationTimestamp: 2019-03-12T22:18:10Z
   name: agilestacks-scc
-priority: 100
 readOnlyRootFilesystem: false
 requiredDropCapabilities: null
 runAsUser:

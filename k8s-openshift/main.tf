@@ -52,18 +52,18 @@ resource "aws_route53_record" "api" {
   records = ["${var.api_fqdn}"]
 }
 
-# resource "aws_route53_zone" "internal" {
-#   name = "i.${var.name}.${data.aws_route53_zone.base.name}"
+resource "aws_route53_zone" "internal" {
+  name = "i.${var.name}.${data.aws_route53_zone.base.name}"
 
-#   # We can't be sure enableDnsHostnames, enableDnsSupport are set on the EKS VPC created
-#   # out of our control, but AWS EKS VPC example do have DNS options enabled.
-#   # Terraform aws_vpc resource:
-#   # enable_dns_hostnames = true
-#   # enable_dns_support   = true
-#   vpc_id = "${var.vpc_id}"
+  # We can't be sure enableDnsHostnames, enableDnsSupport are set on the EKS VPC created
+  # out of our control, but AWS EKS VPC example do have DNS options enabled.
+  # Terraform aws_vpc resource:
+  # enable_dns_hostnames = true
+  # enable_dns_support   = true
+  vpc_id = "${var.vpc_id}"
 
-#   force_destroy = true
-# }
+  force_destroy = true
+}
 
 # outputs
 output "api_endpoint_cname" {

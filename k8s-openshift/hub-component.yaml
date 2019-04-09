@@ -22,7 +22,6 @@ parameters:
   - name: cloud.region
   - name: dns.domain
     env: DOMAIN_NAME
-
   - name: kubernetes.api.endpoint
     env: API_ENDPOINT
   - name: kubernetes.api.namespace
@@ -30,11 +29,10 @@ parameters:
   - name: kubernetes.api.token
   - name: kubernetes.flavor
     value: openshift
-
   - name: terraform.bucket.name
     env: STATE_BUCKET
   - name: terraform.bucket.region
-    env: STATE_REGION
+    env: STATE_REGION 
 
 outputs:
   - name: dns.domain

@@ -5,6 +5,7 @@ API_ENDPOINT ?=
 
 ASI_ACCOUNT ?= asi
 ASI_ROLE ?= cluster-admin
+ASI_SCC ?= agilestacks-scc
 
 DOMAIN_NAME ?= metal.kubernetes.delivery
 
@@ -18,7 +19,11 @@ account:
 		echo "Creating a new service account for $(ASI_ACCOUNT)..."; \
 		$(oc) create serviceaccount $(ASI_ACCOUNT); \
 		$(oc) adm policy add-cluster-role-to-user $(ASI_ROLE) -z $(ASI_ACCOUNT); \
-		$(oc) adm policy add-scc-to-user privileged -z $(ASI_ACCOUNT); \
+		$(oc) create -f $(ASI_SCC).yaml; \
+		$(oc) adm policy add-scc-to-user $(ASI_SCC) -z $(ASI_ACCOUNT); \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:ingress; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:dex; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:cert-manager; \
 	fi		 
 .PHONY: account
 
@@ -47,6 +52,7 @@ output:
 deploy: account secret token decode output
 
 undeploy:
+	$(oc) --context=$(DOMAIN_NAME) delete -f $(ASI_SCC).yaml
 	$(oc) --context=$(DOMAIN_NAME) delete serviceaccount $(ASI_ACCOUNT)
 .PHONY: undeploy	
 
