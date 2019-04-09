@@ -28,7 +28,7 @@ terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-deploy: automation-hub add-scc init vars plan apply output
+deploy: add-scc init vars plan apply output
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
@@ -67,10 +67,6 @@ vars: vpc
 	$(eval export AWS_DEFAULT_REGION := $(shell grep -E '^region =' $(DOMAIN_NAME).log | awk '{print $$3}'))
 	$(eval VPC_ID := $(shell grep -E '^vpc =' $(DOMAIN_NAME).log | awk '{print $$3}'))
 .PHONY: vars
-
-automation-hub:
-	$(kubectl) apply -f automation-hub.yaml
-.PHONY: automation-hub
 
 output:
 	@cat $(DOMAIN_NAME).log
