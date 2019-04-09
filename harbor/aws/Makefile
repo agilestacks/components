@@ -18,26 +18,17 @@ kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 git     ?= git
 
 
-deploy: clean init namespace storage-class fetch install $(TLS_KIND)-deploy pull-secret output
+deploy: clean init namespace storage-class fetch install $(TLS_KIND) output
 
-undeploy: $(TLS_KIND)-undeploy init delete clean
-	- $(kubectl) delete secret $(PULL_SECRET)
+undeploy: undeploy-$(TLS_KIND) init delete clean
 	- $(kubectl) delete pvc -l 'app=harbor,release=$(COMPONENT_NAME)'
 
-$(TLS_KIND)-deploy:
-	test -f $(TLS_KIND)/Makefile \
-		&& $(MAKE) -C $(TLS_KIND) deploy
+$(TLS_KIND):
+	$(MAKE) -C $(TLS_KIND) deploy
+.PHONY: $(TLS_KIND)
 
-$(TLS_KIND)-undeploy:
-	- test -f $(TLS_KIND)/Makefile \
-		&& $(MAKE) -C $(TLS_KIND) undeploy
-
-
-pull-secret: namespace
-	- $(kubectl) create secret docker-registry $(PULL_SECRET) \
-		--docker-server=$(COMPONENT_NAME).$(INGRESS_FQDN) \
-		--docker-username=$(ADMIN_USERNAME) \
-		--docker-password="$$ADMIN_PASSWORD"
+undeploy-$(TLS_KIND):
+	$(MAKE) -C $(TLS_KIND) undeploy
 
 storage-class:
 	$(kubectl) apply -f storage-class.yaml

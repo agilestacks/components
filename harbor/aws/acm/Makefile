@@ -25,7 +25,7 @@ DRYRUN := $(shell $(kubectl) patch service $(COMPONENT_NAME) --patch "$$(cat acm
 ifeq (,$(findstring "no change","$(DRYRUN)"))
 DEPLOY_PREREQS += patch_service
 endif
-DEPLOY_PREREQS += wait_elb init plan apply
+DEPLOY_PREREQS += wait_elb init plan apply $(PULL_SECRET)
 
 deploy: $(DEPLOY_PREREQS)
 
@@ -49,8 +49,7 @@ apply:
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
-undeploy: init destroy
-	- $(MAKE) apply
+undeploy: init destroy apply delete-$(PULL_SECRET)
 
 wait_elb:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
@@ -67,3 +66,12 @@ wait_elb:
 	done; \
 	echo " ERROR timeout $(TIMEOUT)sec"; \
 	exit 1
+
+$(PULL_SECRET):
+	- $(kubectl) create secret docker-registry $(PULL_SECRET) \
+		--docker-server=$(TF_VAR_record).$(DOMAIN_NAME) \
+		--docker-username=$(ADMIN_USERNAME) \
+		--docker-password="$$ADMIN_PASSWORD"
+
+delete-$(PULL_SECRET):
+	- $(kubectl) delete secret $(PULL_SECRET)
