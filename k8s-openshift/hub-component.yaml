@@ -9,8 +9,6 @@ meta:
 
 requires:
   - aws
-  - kubectl
-provides:
   - kubernetes
 
 lifecycle:
@@ -49,7 +47,6 @@ outputs:
     fromTfVar: region
   - name: cloud.availabilityZone
     fromTfVar: zone
-
   - name: cloud.vpc.id
     fromTfVar: vpc
   - name: cloud.vpc.cidr
