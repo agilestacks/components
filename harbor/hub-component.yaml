@@ -14,7 +14,7 @@ provides:
 
 parameters:
 - name: dns.domain
-  env: TF_VAR_domain
+  env: DOMAIN_NAME
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
