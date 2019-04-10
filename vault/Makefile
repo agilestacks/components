@@ -20,7 +20,7 @@ vault   ?= vault
 
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
 
-deploy: clean init purge install sleep connect enable unseal force-disconnect output
+deploy: clean init purge install sleep connect enable unseal mount force-disconnect output
 
 sleep:
 	@echo Waiting 30sec for Vault pod
@@ -105,7 +105,6 @@ seal: login
 undeploy: init disconnect
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	# rm -f $(UNSEAL_FILE)
 
 login:
 	$(vault) login $(shell cat $(UNSEAL_FILE) | jq -rM .root_token)
