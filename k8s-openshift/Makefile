@@ -47,18 +47,14 @@ account:
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:ingress; \
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:dex; \
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:cert-manager; \
-	fi 
-
-secret:
-	$(eval SECRET=$(shell $(oc) get serviceaccount $(ASI_ACCOUNT) -o json | \
-		jq '.secrets[] | select(.name | contains("token")).name'))
+	fi
 
 token:
+	$(eval SECRET=$(shell $(oc) get serviceaccount $(ASI_ACCOUNT) -o json | \
+		jq '.secrets[] | select(.name | contains("token")).name'))
 	$(eval TOKEN_BASE64=$(shell $(oc) get secret $(SECRET) -o json | \
-		jq '.data.token'))
-
-decode:
-	$(eval TOKEN=$(shell echo $(TOKEN_BASE64) | base64 -d ))
+		jq '.data.token'))	
+	$(eval TOKEN=$(shell openssl enc -A -base64 -d <<< $(TOKEN_BASE64)))
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
@@ -101,7 +97,7 @@ output:
 	@echo sa_token=$(TOKEN)	
 	@echo
 
-deploy: account secret token decode init vars plan apply output
+deploy: account token init vars plan apply output
 
 undeploy: init vars destroy apply 
 	$(oc) --context=$(DOMAIN_NAME) delete -f $(ASI_SCC).yaml
