@@ -32,6 +32,8 @@ TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 oc ?= oc -n default
 
+DISCOVERY_KUBE_CTX ?=
+
 account:
 	$(oc) login $(API_ENDPOINT) --token=$(OPENSHIFT_TOKEN)
 	@if $(oc) get serviceaccount $(ASI_ACCOUNT) ; then \
@@ -77,7 +79,7 @@ apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
 vpc:
-	@./vpc.sh | tee $(DOMAIN_NAME).log
+	CONTEXT=$(DISCOVERY_KUBE_CTX) ./vpc.sh | tee $(DOMAIN_NAME).log
 	@grep -E '^vpc =' $(DOMAIN_NAME).log >/dev/null
 
 vars: vpc
@@ -99,6 +101,7 @@ output:
 
 deploy: account token init vars plan apply output
 
+undeploy: DISCOVERY_KUBE_CTX:=--context=$(DOMAIN_NAME)
 undeploy: init vars destroy apply 
 	$(oc) --context=$(DOMAIN_NAME) delete -f $(ASI_SCC).yaml
 	$(oc) --context=$(DOMAIN_NAME) delete serviceaccount $(ASI_ACCOUNT)

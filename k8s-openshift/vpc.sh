@@ -2,7 +2,7 @@
 
 #export KUBECONFIG=kubeconfig
 # this will break if k8s-eks-shell is occupied
-kubectl_run="kubectl run --rm -ti k8s-eks-shell --image busybox --restart=Never -- sh -c"
+kubectl_run="kubectl $CONTEXT run --rm -ti k8s-openshift-shell --image busybox --restart=Never -- sh -c"
 meta='wget -qO - http://169.254.169.254/latest/meta-data'
 macs="$meta/network/interfaces/macs"
 
