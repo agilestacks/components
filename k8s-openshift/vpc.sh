@@ -2,7 +2,7 @@
 
 #export KUBECONFIG=kubeconfig
 # this will break if k8s-eks-shell is occupied
-kubectl_run="kubectl --context=$DOMAIN_NAME run --rm -ti k8s-eks-shell --image busybox --restart=Never -- sh -c"
+kubectl_run="kubectl run --rm -ti k8s-eks-shell --image busybox --restart=Never -- sh -c"
 meta='wget -qO - http://169.254.169.254/latest/meta-data'
 macs="$meta/network/interfaces/macs"
 
@@ -10,6 +10,7 @@ set +x
 
 $kubectl_run "
 mac=\$($macs | head -1)
+echo Outputs:
 echo region = \$($meta/placement/availability-zone | sed -e 's/.$//')
 echo zone = \$($meta/placement/availability-zone)
 echo vpc = \$($macs/\${mac}vpc-id)

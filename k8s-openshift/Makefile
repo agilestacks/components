@@ -1,7 +1,16 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= k8s-metal
-DOMAIN_NAME    ?= metal.kubernetes.delivery
+COMPONENT_NAME ?= k8s-openshift
+OPENSHIFT_TOKEN ?= must-be-set
+API_ENDPOINT ?= must-be-set
+DOMAIN_NAME ?= must-be-set
+ASI_ACCOUNT ?= asi
+ASI_ROLE ?= cluster-admin
+ASI_SCC ?= agilestacks-scc
+
+STATE_BUCKET   ?= terraform.agilestacks.com
+STATE_REGION   ?= us-east-1
+
 NAME           := $(shell echo $(DOMAIN_NAME) | cut -d. -f1)
 BASE_DOMAIN    := $(shell echo $(DOMAIN_NAME) | cut -d. -f2-)
 API_ENDPOINT   ?=
@@ -9,15 +18,11 @@ API_FQDN     := $(shell echo $(API_ENDPOINT) | cut -d: -f1)
 API_PORT       := $(shell echo $(API_ENDPOINT) | cut -d: -f2)
 $(if $(API_PORT),,API_PORT:=443)
 
-STATE_BUCKET   ?= terraform.agilestacks.com
-STATE_REGION   ?= us-east-1
-
 export AWS_DEFAULT_REGION ?= us-east-2
 
 export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
-
 export TF_VAR_name        := $(NAME)
 export TF_VAR_base_domain := $(BASE_DOMAIN)
 export TF_VAR_api_fqdn      := $(API_FQDN)
@@ -25,8 +30,36 @@ export TF_VAR_api_fqdn      := $(API_FQDN)
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+oc ?= oc -n default
 
-deploy: init vars plan apply output
+account:
+	$(oc) login $(API_ENDPOINT) --token=$(OPENSHIFT_TOKEN)
+	@if $(oc) get serviceaccount $(ASI_ACCOUNT) ; then \
+		echo "Service Account $(ASI_ACCOUNT) exists"; \
+	else \
+		echo "Creating a new service account for $(ASI_ACCOUNT)..."; \
+		$(oc) create serviceaccount $(ASI_ACCOUNT); \
+		echo "Assigning $(ASI_ACCOUNT) $(ASI_ROLE) role"; \
+		$(oc) adm policy add-cluster-role-to-user $(ASI_ROLE) -z $(ASI_ACCOUNT); \
+		echo "Creating $(ASI_SCC) Security Context Constraints (SCC)"; \
+		$(oc) create -f $(ASI_SCC).yaml; \
+		$(oc) adm policy add-scc-to-user $(ASI_SCC) -z $(ASI_ACCOUNT); \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:ingress; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:dex; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:cert-manager; \
+	fi 
+
+secret:
+	$(eval SECRET=$(shell $(oc) get serviceaccount $(ASI_ACCOUNT) -o json | \
+		jq '.secrets[] | select(.name | contains("token")).name'))
+
+token:
+	$(eval TOKEN_BASE64=$(shell $(oc) get secret $(SECRET) -o json | \
+		jq '.data.token'))
+
+decode:
+	$(eval TOKEN=$(shell echo $(TOKEN_BASE64) | base64 --decode))
+
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
@@ -39,26 +72,24 @@ init: $(TF_DATA_DIR)
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
-	$(terraform) plan -var vpc_id=$(VPC_ID) $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
-.PHONY: plan	
+	$(terraform) plan -var vpc_id=$(VPC_ID) $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)	
 
 refresh: 
 	$(terraform) refresh $(TF_CLI_ARGS)
-.PHONY: refresh	
 
 apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
-.PHONY: apply	
 
 vpc:
 	@./vpc.sh | tee $(DOMAIN_NAME).log
 	@grep -E '^vpc =' $(DOMAIN_NAME).log >/dev/null
-.PHONY: vpc
 
 vars: vpc
 	$(eval export AWS_DEFAULT_REGION := $(shell grep -E '^region =' $(DOMAIN_NAME).log | awk '{print $$3}'))
 	$(eval VPC_ID := $(shell grep -E '^vpc =' $(DOMAIN_NAME).log | awk '{print $$3}'))
-.PHONY: vars
+
+destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
+destroy: plan	
 
 output:
 	@cat $(DOMAIN_NAME).log
@@ -67,12 +98,13 @@ output:
 	@echo
 	@echo dns_name = $(NAME)
 	@echo dns_base_domain = $(BASE_DOMAIN)
+	@echo sa_token=$(TOKEN)	
 	@echo
-.PHONY: output	
+
+deploy: account secret token decode init vars plan apply output
 
 undeploy: init vars destroy apply 
-
-destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
-destroy: plan
+	$(oc) --context=$(DOMAIN_NAME) delete -f $(ASI_SCC).yaml
+	$(oc) --context=$(DOMAIN_NAME) delete serviceaccount $(ASI_ACCOUNT)
 
 -include ../Mk/phonies
