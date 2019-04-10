@@ -58,7 +58,7 @@ token:
 		jq '.data.token'))
 
 decode:
-	$(eval TOKEN=$(shell echo $(TOKEN_BASE64) | base64 --decode))
+	$(eval TOKEN=$(shell echo $(TOKEN_BASE64) | base64 -d ))
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
