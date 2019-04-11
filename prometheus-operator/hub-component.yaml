@@ -20,7 +20,7 @@ parameters:
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.ingress.kubernetes.ingressClass
-    value: traefik
+    empty: allow
   - name: component.promoper
     parameters:
     - name: chart
