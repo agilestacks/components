@@ -47,9 +47,19 @@ account:
 		echo "Creating $(ASI_SCC) Security Context Constraints (SCC)"; \
 		$(oc) create -f $(ASI_SCC).yaml; \
 		$(oc) adm policy add-scc-to-user $(ASI_SCC) -z $(ASI_ACCOUNT); \
+		echo "All service accounts that are created by ASI components (in namespaces managed by ASI) should be added to $(ASI_SCC) SCC"
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:ingress; \
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:dex; \
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:cert-manager; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:harbor; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:istio-system; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:prometheus; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:postgresql; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:mongodb; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:redis; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:nats; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:minio; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:automation-tasks;
 	fi
 
 token:
