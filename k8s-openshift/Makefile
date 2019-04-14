@@ -91,17 +91,18 @@ apply:
 
 vpc:
 	CONTEXT=$(DISCOVERY_KUBE_CTX) ./vpc.sh | tee $(DOMAIN_NAME).log
-	@grep -E '^vpc =' $(DOMAIN_NAME).log >/dev/null
+	tr -d '\r' < $(DOMAIN_NAME).log > $(DOMAIN_NAME).clean.log
+	@grep -E '^vpc =' $(DOMAIN_NAME).clean.log >/dev/null
 
 vars: vpc
-	$(eval export AWS_DEFAULT_REGION := $(shell grep -E '^region =' $(DOMAIN_NAME).log | awk '{print $$3}'))
-	$(eval VPC_ID := $(shell grep -E '^vpc =' $(DOMAIN_NAME).log | awk '{print $$3}'))
+	$(eval export AWS_DEFAULT_REGION := $(shell grep -E '^region =' $(DOMAIN_NAME).clean.log | awk '{print $$3}'))
+	$(eval VPC_ID := $(shell grep -E '^vpc =' $(DOMAIN_NAME).clean.log | awk '{print $$3}'))
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan	
 
 output:
-	@cat $(DOMAIN_NAME).log
+	@cat $(DOMAIN_NAME).clean.log
 	@echo
 	@echo Outputs:
 	@echo
