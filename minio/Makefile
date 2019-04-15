@@ -10,6 +10,7 @@ PROTOCOL       ?= http
 CLOUD          ?= aws
 ALIAS          ?= $(COMPONENT_NAME)
 DOMAIN         ?= minio
+TLS_KIND ?= shold-be-set
 
 DEFAULT_BUCKET ?= default
 
@@ -87,7 +88,7 @@ install: namespace $(CLOUD)-storage-class
 			--namespace $(NAMESPACE) \
 			--replace \
 			--wait \
-			--values values.yaml \
+			--values $(TLS_KIND)/values.yaml \
 			--set 'accessKey=$(ACCESS_KEY)' \
 			--set 'secretKey=$(SECRET_KEY)' \
 			--set 'fullnameOverride=$(SECRET)'

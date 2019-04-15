@@ -24,6 +24,8 @@ lifecycle:
   - unconfigure
 
 parameters:
+  - name: component.tls.kind
+    env: TLS_KIND
   - name: cloud.kind
     env: CLOUD
   - name: dns.name
@@ -186,3 +188,5 @@ outputs:
 templates:
   files:
     - "*.template"
+    - "acm/values.yaml.template"
+    - "letsencrypt/values.yaml.template"
