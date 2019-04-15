@@ -78,7 +78,7 @@ enable:
 mount: login
 	@if ! $(vault) secrets list | grep ^secret/; then \
 		echo "Enable KV v1 secrets"; \
-		$(vault) secrets enable -path=secret -description='Secrets v1' kv; \
+		$(vault) secrets enable -version=1 -path=secret -description='Secrets v1' kv; \
 	fi
 .PHONY: mount
 
