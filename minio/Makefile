@@ -93,6 +93,7 @@ install: namespace $(CLOUD)-storage-class
 			--set 'fullnameOverride=$(SECRET)'
 
 configure:
+	@ echo "Let's wait until tls certs are issued, otherwise commands below will fail"
 	@ $(mc) config host add $(ALIAS) \
 		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
 		$(ACCESS_KEY) $(SECRET_KEY) \
