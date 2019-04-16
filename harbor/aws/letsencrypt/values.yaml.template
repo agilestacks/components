@@ -1,6 +1,6 @@
 externalURL: https://${component.harbor.name}.${component.ingress.fqdn}
 expose:
-  type: clusterIP
+  type: ingress
   tls:
     enabled: true
     secretName: ${component.harbor.name}-tls
@@ -11,6 +11,7 @@ expose:
       core: ${component.harbor.name}.${component.ingress.fqdn}
       notary: notary.${component.harbor.name}.${component.ingress.fqdn}
     annotations:
+      kubernetes.io/tls-acme: "true"
       ingress.kubernetes.io/ssl-redirect: "true"
       ingress.kubernetes.io/proxy-body-size: "0"
       agilestacks.com/stack-component: ${component.harbor.name}
