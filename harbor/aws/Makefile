@@ -9,8 +9,8 @@ export HELM_HOME      ?= $(shell pwd)/.helm
 TLS_KIND              ?= letsencrypt
 STORAGE_KIND          ?= s3
 # STORAGE_KIND          := local
-CHART_VERSION         := master
-# CHART_VERSION         := 1.0.0
+# CHART_VERSION         := master
+CHART_VERSION         := 1.0.1
 CHART_ORIGIN          := https://github.com/goharbor/harbor-helm.git
 
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
