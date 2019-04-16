@@ -58,6 +58,7 @@ account:
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:mongodb; \
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:redis; \
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:nats; \
+		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:monitoring; \
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:minio; \
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:logs; \
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:automation-tasks; \
