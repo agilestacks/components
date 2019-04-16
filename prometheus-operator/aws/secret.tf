@@ -1,6 +1,6 @@
 provider "kubernetes" {
-  version                = "1.5.2"
-  config_context_cluster = "${var.domain}"
+  version        = "1.5.2"
+  config_context = "${var.domain}"
 }
 
 data "template_file" "thanos_config" {
