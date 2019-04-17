@@ -33,6 +33,9 @@ parameters:
       env: OPENSHIFT_TOKEN
     - name: namespace
       value: kube-system
+    - name: caCert
+      empty: allow
+      env: CA_CERT  
   - name: kubernetes.sa
     parameters:
     - name: name
@@ -68,6 +71,7 @@ outputs:
     fromTfVar: worker_sg_id
   - name: kubernetes.flavor
   - name: kubernetes.api.endpoint
+  - name: kubernetes.api.caCert
   - name: kubernetes.api.token
     fromTfVar: sa_token
 

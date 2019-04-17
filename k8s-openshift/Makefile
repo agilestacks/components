@@ -17,6 +17,7 @@ BASE_DOMAIN    := $(shell echo $(DOMAIN_NAME) | cut -d. -f2-)
 API_ENDPOINT   ?=
 API_FQDN     := $(shell echo $(API_ENDPOINT) | cut -d: -f1)
 API_PORT       := $(shell echo $(API_ENDPOINT) | cut -d: -f2)
+
 $(if $(API_PORT),,API_PORT:=443)
 
 export AWS_DEFAULT_REGION ?= us-east-2
@@ -35,8 +36,13 @@ oc ?= oc -n default
 
 DISCOVERY_KUBE_CTX ?=
 
+ifneq (,$(CA_CERT))
+	echo $(CA_CERT) > ca_cert.pem
+	CA:=--certificate-authority=ca_cert.pem
+endif	
+
 account:
-	$(oc) login $(API_ENDPOINT) --token=$(OPENSHIFT_TOKEN)
+	$(oc) login $(API_ENDPOINT) --token=$(OPENSHIFT_TOKEN) $(CA)
 	@if $(oc) get serviceaccount $(ASI_ACCOUNT) ; then \
 		echo "Service Account $(ASI_ACCOUNT) exists"; \
 	else \
