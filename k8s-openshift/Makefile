@@ -35,11 +35,10 @@ TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 oc ?= oc -n default
 
 DISCOVERY_KUBE_CTX ?=
-
 ifneq (,$(CA_CERT))
-	echo $(CA_CERT) > ca_cert.pem
-	CA:=--certificate-authority=ca_cert.pem
-endif	
+$(shell echo -e "$(CA_CERT)" > ca_cert.pem)
+CA := --certificate-authority=ca_cert.pem
+endif
 
 account:
 	$(oc) login $(API_ENDPOINT) --token=$(OPENSHIFT_TOKEN) $(CA)
