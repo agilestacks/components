@@ -7,10 +7,10 @@ export PULL_SECRET    ?= $(COMPONENT_NAME)-pull-secret
 export HELM_HOME      ?= $(shell pwd)/.helm
 
 TLS_KIND              ?= letsencrypt
+
+# storage kind: {s3, local}
 STORAGE_KIND          ?= s3
-# STORAGE_KIND          := local
-CHART_VERSION         := master
-# CHART_VERSION         := 1.0.1
+CHART_VERSION         := 8008f7d830282545a55e0340495c5ed3700dedf5	# Apr 4, 2019  Merge pull request #183 from paulczar/gce-ingress
 CHART_ORIGIN          := https://github.com/goharbor/harbor-helm.git
 
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
@@ -37,7 +37,14 @@ init: $(HELM_HOME)
 	$(helm) init --client-only --upgrade --wait
 
 fetch:
-	$(git) clone --depth 1 -b $(CHART_VERSION) $(CHART_ORIGIN) $(HELM_HOME)/harbor
+	@echo fetching helm chart from $(CHART_VERSION) on $(CHART_ORIGIN)
+	rm -rf mkdir -p $(HELM_HOME)/harbor
+	mkdir -p $(HELM_HOME)/harbor
+	cd $(HELM_HOME)/harbor && \
+		$(git) init && \
+		$(git) remote add origin $(CHART_ORIGIN) && \
+		$(git) fetch --depth 1 origin $(CHART_VERSION) && \
+		$(git) reset --hard FETCH_HEAD
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
