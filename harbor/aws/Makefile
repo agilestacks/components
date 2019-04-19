@@ -38,7 +38,7 @@ init: $(HELM_HOME)
 
 fetch:
 	@echo fetching helm chart from $(CHART_VERSION) on $(CHART_ORIGIN)
-	rm -rf mkdir -p $(HELM_HOME)/harbor
+	rm -rf $(HELM_HOME)/harbor
 	mkdir -p $(HELM_HOME)/harbor
 	cd $(HELM_HOME)/harbor && \
 		$(git) init && \
