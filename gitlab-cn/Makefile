@@ -33,9 +33,11 @@ purge:
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
+	scripts/create_minio_secret.sh
 	$(MAKE) -C $(CLOUD_TYPE) $@
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
-	  $(helm) install $(notdir $(HELM_CHART)) \
+	  $(helm) upgrade --install $(notdir $(HELM_CHART)) \
+	  --timeout 600
 	  --name $(COMPONENT_NAME) \
 	  --name-template $(COMPONENT_NAME) \
 	  --namespace $(NAMESPACE) \

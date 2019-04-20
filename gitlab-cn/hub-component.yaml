@@ -16,7 +16,6 @@ provides:
   - gitlab
 
 parameters:
-  - name: component.ingress.ssoFqdn
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.ingress.kubernetes.ingressClass
@@ -54,6 +53,13 @@ parameters:
       value: gitlab
     - name:  ingress.path
       value: /
+  - name: component.minio
+    parameters:
+    - name: namespace
+    - name: secret.name
+    - name: secret.accessKeyRef
+    - name: secret.secretKeyRef
+    - name: service.host
 
 templates:
   files:
@@ -67,4 +73,4 @@ templates:
 outputs:
   - name: component.gitlab.url
     brief: Gitlab URL
-    value: http://${component.gitlab.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: http://${component.gitlab.ingress.urlPrefix}.${dns.domain}
