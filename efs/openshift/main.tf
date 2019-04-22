@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 0.11.3"
-  backend "s3" {}
+  backend          "s3"             {}
 }
 
 provider "aws" {
@@ -8,10 +8,6 @@ provider "aws" {
 }
 
 data "aws_region" "current" {}
-
-# variable "aws_az" {
-#   type = "string"
-# }
 
 variable "name" {
   type = "string"
@@ -30,10 +26,31 @@ variable "sgs" {
   type = "string"
 }
 
+variable "vpc_id" {
+  type = "string"
+}
+
+resource "aws_security_group" "efs" {
+  name        = "allow_tls"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = "${var.vpc_id}"
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_efs_file_system" "main" {
-  # do we really need to replace `.` with `-`?
-  # https://docs.aws.amazon.com/efs/latest/ug/API_CreateFileSystem.html#efs-CreateFileSystem-request-CreationToken
-  # creation_token = "${replace("${var.name}", ".", "-")}"
   creation_token = "${var.name}"
 
   tags {
@@ -46,7 +63,7 @@ resource "aws_efs_file_system" "main" {
 resource "aws_efs_mount_target" "main" {
   file_system_id  = "${aws_efs_file_system.main.id}"
   subnet_id       = "${var.subnet}"
-  security_groups = ["${split(",", var.sgs)}"]
+  security_groups = ["${aws_security_group.efs.id}"]
 }
 
 data "aws_subnet" "mount_target" {
@@ -54,11 +71,6 @@ data "aws_subnet" "mount_target" {
 }
 
 locals {
-  # https://docs.aws.amazon.com/efs/latest/ug/mounting-fs-mount-cmd-dns-name.html
-  # https://docs.aws.amazon.com/efs/latest/ug/troubleshooting-efs-mounting.html#mount-fails-dns-name
-  # dns = "${aws_efs_mount_target.main.dns_name}" # this will wait for mount target? - slower
-  # If there is no mount target in a particular zone, then `fs-...` won't resolve.
-  # Export zone-specific DNS name to everyone.
   dns = "${data.aws_subnet.mount_target.availability_zone}.${aws_efs_file_system.main.id}.efs.${data.aws_region.current.name}.amazonaws.com"
 }
 
