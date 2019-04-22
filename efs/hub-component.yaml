@@ -33,7 +33,7 @@ parameters:
     env: TF_VAR_performance_mode
   - name: vpc
     value: ${cloud.vpc.id}
-    env: TV_VAR_vpc_id  
+    env: TF_VAR_vpc_id  
 - name: cloud.region
   env: AWS_DEFAULT_REGION
 - name: dns.domain
