@@ -33,9 +33,9 @@ parameters:
     env: TF_VAR_domain_name
   - name: dns.name
     env: TF_VAR_name
-  - name: cloud.resource_group
-    empty: allow
-    env: TF_VAR_resource_group_name
+  - name: cloud.azureResourceGroupName
+    value: superhub-${cloud.region}
+    env: TF_VAR_azure_resource_group_name
 
   - name: component.ingress
     parameters:
