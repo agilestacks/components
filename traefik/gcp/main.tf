@@ -34,10 +34,6 @@ resource "google_dns_record_set" "dns_auth_ext" {
   type         = "A"
   ttl          = "300"
   rrdatas      = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.ip}"]
-
-  # lifecycle {
-  #   ignore_changes = ["records", "ttl"]
-  # }
 }
 
 resource "google_dns_record_set" "dns_app1_ext" {
@@ -46,10 +42,6 @@ resource "google_dns_record_set" "dns_app1_ext" {
   type         = "A"
   ttl          = "300"
   rrdatas      = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.ip}"]
-
-  # lifecycle {
-  #   ignore_changes = ["records", "ttl"]
-  # }
 }
 
 resource "google_dns_record_set" "dns_app2_ext" {
@@ -58,10 +50,6 @@ resource "google_dns_record_set" "dns_app2_ext" {
   type         = "A"
   ttl          = "300"
   rrdatas      = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.ip}"]
-
-  # lifecycle {
-  #   ignore_changes = ["records", "ttl"]
-  # }
 }
 
 resource "google_dns_record_set" "dns_apps1_ext" {
@@ -70,10 +58,6 @@ resource "google_dns_record_set" "dns_apps1_ext" {
   type         = "A"
   ttl          = "300"
   rrdatas      = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.ip}"]
-
-  # lifecycle {
-  #   ignore_changes = ["records", "ttl"]
-  # }
 }
 
 resource "google_dns_record_set" "dns_apps2_ext" {
@@ -82,8 +66,4 @@ resource "google_dns_record_set" "dns_apps2_ext" {
   type         = "A"
   ttl          = "300"
   rrdatas      = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.ip}"]
-
-  # lifecycle {
-  #   ignore_changes = ["records", "ttl"]
-  # }
 }

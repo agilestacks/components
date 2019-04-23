@@ -19,10 +19,6 @@ resource "aws_route53_record" "dns_auth_ext" {
   type    = "A"
   ttl     = "300"
   records = ["${var.ingress_static_ip}"]
-
-  # lifecycle {
-  #   ignore_changes = ["records", "ttl"]
-  # }
 }
 
 resource "aws_route53_record" "dns_app1_ext" {
@@ -31,10 +27,6 @@ resource "aws_route53_record" "dns_app1_ext" {
   type    = "A"
   ttl     = "300"
   records = ["${var.ingress_static_ip}"]
-
-  # lifecycle {
-  #   ignore_changes = ["records", "ttl"]
-  # }
 }
 
 resource "aws_route53_record" "dns_app2_ext" {
@@ -43,10 +35,6 @@ resource "aws_route53_record" "dns_app2_ext" {
   type    = "A"
   ttl     = "300"
   records = ["${var.ingress_static_ip}"]
-
-  # lifecycle {
-  #   ignore_changes = ["records", "ttl"]
-  # }
 }
 
 resource "aws_route53_record" "dns_apps1_ext" {
@@ -55,10 +43,6 @@ resource "aws_route53_record" "dns_apps1_ext" {
   type    = "A"
   ttl     = "300"
   records = ["${var.ingress_static_ip}"]
-
-  # lifecycle {
-  #   ignore_changes = ["records", "ttl"]
-  # }
 }
 
 resource "aws_route53_record" "dns_apps2_ext" {
@@ -67,8 +51,4 @@ resource "aws_route53_record" "dns_apps2_ext" {
   type    = "A"
   ttl     = "300"
   records = ["${var.ingress_static_ip}"]
-
-  # lifecycle {
-  #   ignore_changes = ["records", "ttl"]
-  # }
 }
