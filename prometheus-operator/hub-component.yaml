@@ -27,7 +27,7 @@ parameters:
       value: stable/prometheus-operator
       env: HELM_CHART
     - name: chart.version
-      value: 5.0.4
+      value: 5.2.0
       env: CHART_VERSION
     - name:  name
       value: prometheus-operator
@@ -59,7 +59,7 @@ parameters:
     parameters:
     - name:  version
       brief: Alertmanager version
-      value: v0.16.1
+      value: v0.16.2
     - name:  ingress.enabled
       value: true
     - name:  ingress.urlPrefix
@@ -70,7 +70,7 @@ parameters:
     parameters:
     - name:  version
       brief: Grafana version
-      value: 6.0.2
+      value: 6.1.4
     - name:  ingress.enabled
       value: true
     - name:  ingress.urlPrefix
