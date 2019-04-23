@@ -37,7 +37,7 @@ spec:
           timeoutSeconds: 1
           successThreshold: 1
         env:
-          - name: ELASTICSEARCH_URL
+          - name: ELASTICSEARCH_HOSTS
             valueFrom:
               configMapKeyRef:
                 name: es-env

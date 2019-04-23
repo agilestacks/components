@@ -33,14 +33,17 @@ parameters:
     env: TF_VAR_domain_name
   - name: dns.name
     env: TF_VAR_name
+  - name: cloud.resource_group
+    empty: allow
+    env: TF_VAR_resource_group_name
 
   - name: component.ingress
     parameters:
     - name: urlPrefix
-      value: www
+      value: app
       env: TF_VAR_url_prefix
     - name: ssoUrlPrefix
-      value: swww
+      value: apps
       env: TF_VAR_sso_url_prefix
     - name: name
       env: TF_VAR_component
@@ -163,8 +166,6 @@ outputs:
   fromTfVar: sso_ingress_fqdn
 - name: component.ingress.protocol
   fromTfVar: ingress_protocol
-- name: component.ingress.ssl.enabled
-  fromTfVar: ingress_ssl_enabled
 - name: component.ingress.urlPrefix
 - name: component.ingress.ssoUrlPrefix
 - name: component.ingress.kubernetes.ingressClass
@@ -175,4 +176,4 @@ outputs:
   fromTfVar: load_balancer
 
 templates:
-  files: ["*.yaml.template"]
+  files: ["*.yaml.template", "azure/values-tls.yaml.template", "aws/values-tls.yaml.template"]

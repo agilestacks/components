@@ -20,14 +20,14 @@ parameters:
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.ingress.kubernetes.ingressClass
-    value: traefik
+    empty: allow
   - name: component.promoper
     parameters:
     - name: chart
       value: stable/prometheus-operator
       env: HELM_CHART
     - name: chart.version
-      value: 5.0.3
+      value: 5.0.4
       env: CHART_VERSION
     - name:  name
       value: prometheus-operator
@@ -53,6 +53,8 @@ parameters:
       value: /
     - name: prometheus.replicas
       value: 1
+    - name: prometheus.retention
+      value: 12h
   - name: component.promoper.alertmanager
     parameters:
     - name:  version

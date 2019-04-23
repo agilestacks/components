@@ -13,10 +13,14 @@ provides:
 - cert-manager
 
 parameters:
+- name: component.tls.kind
+  value: letsencrypt  
 - name: cloud.region # for DNS01 ACME solver
   value: us-east-1
 - name: dns.domain
   env: DOMAIN_NAME
+- name: kubernetes.flavor
+  env: KUBE_FLAVOR
 - name: component.cert-manager
   parameters:
   - name: name
@@ -36,7 +40,6 @@ parameters:
 
 outputs:
 - name: component.tls.kind
-  value: letsencrypt
 
 templates:
   files:

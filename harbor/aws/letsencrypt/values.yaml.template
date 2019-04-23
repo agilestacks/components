@@ -1,18 +1,15 @@
+externalURL: https://${component.harbor.name}.${component.ingress.fqdn}
 expose:
-  # Set the way how to expose the service. Set the type as "ingress", 
-  # "clusterIP" or "nodePort" and fill the information in the corresponding 
-  # section
-  type: clusterIP
+  type: ingress
   tls:
     enabled: true
     secretName: ${component.harbor.name}-tls
     notarySecretName: ${component.harbor.name}-tls
     commonName: ${component.harbor.name}.${component.ingress.fqdn}
   ingress:
-    hosts:
-      core: ${component.harbor.name}.${component.ingress.fqdn}
-      notary: notary.${component.harbor.name}.${component.ingress.fqdn}
+    host: ${component.harbor.name}.${component.ingress.fqdn}
     annotations:
+      kubernetes.io/tls-acme: "true"
       ingress.kubernetes.io/ssl-redirect: "true"
       ingress.kubernetes.io/proxy-body-size: "0"
       agilestacks.com/stack-component: ${component.harbor.name}
@@ -28,9 +25,9 @@ expose:
       http:
         port: 80
         nodePort: 30002
-      https: 
+      https:
         port: 443
         nodePort: 30003
-      notary: 
+      notary:
         port: 4443
         nodePort: 30004

@@ -1,10 +1,10 @@
 .DEFAULT_GOAL := deploy
 
-DOMAIN_NAME ?= dev.kubernetes.delivery
-NAMESPACE   ?= kube-system
-SSL_ENABLED ?= true
+DOMAIN_NAME  ?= dev.kubernetes.delivery
+NAMESPACE    ?= kube-system
+HUB_PROVIDES ?=
 
-ifeq (true,$(SSL_ENABLED))
+ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
 	INGRESS:=ingress-tls
 else
 	INGRESS:=ingress

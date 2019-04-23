@@ -7,36 +7,44 @@ export PULL_SECRET    ?= $(COMPONENT_NAME)-pull-secret
 export HELM_HOME      ?= $(shell pwd)/.helm
 
 TLS_KIND              ?= letsencrypt
+
+# storage kind: {s3, local}
 STORAGE_KIND          ?= s3
-# STORAGE_KIND          := local
-CHART_VERSION         := master
-# CHART_VERSION         := 1.0.0
+CHART_VERSION         := 8008f7d830282545a55e0340495c5ed3700dedf5	# Apr 4, 2019  Merge pull request #183 from paulczar/gce-ingress
 CHART_ORIGIN          := https://github.com/goharbor/harbor-helm.git
 
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 git     ?= git
 
-deploy: clean init namespace storage-class fetch install pull-secret output
 
-undeploy: init delete clean
-	- $(kubectl) delete secret $(PULL_SECRET)
+deploy: clean init namespace storage-class fetch install $(TLS_KIND) output
+
+undeploy: undeploy-$(TLS_KIND) init delete clean
 	- $(kubectl) delete pvc -l 'app=harbor,release=$(COMPONENT_NAME)'
 
-pull-secret: namespace
-	- $(kubectl) create secret docker-registry $(PULL_SECRET) \
-		--docker-server=$(COMPONENT_NAME).$(INGRESS_FQDN) \
-		--docker-username=$(ADMIN_USERNAME) \
-		--docker-password="$$ADMIN_PASSWORD"
+$(TLS_KIND):
+	$(MAKE) -C $(TLS_KIND) deploy
+.PHONY: $(TLS_KIND)
 
-storage-class: 
+undeploy-$(TLS_KIND):
+	$(MAKE) -C $(TLS_KIND) undeploy
+
+storage-class:
 	$(kubectl) apply -f storage-class.yaml
 
 init: $(HELM_HOME)
 	$(helm) init --client-only --upgrade --wait
 
 fetch:
-	$(git) clone --depth 1 -b $(CHART_VERSION) $(CHART_ORIGIN) $(HELM_HOME)/harbor
+	@echo fetching helm chart from $(CHART_VERSION) on $(CHART_ORIGIN)
+	rm -rf $(HELM_HOME)/harbor
+	mkdir -p $(HELM_HOME)/harbor
+	cd $(HELM_HOME)/harbor && \
+		$(git) init && \
+		$(git) remote add origin $(CHART_ORIGIN) && \
+		$(git) fetch --depth 1 origin $(CHART_VERSION) && \
+		$(git) reset --hard FETCH_HEAD
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
@@ -48,13 +56,17 @@ install:
 			--values values.yaml \
 			--values $(TLS_KIND)/values.yaml \
 			--values $(STORAGE_KIND)/values.yaml \
-			--set "harborAdminPassword=$$ADMIN_PASSWORD"
+			--set "harborAdminPassword=$$ADMIN_PASSWORD" $(HELM_ARGS) \
 
 output:
-	@ echo 
+	@ echo
 	@ echo Outputs:
 	@ echo pull_secret = $(PULL_SECRET)
+ifeq ("$(TLS_KIND)","acm")
+	@ echo harbor_url = https://$(COMPONENT_NAME).svc.$(DOMAIN_NAME)
+else
 	@ echo harbor_url = https://$(COMPONENT_NAME).$(INGRESS_FQDN)
+endif
 	@ echo
 
 namespace:
@@ -63,7 +75,7 @@ namespace:
 $(HELM_HOME):
 	mkdir -p $@
 
-delete: 
+delete:
 	- $(helm) delete --purge $(COMPONENT_NAME)
 
 clean:

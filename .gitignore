@@ -30,6 +30,8 @@ traefik/values-acm.yaml
 traefik/values-dashboard.yaml
 traefik/values-tls.yaml
 traefik/values.yaml
+traefik/aws/values-tls.yaml
+traefik/azure/values-tls.yaml
 nginxing/charts
 nginxing/values.yaml
 sysdig/charts

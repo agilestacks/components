@@ -63,7 +63,7 @@ spec:
     spec:
       containers:
       - name: cerebro
-        image: agilestacks/cerebro:0.8.1
+        image: agilestacks/cerebro:0.8.2
         imagePullPolicy: Always
         readinessProbe:
           httpGet:

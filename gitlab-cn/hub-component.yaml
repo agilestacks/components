@@ -1,0 +1,76 @@
+---
+version: 1
+kind: component
+meta:
+  name: gitlab-cn
+  brief: Cloud-Native, multi-pod deployment of Gitlab
+  source:
+    dir: ../../components/gitlab-cn
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+
+provides:
+  - gitlab
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.ingress.kubernetes.ingressClass
+    empty: allow
+  - name: component.gitlab
+    parameters:
+    - name: chart
+      value: gitlab
+      env: HELM_CHART
+    - name: repo
+      value: https://charts.gitlab.io
+    - env: HELM_REPO 
+    - name: chart.version
+      value: 1.7.5
+      env: CHART_VERSION
+    - name:  name
+      value: gitlab-cn
+      env:   COMPONENT_NAME
+    - name: edition
+      value: ce
+    - name:  namespace
+      brief: Kubernetes namespace to install into
+      value: gitlab
+      env:   NAMESPACE
+    - name:  software.version
+      brief: Gitlab Version
+      value: 11.9.8 
+    - name:  rbac.enabled
+      value: true
+    - name:  psp.enabled
+      value: true
+    - name:  ingress.enabled
+      value: true
+    - name:  ingress.urlPrefix
+      value: gitlab
+    - name:  ingress.path
+      value: /
+  - name: component.minio
+    parameters:
+    - name: namespace
+    - name: secret.name
+    - name: secret.accessKeyRef
+    - name: secret.secretKeyRef
+    - name: service.host
+
+templates:
+  files:
+    - "*.template"
+  extra:
+  - kind: mustache
+    files:
+    - 'scripts/*'
+
+
+outputs:
+  - name: component.gitlab.url
+    brief: Gitlab URL
+    value: http://${component.gitlab.ingress.urlPrefix}.${dns.domain}

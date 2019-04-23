@@ -16,6 +16,7 @@ parameters:
   - name: component.ingress.protocol
   - name: component.ingress.ssoFqdn
   - name: component.ingress.kubernetes.ingressClass
+    empty: allow
   - name: component.postgresql.namespace
     brief: Kubernetes namespace to install into
     value: postgresql

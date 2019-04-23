@@ -1,21 +1,28 @@
+externalURL: https://${component.harbor.name}.svc.${dns.domain}
 expose:
-  # Set the way how to expose the service. Set the type as "ingress", 
-  # "clusterIP" or "nodePort" and fill the information in the corresponding 
-  # section
-  type: ingress
+  # type: ingress
+  # type: clusterIP
+  type: loadBalancer
   tls:
-    enabled: false
+    enabled: true
     notarySecretName: ""
-    commonName: ""
+    commonName: "${component.harbor.name}.svc.${dns.domain}"
   ingress:
-    host: ${component.harbor.name}.${component.ingress.fqdn}
+    host: ${component.harbor.name}.svc.${dns.domain}
     hosts:
-      core: ${component.harbor.name}.${component.ingress.fqdn}
-      notary: notary.${component.harbor.name}.${component.ingress.fqdn}
+      core: ${component.harbor.name}.svc.${dns.domain}
+      notary: notary.${component.harbor.name}.svc.${dns.domain}
     annotations:
-      ingress.kubernetes.io/ssl-redirect: "false"
-      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "0"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      # traefik.frontend.auth.headerField: "X-Forwarded-Proto:https"
+      # ingress.kubernetes.io/ssl-redirect: "false"
+      # nginx.ingress.kubernetes.io/ssl-redirect: "false"
       agilestacks.com/stack-component: ${component.harbor.name}
+  loadBalancer:
+    name: ${component.harbor.name}
   clusterIP:
     name: ${component.harbor.name}
     ports:
@@ -28,9 +35,9 @@ expose:
       http:
         port: 80
         nodePort: 30002
-      https: 
+      https:
         port: 443
         nodePort: 30003
-      notary: 
+      notary:
         port: 4443
         nodePort: 30004

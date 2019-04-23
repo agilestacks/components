@@ -11,14 +11,12 @@ expose:
       http:
         port: 80
         nodePort: 30002
-      https: 
+      https:
         port: 443
         nodePort: 30003
-      notary: 
+      notary:
         port: 4443
         nodePort: 30004
-
-externalURL: https://${component.harbor.name}.${component.ingress.fqdn}
 
 imagePullPolicy: IfNotPresent
 
@@ -175,7 +173,7 @@ clair:
   # The http(s) proxy used to update vulnerabilities database from internet
   httpProxy:
   httpsProxy:
-  # The interval of clair updaters, the unit is hour, set to 0 to 
+  # The interval of clair updaters, the unit is hour, set to 0 to
   # disable the updaters
   updatersInterval: 12
   # resources:

@@ -13,6 +13,9 @@ provides:
 - nfs
 
 parameters:
+- name: kubernetes.flavor
+  empty: allow
+  env: KUBE_FLAVOR 
 - name: component.efs
   parameters:
   - name: name
@@ -22,11 +25,15 @@ parameters:
     value: ${cloud.vpc.worker.subnet.id}
     env: TF_VAR_subnet
   - name: sgs
+    empty: allow
     value: "${cloud.vpc.master.sg.id},${cloud.vpc.worker.sg.id}"
     env: TF_VAR_sgs
   - name: performanceMode
     value: generalPurpose    # maxIO
     env: TF_VAR_performance_mode
+  - name: vpc
+    value: ${cloud.vpc.id}
+    env: TF_VAR_vpc_id  
 - name: cloud.region
   env: AWS_DEFAULT_REGION
 - name: dns.domain

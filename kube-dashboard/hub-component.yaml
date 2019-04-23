@@ -16,11 +16,8 @@ provides:
 parameters:
   - name: component.ingress.protocol
   - name: component.ingress.ssoFqdn
-  - name: component.ingress.ssl.enabled
-    empty: allow
-    env: SSL_ENABLED
   - name: component.ingress.kubernetes.ingressClass
-    value: traefik
+    empty: allow
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.kubernetes-dashboard

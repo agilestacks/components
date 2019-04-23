@@ -41,9 +41,15 @@ parameters:
   - name: rds.snapshot
     empty: allow
     env: TF_VAR_snapshot_identifier
+  - name: rds.multiAz
+    value: false
+    env: TF_VAR_multi_availability_zone
   - name: rds.skipFinalSnapshot
     value: true
     env: TF_VAR_skip_final_snapshot
+  - name: rds.storageEncrypted
+    value: false
+    env: TF_VAR_storage_encrypted
   - name: rds.finalSnapshotName
     value: ${dns.name}-${hub.componentName}-final
     env: TF_VAR_final_snapshot_identifier

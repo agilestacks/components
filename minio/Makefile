@@ -10,6 +10,7 @@ PROTOCOL       ?= http
 CLOUD          ?= aws
 ALIAS          ?= $(COMPONENT_NAME)
 DOMAIN         ?= minio
+TLS_KIND ?= shold-be-set
 
 DEFAULT_BUCKET ?= default
 
@@ -87,12 +88,14 @@ install: namespace $(CLOUD)-storage-class
 			--namespace $(NAMESPACE) \
 			--replace \
 			--wait \
-			--values values.yaml \
+			--values $(TLS_KIND)/values.yaml \
 			--set 'accessKey=$(ACCESS_KEY)' \
 			--set 'secretKey=$(SECRET_KEY)' \
 			--set 'fullnameOverride=$(SECRET)'
 
 configure:
+	@ sleep 60s
+	@ echo "Let's wait until tls certs are issued, otherwise commands below will fail"
 	@ $(mc) config host add $(ALIAS) \
 		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
 		$(ACCESS_KEY) $(SECRET_KEY) \

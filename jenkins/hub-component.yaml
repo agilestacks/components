@@ -43,6 +43,8 @@ parameters:
     value: init.groovy.d
   - name: operator.image
     value: docker.io/agilestacks/jenkins-operator:stable
+  - name: operator.maxConcurrentReqsPerHost
+    value: 10
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION

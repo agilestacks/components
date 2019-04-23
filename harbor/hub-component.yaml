@@ -14,14 +14,14 @@ provides:
 
 parameters:
 - name: dns.domain
-  env: TF_VAR_domain
+  env: DOMAIN_NAME
 - name: cloud.region
   kind: user
   env: AWS_DEFAULT_REGION
 - name: cloud.kind
   env: CLOUD_KIND
 - name: component.tls.kind
-  value: letsencrypt
+  value: acm
   env: TLS_KIND
   empty: allow
 
@@ -37,6 +37,7 @@ parameters:
   parameters:
   - name: region
     empty: allow
+    env: MINIO_REGION
   - name: accessKey
     empty: allow
   - name: secretKey
@@ -94,12 +95,12 @@ outputs:
 
 templates:
   files:
-  - "aws/*.template" 
+  - "aws/*.template"
   - "aws/acm/*.template"
   - "aws/letsencrypt/*.template"
   - "aws/local/*.template"
   - "aws/minio/*.template"
-  - "aws/minio/*.template"  
+  - "aws/minio/*.template"
   - "aws/s3/*.template"
   - "aws/s3/*.template"
   - "hybrid/local/*.template"
