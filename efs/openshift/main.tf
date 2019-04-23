@@ -31,21 +31,14 @@ variable "vpc_id" {
 }
 
 resource "aws_security_group" "efs" {
-  name        = "allow_tls"
-  description = "Allow TLS inbound traffic"
+  name        = "${var.name}-inbound-nfs"
+  description = "Allow inbound NFS traffic"
   vpc_id      = "${var.vpc_id}"
 
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
