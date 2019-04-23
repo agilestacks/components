@@ -70,6 +70,10 @@ account:
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:automation-tasks; \
 	fi
 
+patch:
+	echo "Dissable default storageclass (if exists)"
+	-$(oc) patch storageclass gp2 -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "false"}}}'
+
 token:
 	$(eval SECRET=$(shell $(oc) get serviceaccount $(ASI_ACCOUNT) -o json | \
 		jq '.secrets[] | select(.name | contains("token")).name'))
@@ -119,7 +123,7 @@ output:
 	@echo sa_token=$(TOKEN)	
 	@echo
 
-deploy: account token init vars plan apply output
+deploy: account patch token init vars plan apply output
 
 undeploy: DISCOVERY_KUBE_CTX:=--context=$(DOMAIN_NAME)
 undeploy: init vars destroy apply 
