@@ -40,7 +40,7 @@ global:
   ## Secret created according to doc/installation/secrets.md#initial-root-password
   ## If allowing shared-secrets generation, this is OPTIONAL.
   initialRootPassword: {}
-    # secret: RELEASE-gitlab-initial-root-password
+    # secret: gitlab-initial-root-password
     # key: password
 
   ## doc/charts/globals.md#configure-postgresql-settings
@@ -361,7 +361,7 @@ nginx-ingress:
 ## Installation & configuration of stable/prometheus
 ## See requirements.yaml for current version
 prometheus:
-  install: true
+  install: false
   rbac:
     create: true
   alertmanager:
@@ -416,7 +416,7 @@ registry:
     key: config
   ingress:
     tls:
-      secretName: RELEASE-registry-tls
+      secretName: registry-tls
 
 
 ## Automatic shared secret generation
@@ -450,7 +450,7 @@ gitlab:
     enabled: true
     ingress:
       tls:
-        secretName: RELEASE-gitlab-tls
+        secretName: gitlab-tls
   task-runner:
     backups:
       objectStorage:

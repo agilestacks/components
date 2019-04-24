@@ -30,7 +30,7 @@ fetch:
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-	  $(kubectl) -n $(NAMESPACE) delete secret --all
+	  $(kubectl) -n $(NAMESPACE) delete secret --all && \
 	  $(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 install:
@@ -47,11 +47,12 @@ install:
 	  --wait \
 	  --values values.yaml \
 	  --version $(CHART_VERSION)
+	$(MAKE) -C $(CLOUD_KIND) dns
+	scripts/create_bot_account.sh
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 	  $(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	$(MAKE) -C $(CLOUD_TYPE) $@
 
 clean:
 	rm -rf $(HELM_HOME) $(notdir $(HELM_CHART))

@@ -55,6 +55,10 @@ parameters:
       value: gitlab
     - name:  ingress.path
       value: /
+    - name: bot.name
+      value: gitbot
+    - name: bot.password
+      value: ASIWinning@Gitlab
   - name: component.minio
     parameters:
     - name: namespace
@@ -66,12 +70,13 @@ parameters:
 
 templates:
   files:
-    - "*.template"
-    - "aws/*.template"
+    - "values.yaml.template"
   extra:
-  - kind: mustache
-    files:
-    - 'scripts/*'
+    - kind: mustache
+      files:
+        - "scripts/*.template"
+        - "aws/*.yaml.template"
+        - "aws/*.sh.template"
 
 
 outputs:

@@ -3,7 +3,7 @@
 ## expects jq 1.6 or later
 ## expects to be formatted with mustache, not default/golang
 
-SECRETS=$(kubectl -n minio get secret rick-minio -o json | jq '.data | map_values(@base64d)')
+SECRETS=$(kubectl -n minio get secret rick04-minio -o json | jq '.data | map_values(@base64d)')
 MINIO_ACCESS_KEY=$(echo $SECRETS | jq '.accesskey' | tr -d '"')
 MINIO_SECRET_KEY=$(echo $SECRETS | jq '.secretkey' | tr -d '"')
 
@@ -16,9 +16,9 @@ s3:
   bucket: gitlab-registry-storage
   accesskey: ${MINIO_ACCESS_KEY}
   secretkey: ${MINIO_SECRET_KEY}
-  regionendpoint: http://rick-minio.minio:9000
+  regionendpoint: http://rick04-minio.minio.svc.cluster.local:9000
   region: us-east-1
-  host: rick-minio.minio
+  host: rick04-minio.minio.svc.cluster.local
   v4auth: true
 END
 )
@@ -32,8 +32,8 @@ provider: AWS
 aws_access_key_id: ${MINIO_ACCESS_KEY} 
 aws_secret_access_key: ${MINIO_SECRET_KEY}
 aws_signature_version: 4
-host: rick-minio.minio
-endpoint: http://rick-minio.minio:9000
+host: rick04-minio.minio.svc.cluster.local
+endpoint: http://rick04-minio.minio.svc.cluster.local:9000
 END
 )
 
@@ -42,8 +42,8 @@ kubectl -n gitlab create secret generic gitlab-rails-storage --from-file=connect
 F=$(mktemp)
 BACKUP_SECRET_FILE=$(cat << END > $F
 [default]
-host_base = rick-minio.minio:9000
-host_bucket = rick-minio.minio:9000
+host_base = rick04-minio.minio.svc.cluster.local:9000
+host_bucket = rick04-minio.minio.svc.cluster.local:9000
 use_https = False
 signature_v2 = False
 access_key = ${MINIO_ACCESS_KEY} 
