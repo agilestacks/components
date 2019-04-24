@@ -16,6 +16,8 @@ provides:
   - gitlab
 
 parameters:
+  - name: cloud.kind
+    env: CLOUD_KIND
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.ingress.kubernetes.ingressClass
@@ -27,7 +29,7 @@ parameters:
       env: HELM_CHART
     - name: repo
       value: https://charts.gitlab.io
-    - env: HELM_REPO 
+      env: HELM_REPO 
     - name: chart.version
       value: 1.7.5
       env: CHART_VERSION
@@ -60,10 +62,12 @@ parameters:
     - name: secret.accessKeyRef
     - name: secret.secretKeyRef
     - name: service.host
+    - name: service.port
 
 templates:
   files:
     - "*.template"
+    - "aws/*.template"
   extra:
   - kind: mustache
     files:

@@ -74,9 +74,9 @@ global:
   ## doc/charts/globals.md#configure-minio-settings
   minio:
     enabled: false
-    credentials: {}
-      secret:
-        gitlab-registry-storage
+    credentials: 
+      secret: gitlab-rails-storage
+      key: connection
 
   ## doc/charts/globals.md#configure-appconfig-settings
   ## Rails based portions of this chart share many settings
@@ -129,33 +129,38 @@ global:
     ## doc/charts/globals.md#lfs-artifacts-uploads-packages-external-mr-diffs
     lfs:
       bucket: git-lfs
-      connection: {}
-        # secret:
-        # key:
+      connection: 
+        secret: gitlab-rails-storage
+        key: connection
     artifacts:
       bucket: gitlab-artifacts
-      connection: {}
-        # secret:
-        # key:
+      connection: 
+        secret: gitlab-rails-storage
+        key: connection
     uploads:
       bucket: gitlab-uploads
-      connection: {}
-        # secret:
-        # key:
+      connection: 
+        secret: gitlab-rails-storage
+        key: connection
     packages:
       bucket: gitlab-packages
-      connection: {}
+      connection: 
+        secret: gitlab-rails-storage
+        key: connection
     externalDiffs:
       bucket: gitlab-mr-diffs
-      connection: {}
+      connection: 
+        secret: gitlab-rails-storage
+        key: connection
 
     ## doc/charts/globals.md#pseudonymizer-settings
     pseudonymizer:
       configMap:
       bucket: gitlab-pseudo
-      connection: {}
-        # secret:
-        # key:
+      connection: 
+        secret: gitlab-rails-storage
+        key: connection
+
     backups:
       bucket: gitlab-backups
       tmpBucket: tmp
@@ -284,6 +289,7 @@ global:
     customCAs: []
     # - secret: custom-CA
     # - secret: more-custom-CAs
+
 ## End of global
 
 ## Settings to for the Let's Encrypt ACME Issuer
@@ -372,14 +378,17 @@ prometheus:
 ## Configuration of Redis
 ## doc/architecture/decisions.md#redis
 ## doc/charts/redis
-# redis:
-#   enabled: true
+redis:
+  enabled: true
+  persistence:
+    storageClass: pv-${cloud.kind}
+    size: 10Gi
 ## doc/architecture/decisions.md#redis-ha
 ## doc/charts/redis-ha
 redis-ha:
   enabled: false
   nameOverride: redis
-
+  
 ## Instllation & configuration of stable/prostgresql
 ## See requirements.yaml for current version
 postgresql:
@@ -389,6 +398,9 @@ postgresql:
   imageTag: 9.6.8
   usePasswordFile: true
   existingSecret: 'secret'
+  persistence:
+    storageClass: pv-${cloud.kind}
+    size: 10Gi
   metrics:
     enabled: true
     ## Optionally define additional custom metrics
@@ -439,6 +451,17 @@ gitlab:
     ingress:
       tls:
         secretName: RELEASE-gitlab-tls
+  task-runner:
+    backups:
+      objectStorage:
+        config:
+          secret: gitlab-backup-storage
+          key: config
+  gitaly:
+    persistence:
+      storageClass: pv-${cloud.kind}
+      size: 100Gi
+
 ## doc/charts/gitlab/migrations
 #   migrations:
 #     enabled: false
