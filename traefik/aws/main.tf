@@ -95,7 +95,7 @@ for ID in "$SG_IDS"; do
       --query "SecurityGroups[?contains(IpPermissions[].UserIdGroupPairs[].GroupId,'$ID')].GroupId" \
       --output=text | xargs )
   echo "Revoking ingress from: $SG_REVOKES"
-  for R in "$SG_REVOKES"; do
+  for R in $SG_REVOKES; do
     echo "Proceed revoke $R ingress route source: $ID"
     aws \
       ec2 revoke-security-group-ingress \
