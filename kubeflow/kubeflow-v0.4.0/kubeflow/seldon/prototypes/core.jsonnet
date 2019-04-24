@@ -11,6 +11,7 @@
 // @optionalParam operatorJavaOpts string null cluster manager java opts
 // @optionalParam grpcMaxMessageSize string 4194304 Max gRPC message size
 // @optionalParam seldonVersion string 0.2.3 Seldon version
+// @optionalParam externalTrafficPolicy string null can be (Local|Cluster|null)
 
 local k = import "k.libsonnet";
 local core = import "kubeflow/seldon/core.libsonnet";
@@ -22,6 +23,7 @@ local namespace = env.namespace;
 local withRbac = import "param://withRbac";
 local withApife = import "param://withApife";
 local withAmbassador = import "param://withAmbassador";
+// local externalTrafficPolicyParam = import "param://externalTrafficPolicy";
 
 // APIFE
 local apifeImage = "seldonio/apife:" + seldonVersion;

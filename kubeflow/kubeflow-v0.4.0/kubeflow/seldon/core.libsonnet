@@ -91,7 +91,21 @@ local getEnvNotRedis(x) = x.name != "SELDON_CLUSTER_MANAGER_REDIS_HOST";
         service.metadata.withName(name + "-seldon-apiserver") +
         service.metadata.withNamespace(namespace) +
         service.metadata.withLabelsMixin(labels) +
-        service.spec.withType(serviceType),
+        service.spec.withType(serviceType) +
+        service.spec.withExternalTrafficPolicy(""),
+        // service.metadata.withAnnotationsMixin({
+        //   "getambassador.io/config":
+        //     std.join("\n", [
+        //       "---",
+        //       "apiVersion: ambassador/v0",
+        //       "kind:  Mapping",
+        //       "name: seldon-" + name + "",
+        //       "prefix: /seldon/ " + name + "/",
+        //       "rewrite: /",
+        //       "method: GET",
+        //       "service: " + name + "-seldon-apiserver:8080",
+        //     ]),
+        // }) +
 
       deploymentOperator(engineImage, clusterManagerImage, springOpts, javaOpts, withRbac):
 
