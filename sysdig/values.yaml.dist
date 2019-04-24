@@ -91,4 +91,4 @@ customAppChecks: {}
 # Allow sysdig to run on Kubernetes 1.6 masters.
 tolerations:
   - effect: NoSchedule
-    key: node-role.kubernetes.io/master
+    key: node.kubernetes.io/master

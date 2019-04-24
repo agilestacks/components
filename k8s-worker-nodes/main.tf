@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 0.11.3"
-  backend "s3" {}
+  backend          "s3"             {}
 }
 
 provider "aws" {
@@ -46,30 +46,32 @@ locals {
       key                 = "kubernetes.io/cluster/${var.cluster_tag}"
       value               = "owned"
       propagate_at_launch = true
-    }
+    },
   ]
 
   # TODO: change this when will use terraform >=0.12
   tags = {
-    default_tags     = "${local.default_tags}"
+    default_tags = "${local.default_tags}"
+
     autoscaling_tags = [
       "${local.default_tags}",
       {
-        key                 = "k8s.io/cluster-autoscaler/enabled",
-        value               = "true",
+        key                 = "k8s.io/cluster-autoscaler/enabled"
+        value               = "true"
         propagate_at_launch = true
-      }
+      },
     ]
   }
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
-  bucket  = "${var.s3_bucket}"
-  key     = "k8s-worker-nodes/${var.name}/ignition_worker.json"
+  bucket = "${var.s3_bucket}"
+  key    = "k8s-worker-nodes/${var.name}/ignition_worker.json"
+
   content = "${local.instance_gpu ?
     replace(data.aws_s3_bucket_object.bootstrap_script.body,
-      "--node-labels=node-role.kubernetes.io/node",
-      "--node-labels=node-role.kubernetes.io/node,gpu=true") :
+      "--node-labels=node.kubernetes.io/node",
+      "--node-labels=node.kubernetes.io/node,gpu=true") :
     data.aws_s3_bucket_object.bootstrap_script.body}"
 
   content_type = "text/json"
@@ -140,7 +142,8 @@ resource "aws_launch_configuration" "worker_conf" {
 }
 
 resource "aws_autoscaling_group" "workers" {
-  name                 = "${local.name2}"
+  name = "${local.name2}"
+
   # if autoscale not enabled then pool_max_size is 1 (default)
   max_size             = "${max(var.pool_max_count, var.pool_count)}"
   min_size             = "${var.pool_count}"
