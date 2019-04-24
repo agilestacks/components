@@ -6,7 +6,7 @@ HELM_PROJECT     ?= gitlab
 DOMAIN_NAME      ?= dev.kubernetes.delivery
 NAMESPACE 	 ?= gitlab
 CHART_VERSION    ?= 1.7.5 
-CLOUD_TYPE   	 ?= aws
+CLOUD_KIND   	 ?= aws
 HELM_REPO        ?= https://charts.gitlab.io/
 
 export HELM_HOME           ?= $(shell pwd)/.helm
@@ -19,7 +19,8 @@ deploy: clean init fetch purge install output
 init:
 	@mkdir -p $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
-	$(helm)helm repo add gitlab $(HELM_REPO)
+	$(helm) repo add gitlab $(HELM_REPO)
+	$(helm) repo update
 
 fetch:
 	$(helm) fetch \
@@ -29,15 +30,16 @@ fetch:
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+	  $(kubectl) -n $(NAMESPACE) delete secret --all
 	  $(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
 	scripts/create_minio_secret.sh
-	$(MAKE) -C $(CLOUD_TYPE) $@
+	$(MAKE) -C $(CLOUD_KIND) $@
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
-	  $(helm) upgrade --install $(notdir $(HELM_CHART)) \
-	  --timeout 600
+	  $(helm) install charts/$(notdir $(HELM_CHART)) \
+	  --timeout 600 \
 	  --name $(COMPONENT_NAME) \
 	  --name-template $(COMPONENT_NAME) \
 	  --namespace $(NAMESPACE) \

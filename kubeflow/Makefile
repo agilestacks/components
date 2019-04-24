@@ -14,15 +14,18 @@ export K8S_API_SERVER		?=
 export KF_ENV				?= cloud
 export TF_DATA_DIR          := .terraform
 
-terraform ?= terraform-v0.11
+SELDON_APISERVER ?= seldon-seldon-apiserver
+
+terraform := terraform-v0.11
 ks := cd $(KUBEFLOW_KS_DIR) && ks
+jq := jq -cM
 
 STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1
 ACM_CERTIFICATE_ARN ?=
 PROTOCOL ?= https
 
-deploy: clean init fetch configure install get plan apply output
+deploy: clean init fetch configure install patch-apiserver get plan apply output
 
 namespace:
 	- $(kubectl) create namespace $(TF_VAR_namespace)
@@ -63,7 +66,11 @@ configure:
 	- $(ks) generate centraldashboard centraldashboard
 	- $(ks) generate pytorch-operator pytorch-operator
 	- $(ks) generate katib katib
-	- $(ks) generate seldon seldon
+	# ERROR Invalid value: \"Cluster\": ExternalTrafficPolicy can only be set on NodePort and LoadBalancer service"
+	- $(ks) generate seldon seldon \
+		--withApife true \
+		--apifeServiceType NodePort \
+		--withAmbassador false
 	- $(ks) generate tf-job-operator tf-job-operator
 	- $(ks) env add $(KF_ENV) --context=$(TF_VAR_domain_name)
 	- $(ks) env set $(KF_ENV) --namespace=$(TF_VAR_namespace)
@@ -85,8 +92,7 @@ install:
 	- $(ks) apply $(KF_ENV) -c katib --context=$(TF_VAR_domain_name)
 	- $(ks) apply $(KF_ENV) -c seldon --context=$(TF_VAR_domain_name)
 	- $(ks) apply $(KF_ENV) -c tf-job-operator --context=$(TF_VAR_domain_name)
-	- $(kubectl) delete -f bootstrapper-rbac.yaml
-	- $(kubectl) create -f bootstrapper-rbac.yaml
+	- $(kubectl) replace --force -f bootstrapper-rbac.yaml
 	- $(kubectl) create -f bootstrapper-install.yaml
 	- $(kubectl) create -f oidc-crd.yaml
 	- $(kubectl) create secret generic ambassador-auth-jwt-key --from-literal=jwt-key=qafBTgd27hg0cX11tawDLu0SLsXXiiEW4kl6SC5p4eBwRCr0ejiSBDSdW8mQQwFh2nS0wOXtdWq28DvxEnIFaQ==
@@ -98,6 +104,24 @@ install:
 	- $(kubectl) create -f oidc-deployment.yaml
 	- $(kubectl) create -f oidc-ambassador-service.yaml
 .PHONY: install
+
+JQ_DELETE := .status,
+JQ_DELETE += .metadata.uid,
+JQ_DELETE += .metadata.resourceVersion,
+JQ_DELETE += .metadata.selfLink,
+JQ_DELETE += .metadata.creationTimestamp,
+JQ_DELETE += .metadata.annotations."kubectl.kubernetes.io/last-applied-configuration",
+JQ_DELETE += .spec.clusterIP,
+JQ_DELETE += .spec.externalTrafficPolicy,
+JQ_DELETE += .spec.ports[].nodePort,
+# service.type default goes to ClusterIP
+JQ_DELETE += .spec.type
+
+patch-apiserver:
+	# we cannot use kubectl patch because this command cannot delete keys like nodePort and externalTrafficPolicy
+	$(kubectl) get service $(SELDON_APISERVER) -o json \
+		| $(jq) 'del( $(JQ_DELETE) )' \
+		| $(kubectl) replace --wait --force -f -
 
 get:
 	$(terraform) get $(TF_UPDATE) ./aws

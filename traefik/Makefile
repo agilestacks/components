@@ -5,6 +5,8 @@ export TF_VAR_domain_name        ?= dev.kubernetes.delivery
 export TF_VAR_namespace          ?= ingress
 export TF_VAR_kubeconfig_context ?= $(TF_VAR_domain_name)
 
+export TF_VAR_azure_resource_group_name ?= superhub-eastus2
+
 CLOUD_KIND          ?= aws
 ACM_CERTIFICATE_ARN ?=
 CHART_VERSION       ?= 1.63.1

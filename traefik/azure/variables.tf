@@ -30,6 +30,7 @@ variable "component" {
   default = "traefik"
 }
 
-variable "resource_group_name" {
-  default = "SuperHub"
+variable "azure_resource_group_name" {
+  type    = "string"
+  default = "superhub-eastus2"
 }

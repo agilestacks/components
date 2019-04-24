@@ -545,9 +545,8 @@
                 "selector": {
                     "app": "seldon-apiserver-container-app"
                 },
-                "type": "NodePort",
-                "sessionAffinity": "None",
-                "externalTrafficPolicy": "Cluster"
+                "type": "ClusterIP",
+                "sessionAffinity": "None"
             },
             "status": {
                 "loadBalancer": {}
