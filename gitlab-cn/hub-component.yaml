@@ -67,6 +67,7 @@ parameters:
     - name: secret.secretKeyRef
     - name: service.host
     - name: service.port
+    - name: component.minio.endpoint.ingress
 
 templates:
   files:
