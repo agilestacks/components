@@ -22,4 +22,4 @@ if [ $TOKEN == "null" ]; then
     echo "Failed to log into gitlab-ce"
 fi
 
-curl -H "Authorization: Bearer ${TOKEN}" https://gitlab.rick04.dev.superhub.io/api/v4/users --data "username=${BOT_NAME}&email=${BOT_NAME}@rick04.dev.superhub.io&password=${BOT_PASSWORD}&name=gitbot&admin=true"
+curl -H "Authorization: Bearer ${TOKEN}" https://gitlab.rick04.dev.superhub.io/api/v4/users --data "username=${BOT_NAME}&email=${BOT_NAME}@rick04.dev.superhub.io&password=${BOT_PASSWORD}&name=gitbot&admin=true&skip_confirmation=true"
