@@ -9,14 +9,19 @@ ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name {{dns.domain}} --max-
 ELB=""
 echo "Waiting for Load Balancer"
 for i in {1..100}; do
-  ELB=$(kubectl -n gitlab get ingress -o json | jq --raw-output .items[].status.loadBalancer.ingress.hostname)
+  ELB=$(kubectl -n gitlab get ingress gitlab-cn-unicorn -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname')
   #ELB=$(kubectl --namespace="{{component.gitlab.namespace}}" get ingress gitlab-cn-nginx-ingress-controller | grep Ingress | awk '{print $3}')
-  if [ ! -z "${ELB}" ] || [ "${ELB}" == "null" ]; then
+  if [ ! -z "${ELB}" ] && [ "${ELB}" != "null" ]; then
     break
   fi
   echo "retry ${i}..."
   sleep 3;
 done
+
+if [ -z "${ELB}" ]; then
+  echo "Failed to get gitlab ELB"
+  exit -1
+fi
 
 #echo "Check if gitlab.{{dns.domain}} exists"
 #record=$(
