@@ -32,6 +32,6 @@ acme:
   dnsProvider:
     name: azure
     azure:
-      AZURE_RESOURCE_GROUP: "{cloud.resource_group}"
+      AZURE_RESOURCE_GROUP: "${cloud.azureResourceGroupName}"
   persistence:
     enabled: false
