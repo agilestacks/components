@@ -36,6 +36,9 @@ parameters:
   - name: cloud.azureResourceGroupName
     value: superhub-${cloud.region}
     env: TF_VAR_azure_resource_group_name
+  - name: cloud.project
+    empty: allow
+    env: TF_VAR_project
 
   - name: component.ingress
     parameters:
@@ -176,4 +179,4 @@ outputs:
   fromTfVar: load_balancer
 
 templates:
-  files: ["*.yaml.template", "azure/values-tls.yaml.template", "aws/values-tls.yaml.template"]
+  files: ["*.yaml.template", "azure/values-tls.yaml.template", "aws/values-tls.yaml.template", "gcp/values-tls.yaml.template"]

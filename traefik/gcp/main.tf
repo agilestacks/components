@@ -1,10 +1,11 @@
 terraform {
   required_version = ">= 0.11.3"
-  backend "gcs" {}
+  backend          "gcs"            {}
 }
 
 provider "google" {
   version = "2.3.0"
+  project = "${var.project}"
 }
 
 provider "kubernetes" {
@@ -17,7 +18,8 @@ provider "null" {
 }
 
 data "google_dns_managed_zone" "ext_zone" {
-  name = "${var.name}"
+  project = "${var.project}"
+  name    = "${replace(var.domain_name,".","-")}"
 }
 
 data "kubernetes_service" "traefik" {

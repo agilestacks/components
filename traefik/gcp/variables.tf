@@ -1,10 +1,10 @@
 variable "name" {
-  type = "string"
+  type        = "string"
   description = "Google DNS managed zone name"
 }
 
 variable "domain_name" {
-  type = "string"
+  type        = "string"
   description = "Domain name associated with Google DNS managed zone"
 }
 
@@ -13,7 +13,7 @@ variable "kubeconfig_context" {
 }
 
 variable "namespace" {
-  type = "string"
+  type    = "string"
   default = "ingress"
 }
 
@@ -26,11 +26,15 @@ variable "sso_url_prefix" {
 }
 
 variable "auth_url_prefix" {
-  type = "string"
+  type    = "string"
   default = "auth"
 }
 
 variable "component" {
-  type = "string"
+  type    = "string"
   default = "traefik"
+}
+
+variable "project" {
+  type = "string"
 }
