@@ -51,8 +51,6 @@ parameters:
       value: true
     - name:  ingress.enabled
       value: true
-    - name:  ingress.urlPrefix
-      value: gitlab
     - name:  ingress.path
       value: /
     - name: bot.name
@@ -84,4 +82,7 @@ templates:
 outputs:
   - name: component.gitlab.url
     brief: Gitlab URL
-    value: http://${component.gitlab.ingress.urlPrefix}.${dns.domain}
+    value: https://gitlab.${dns.domain}
+  - name: component.gitlab.registryUrl
+    brief: Gitlab Registry URL
+    value: https://registry.${dns.domain}
