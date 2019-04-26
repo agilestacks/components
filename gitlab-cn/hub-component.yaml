@@ -68,6 +68,7 @@ parameters:
     - name: service.host
     - name: service.port
     - name: endpoint.ingress
+    - name: endpoint.url
 
 templates:
   files:

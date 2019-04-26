@@ -49,6 +49,7 @@ install:
 	  --version $(CHART_VERSION)
 	$(MAKE) -C $(CLOUD_KIND) dns
 	scripts/create_bot_account.sh
+	scripts/create_minio_buckets.sh
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \

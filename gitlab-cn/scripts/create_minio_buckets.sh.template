@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# connectToMinio
+# Use a check-sleep-check loop to wait for Minio service to be available
+connectToMinio() {
+  SECRETS=$(kubectl -n {{component.minio.namespace}} get secret {{component.minio.secret.name}} -o json | jq '.data | map_values(@base64d)')
+  MINIO_ACCESS_KEY=$(echo $SECRETS | jq --raw-output '.{{component.minio.secret.accessKeyRef}}')
+  MINIO_SECRET_KEY=$(echo $SECRETS | jq --raw-output '.{{component.minio.secret.secretKeyRef}}')
+  MINIO_ENDPOINT={{component.minio.endpoint.url}}
+  MC_COMMAND="mc config host add glminio $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY" ;
+  $MC_COMMAND ;
+  STATUS=$? ;
+  until [ $STATUS -eq 0 ] ;
+  do
+    sleep 1 ; # 1 second intervals between attempts
+    $MC_COMMAND ;
+    STATUS=$? ;
+  done ;
+  set -e ; # reset `e` as active
+    return 0
+}
+
+# checkBucketExists ($bucket)
+# Check if the bucket exists, by using the exit code of `mc ls`
+checkBucketExists() {
+  BUCKET=$1
+    CMD=$(mc ls glminio/$BUCKET > /dev/null 2>&1)
+    return $?
+}
+
+# createBucket ($bucket, $policy, $purge)
+# Ensure bucket exists, purging if asked to
+createBucket() {
+  BUCKET=$1
+  POLICY=$2
+  PURGE=$3
+
+
+  # Purge the bucket, if set & exists
+  # Since PURGE is user input, check explicitly for `true`
+  if [ $PURGE = true ]; then
+    if checkBucketExists $BUCKET ; then
+      echo "Purging bucket '$BUCKET'."
+      set +e ; # don't exit if this fails
+      mc rm -r --force glminio/$BUCKET
+      set -e ; # reset `e` as active
+    else
+      echo "Bucket '$BUCKET' does not exist, skipping purge."
+    fi
+  fi
+
+  # Create the bucket if it does not exist
+  if ! checkBucketExists $BUCKET ; then
+    echo "Creating bucket '$BUCKET'"
+    mc mb glminio/$BUCKET
+  else
+    echo "Bucket '$BUCKET' already exists."
+  fi
+
+  # At this point, the bucket should exist, skip checking for existance
+  # Set policy on the bucket
+  echo "Setting policy of bucket '$BUCKET' to '$POLICY'."
+  mc policy $POLICY glminio/$BUCKET
+}
+
+connectToMinio
+createBucket gitlab-registry none false
+createBucket git-lfs none false
+createBucket runner-cache none false
+createBucket gitlab-uploads none false
+createBucket gitlab-artifacts none false
+createBucket gitlab-backups none false
+createBucket gitlab-packages none false
+createBucket tmp none false
+createBucket gitlab-pseudo none false
+createBucket gitlab-mr-diffs none false
