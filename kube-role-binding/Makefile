@@ -11,9 +11,9 @@ ROLE_NAME ?= cluster-admin
 BINDING_TYPE ?= clusterrolebinding
 
 deploy:
-	$(kubectl) create $(BINDING_TYPE) $(IDENTITY_NAME)-$(ROLE_NAME)-binding \
+	-$(kubectl) create $(BINDING_TYPE) $(IDENTITY_NAME)-$(ROLE_NAME)-binding \
 		--$(ROLE_TYPE)=$(ROLE_NAME) --$(IDENTITY_TYPE)=$(IDENTITY_NAME)
 
 undeploy:
-	$(kubectl) delete $(BINDING_TYPE) $(IDENTITY_NAME)-$(ROLE_NAME)-binding
+	-$(kubectl) delete $(BINDING_TYPE) $(IDENTITY_NAME)-$(ROLE_NAME)-binding
 			
