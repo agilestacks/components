@@ -1,6 +1,7 @@
 #!/bin/bash
 
-ROOT_PASSWORD=$(kubectl -n gitlab get secret gitlab-cn-gitlab-initial-root-password -o json | jq --raw-output '.data | map_values(@base64d) | .password')
+KUBE="kubectl --context={{dns.domain}} --namespace={{component.gitlab.namespace}}"
+ROOT_PASSWORD=$($KUBE get secret gitlab-cn-gitlab-initial-root-password -o json | jq --raw-output '.data | map_values(@base64d) | .password')
 
 BOT_NAME={{component.gitlab.bot.name}}
 BOT_PASSWORD={{component.gitlab.bot.password}}
@@ -10,7 +11,7 @@ REQUEST="grant_type=password&username=root&password=${ROOT_PASSWORD}"
 
 while [ -z "$TOKEN" ]
 do
-  RESULT=$(curl -H"Accept: application/json" --data "${REQUEST}" --request POST https://gitlab.{{dns.domain}}/oauth/token)
+  RESULT=$(curl -k -H"Accept: application/json" --data "${REQUEST}" --request POST https://gitlab.{{dns.domain}}/oauth/token)
     TOKEN=$(echo $RESULT | jq --raw-output .access_token)
     if [ -z "$TOKEN" ]; then
         echo "Failed to log into gitlab. Service is still unavailable. Retrying ..."
@@ -22,4 +23,4 @@ if [ $TOKEN == "null" ]; then
     echo "Failed to log into gitlab-ce"
 fi
 
-curl -H "Authorization: Bearer ${TOKEN}" https://gitlab.{{dns.domain}}/api/v4/users --data "username=${BOT_NAME}&email=${BOT_NAME}@{{dns.domain}}&password=${BOT_PASSWORD}&name=${BOT_NAME}&admin=true&skip_confirmation=true"
+curl -k -H "Authorization: Bearer ${TOKEN}" https://gitlab.{{dns.domain}}/api/v4/users --data "username=${BOT_NAME}&email=${BOT_NAME}@{{dns.domain}}&password=${BOT_PASSWORD}&name=${BOT_NAME}&admin=true&skip_confirmation=true"

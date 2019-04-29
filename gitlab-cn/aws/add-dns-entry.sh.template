@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #To avoid race conditions, we need to set up the DNS as soon as the ELB becomes available
-
+KUBE="kubectl --context={{dns.domain}} --namespace={{component.gitlab.namespace}}"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name {{dns.domain}} --max-items 1 | jq -Mr .HostedZones[0].Id | sed -e 's/\/hostedzone\///')
 
@@ -9,8 +9,7 @@ ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name {{dns.domain}} --max-
 ELB=""
 echo "Waiting for Load Balancer"
 for i in {1..100}; do
-  ELB=$(kubectl -n gitlab get ingress gitlab-cn-unicorn -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname')
-  #ELB=$(kubectl --namespace="{{component.gitlab.namespace}}" get ingress gitlab-cn-nginx-ingress-controller | grep Ingress | awk '{print $3}')
+  ELB=$($KUBE get ingress gitlab-cn-unicorn -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname')
   if [ ! -z "${ELB}" ] && [ "${ELB}" != "null" ]; then
     break
   fi

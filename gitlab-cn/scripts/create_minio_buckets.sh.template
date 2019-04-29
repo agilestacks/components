@@ -1,9 +1,11 @@
 #!/bin/bash
 
+KUBE="kubectl --context={{dns.domain}} --namespace={{component.minio.namespace}}"
+
 # connectToMinio
 # Use a check-sleep-check loop to wait for Minio service to be available
 connectToMinio() {
-  SECRETS=$(kubectl -n {{component.minio.namespace}} get secret {{component.minio.secret.name}} -o json | jq '.data | map_values(@base64d)')
+  SECRETS=$($KUBE get secret {{component.minio.secret.name}} -o json | jq '.data | map_values(@base64d)')
   MINIO_ACCESS_KEY=$(echo $SECRETS | jq --raw-output '.{{component.minio.secret.accessKeyRef}}')
   MINIO_SECRET_KEY=$(echo $SECRETS | jq --raw-output '.{{component.minio.secret.secretKeyRef}}')
   MINIO_ENDPOINT={{component.minio.endpoint.url}}

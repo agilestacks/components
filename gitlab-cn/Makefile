@@ -35,7 +35,7 @@ purge:
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
-	scripts/create_minio_secret.sh
+	-scripts/create_minio_secret.sh
 	$(MAKE) -C $(CLOUD_KIND) $@
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 	  $(helm) install charts/$(notdir $(HELM_CHART)) \
