@@ -44,7 +44,7 @@ parameters:
       env:   NAMESPACE
     - name:  software.version
       brief: Gitlab Version
-      value: 11.9.8 
+      value: 11.9.10
     - name:  rbac.enabled
       value: true
     - name:  psp.enabled
