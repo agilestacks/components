@@ -43,8 +43,8 @@ parameters:
       value: gitlab
       env:   NAMESPACE
     - name:  software.version
-      brief: Gitlab Version
-      value: 11.9.10
+      brief: Gitlab Version #TODO CHANGE THIS TO 11.9.10 or later as soon as its available
+      value: 11.9.8
     - name:  rbac.enabled
       value: true
     - name:  psp.enabled
