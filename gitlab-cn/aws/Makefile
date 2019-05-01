@@ -8,3 +8,6 @@ install:
 	$(kubectl) -n $(NAMESPACE) apply -f storageclass.yaml
 .PHONY: install
 
+dns:
+	./add-dns-entry.sh
+.PHONE: dns

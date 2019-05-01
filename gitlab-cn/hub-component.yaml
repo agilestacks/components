@@ -43,18 +43,20 @@ parameters:
       value: gitlab
       env:   NAMESPACE
     - name:  software.version
-      brief: Gitlab Version
-      value: 11.9.8 
+      brief: Gitlab Version #TODO CHANGE THIS TO 11.9.10 or later as soon as its available
+      value: 11.9.8
     - name:  rbac.enabled
       value: true
     - name:  psp.enabled
       value: true
     - name:  ingress.enabled
       value: true
-    - name:  ingress.urlPrefix
-      value: gitlab
     - name:  ingress.path
       value: /
+    - name: bot.name
+      value: gitbot
+    - name: bot.password
+      value: ASIWinning@Gitlab
   - name: component.minio
     parameters:
     - name: namespace
@@ -63,18 +65,24 @@ parameters:
     - name: secret.secretKeyRef
     - name: service.host
     - name: service.port
+    - name: endpoint.ingress
+    - name: endpoint.url
 
 templates:
   files:
-    - "*.template"
-    - "aws/*.template"
+    - "values.yaml.template"
   extra:
-  - kind: mustache
-    files:
-    - 'scripts/*'
+    - kind: mustache
+      files:
+        - "scripts/*.template"
+        - "aws/*.yaml.template"
+        - "aws/*.sh.template"
 
 
 outputs:
   - name: component.gitlab.url
     brief: Gitlab URL
-    value: http://${component.gitlab.ingress.urlPrefix}.${dns.domain}
+    value: https://gitlab.${dns.domain}
+  - name: component.gitlab.registryUrl
+    brief: Gitlab Registry URL
+    value: https://registry.${dns.domain}

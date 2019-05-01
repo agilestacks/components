@@ -4,7 +4,6 @@ export TF_VAR_namespace    	?= kubeflow
 export TF_VAR_component    	?= kubeflow
 export TF_VAR_domain_name  	?= dev.kubernetes.delivery
 export TF_VAR_url_prefix	?= svc
-export kubectl      		?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
 export KUBEFLOW_VERSION		?= v0.3.4
 export KUBEFLOW_KS_DIR	    ?= ks-app
 export ARGO_VERSION			?= v2.2.1
@@ -16,6 +15,7 @@ export TF_DATA_DIR          := .terraform
 
 SELDON_APISERVER ?= seldon-seldon-apiserver
 
+kubectl := kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
 terraform := terraform-v0.11
 ks := cd $(KUBEFLOW_KS_DIR) && ks
 jq := jq -cM
@@ -24,8 +24,10 @@ STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1
 ACM_CERTIFICATE_ARN ?=
 PROTOCOL ?= https
+TIMEOUT ?= 600
+AMBASSADOR_SERVICE := ambassador
 
-deploy: clean init fetch configure install patch-apiserver get plan apply output
+deploy: clean init fetch configure install get plan wait_elb apply output
 
 namespace:
 	- $(kubectl) create namespace $(TF_VAR_namespace)
@@ -69,7 +71,8 @@ configure:
 	# ERROR Invalid value: \"Cluster\": ExternalTrafficPolicy can only be set on NodePort and LoadBalancer service"
 	- $(ks) generate seldon seldon \
 		--withApife true \
-		--apifeServiceType NodePort \
+		--apifeServiceType ClusterIP \
+		--externalTrafficPolicy=null \
 		--withAmbassador false
 	- $(ks) generate tf-job-operator tf-job-operator
 	- $(ks) env add $(KF_ENV) --context=$(TF_VAR_domain_name)
@@ -105,39 +108,22 @@ install:
 	- $(kubectl) create -f oidc-ambassador-service.yaml
 .PHONY: install
 
-JQ_DELETE := .status,
-JQ_DELETE += .metadata.uid,
-JQ_DELETE += .metadata.resourceVersion,
-JQ_DELETE += .metadata.selfLink,
-JQ_DELETE += .metadata.creationTimestamp,
-JQ_DELETE += .metadata.annotations."kubectl.kubernetes.io/last-applied-configuration",
-JQ_DELETE += .spec.clusterIP,
-JQ_DELETE += .spec.externalTrafficPolicy,
-JQ_DELETE += .spec.ports[].nodePort,
-# service.type default goes to ClusterIP
-JQ_DELETE += .spec.type
-
-patch-apiserver:
-	# we cannot use kubectl patch because this command cannot delete keys like nodePort and externalTrafficPolicy
-	$(kubectl) get service $(SELDON_APISERVER) -o json \
-		| $(jq) 'del( $(JQ_DELETE) )' \
-		| $(kubectl) replace --wait --force -f -
-
 get:
 	$(terraform) get $(TF_UPDATE) ./aws
 .PHONY: get
 
 plan:
-	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan ./aws
+	- $(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan ./aws
 
 apply:
 	$(terraform) apply $(TF_OPTS) -Xshadow=false .terraform/terraform.tfplan
 	@echo
 
-destroy: TF_OPTS:=-destroy
-destroy: plan
+destroy: init
+	$(MAKE) plan TF_OPTS=-destroy
+	- $(MAKE) apply
 
-undeploy: init destroy apply fetch configure uninstall
+undeploy:  destroy fetch configure uninstall
 
 uninstall:
 	- $(kubectl) create -f bootstrapper-rbac.yaml | true
@@ -171,5 +157,21 @@ output:
 	@echo Outputs:
 	@echo protocol = $(PROTOCOL)
 	@echo
+
+wait_elb:
+	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
+	$(eval get_svc=$(kubectl) get --output=json service $(AMBASSADOR_SERVICE))
+	@ echo 'Waiting for $(AMBASSADOR_SERVICE) service elb'
+	@ while [ `date +%s` -le "$(timeout)" ]; do \
+		if [ `$(get_svc) | $(jq) '.status.loadBalancer.ingress' | xargs` != "null" ]; then \
+			printf ' done\n---\n'; \
+			$(get_svc) | jq .status.loadBalancer;\
+			test `$(get_svc) | $(jq) '.status.loadBalancer.ingress' | xargs` != "null" && exit 0; \
+		fi; \
+		printf "."; \
+		sleep 2; \
+	done; \
+	echo " ERROR timeout $(TIMEOUT)sec"; \
+	exit 1
 
 -include ../Mk/phonies

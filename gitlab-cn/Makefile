@@ -30,12 +30,12 @@ fetch:
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-	  $(kubectl) -n $(NAMESPACE) delete secret --all
+	  $(kubectl) -n $(NAMESPACE) delete secret --all && \
 	  $(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
-	scripts/create_minio_secret.sh
+	-scripts/create_minio_secret.sh
 	$(MAKE) -C $(CLOUD_KIND) $@
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 	  $(helm) install charts/$(notdir $(HELM_CHART)) \
@@ -47,11 +47,13 @@ install:
 	  --wait \
 	  --values values.yaml \
 	  --version $(CHART_VERSION)
+	$(MAKE) -C $(CLOUD_KIND) dns
+	scripts/create_bot_account.sh
+	scripts/create_minio_buckets.sh
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 	  $(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	$(MAKE) -C $(CLOUD_TYPE) $@
 
 clean:
 	rm -rf $(HELM_HOME) $(notdir $(HELM_CHART))

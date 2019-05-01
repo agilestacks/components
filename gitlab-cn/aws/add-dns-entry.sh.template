@@ -1,0 +1,82 @@
+#!/bin/bash -x
+
+#To avoid race conditions, we need to set up the DNS as soon as the ELB becomes available
+KUBE="kubectl --context={{dns.domain}} --namespace={{component.gitlab.namespace}}"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name {{dns.domain}} --max-items 1 | jq -Mr .HostedZones[0].Id | sed -e 's/\/hostedzone\///')
+
+
+ELB=""
+echo "Waiting for Load Balancer"
+for i in {1..100}; do
+  ELB=$($KUBE get ingress gitlab-cn-unicorn -o json | jq --raw-output '.status.loadBalancer.ingress[0].hostname')
+  if [ ! -z "${ELB}" ] && [ "${ELB}" != "null" ]; then
+    break
+  fi
+  echo "retry ${i}..."
+  sleep 3;
+done
+
+if [ -z "${ELB}" ]; then
+  echo "Failed to get gitlab ELB"
+  exit -1
+fi
+
+#echo "Check if gitlab.{{dns.domain}} exists"
+#record=$(
+#    aws route53 list-resource-record-sets --hosted-zone-id "${ZONE_ID}" --start-record-name "{{dns.domain}}." --start-record-type "CNAME" \
+#    | jq -Mc ".ResourceRecordSets[] | select(.Name == \"git.{{dns.domain}}\")" \
+#)
+
+#if [ ! -z "${record}" ]; then
+#  echo "Record git.{{dns.domain}} already exists \n Skip DNS UPSERT"
+#  exit 0
+#fi
+
+echo "Create gitlab.{{dns.domain}} CNAME for ${ELB}"
+cat << EOF > ${DIR}/upsert.json
+{
+  "Comment": "Gitlab SSH ELB",
+  "Changes": [{
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "gitlab.{{dns.domain}}",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "${ELB}"
+      }]
+    }
+  },
+  {
+    "Action": "UPSERT",
+    "ResourceRecordSet": {
+      "Name": "registry.{{dns.domain}}",
+      "Type": "CNAME",
+      "TTL": 30,
+      "ResourceRecords": [{
+        "Value": "${ELB}"
+      }]
+    }
+  }]
+}
+EOF
+
+CHANGE_ID=$(
+  aws route53 change-resource-record-sets --hosted-zone-id ${ZONE_ID} --change-batch=file://${DIR}/upsert.json  \
+    | jq  -Mr '.ChangeInfo.Id'
+)
+
+if [ -n "${CHANGE_ID}" ]; then
+  for i in $(seq 1 60); do
+    _status=$(
+      aws route53 get-change --id ${CHANGE_ID} | jq  -Mr '.ChangeInfo.Status'
+    )
+    echo "Wait to propagate DNS record: ${_status}"
+    test "${_status}" == "INSYNC" && break
+    sleep 3
+  done
+else
+  echo There\'s no DNS update needed
+fi
+

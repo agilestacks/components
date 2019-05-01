@@ -13,8 +13,6 @@ provides:
 - cert-manager
 
 parameters:
-- name: component.tls.kind
-  value: letsencrypt  
 - name: cloud.region # for DNS01 ACME solver
   value: us-east-1
 - name: dns.domain
@@ -40,6 +38,7 @@ parameters:
 
 outputs:
 - name: component.tls.kind
+  value: letsencrypt
 
 templates:
   files:

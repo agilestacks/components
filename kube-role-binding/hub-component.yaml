@@ -1,0 +1,28 @@
+---
+version: 1
+kind: component
+meta:
+  name: kube-role-binding
+  brief: A tiny component that binds an identity to a role in k8s cluster
+  source:
+      dir: ../../components/kube-role-binding
+
+requires:
+  - kubernetes
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.kube-role-binding
+    parameters:
+    - name: identityType
+      env: IDENTITY_TYPE
+    - name: identityName
+      env: IDENTITY_NAME
+    - name: roleType
+      env: ROLE_TYPE
+    - name: roleName
+      env: ROLE_NAME
+    - name: bindingType
+      env: BINDING_TYPE
+

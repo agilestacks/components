@@ -30,8 +30,8 @@ acme:
   challengeType: dns-01
   delayBeforeCheck: 60
   dnsProvider:
-    name: azure
-    azure:
-      AZURE_RESOURCE_GROUP: "${cloud.azureResourceGroupName}"
+    name: gcloud
+    gcloud:
+      GCE_PROJECT: "${cloud.project}"
   persistence:
     enabled: false

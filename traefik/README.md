@@ -132,7 +132,7 @@ Every ingress that goes into `applications` namespace (or annotated with `kubern
 
 ### No Traefik Dashboard
 
-When `component.traefik.kubernetes.namespaces` option is used you may get 404 HTTP error visiting Traefik Dashboard URL. The problem is that public ingress Traefik might be installed in the namespace is does not _oversee_. By default Traefik installs into `ingress` namespace that is managed by default Traefik. Public ingress Traefik cannot not see it’s own ingress object / route. There are two options:
+When `component.traefik.kubernetes.namespaces` option is used you may get 404 HTTP error visiting Traefik Dashboard URL. The problem is that public ingress Traefik might be installed in the namespace is does not _oversee_. By default Traefik installs into `ingress` namespace that is managed by default Traefik. Public ingress Traefik cannot see it’s own ingress object / route. There are two options:
 1. In case you segregate controllers both on ingress class and namespace, then add `ingress` namespace to `component.traefik.kubernetes.namespaces` of `public-ingress`. It won’t conflict with default Traefik because of `ingressClass`.
 2. Otherwise install public ingress into some of the namespaces it oversees or in it’s own namespace. The parameter controlling namespace to install into is `component.ingress.namespace`.
 
