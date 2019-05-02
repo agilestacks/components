@@ -43,6 +43,7 @@ apply:
 gcontext:
 	$(gcloud) auth activate-service-account \
 		--key-file=$(GOOGLE_APPLICATION_CREDENTIALS)
+	$(gcloud) config set project $(TF_VAR_project)		
 	$(gcloud) container clusters get-credentials $(CLUSTER_NAME) --region $(TF_VAR_region)
 
 createsa: gcontext
@@ -57,6 +58,7 @@ createsa: gcontext
 		$(kubectl) create clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding \
 			--clusterrole=cluster-admin --serviceaccount=default:$(SERVICE_ACCOUNT); \
 	fi
+	sleep 10s
 
 token:
 	$(eval SECRET=$(shell $(kubectl) get serviceaccount $(SERVICE_ACCOUNT) -o json | \
