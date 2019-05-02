@@ -18,9 +18,9 @@ spec:
       serviceAccountName: ${component.cluster-autoscaler.name}
       tolerations:
       - effect: NoSchedule
-        key: node.kubernetes.io/master
+        key: node-role.kubernetes.io/master
       nodeSelector:
-        node.kubernetes.io/master: ""
+        node-role.kubernetes.io/master: ""
       containers:
         - image: k8s.gcr.io/cluster-autoscaler:${component.cluster-autoscaler.version}
           name: ${component.cluster-autoscaler.name}
