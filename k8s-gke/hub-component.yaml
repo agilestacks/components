@@ -25,13 +25,15 @@ parameters:
     value: gke
   - name: kubernetes.gke.cluster
     env: CLUSTER_NAME  
-  - name: cloud.kind
-    value: gcp
   - name: dns.domain
     env: DOMAIN_NAME
   - name: cloud.region
-    env: TF_VAR_region
-  - name: cloud.project
+    empty: allow
+    env: REGION
+  - name: cloud.zone
+    empty: allow
+    env: ZONE
+  - name: cloud.gcpProjectId
     env: TF_VAR_project
 
   - name: terraform.bucket.name
@@ -46,9 +48,8 @@ parameters:
       env: SERVICE_ACCOUNT
 
 outputs:
-  - name: cloud.kind
   - name: cloud.region
-  - name: cloud.project
+  - name: cloud.zone
   - name: kubernetes.gke.cluster
   - name: dns.domain
   - name: dns.name

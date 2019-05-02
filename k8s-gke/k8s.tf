@@ -1,6 +1,6 @@
 data "google_container_cluster" "primary" {
   name     = "${var.cluster_name}"
-  location = "${var.region}"
+  location = "${var.location}"
 }
 
 resource "local_file" "cluster_ca_certificate" {

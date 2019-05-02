@@ -11,6 +11,13 @@ STATE_REGION ?= us-central1
 
 SERVICE_ACCOUNT ?= asi
 
+LOCATION := $(REGION)
+LOCATION_KIND :=--region
+ifneq (,$(ZONE))
+	LOCATION=$(ZONE)
+	LOCATION_KIND=--zone
+endif
+
 export TF_VAR_base_domain ?= $(BASE_DOMAIN)
 export TF_VAR_project ?= superhub
 export TF_VAR_region ?= us-central1
@@ -41,10 +48,8 @@ apply:
 	$(terraform) apply $(TF_CLI_ARGS) -Xshadow=false $(TFPLAN)
 
 gcontext:
-	$(gcloud) auth activate-service-account \
-		--key-file=$(GOOGLE_APPLICATION_CREDENTIALS)
 	$(gcloud) config set project $(TF_VAR_project)		
-	$(gcloud) container clusters get-credentials $(CLUSTER_NAME) --region $(TF_VAR_region)
+	$(gcloud) container clusters get-credentials $(CLUSTER_NAME) $(LOCATION_KIND) $(TF_VAR_region)
 
 createsa: gcontext
 	@if $(kubectl) get -n default serviceaccount $(SERVICE_ACCOUNT) ; then \
