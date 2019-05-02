@@ -23,6 +23,8 @@ lifecycle:
 parameters:
   - name: kubernetes.flavor
     value: gke
+  - name: kubernetes.gke.cluster
+    env: CLUSTER_NAME  
   - name: cloud.kind
     value: gcp
   - name: dns.domain
@@ -42,15 +44,12 @@ parameters:
     - name: serviceaccount
       value: asi
       env: SERVICE_ACCOUNT
-    - name: gke
-      parameters:
-      - name: cluster
-        env: CLUSTER_NAME
 
 outputs:
   - name: cloud.kind
   - name: cloud.region
   - name: cloud.project
+  - name: kubernetes.gke.cluster
   - name: dns.domain
   - name: dns.name
     fromTfVar: dns_name
