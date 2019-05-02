@@ -54,7 +54,7 @@ spec:
       serviceAccountName: ${component.kubernetes-dashboard.name}
       # Comment the following tolerations if Dashboard must not be deployed on master
       tolerations:
-      - key: node.kubernetes.io/master
+      - key: node-role.kubernetes.io/master
         effect: NoSchedule
       - key: "CriticalAddonsOnly"
         operator: "Exists"

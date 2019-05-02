@@ -43,7 +43,7 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
       tolerations:
-      - key: "node.kubernetes.io/master"
+      - key: "node-role.kubernetes.io/master"
         operator: "Exists"
         effect: "NoSchedule"
     {{- if .Values.nodeSelector }}

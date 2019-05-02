@@ -70,8 +70,8 @@ resource "aws_s3_bucket_object" "bootstrap_script" {
 
   content = "${local.instance_gpu ?
     replace(data.aws_s3_bucket_object.bootstrap_script.body,
-      "--node-labels=node.kubernetes.io/node",
-      "--node-labels=node.kubernetes.io/node,gpu=true") :
+      "--node-labels=node-role.kubernetes.io/node",
+      "--node-labels=node-role.kubernetes.io/node,gpu=true") :
     data.aws_s3_bucket_object.bootstrap_script.body}"
 
   content_type = "text/json"

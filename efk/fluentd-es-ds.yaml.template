@@ -107,7 +107,7 @@ spec:
         - name: config-volume
           mountPath: /etc/fluent/config.d
       tolerations:
-      - key: "node.kubernetes.io/master"
+      - key: "node-role.kubernetes.io/master"
         operator: "Exists"
         effect: "NoSchedule"
       terminationGracePeriodSeconds: 30

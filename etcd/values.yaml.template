@@ -144,6 +144,6 @@ etcdCluster:
     ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
     nodeSelector: {}
     # tolerations:
-    # - key: node.kubernetes.io/master
+    # - key: node-role.kubernetes.io/master
     #   effect: NoSchedule
     #   operator: Exists
