@@ -1,6 +1,11 @@
 ## Default values for Traefik
 image: traefik
 imageTag: ${component.traefik.app.version}
+
+testFramework:
+  image: "dduportal/bats"
+  tag: "0.4.0"
+
 ## can switch the service type to NodePort if required
 serviceType: ${component.ingress.kubernetes.serviceType}
 loadBalancerIP:
@@ -196,8 +201,12 @@ acme:
   ## Configure dnsProvider to perform domain verification using dns challenge
   ## Applicable only if using the dns-01 challenge type
   delayBeforeCheck: 0
+  resolvers: []
+    # - 1.1.1.1:53
+    # - 8.8.8.8:53
   dnsProvider:
     name: nil
+    existingSecretName: ""
     auroradns:
       AURORA_USER_ID: ""
       AURORA_KEY: ""
@@ -222,6 +231,8 @@ acme:
       DNSMADEEASY_SANDBOX: ""
     dnspod:
       DNSPOD_API_KEY: ""
+    dreamhost:
+      DREAMHOST_API_KEY: ""
     dyn:
       DYN_CUSTOMER_NAME: ""
       DYN_USER_NAME: ""
@@ -433,3 +444,16 @@ tracing:
 #     resource:
 #       name: memory
 #       targetAverageUtilization: 60
+
+## Timeouts
+##
+# timeouts:
+#   ## responding are timeouts for incoming requests to the Traefik instance
+#   responding:
+#     readTimeout: 0s
+#     writeTimeout: 0s
+#     idleTimeout: 180s
+#   ## forwarding are timeouts for requests forwarded to the backend servers
+#   forwarding:
+#     dialTimeout: 30s
+#     responseHeaderTimeout: 0s
