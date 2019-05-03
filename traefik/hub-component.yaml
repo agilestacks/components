@@ -36,7 +36,7 @@ parameters:
   - name: cloud.azureResourceGroupName
     value: superhub-${cloud.region}
     env: TF_VAR_azure_resource_group_name
-  - name: cloud.project
+  - name: cloud.gcpProjectId
     empty: allow
     env: TF_VAR_project
 

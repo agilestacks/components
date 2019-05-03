@@ -32,6 +32,6 @@ acme:
   dnsProvider:
     name: gcloud
     gcloud:
-      GCE_PROJECT: "${cloud.project}"
+      GCE_PROJECT: "${cloud.gcpProjectId}"
   persistence:
     enabled: false
