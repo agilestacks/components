@@ -33,11 +33,11 @@ STATE_CONTAINER ?= agilestacks
 VALUES_FILE:=values.yaml
 ifneq (,$(ACM_CERTIFICATE_ARN))
 	PROTOCOL:=https
-	ACM_VALUES_FILE:=--values values-acm.yaml
+	ACM_VALUES_FILE:=--values aws/values-acm.yaml
 else
 ifneq (,$(filter cert-manager,$(HUB_PROVIDES)))
 	PROTOCOL:=https
-	TLS_VALUES_FILE:=--values $(CLOUD_KIND)/values-tls.yaml
+	TLS_VALUES_FILE:=--values values-tls.yaml --values $(CLOUD_KIND)/values-tls.yaml
 	DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
 	PROVIDES:=tls-ingress
 else
