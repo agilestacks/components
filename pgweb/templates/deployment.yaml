@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: pgweb
-        image: "sosedoff/pgweb:0.9.7"
+        image: "{{ .Values.image }}"
         imagePullPolicy: Always
         env:
         - name: DATABASE_URL

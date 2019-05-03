@@ -1,4 +1,4 @@
-image: "sosedoff/pgweb:0.9.7"
+image: "${component.pgweb.image}"
 
 database:
   url: "postgres://${component.postgresql.user}:${component.postgresql.password}@${component.postgresql.host}:${component.postgresql.port}/${component.postgresql.database}?sslmode=disable"
