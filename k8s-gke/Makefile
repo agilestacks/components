@@ -47,8 +47,7 @@ plan:
 apply:
 	$(terraform) apply $(TF_CLI_ARGS) -Xshadow=false $(TFPLAN)
 
-gcontext:
-	$(gcloud) config set project $(TF_VAR_project)		
+gcontext:	
 	$(gcloud) container clusters get-credentials $(CLUSTER_NAME) $(LOCATION_KIND) $(TF_VAR_region)
 
 createsa: gcontext
