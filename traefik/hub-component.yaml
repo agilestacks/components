@@ -179,4 +179,4 @@ outputs:
   fromTfVar: load_balancer
 
 templates:
-  files: ["*.yaml.template", "azure/values-tls.yaml.template", "aws/values-tls.yaml.template", "gcp/values-tls.yaml.template"]
+  files: ["values.yaml.template", "values-dashboard.yaml.template", "values-tls.yaml.template", "azure/values-tls.yaml.template", "aws/values-tls.yaml.template", "gcp/values-tls.yaml.template"]
