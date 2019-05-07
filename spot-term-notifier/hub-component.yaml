@@ -29,7 +29,7 @@ parameters:
       env:   COMPONENT_NAME
     - name:  version
       brief: spot-term-notifier version
-      value: 1.12.0-1
+      value: 1.13.0-1
     - name:  image.repository
       value: kubeaws/kube-spot-termination-notice-handler
     - name:  image.pullPolicy
