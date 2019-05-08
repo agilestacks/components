@@ -49,7 +49,7 @@ apply:
 	$(terraform) apply $(TF_CLI_ARGS) -Xshadow=false $(TFPLAN)
 
 gcontext:	
-	$(gcloud) container clusters get-credentials $(CLUSTER_NAME) $(LOCATION_KIND) $(TF_VAR_region)
+	$(gcloud) container clusters get-credentials $(CLUSTER_NAME) $(LOCATION_KIND) $(TF_VAR_location)
 
 createsa: gcontext
 	@if $(kubectl) get -n default serviceaccount $(SERVICE_ACCOUNT) ; then \
