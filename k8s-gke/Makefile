@@ -22,6 +22,7 @@ export TF_VAR_base_domain ?= $(BASE_DOMAIN)
 export TF_VAR_project ?= superhub
 export TF_VAR_region ?= us-central1
 export TF_VAR_cluster_name := $(CLUSTER_NAME)
+export TF_VAR_location := $(LOCATION)
 export TF_VAR_name := $(NAME)
 
 terraform   ?= terraform-v0.11
