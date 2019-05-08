@@ -17,8 +17,8 @@ lifecycle:
     - deploy
     - undeploy
   readyConditions:
-    - dns: ${kubernetes.api.endpoint}
-      url: https://${kubernetes.api.endpoint}
+    - dns: api.${dns.domain}
+      url: https://api.${dns.domain}
 
 parameters:
   - name: kubernetes.flavor
