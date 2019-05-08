@@ -49,6 +49,7 @@ parameters:
 
 outputs:
   - name: cloud.region
+    fromTfVar: region
   - name: cloud.availabilityZone
   - name: kubernetes.gke.cluster
   - name: dns.domain

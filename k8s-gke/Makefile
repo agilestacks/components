@@ -77,12 +77,16 @@ deletesa: gcontext
 	$(kubectl) delete clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding
 	$(kubectl) delete -n default serviceaccount $(SERVICE_ACCOUNT)
 
+region:
+	$(eval REGION=$(shell echo $(LOCATION) | cut -d- -f1-2))
+
 output:
 	@echo
 	@echo Outputs:
 	@echo dns_name = $(NAME)
 	@echo dns_base_domain = $(BASE_DOMAIN)
 	@echo token = $(TOKEN)
+	@echo region = $(REGION)
 	@echo
 .PHONY: output
 
