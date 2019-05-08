@@ -30,7 +30,7 @@ parameters:
   - name: cloud.region
     empty: allow
     env: REGION
-  - name: cloud.zone
+  - name: cloud.availabilityZone
     empty: allow
     env: ZONE
   - name: cloud.gcpProjectId
@@ -49,7 +49,7 @@ parameters:
 
 outputs:
   - name: cloud.region
-  - name: cloud.zone
+  - name: cloud.availabilityZone
   - name: kubernetes.gke.cluster
   - name: dns.domain
   - name: dns.name
