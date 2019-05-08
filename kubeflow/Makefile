@@ -55,6 +55,7 @@ fetch:
 	- $(ks) pkg install kubeflow/argo
 	- $(ks) pkg install kubeflow/common
 	- $(ks) pkg install kubeflow/jupyter
+	- $(ks) pkg install kubeflow/metacontroller
 	- $(ks) pkg install kubeflow/examples
 	- $(ks) pkg install kubeflow/katib
 	- $(ks) pkg install kubeflow/mpi-job
@@ -66,7 +67,10 @@ fetch:
 configure:
 	- $(ks) generate argo argo
 	- $(ks) generate ambassador ambassador
+	- $(ks) generate metacontroller metacontroller
 	- $(ks) generate jupyter jupyter
+	- $(ks) generate jupyter-web-app jupyter-web-app
+	- $(ks) generate notebook-controller notebook-controller
 	- $(ks) generate centraldashboard centraldashboard
 	- $(ks) generate pytorch-operator pytorch-operator
 	- $(ks) generate katib katib
@@ -96,7 +100,10 @@ configure:
 install:
 	- $(kubectl) apply -f default-storage-class.yaml
 	- $(ks) apply $(KF_ENV) -c ambassador --context=$(TF_VAR_domain_name)
+	- $(ks) apply $(KF_ENV) -c metacontroller --context=$(TF_VAR_domain_name)
 	- $(ks) apply $(KF_ENV) -c jupyter --context=$(TF_VAR_domain_name)
+	- $(ks) apply $(KF_ENV) -c jupyter-web-app --context=$(TF_VAR_domain_name)
+	- $(ks) apply $(KF_ENV) -c notebook-controller --context=$(TF_VAR_domain_name)
 	- $(ks) apply $(KF_ENV) -c centraldashboard --context=$(TF_VAR_domain_name)
 	- $(ks) apply $(KF_ENV) -c pytorch-operator --context=$(TF_VAR_domain_name)
 	- $(ks) apply $(KF_ENV) -c argo --context=$(TF_VAR_domain_name)
@@ -136,7 +143,10 @@ uninstall:
 	- $(kubectl) create -f bootstrapper-rbac.yaml | true
 	- $(kubectl) create -f bootstrapper-uninstall.yaml | true
 	- $(ks) delete $(KF_ENV) -c ambassador --context=$(TF_VAR_domain_name)
+	- $(ks) delete $(KF_ENV) -c metacontroller --context=$(TF_VAR_domain_name)
 	- $(ks) delete $(KF_ENV) -c jupyter --context=$(TF_VAR_domain_name)
+	- $(ks) delete $(KF_ENV) -c jupyter-web-app --context=$(TF_VAR_domain_name)
+	- $(ks) delete $(KF_ENV) -c notebook-controller --context=$(TF_VAR_domain_name)
 	- $(ks) delete $(KF_ENV) -c centraldashboard --context=$(TF_VAR_domain_name)
 	- $(ks) delete $(KF_ENV) -c pytorch-operator --context=$(TF_VAR_domain_name)
 	- $(ks) delete $(KF_ENV) -c argo --context=$(TF_VAR_domain_name)
