@@ -26,8 +26,6 @@ lifecycle:
 parameters:
   - name: component.tls.kind
     env: TLS_KIND
-  - name: cloud.kind
-    env: CLOUD
   - name: dns.name
     env: DOMAIN
   - name: dns.domain
@@ -92,7 +90,7 @@ parameters:
     - name:  volumeType
       value: gp2
     - name: storageClass
-      value: ${cloud.kind}-minio-buckets
+      value: default
     - name: storageSize
       value: 20Gi
     - name: postgresql.enabled
