@@ -3,7 +3,6 @@
 COMPONENT_NAME   ?= redis
 DOMAIN_NAME      ?= dev.kubernetes.delivery
 NAMESPACE 	     ?= redis
-CLOUD_KIND       ?= aws
 HA_ENABLED       ?= false
 CHART_VERSION    ?= 6.1.4
 HA_CHART_VERSION ?= 3.3.0
@@ -40,7 +39,6 @@ purge:
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
-	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \

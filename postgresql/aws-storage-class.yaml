@@ -4,5 +4,5 @@ metadata:
   name: aws-storage
 provisioner: kubernetes.io/aws-ebs
 parameters:
-  type: ${component.redis.volumeType}
+  type: gp2
   encrypted: "true"

@@ -3,7 +3,6 @@
 COMPONENT_NAME ?= postgresql
 DOMAIN_NAME    ?= dev.kubernetes.delivery
 NAMESPACE      ?= postgresql
-CLOUD_KIND     ?= aws
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
@@ -28,7 +27,6 @@ purge:
 
 install:
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/postgresql \
 			--name $(COMPONENT_NAME) \
