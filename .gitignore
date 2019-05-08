@@ -26,10 +26,10 @@ etcd/values.yaml
 etcd/secret-config
 upsert.json
 traefik/charts
-traefik/values-acm.yaml
 traefik/values-dashboard.yaml
 traefik/values-tls.yaml
 traefik/values.yaml
+traefik/aws/values-acm.yaml
 traefik/aws/values-tls.yaml
 traefik/azure/values-tls.yaml
 traefik/gcp/values-tls.yaml
