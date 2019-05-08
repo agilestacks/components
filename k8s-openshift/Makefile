@@ -76,6 +76,10 @@ patch:
 	-$(oc) patch storageclass gp2 -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "false"}}}'
 	-$(oc) patch storageclass gp2 -p '{"metadata": {"annotations": {"storageclass.beta.kubernetes.io/is-default-class": "false"}}}'
 
+storage:
+	$(kubectl) apply -f storage-class.yaml
+.PHONY: storage
+
 token:
 	$(eval SECRET=$(shell $(oc) get serviceaccount $(ASI_ACCOUNT) -o json | \
 		jq '.secrets[] | select(.name | contains("token")).name'))
@@ -125,7 +129,7 @@ output:
 	@echo sa_token=$(TOKEN)
 	@echo
 
-deploy: account patch token init vars plan apply output
+deploy: account patch storage token init vars plan apply output
 
 undeploy: DISCOVERY_KUBE_CTX:=--context=$(DOMAIN_NAME)
 undeploy: init vars destroy apply
