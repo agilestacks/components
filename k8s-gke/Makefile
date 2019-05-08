@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 .DEFAULT_GOAL := deploy
 
 DOMAIN_NAME    ?= supergke.gcp.superhub.io
@@ -63,7 +64,7 @@ createsa: gcontext
 		$(kubectl) create clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding \
 			--clusterrole=cluster-admin --serviceaccount=default:$(SERVICE_ACCOUNT); \
 	fi
-	sleep 10s
+	@sleep 10s
 
 token:
 	$(eval SECRET=$(shell $(kubectl) get serviceaccount $(SERVICE_ACCOUNT) -o json | \
