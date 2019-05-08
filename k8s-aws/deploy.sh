@@ -1,9 +1,12 @@
 #!/bin/bash -xe
 
 #export KUBECONFIG=kubeconfig
-kubectl_run="kubectl --context=$DOMAIN_NAME run --rm -ti k8s-aws-shell --image busybox --restart=Never -- sh -c"
+kubectl="kubectl --context=$DOMAIN_NAME"
+kubectl_run="$kubectl run --rm -ti k8s-aws-shell --image busybox --restart=Never -- sh -c"
 meta='wget -qO - http://169.254.169.254/latest/meta-data'
 macs="$meta/network/interfaces/macs"
+
+$kubectl apply -f storage-class.yaml
 
 set +x
 
