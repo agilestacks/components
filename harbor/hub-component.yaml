@@ -86,7 +86,19 @@ parameters:
     env: EMAIL
 
 outputs:
-- name: component.harbor.pullSecret
+- name: component.docker.registry.url
+  brief: Name of the pull secret to access harbor
+  fromTfVar: harbor_url
+- name: component.docker.registry.pullSecret.name
+  brief: Name of the pull secret to access harbor
+  fromTfVar: pull_secret
+- name: component.docker.registry.pullSecret.namespace
+  brief: Namespace where is harbor pull secret
+  value: ${component.harbor.namespace}
+- name: component.harbor.url
+  brief: Harbor URL
+  fromTfVar: harbor_url
+- name: component.docker.registry.pullSecret
   brief: Name of the pull secret to access harbor
   fromTfVar: pull_secret
 - name: component.harbor.url
