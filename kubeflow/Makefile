@@ -74,11 +74,11 @@ configure:
 	- $(ks) generate centraldashboard centraldashboard
 	- $(ks) generate pytorch-operator pytorch-operator
 	- $(ks) generate katib katib
-	# ERROR Invalid value: \"Cluster\": ExternalTrafficPolicy can only be set on NodePort and LoadBalancer service"
+	## ERROR Invalid value: \"Cluster\": ExternalTrafficPolicy can only be set on NodePort and LoadBalancer service"
 	- $(ks) generate seldon seldon \
 		--withApife true \
 		--apifeServiceType ClusterIP \
-		--externalTrafficPolicy=null \
+		--externalTrafficPolicy="" \
 		--withAmbassador false
 	- $(ks) generate tf-job-operator tf-job-operator
 	- $(ks) generate pipeline pipeline
