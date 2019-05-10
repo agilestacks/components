@@ -36,10 +36,10 @@ parameters:
     - name: poolName
       env: TF_VAR_pool_name
       value: gpu1
-    - name: asgMaxSize
+    - name: maxCount
       value: 6
       env: TF_VAR_max_node_count
-    - name: asgMinSize
+    - name: count
       value: 0
       env: TF_VAR_min_node_count
     - name: preemptible
