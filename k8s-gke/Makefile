@@ -103,9 +103,9 @@ output:
 	@echo
 .PHONY: output
 
-deploy: init plan apply createsa storage token region output
+deploy: createsa storage token region init plan apply output
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
-undeploy: deletesa init destroy apply
+undeploy: init destroy apply deletesa
