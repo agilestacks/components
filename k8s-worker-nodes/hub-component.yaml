@@ -44,9 +44,8 @@ parameters:
       env: TF_VAR_container_linux_version_gpu
       value: 1855.4.0
     - name: shortName
-      value: pool-1
+      value: ${hub.componentName}
     - name: name
-      kind: link
       env: TF_VAR_name
       value: ${component.k8s-worker-nodes.shortName}-${dns.domain}
     - name: autoscale.enabled

@@ -1,6 +1,6 @@
 terraform {
-  required_version = ">= 0.11.3"
-  backend          "s3"             {}
+  required_version = ">= 0.11.10"
+  backend "s3" {}
 }
 
 provider "aws" {
@@ -8,7 +8,11 @@ provider "aws" {
 }
 
 provider "ignition" {
-  version = "~> 1.0"
+  version = "1.0.1"
+}
+
+provider "template" {
+  version = "~> 2.1"
 }
 
 data "aws_s3_bucket_object" "bootstrap_script" {
@@ -17,24 +21,8 @@ data "aws_s3_bucket_object" "bootstrap_script" {
 }
 
 locals {
-  gpu_instance_types = [
-    "p3.2xlarge",
-    "p3.8xlarge",
-    "p3.16xlarge",
-    "p3dn.24xlarge",
-    "p2.xlarge",
-    "p2.8xlarge",
-    "p2.16xlarge",
-    "g3s.xlarge",
-    "g3.4xlarge",
-    "g3.8xlarge",
-    "g3.16xlarge",
-  ]
-
   name1 = "worker-${var.name}"
-  name2 = "${substr(local.name1, 0, min(length(local.name1),63))}"
-
-  instance_gpu = "${contains(local.gpu_instance_types, var.instance_type)}"
+  name2 = "${substr(local.name1, 0, min(length(local.name1), 63))}"
 
   default_tags = [
     {
@@ -49,7 +37,6 @@ locals {
     },
   ]
 
-  # TODO: change this when will use terraform >=0.12
   tags = {
     default_tags = "${local.default_tags}"
 
@@ -78,11 +65,6 @@ resource "aws_s3_bucket_object" "bootstrap_script" {
   acl          = "private"
 }
 
-data "ignition_systemd_unit" "nvidia" {
-  name    = "nvidia.service"
-  enabled = "${local.instance_gpu}"
-  content = "${file("nvidia.service")}"
-}
 
 data "ignition_config" "main" {
   append {
@@ -91,8 +73,13 @@ data "ignition_config" "main" {
       "k8s-worker-nodes/${var.name}/ignition_worker.json")}"
   }
 
+  // conditional operator cannot be used with list values
+  arrays = ["${local.nvme[local.nvme_ndevices > 1 ? "raid" : "empty"]}"]
+  filesystems = ["${local.nvme[local.instance_ephemeral_nvme ? "docker" : "empty"]}"]
+
   systemd = [
     "${data.ignition_systemd_unit.nvidia.id}",
+    "${data.ignition_systemd_unit.var_lib_docker.id}",
   ]
 }
 
