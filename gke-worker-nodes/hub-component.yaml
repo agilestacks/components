@@ -37,7 +37,7 @@ parameters:
       value: r4.large
     - name: poolName
       env: TF_VAR_pool_name
-      value: ${hub.componentName}-${kubernetes.gke.cluster}
+      value: ${component.k8s-worker-nodes.shortName}-${kubernetes.gke.cluster}
     - name: maxCount
       value: 6
       env: TF_VAR_max_node_count
