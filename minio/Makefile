@@ -7,7 +7,6 @@ DOMAIN_NAME    ?= dev.kubernetes.delivery
 NAMESPACE      ?= minio
 INGRESS_DOMAIN ?= localhost
 PROTOCOL       ?= http
-CLOUD          ?= aws
 ALIAS          ?= $(COMPONENT_NAME)
 DOMAIN         ?= minio
 TLS_KIND ?= shold-be-set
@@ -72,15 +71,11 @@ namespace:
 nats-notifications:
 	$(mc) event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
 
-$(CLOUD)-storage-class:
-	- $(kubectl) create -f $@.yaml
-.PHONY: $(CLOUD)-storage-class
-
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
-install: namespace $(CLOUD)-storage-class
+install: namespace
 	@ echo Running helm install charts/minio...
 	@ $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/minio \

@@ -17,6 +17,7 @@ provides:
 
 parameters:
   - name: component.ingress.ssoFqdn
+  - name: component.ingress.protocol
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.prometheus
@@ -88,10 +89,10 @@ templates:
 outputs:
   - name: component.prometheus.url
     brief: Prometheus URL
-    value: http://${component.prometheus.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.prometheus.ingress.urlPrefix}.${component.ingress.ssoFqdn}
   - name: component.prometheus.alertmanager_url
     brief: Alertmanager URL
-    value: http://${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.ssoFqdn}
   - name: component.prometheus.grafana_url
     brief: Grafana URL
-    value: http://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.ssoFqdn}

@@ -1,13 +1,14 @@
 apiVersion: v1
-description: Watch and action AWS spot termination events
-name: kube-spot-termination-notice-handler
-version: 0.2.1
-appVersion: 1.9.0-1
-home: https://github.com/egeland/kube-spot-termination-notice-handler
-source:
-  - https://hub.docker.com/r/egeland/kube-spot-termination-notice-handler/
+appVersion: "1.13.0-1"
+description: The K8s Spot Termination handler handles draining AWS Spot Instances in response to termination requests.
+name: k8s-spot-termination-handler
+version: 1.2.0
+keywords:
+  - spot
+  - termination
+home: https://github.com/kube-aws/kube-spot-termination-notice-handler
+sources:
+  - https://github.com/kube-aws/kube-spot-termination-notice-handler
 maintainers:
-  - name: FFX Blue Operations
-    email: blueops@fairfaxmedia.com.au
-  - name: Frode Egeland
-    email: egeland@gmail.com
+  - name: kierranm
+    email: kierranm@gmail.com

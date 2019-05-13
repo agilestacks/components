@@ -1,37 +1,45 @@
 # Kubernetes AWS EC2 Spot Termination Notice Handler
 
-This chart installs the [kube-spot-termination-notice-handler](https://github.com/mumoshu/kube-spot-termination-notice-handler) as a daemonset across the cluster nodes.
+This chart installs the [k8s-spot-termination-handler](https://github.com/kube-aws/kube-spot-termination-notice-handler)
+as a daemonset across the cluster nodes.
 
 ## Purpose
 
-The handler watches for Spot termination events, and will do the following if detected:
+Spot instances on EC2 come with significant cost savings, but with the burden of instance being terminated if
+the market price goes higher than the maximum price you have configured.
 
-* Drain the affected node
-
-* [Optional] Send a message to a Slack channel informing that a termination notice has been received.
+The termination handler watches the AWS Metadata API for termination requests and starts draining the node
+so that it can be terminated safely. Optionally it can also send a message to a Slack channel informing that
+a termination notice has been received.
 
 ## Installation
 
 You should install into the `kube-system` namespace, but this is not a requirement. The following example assumes this has been chosen.
 
 ```
-helm install incubator/kube-spot-termination-notice-handler --name-space kube-system
+helm install stable/k8s-spot-termination-handler --namespace kube-system
 ```
 
 ## Configuration
 
-You may set these options in your values file:
+The following table lists the configurable parameters of the k8s-spot-termination-handler chart and their default values.
 
-* `enableLogspout` - if you use Logspout to capture logs, this option will ensure your logs are captured. The logs are noisy, and as such are disabled from Logspout by default.
-
-* `slackUrl` - optional - put a slack webhook URL here to get messaged when a termination notice is received.
-
-* `clusterName` - optional - when slack is configured use this cluster name for reports
-
-* `pollInterval` - how often to query the EC2 metadata for termination notices. Defaults to every `5` seconds.
-
-* `rbac.create` -  Specifies whether RBAC resources should be created. Defaults to `true`.
-
-* `serviceAccount.create` -  Specifies whether a ServiceAccount should be created. Defaults to `true`.
-
-* `serviceAccount.name` - The name of the ServiceAccount to use. If not set and create is true, a name is generated using the fullname template.
+Parameter | Description | Default
+--- | --- | ---
+`image.repository` | container image repository | `kubeaws/kube-spot-termination-notice-handler`
+`image.tag` | container image tag | `1.13.0-1`
+`image.pullPolicy` | container image pull policy | `IfNotPresent`
+`pollInterval` | the interval in seconds between attempts to poll EC2 metadata API for termination events | `"5"`
+`slackUrl` | Slack webhook URL to send messages when a termination notice is received | _not defined_
+`clusterName` | if `slackUrl` is set - use this cluster name in Slack messages | _not defined_
+`enableLogspout` | if `true`, enable the Logspout log capturing. Logspout should be deployed separately | `false`
+`rbac.create` | if `true`, create & use RBAC resources | `true`
+`serviceAccount.create` | if `true`, create a service account | `true`
+`serviceAccount.name` | the name of the service account to use. If not set and `create` is `true`, a name is generated using the fullname template. | ``
+`detachAsg` | if `true`, the spot termination handler will detect (standard) AutoScaling Group, and initiate detach when termination notice is detected. | `false`
+`gracePeriod` | Grace period for node draining | `120`
+`resources` | pod resource requests & limits | `{}`
+`nodeSelector` | node labels for pod assignment | `{}`
+`tolerations` | node taints to tolerate (requires Kubernetes >=1.6) | `[]`
+`affinity` | node/pod affinities (requires Kubernetes >=1.6) | `{}`
+`priorityClassName` | pod priorityClassName for pod. | ``

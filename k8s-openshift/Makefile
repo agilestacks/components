@@ -72,15 +72,19 @@ account:
 	fi
 
 patch:
-	echo "Dissable default storageclass (if exists)"
+	echo "Disable default storageclass (if exists)"
 	-$(oc) patch storageclass gp2 -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "false"}}}'
 	-$(oc) patch storageclass gp2 -p '{"metadata": {"annotations": {"storageclass.beta.kubernetes.io/is-default-class": "false"}}}'
+
+storage:
+	$(kubectl) apply -f storage-class.yaml
+.PHONY: storage
 
 token:
 	$(eval SECRET=$(shell $(oc) get serviceaccount $(ASI_ACCOUNT) -o json | \
 		jq '.secrets[] | select(.name | contains("token")).name'))
 	$(eval TOKEN_BASE64=$(shell $(oc) get secret $(SECRET) -o json | \
-		jq '.data.token'))	
+		jq '.data.token'))
 	$(eval TOKEN=$(shell openssl enc -A -base64 -d <<< $(TOKEN_BASE64)))
 
 $(TF_DATA_DIR):
@@ -95,9 +99,9 @@ init: $(TF_DATA_DIR)
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
-	$(terraform) plan -var vpc_id=$(VPC_ID) $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)	
+	$(terraform) plan -var vpc_id=$(VPC_ID) $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
 
-refresh: 
+refresh:
 	$(terraform) refresh $(TF_CLI_ARGS)
 
 apply:
@@ -113,7 +117,7 @@ vars: vpc
 	$(eval VPC_ID := $(shell grep -E '^vpc =' $(DOMAIN_NAME).clean.log | awk '{print $$3}'))
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
-destroy: plan	
+destroy: plan
 
 output:
 	@cat $(DOMAIN_NAME).clean.log
@@ -122,13 +126,13 @@ output:
 	@echo
 	@echo dns_name = $(NAME)
 	@echo dns_base_domain = $(BASE_DOMAIN)
-	@echo sa_token=$(TOKEN)	
+	@echo sa_token=$(TOKEN)
 	@echo
 
-deploy: account patch token init vars plan apply output
+deploy: account patch storage token init vars plan apply output
 
 undeploy: DISCOVERY_KUBE_CTX:=--context=$(DOMAIN_NAME)
-undeploy: init vars destroy apply 
+undeploy: init vars destroy apply
 	-$(oc) --context=$(DOMAIN_NAME) delete -f $(ASI_SCC).yaml
 	-$(oc) --context=$(DOMAIN_NAME) delete serviceaccount $(ASI_ACCOUNT)
 

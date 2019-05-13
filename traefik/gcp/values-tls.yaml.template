@@ -1,37 +1,5 @@
-ssl:
-  enabled: true
-  enforced: false
-  # https://docs.traefik.io/configuration/entrypoints/#specify-minimum-tls-version
-  # cipherSuites: []
-  tlsMinVersion: VersionTLS12
-  defaultCert: ${component.ingress.tls.cert/base64}
-  defaultKey: ${component.ingress.tls.key/base64}
-
 acme:
-  enabled: true
-  email: ${component.cert-manager.issuerEmail}
-  onHostRule: false
-  staging: false
-  logging: true
-  domains:
-    enabled: true
-    # https://github.com/containous/traefik/issues/4585
-    domainsList:
-    - main: "*.${component.ingress.ssoUrlPrefix}.${dns.domain}"
-    - sans:
-      - "${component.ingress.ssoUrlPrefix}.${dns.domain}"
-    # domainsList:
-    # - main: "${dns.domain}"
-    # - sans:
-    #   - "${component.ingress.urlPrefix}.${dns.domain}"
-    #   - "${component.ingress.ssoUrlPrefix}.${dns.domain}"
-    #   - "*.${component.ingress.urlPrefix}.${dns.domain}"
-    #   - "*.${component.ingress.ssoUrlPrefix}.${dns.domain}"
-  challengeType: dns-01
-  delayBeforeCheck: 60
   dnsProvider:
     name: gcloud
     gcloud:
-      GCE_PROJECT: "${cloud.project}"
-  persistence:
-    enabled: false
+      GCE_PROJECT: "${cloud.gcpProjectId}"

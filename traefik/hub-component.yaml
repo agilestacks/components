@@ -19,6 +19,11 @@ lifecycle:
     - deploy
     - undeploy
     - upgrade
+  readyConditions:
+    - dns: ${component.ingress.ssoFqdn}
+      url: ${component.ingress.protocol}://${component.ingress.ssoFqdn}
+    - dns: auth.${dns.domain}
+      url: ${component.ingress.protocol}://auth.${dns.domain}
 
 parameters:
   - name: terraform.bucket.name
@@ -36,7 +41,7 @@ parameters:
   - name: cloud.azureResourceGroupName
     value: superhub-${cloud.region}
     env: TF_VAR_azure_resource_group_name
-  - name: cloud.project
+  - name: cloud.gcpProjectId
     empty: allow
     env: TF_VAR_project
 
@@ -139,10 +144,10 @@ parameters:
       value: stable/traefik
       env: CHART
     - name: chart.version
-      value: 1.63.1
+      value: 1.67.1
       env: CHART_VERSION
     - name: app.version
-      value: 1.7.9
+      value: 1.7.11
     - name: bin.terraform
       value: terraform-v0.11
       env: terraform
@@ -179,4 +184,11 @@ outputs:
   fromTfVar: load_balancer
 
 templates:
-  files: ["*.yaml.template", "azure/values-tls.yaml.template", "aws/values-tls.yaml.template", "gcp/values-tls.yaml.template"]
+  files:
+  - values*.yaml.template
+  directories:
+  - .
+  - aws
+  - azure
+  - gcp
+  # - hybrid

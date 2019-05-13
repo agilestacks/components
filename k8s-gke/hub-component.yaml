@@ -17,19 +17,23 @@ lifecycle:
     - deploy
     - undeploy
   readyConditions:
-    - dns: ${kubernetes.api.endpoint}
-      url: https://${kubernetes.api.endpoint}
+    - dns: api.${dns.domain}
+      url: https://api.${dns.domain}
 
 parameters:
   - name: kubernetes.flavor
     value: gke
-  - name: cloud.kind
-    value: gcp
+  - name: kubernetes.gke.cluster
+    env: CLUSTER_NAME  
   - name: dns.domain
     env: DOMAIN_NAME
   - name: cloud.region
-    env: TF_VAR_region
-  - name: cloud.project
+    empty: allow
+    env: REGION
+  - name: cloud.availabilityZone
+    empty: allow
+    env: ZONE
+  - name: cloud.gcpProjectId
     env: TF_VAR_project
 
   - name: terraform.bucket.name
@@ -42,15 +46,12 @@ parameters:
     - name: serviceaccount
       value: asi
       env: SERVICE_ACCOUNT
-    - name: gke
-      parameters:
-      - name: cluster
-        env: CLUSTER_NAME
 
 outputs:
-  - name: cloud.kind
   - name: cloud.region
-  - name: cloud.project
+    fromTfVar: region
+  - name: cloud.availabilityZone
+  - name: kubernetes.gke.cluster
   - name: dns.domain
   - name: dns.name
     fromTfVar: dns_name

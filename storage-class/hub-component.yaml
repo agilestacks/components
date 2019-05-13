@@ -1,0 +1,24 @@
+---
+version: 1
+kind: component
+meta:
+  name: storage-class
+  brief: Kubernetes storage class
+  source:
+    dir: ../../components/storage-class
+
+parameters:
+- name: dns.domain
+  env:  DOMAIN_NAME
+- name: cloud.kind
+  env:  CLOUD_KIND
+- name: component.storage-class
+  parameters:
+  - name: type
+    empty: allow
+  - name: name
+    value: "${hub.componentName}"
+
+templates:
+  files:
+  - "*.yaml.template"

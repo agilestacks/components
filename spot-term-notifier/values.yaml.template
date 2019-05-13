@@ -1,6 +1,17 @@
 # Default values for kube-spot-termination-notice-handler.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+  # The name of the ServiceAccount to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: spot-term-notifier
+
 image:
   repository: ${component.spot-term-notifier.image.repository}
   tag: ${component.spot-term-notifier.version}
@@ -18,6 +29,12 @@ clusterName: ${dns.domain}
 # Silence logspout by default - set to true to enable logs arriving in logspout
 enableLogspout: false
 
+# Trigger instance removal from AutoScaling Group on termination notice
+detachAsg: false
+
+# Grace period for node draining
+gracePeriod: 120
+
 resources: {}
 # We usually recommend not to specify default resources and to leave this as a conscious
 # choice for the user. This also increases chances charts run on environments with little
@@ -30,13 +47,19 @@ resources: {}
 #  cpu: 100m
 #  memory: 128Mi
 
-rbac:
-  # Specifies whether RBAC resources should be created
-  create: true
+# Add a priority class to the deamonset
+priorityClassName: ""
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: spot-term-notifier
+nodeSelector: {}
+  # "node-role.kubernetes.io/spot-worker": "true"
+
+tolerations:
+  # - key: "dedicated"
+  #   operator: "Equal"
+  #   value: "gpu"
+  #   effect: "NoSchedule"
+  - key: "node-role.kubernetes.io/master"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+affinity: {}

@@ -33,6 +33,8 @@ parameters:
       value: pgweb-${dns.name}-${hub.componentName}
     - name: ingress.path
       value: /
+    - name: image
+      value: sosedoff/pgweb:0.11.2
   - name: component.postgresql
     parameters:
     - name: host

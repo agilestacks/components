@@ -17,8 +17,6 @@ provides:
 parameters:
   - name: dns.domain
     env: DOMAIN_NAME
-  - name: cloud.kind
-    env: CLOUD_KIND
   - name: component.postgresql
     parameters:
     - name:  name
@@ -30,14 +28,10 @@ parameters:
     - name:  user
     - name:  password
     - name:  database
-    - name:  volumeType
-      value: gp2
-      # conditional defaults?
-      # value: pd-ssd
     - name:  volumeSize
       value: 8Gi
     - name:  storageClass
-      value: ${cloud.kind}-storage
+      value: default
     - name:  port
       value: 5432
 

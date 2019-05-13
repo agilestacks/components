@@ -39,13 +39,13 @@ parameters:
       value: kubeflow
       env: TF_VAR_namespace
     - name: version
-      value: v0.4.0
+      value: v0.5.1
       env: KUBEFLOW_VERSION
     - name:  urlPrefix
       value: kubeflow.svc
       env: TF_VAR_url_prefix
     - name: apiSpec
-      value: v1.12.5
+      value: v1.13.5
       env: K8S_API_SPEC
     - name: environment
       value: cloud
@@ -62,8 +62,9 @@ parameters:
         env: AMBASSADOR_VERSION
     - name: pipelines
       parameters:
-      - name: image
-        value: agilestacks/bootstrapper:0.1.7
+      - name: tag
+        value: 0.1.19
+        env: PIPELINE_VERSION
 
 
 outputs:
