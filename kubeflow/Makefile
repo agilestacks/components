@@ -91,6 +91,7 @@ configure:
 	- $(ks) param set ambassador ambassadorProtocol $(PROTOCOL) --env=$(KF_ENV)
 	- $(ks) param set ambassador ambassadorAcmCertificateArn $(ACM_CERTIFICATE_ARN) --env=$(KF_ENV)
 	- $(ks) param set ambassador platform aws --env=$(KF_ENV)
+	- $(ks) param set jupyter-web-app image gcr.io/kubeflow-images-public/jupyter-web-app:v-latest-base-fcb983-1126234591183507456
 	- $(ks) param set --env=$(KF_ENV) pipeline apiImage gcr.io/ml-pipeline/api-server:$(PIPELINE_VERSION)
 	- $(ks) param set --env=$(KF_ENV) pipeline scheduledWorkflowImage gcr.io/ml-pipeline/scheduledworkflow:$(PIPELINE_VERSION)
 	- $(ks) param set --env=$(KF_ENV) pipeline persistenceAgentImage gcr.io/ml-pipeline/persistenceagent:$(PIPELINE_VERSION)
