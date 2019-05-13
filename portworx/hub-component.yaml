@@ -1,0 +1,37 @@
+---
+version: 1
+kind: component
+meta:
+  name: portworx
+  brief: Cloud native storage and data management
+  source:
+      dir: ../../components/portworx
+
+requires:
+  - kubernetes
+
+parameters:
+  - name: component.ingress.ssoUrlPrefix
+  - name: component.ingress.protocol
+  - name: component.portworx.lighthouseUrl
+    value: px.${dns.domain}
+  - name: component.portworx.namespace
+    brief: Kubernetes namespace to install into
+    value: kube-system
+    env: NAMESPACE
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: TF_VAR_name
+  - name: terraform.bucket
+    parameters:
+    - name: name
+    - name: region
+
+outputs:
+  - name: component.portworx.lighthouseUrl
+    value: ${component.ingress.protocol}://${component.portworx.lighthouseUrl}
+
+templates:
+  files:
+    - "*.yaml.template"
