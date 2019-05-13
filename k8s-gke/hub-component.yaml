@@ -21,10 +21,12 @@ lifecycle:
       url: https://api.${dns.domain}
 
 parameters:
+  - name: cloud.kind
+    value: gcp
   - name: kubernetes.flavor
     value: gke
   - name: kubernetes.gke.cluster
-    env: CLUSTER_NAME  
+    env: CLUSTER_NAME
   - name: dns.domain
     env: DOMAIN_NAME
   - name: cloud.region
@@ -50,6 +52,7 @@ parameters:
 outputs:
   - name: cloud.region
     fromTfVar: region
+  - name: cloud.kind
   - name: cloud.availabilityZone
   - name: kubernetes.gke.cluster
   - name: dns.domain
@@ -63,4 +66,4 @@ outputs:
   - name: kubernetes.api.caCert
     fromTfVar: api_ca_crt
   - name: kubernetes.api.token
-    fromTfVar: token 
+    fromTfVar: token
