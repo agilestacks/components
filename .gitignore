@@ -132,3 +132,4 @@ harbor/aws/s3/values-harbor.yaml
 harbor/hybrid/local/values-harbor.yaml
 harbor/hybrid/minio/values-harbor.yaml
 cert-manager/charts/
+storage-class/*.yaml
