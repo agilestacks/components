@@ -20,5 +20,5 @@ spec:
           servicePort: 443
   tls:
     - hosts:
-      - ${component.portworx.lighthouse}
+      - ${component.portworx.lighthouseUrl}
       secretName: px-ingress-tls
