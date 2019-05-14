@@ -4,31 +4,49 @@ variable "keypair" {
   description = "Name of an SSH key located within the AWS region. Example: coreos-user."
 }
 
-variable "worker_instance_type" {
+variable "instance_type" {
   type        = "string"
   default     = "r4.large"
   description = "Instance size for the worker node(s). Example: `t2.small`."
 }
 
-variable "worker_spot_price" {
+variable "spot_price" {
   type        = "string"
   default     = "0.06"
   description = "Spot request price. Empty for on-demand"
 }
 
-variable "worker_root_volume_type" {
+variable "autoscale_enabled" {
+  type        = "string"
+  default     = "false"
+  description = "Enable autoscaling by adding special auto scale group tags"
+}
+
+variable "pool_max_count" {
+  type        = "string"
+  default     = "1"
+  description = "The maximum size of the auto scale group."
+}
+
+variable "pool_count" {
+  type        = "string"
+  default     = "1"
+  description = "The minimum size of the auto scale group."
+}
+
+variable "root_volume_type" {
   type        = "string"
   default     = "gp2"
   description = "The type of volume for the root block device of worker nodes."
 }
 
-variable "worker_root_volume_size" {
+variable "root_volume_size" {
   type        = "string"
   default     = "30"
   description = "The size of the volume in gigabytes for the root block device of worker nodes."
 }
 
-variable "worker_root_volume_iops" {
+variable "root_volume_iops" {
   type    = "string"
   default = "100"
 
@@ -38,12 +56,20 @@ Ignored if the volume type is not io1.
 EOF
 }
 
-variable "domain" {
-  type        = "string"
-  description = "Domain of the stack"
+variable "load_balancers" {
+  type    = "list"
+  default = []
+
+  description = <<EOF
+(optional) List of ELBs to attach all worker instances to.
+This is useful for exposing NodePort services via load-balancers managed separately from the cluster.
+
+Example:
+ * `["ingress-nginx"]`
+EOF
 }
 
-variable "pool_name" {
+variable "name" {
   type = "string"
 
   description = <<EOF
@@ -54,9 +80,9 @@ Example:
 EOF
 }
 
-variable "worker_sg_id" {
-  type = "string"
-
+variable "sg_ids" {
+  type = "list"
+  default = []
   description = <<EOF
 Security group where additional worker nodes will be joined.
 Example:
@@ -64,9 +90,9 @@ Example:
 EOF
 }
 
-variable "worker_subnet_ids" {
-  type = "string"
-
+variable "subnet_ids" {
+  type    = "list"
+  default = []
   description = <<EOF
 Subnets where additional worker nodes will be joined.
 Example:
@@ -74,37 +100,11 @@ Example:
 EOF
 }
 
-variable "worker_instance_profile" {
+variable "instance_profile" {
   type = "string"
 }
 
 variable "cluster_name" {
   type        = "string"
   description = "EKS cluster name"
-}
-
-variable "autoscaling_group_extra_tags" {
-  type    = "list"
-  default = []
-
-  description = <<EOF
-(optional) Extra AWS tags to be applied to created autoscaling group resources.
-This is a list of maps having the keys `key`, `value` and `propagate_at_launch`.
-
-Example: `[ { key = "foo", value = "bar", propagate_at_launch = true } ]`
-EOF
-}
-
-variable "autoscaling_group_max_size" {
-  type    = "string"
-  default = "6"
-
-  description = "The maximum size of the auto scale group."
-}
-
-variable "autoscaling_group_min_size" {
-  type    = "string"
-  default = "0"
-
-  description = "The minimum size of the auto scale group."
 }

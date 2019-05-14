@@ -5,16 +5,19 @@ STATE_REGION ?= us-east-1
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
-export TF_VAR_domain    ?= dev.kubernetes.delivery
-export TF_VAR_pool_name ?= gpu1
+export DOMAIN_NAME      ?= default
 
 export TF_LOG      ?= info
-export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain)-$(TF_VAR_pool_name)
+export TF_DATA_DIR ?= .terraform/$(TF_VAR_name)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+
+export TF_VAR_subnet_ids := $(shell echo -n '$(SUBNET_IDS)' | tr ',' ' ' | xargs | jq -cRM 'split(" ")')
+export TF_VAR_sg_ids     := $(shell echo -n '$(SG_IDS)' | tr ',' ' ' | xargs | jq -cRM 'split(" ")')
+
 
 deploy: init plan apply
 
@@ -26,11 +29,11 @@ init: $(TF_DATA_DIR)
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
         -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(TF_VAR_domain)/eks-worker-nodes/$(TF_VAR_pool_name)/terraform.tfstate" \
+        -backend-config="key=$(DOMAIN_NAME)/eks-worker-nodes/$(TF_VAR_name)/terraform.tfstate" \
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+	$(terraform) plan -var cluster_tag=$${DOMAIN_NAME/./-} $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
 
 refresh:
 	$(terraform) refresh $(TF_CLI_ARGS)
