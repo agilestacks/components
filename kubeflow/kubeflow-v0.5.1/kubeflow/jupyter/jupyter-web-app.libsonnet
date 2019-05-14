@@ -87,93 +87,33 @@
         apiGroup: "rbac.authorization.k8s.io",
       },
     },
-    
-    notebookRole:: {
-      apiVersion: "rbac.authorization.k8s.io/v1beta1",
-      kind: "Role",
-      metadata: {
-        name: "jupyter-notebook-role",
-        namespace: params.namespace,
-      },
-      rules: [
-        {
-          apiGroups: [
-            "",
-          ],
-          resources: [
-            "pods",
-            "pods/log",
-            "secrets",
-            "services",
-          ],
-          verbs: [
-            "*",
-          ],
-        },
-        {
-          apiGroups: [
-            "",
-            "apps",
-            "extensions",
-          ],
-          resources: [
-            "deployments",
-            "replicasets",
-          ],
-          verbs: [
-            "*",
-          ],
-        },
-        {
-          apiGroups: [
-            "kubeflow.org",
-          ],
-          resources: [
-            "*",
-          ],
-          verbs: [
-            "*",
-          ],
-        },
-        {
-          apiGroups: [
-            "batch",
-          ],
-          resources: [
-            "jobs",
-          ],
-          verbs: [
-            "*",
-          ],
-        },
-      ],
-    },
-    
-    notebookServiceAccount:: {
+
+    // TODO: "default-editor" will be shared by multiple components; update here once other components switched to new auth-model
+    defaultEditorServiceAccount:: {
       apiVersion: "v1",
       kind: "ServiceAccount",
       metadata: {
-        name: "jupyter-notebook",
+        name: "default-editor",
         namespace: params.namespace,
       },
     },
-    
-    notebookRoleBinding:: {
+
+    defaultEditorRoleBinding:: {
       apiVersion: "rbac.authorization.k8s.io/v1beta1",
       kind: "RoleBinding",
       metadata: {
-        name: "jupyter-notebook-role-binding",
+        name: "default-editor-role-binding",
         namespace: params.namespace,
       },
       roleRef: {
         apiGroup: "rbac.authorization.k8s.io",
-        kind: "Role",
-        name: "jupyter-notebook-role",
+        kind: "ClusterRole",
+        name: "edit",
       },
       subjects: [
         {
           kind: "ServiceAccount",
-          name: "jupyter-notebook",
+          name: "default-editor",
           namespace: params.namespace,
         },
       ],
@@ -213,6 +153,58 @@
         selector: {
           app: params.name
         },
+      },
+    },
+
+    istioVirtualService:: {
+      apiVersion: "networking.istio.io/v1alpha3",
+      kind: "VirtualService",
+      metadata: {
+        name: params.name,
+        namespace: params.namespace,
+      },
+      spec: {
+        hosts: [
+          "*",
+        ],
+        gateways: [
+          "kubeflow-gateway",
+        ],
+        http: [
+          {
+            match: [
+              {
+                uri: {
+                  prefix: "/" + params.prefix + "/",
+                },
+              },
+            ],
+            rewrite: {
+              uri: "/",
+            },
+            route: [
+              {
+                destination: {
+                  host: std.join(".", [
+                    params.name,
+                    params.namespace,
+                    params.clusterDomain,
+                  ]),
+                  port: {
+                    number: 80,
+                  },
+                },
+              },
+            ],
+            headers: {
+              request: {
+                add: {
+                  "x-forwarded-prefix": "/" + params.prefix,
+                },
+              },
+            },
+          },
+        ],
       },
     },
 
@@ -286,10 +278,11 @@
       self.serviceAccount,
       self.clusterRoleBinding,
       self.clusterRole,
-      self.notebookServiceAccount,
-      self.notebookRole,
-      self.notebookRoleBinding,
-      ],
+      self.defaultEditorServiceAccount,
+      self.defaultEditorRoleBinding,
+    ] + if util.toBool(params.injectIstio) then [
+      self.istioVirtualService,
+    ] else [],
 
     list(obj=self.all):: util.list(obj),
   },

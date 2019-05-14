@@ -30,12 +30,14 @@ parameters:
 
   - name: component.k8s-worker-nodes
     parameters:
+    - name: shortName
+      value: ${hub.componentName}
     - name: size
       env: TF_VAR_node_machine_type
       value: r4.large
     - name: poolName
       env: TF_VAR_pool_name
-      value: gpu1
+      value: ${component.k8s-worker-nodes.shortName}-${kubernetes.gke.cluster}
     - name: maxCount
       value: 6
       env: TF_VAR_max_node_count

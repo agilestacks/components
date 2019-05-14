@@ -92,12 +92,12 @@ configure:
 	- $(ks) param set ambassador ambassadorAcmCertificateArn $(ACM_CERTIFICATE_ARN) --env=$(KF_ENV)
 	- $(ks) param set ambassador platform aws --env=$(KF_ENV)
 	- $(ks) param set jupyter-web-app image gcr.io/kubeflow-images-public/jupyter-web-app:v-latest-base-fcb983-1126234591183507456
+	- $(ks) param set jupyter-web-app injectIstio false --env=$(KF_ENV)
 	- $(ks) param set --env=$(KF_ENV) pipeline apiImage gcr.io/ml-pipeline/api-server:$(PIPELINE_VERSION)
 	- $(ks) param set --env=$(KF_ENV) pipeline scheduledWorkflowImage gcr.io/ml-pipeline/scheduledworkflow:$(PIPELINE_VERSION)
 	- $(ks) param set --env=$(KF_ENV) pipeline persistenceAgentImage gcr.io/ml-pipeline/persistenceagent:$(PIPELINE_VERSION)
 	- $(ks) param set --env=$(KF_ENV) pipeline viewerCrdControllerImage gcr.io/ml-pipeline/viewer-crd-controller:$(PIPELINE_VERSION)
 	- $(ks) param set --env=$(KF_ENV) pipeline uiImage gcr.io/ml-pipeline/frontend:$(PIPELINE_VERSION)
-
 install:
 	- $(kubectl) apply -f default-storage-class.yaml
 	- $(ks) apply $(KF_ENV) -c ambassador --context=$(TF_VAR_domain_name)

@@ -4,7 +4,7 @@ data "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "pool" {
-  name     = "${var.cluster_name}-pool-${var.pool_name}"
+  name     = "${var.pool_name}"
   location = "${var.location}"
   cluster  = "${data.google_container_cluster.primary.name}"
 

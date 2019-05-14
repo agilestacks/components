@@ -36,7 +36,7 @@ parameters:
       env:   COMPONENT_NAME
     - name:  version
       brief: Vault version
-      value: 1.1.0
+      value: 1.1.2
     - name:  image.repository
       value: vault
     - name:  image.pullPolicy
