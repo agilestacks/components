@@ -29,7 +29,7 @@ parameters:
     - name: region
 
 outputs:
-  - name: component.portworx.lighthouseUrl
+  - name: component.portworx.url
     value: ${component.ingress.protocol}://${component.portworx.ingress.urlPrefix}.${component.ingress.ssoFqdn}
 
 templates:
