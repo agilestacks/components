@@ -77,7 +77,7 @@ patch:
 	-$(oc) patch storageclass gp2 -p '{"metadata": {"annotations": {"storageclass.beta.kubernetes.io/is-default-class": "false"}}}'
 
 storage:
-	$(kubectl) apply -f storage-class.yaml
+	$(oc) apply -f storage-class.yaml
 .PHONY: storage
 
 token:
