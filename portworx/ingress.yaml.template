@@ -2,12 +2,12 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: px-ingress
-  namespace: ${component.portworx.namespace}
+  namespace: kube-system
   annotations:
     agilestacks.com/stack-component: portworx
 spec:
   rules:
-  - host: ${component.portworx.lighthouseUrl}
+  - host: ${component.portworx.ingress.urlPrefix}.${component.ingress.ssoFqdn}
     http:
       paths:
       - path: /

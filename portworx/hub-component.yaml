@@ -11,10 +11,10 @@ requires:
   - kubernetes
 
 parameters:
-  - name: component.ingress.ssoUrlPrefix
+  - name: component.ingress.ssoFqdn
   - name: component.ingress.protocol
-  - name: component.portworx.lighthouseUrl
-    value: px.${dns.domain}
+  - name: component.portworx.ingress.urlPrefix
+    value: px
   - name: component.portworx.namespace
     brief: Kubernetes namespace to install into
     value: kube-system
@@ -30,7 +30,7 @@ parameters:
 
 outputs:
   - name: component.portworx.lighthouseUrl
-    value: ${component.ingress.protocol}://${component.portworx.lighthouseUrl}
+    value: ${component.ingress.protocol}://${component.portworx.ingress.urlPrefix}.${component.ingress.ssoFqdn}
 
 templates:
   files:
