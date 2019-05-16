@@ -45,7 +45,8 @@ serviceAccount:
   name:
 
 # Optional additional arguments
-extraArgs: []
+extraArgs:
+  - --dns01-self-check-nameservers="8.8.8.8:53"
   # Use this flag to set a namespace that cert-manager will use to store
   # supporting resources required for each ClusterIssuer (default is kube-system)
   # - --cluster-resource-namespace=kube-system
