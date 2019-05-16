@@ -60,7 +60,7 @@ STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
 else ifeq ($(CLOUD_KIND),azure)
 STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$${STATE_BUCKET//./}" \
 				-backend-config="container_name=$(STATE_CONTAINER)" \
-				-backend-config="resource_group_name=$(TF_VAR_resource_group_name)" \
+				-backend-config="resource_group_name=$(TF_VAR_azure_resource_group_name)" \
 				-backend-config="key=$(DOMAIN_NAME)/$(TF_VAR_component)/terraform.tfstate"
 else
 	$(error cloud.kind / CLOUD_KIND must be one of: aws, gcp, hybrid, azure)
