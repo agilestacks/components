@@ -45,8 +45,13 @@ variable "acl" {
   default = "private"
 }
 
+locals {
+  bucket = "${replace(lower("${var.name}"), ".", "-")}"
+}
+
+
 resource "aws_s3_bucket" "main" {
-    bucket = "${var.name}"
+    bucket = "${local.bucket}"
 
     acl = "${var.acl}"
 
