@@ -45,6 +45,15 @@ parameters:
     empty: allow
     env: TF_VAR_project
 
+  - name: cloud.azureClientId
+    empty: allow
+  - name: cloud.azureTenantId
+    empty: allow
+  - name: cloud.azureClientSecret
+    empty: allow
+  - name: cloud.azureSubscriptionId
+    empty: allow
+
   - name: component.ingress
     parameters:
     - name: urlPrefix
