@@ -1,0 +1,64 @@
+---
+version: 1
+kind: component
+meta:
+  name: cloudsql
+  brief: GCP CloudSQL component
+  source:
+    dir: ../../components/cloudsql
+
+requires:
+- gcp
+provides:
+- postgresql
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: cloud.gcpProjectId
+  env: TF_VAR_project
+- name: cloud.region
+  env: TF_VAR_region
+- name: cloud.network.name
+  env: TF_VAR_network
+- name: component.postgresql
+  parameters:
+  - name: name
+    value: ${hub.componentName}
+    env: COMPONENT_NAME
+  - name: cloudsql.name
+    value: ${dns.name}-${hub.componentName}
+    env: TF_VAR_name
+  - name: cloudsql.databaseVersion
+    value: POSTGRES_9_6
+    env: TF_VAR_database_version
+  - name: cloudsql.tier
+    value: db-f1-micro
+    env: TF_VAR_tier
+  - name: cloudsql.diskSize
+    value: 10
+    env: TF_VAR_disk_size
+  - name: database
+    value: agilestacks
+    env: TF_VAR_database_name
+  - name: user
+    value: postgres
+    env: TF_VAR_database_username
+  - name: password
+    env: TF_VAR_database_password
+- name: terraform.bucket
+  parameters:
+  - name: name
+    env: STATE_BUCKET
+  - name: region
+    env: STATE_REGION
+
+outputs:
+- name: component.postgresql.cloudsql.connection
+  fromTfVar: connection
+- name: component.postgresql.host
+  fromTfVar: host
+- name: component.postgresql.port
+  value: 5432
+- name: component.postgresql.database
+- name: component.postgresql.user
