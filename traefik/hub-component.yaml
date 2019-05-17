@@ -20,10 +20,9 @@ lifecycle:
     - undeploy
     - upgrade
   readyConditions:
-    - dns: ${component.ingress.ssoFqdn}
+    - pauseSeconds: 30
+      dns: ${component.ingress.ssoFqdn}
       url: ${component.ingress.protocol}://${component.ingress.ssoFqdn}
-    - dns: auth.${dns.domain}
-      url: ${component.ingress.protocol}://auth.${dns.domain}
 
 parameters:
   - name: terraform.bucket.name
