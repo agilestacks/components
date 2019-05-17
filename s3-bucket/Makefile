@@ -51,7 +51,7 @@ destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
 import:
-	-$(terraform) import $(TF_CLI_ARGS) aws_s3_bucket.main $(TF_VAR_name)
+	-$(terraform) import $(TF_CLI_ARGS) aws_s3_bucket.main $$(echo $(TF_VAR_name) | sed -e 's/\./-/g')
 
 clean:
 	rm -rf .terraform
