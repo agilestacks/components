@@ -46,7 +46,7 @@ variable "acl" {
 }
 
 locals {
-  bucket = "${replace(lower("${var.name}"), ".", "-")}"
+  bucket = "${replace(lower(var.name), ".", "-")}"
 }
 
 
@@ -89,6 +89,7 @@ output "domain" {
 output "region" {
   value = "${aws_s3_bucket.main.region}"
 }
+
 output "console_url" {
   value = "https://s3.console.aws.amazon.com/s3/buckets/${aws_s3_bucket.main.bucket}/"
 }
