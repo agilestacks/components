@@ -45,7 +45,7 @@ destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
 import:
-	-$(terraform) import $(TF_CLI_ARGS) google_filestore_instance.main $(TF_VAR_name)
+	-$(terraform) import $(TF_CLI_ARGS) google_filestore_instance.main $(TF_VAR_project)/$(TF_VAR_zone)/$(TF_VAR_name)
 
 clean:
 	rm -rf .terraform
