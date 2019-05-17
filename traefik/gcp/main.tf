@@ -1,15 +1,15 @@
 terraform {
-  required_version = ">= 0.11.3"
-  backend          "gcs"            {}
+  required_version = ">= 0.11.10"
+  backend "gcs" {}
 }
 
 provider "google" {
-  version = "2.5.0"
+  version = "2.6.0"
   project = "${var.project}"
 }
 
 provider "kubernetes" {
-  version        = "1.3.0"
+  version        = "1.6.2"
   config_context = "${var.kubeconfig_context}"
 }
 
