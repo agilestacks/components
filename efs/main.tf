@@ -1,10 +1,10 @@
 terraform {
-  required_version = ">= 0.11.3"
-  backend          "s3"             {}
+  required_version = ">= 0.11.10"
+  backend "s3" {}
 }
 
 provider "aws" {
-  version = "1.60.0"
+  version = "2.11.0"
 }
 
 data "aws_region" "current" {}
@@ -17,9 +17,8 @@ variable "name" {
   type = "string"
 }
 
-variable "performance_mode" {
-  type    = "string"
-  default = "generalPurpose"
+variable "vpc_id" {
+  type = "string"
 }
 
 variable "subnet" {
@@ -28,6 +27,32 @@ variable "subnet" {
 
 variable "sgs" {
   type = "string"
+}
+
+variable "performance_mode" {
+  type    = "string"
+  default = "generalPurpose"
+}
+
+variable "provisioned_throughput" {
+  type    = "string"
+  default = "0"
+}
+
+
+resource "aws_security_group" "efs" {
+  count = "${var.sgs == "" ? 1 : 0}"
+
+  name        = "${var.name}-inbound-nfs"
+  description = "Allow inbound NFS traffic"
+  vpc_id      = "${var.vpc_id}"
+
+  ingress {
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_efs_file_system" "main" {
@@ -41,12 +66,14 @@ resource "aws_efs_file_system" "main" {
   }
 
   performance_mode = "${var.performance_mode}"
+  throughput_mode = "${var.provisioned_throughput > 0 ? "provisioned" : "bursting"}"
+  provisioned_throughput_in_mibps = "${var.provisioned_throughput}"
 }
 
 resource "aws_efs_mount_target" "main" {
   file_system_id  = "${aws_efs_file_system.main.id}"
   subnet_id       = "${var.subnet}"
-  security_groups = ["${split(",", var.sgs)}"]
+  security_groups = ["${concat(aws_security_group.efs.*.id, split(",", var.sgs))}"]
 }
 
 data "aws_subnet" "mount_target" {

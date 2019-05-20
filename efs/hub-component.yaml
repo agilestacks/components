@@ -15,12 +15,15 @@ provides:
 parameters:
 - name: kubernetes.flavor
   empty: allow
-  env: KUBE_FLAVOR 
+  env: KUBE_FLAVOR
 - name: component.efs
   parameters:
   - name: name
     value: ${dns.domain}
     env: COMPONENT_NAME
+  - name: vpc
+    value: ${cloud.vpc.id}
+    env: TF_VAR_vpc_id
   - name: subnet
     value: ${cloud.vpc.worker.subnet.id}
     env: TF_VAR_subnet
@@ -31,16 +34,13 @@ parameters:
   - name: performanceMode
     value: generalPurpose    # maxIO
     env: TF_VAR_performance_mode
-  - name: vpc
-    value: ${cloud.vpc.id}
-    env: TF_VAR_vpc_id  
+  - name: provisionedThroughput
+    value: 0
+    env: TF_VAR_provisioned_throughput
 - name: cloud.region
   env: AWS_DEFAULT_REGION
 - name: dns.domain
   env: DOMAIN_NAME
-- name: bin.terraform
-  value: terraform-v0.11
-  env: terraform
 - name: terraform.bucket
   parameters:
   - name: name
