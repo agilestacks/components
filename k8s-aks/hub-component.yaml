@@ -21,43 +21,51 @@ lifecycle:
       url: https://${kubernetes.api.endpoint}
 
 parameters:
-  - name: kubernetes.flavor
-    value: k8s-aks
-  - name: cloud.kind
-    value: azure
+  - name: kubernetes.aks.cluster
+    env: CLUSTER_NAME
+    value: ${dns.name}
   - name: dns.domain
     env: DOMAIN_NAME
   - name: cloud.region
     env: TF_VAR_location
-  - name: cloud.aksName
-    env: TF_VAR_cluster_name
-  - name: cloud.resourceGroup
-    env: TF_VAR_resource_group_name
+
+  - name: component.kubernetes
+    parameters:
+    - name: serviceaccount
+      value: asi
+      env: SERVICE_ACCOUNT
+    - name: aks
+      parameters:
+      - name: aksResourceGroupName
+        env: TF_VAR_aks_resource_group_name
 
   - name: terraform.bucket.name
     env: STATE_BUCKET
   - name: terraform.bucket.region
     env: STATE_REGION
- 
+  - name: cloud.azureResourceGroupName
+    env: CLOUD_RESOURCE_GROUP
+
 
 outputs:
   - name: cloud.kind
+    value: azure
+  - name: kubernetes.flavor
+    value: aks
   - name: cloud.region
+  - name: cloud.azureResourceGroupName
   - name: dns.domain
   - name: dns.name
     fromTfVar: dns_name
   - name: dns.baseDomain
     fromTfVar: dns_base_domain
-  - name: kubernetes.flavor
   - name: kubernetes.api.host
     fromTfVar: fqdn
   - name: kubernetes.api.port
     value: 443
   - name: kubernetes.api.endpoint
-    value: ${kubernetes.api.host}:${kubernetes.api.port} 
+    value: ${kubernetes.api.host}:${kubernetes.api.port}
   - name: kubernetes.api.caCert
     fromTfVar: api_ca_crt
-  - name: kubernetes.api.clientCert
-    fromTfVar: api_client_crt
-  - name: kubernetes.api.clientKey
-    fromTfVar: api_client_key
+  - name: kubernetes.api.token
+    fromTfVar: token
