@@ -13,7 +13,7 @@ provider "kubernetes" {
 }
 
 provider "null" {
-  version = "1.0.0"
+  version = "2.1.2"
 }
 
 data "aws_region" "current" {}
