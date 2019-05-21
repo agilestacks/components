@@ -115,6 +115,12 @@ spec:
         - name: jnlp
           containerPort: 50000
         volumeMounts:
+        - name: workspace-volume
+          mountPath: /var/jenkins_home/workspace
+          readOnly: false
+        - name: jobs-volume
+          mountPath: /var/jenkins_home/jobs
+          readOnly: false
         - name: init-groovy-scripts
           mountPath: /usr/share/jenkins/ref/init.groovy.d
         - name: dot-groovy
@@ -136,6 +142,12 @@ spec:
             port: 8080
 
       volumes:
+        - name: workspace-volume
+          persistentVolumeClaim:
+            claimName: workspace-volume
+        - name: jobs-volume
+          persistentVolumeClaim:
+            claimName: jobs-volume
         - name: init-scripts
           configMap:
             name: init-scripts
