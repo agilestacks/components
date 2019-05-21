@@ -1,0 +1,14 @@
+{% set name = "bucket-" + properties["domain"]|replace(".", "-") %}
+
+resources:
+- type: storage.v1.bucket
+  name: {{ name }}
+  properties:
+    predefinedAcl: projectPrivate
+    projection: full
+    location: {{ properties["location"] }}
+    storageClass: STANDARD
+
+outputs:
+- name: name
+  value: {{ name }}

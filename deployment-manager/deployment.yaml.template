@@ -1,0 +1,13 @@
+imports:
+- path: bucket.jinja
+
+resources:
+- name: bucket
+  type: bucket.jinja
+  properties:
+    domain: ${dns.domain}
+    location: ${cloud.region}
+
+outputs:
+- name: name
+  value: $(ref.bucket.name)
