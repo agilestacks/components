@@ -50,8 +50,6 @@ parameters:
   env: AWS_DEFAULT_REGION
 - name: dns.domain
   env: DOMAIN_NAME
-- name: nfs.server
-  brief: NFS server for NFS volumes
 - name: terraform.bucket.name
   env: STATE_BUCKET
 - name: terraform.bucket.region
