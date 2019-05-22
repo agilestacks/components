@@ -22,9 +22,6 @@ parameters:
   env: AWS_DEFAULT_REGION
 - name: dns.domain
   env:  DOMAIN_NAME
-- name: bin.terraform
-  value: terraform-v0.11
-  env: terraform
 - name: terraform.bucket
   parameters:
   - name: name

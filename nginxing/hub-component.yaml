@@ -52,9 +52,6 @@ parameters:
     - name:  chart.version
       value: 0.13.1
       env:   CHART_VERSION
-    - name:  bin.terraform
-      value: terraform-v0.11
-      env:   terraform
 
 outputs:
 - name: component.nginxing.fqdn
