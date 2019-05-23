@@ -108,7 +108,7 @@ spec:
       port: 8099
       targetPort: 8099
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -378,7 +378,7 @@ kind: Namespace
 metadata:
   name: portworx
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: portworx
@@ -414,14 +414,14 @@ spec:
           image: portworx/oci-monitor:2.0.3.4
           imagePullPolicy: Always
           args:
-            ["-c", "px-cluster-internalkvdb-835ac810-fc8e-4a85-aa7f-052bb5ba4cf9", "-s", "type=gp2,size=50", "-secret_type", "k8s", "-metadata", "type=gp2,size=64", "-b", 
+            ["-c", "px-cluster-internalkvdb-835ac810-fc8e-4a85-aa7f-052bb5ba4cf9", "-s", "type=gp2,size=50", "-secret_type", "k8s", "-metadata", "type=gp2,size=64", "-b",
              "-x", "kubernetes"]
           env:
             - name: "AUTO_NODE_RECOVERY_TIMEOUT_IN_SECS"
               value: "1500"
             - name: "PX_TEMPLATE_VERSION"
               value: "v4"
-            
+
           livenessProbe:
             periodSeconds: 30
             initialDelaySeconds: 840 # allow image pull in slow networks

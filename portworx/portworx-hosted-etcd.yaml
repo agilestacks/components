@@ -108,7 +108,7 @@ spec:
       port: 8099
       targetPort: 8099
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -403,7 +403,7 @@ roleRef:
   name: px-role
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: portworx
@@ -439,14 +439,14 @@ spec:
           image: portworx/oci-monitor:2.0.3.4
           imagePullPolicy: Always
           args:
-            ["-k", "etcd:http://px-etcd1.portworx.com:2379,etcd:http://px-etcd2.portworx.com:2379,etcd:http://px-etcd3.portworx.com:2379", "-c", "px-cluster-1bf91b97-a82c-452b-94cf-3720c2173e93", "-s", "type=gp2,size=50", "-secret_type", "k8s", 
+            ["-k", "etcd:http://px-etcd1.portworx.com:2379,etcd:http://px-etcd2.portworx.com:2379,etcd:http://px-etcd3.portworx.com:2379", "-c", "px-cluster-1bf91b97-a82c-452b-94cf-3720c2173e93", "-s", "type=gp2,size=50", "-secret_type", "k8s",
              "-x", "kubernetes"]
           env:
             - name: "AUTO_NODE_RECOVERY_TIMEOUT_IN_SECS"
               value: "1500"
             - name: "PX_TEMPLATE_VERSION"
               value: "v4"
-            
+
           livenessProbe:
             periodSeconds: 30
             initialDelaySeconds: 840 # allow image pull in slow networks

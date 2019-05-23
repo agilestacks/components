@@ -1,5 +1,5 @@
 {{- if default "" .Values.externalUrl }}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "gitlab-ce.fullname" . }}
@@ -18,7 +18,7 @@ spec:
       initContainers:
       - name: init-gitlab-db
         image: postgres:9.6
-        command: 
+        command:
         - "sh"
         - "-c"
         - psql -c "create database {{ .Values.gitlab.database }};" && psql -c "create user {{ .Values.gitlab.databaseUser }} with unencrypted password '{{ .Values.gitlab.databasePassword }}';" &&  psql -c "grant all privileges on database {{ .Values.gitlab.database }} to {{ .Values.gitlab.databaseUser }};" || true
@@ -39,7 +39,7 @@ spec:
           value: {{ .Values.postgresql.postgresDatabase }}
       - name: add-gitlab-extension
         image: postgres:9.6
-        command: 
+        command:
         - "sh"
         - "-c"
         - psql -c 'CREATE EXTENSION IF NOT EXISTS "pg_trgm"'
