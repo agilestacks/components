@@ -137,6 +137,8 @@ parameters:
       env: CHART_VERSION
 
 outputs:
+  - name: component.bucket.kind
+    value: minio
   - name: component.minio.service.host
     brief: Bucket endpoint for reference by other service
     value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local
