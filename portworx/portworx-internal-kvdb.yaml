@@ -118,6 +118,10 @@ metadata:
   name: stork
   namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      name: stork
+      tier: control-plane
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -245,6 +249,10 @@ metadata:
   name: stork-scheduler
   namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      component: scheduler
+      tier: control-plane
   replicas: 3
   template:
     metadata:
@@ -386,6 +394,9 @@ metadata:
   annotations:
     portworx.com/install-source: "https://install.portworx.com/?mc=false&kbver=1.13.5&b=true&s=%22type%3Dgp2%2Csize%3D50%22&md=type%3Dgp2%2Csize%3D64&c=px-cluster-internalkvdb-835ac810-fc8e-4a85-aa7f-052bb5ba4cf9&stork=true&lh=true&st=k8s"
 spec:
+  selector:
+    matchLabels:
+      name: portworx
   minReadySeconds: 0
   updateStrategy:
     type: RollingUpdate
@@ -552,7 +563,7 @@ spec:
   selector:
     tier: px-web-console
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: px-lighthouse

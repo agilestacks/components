@@ -10,6 +10,10 @@ metadata:
     release: {{ .Release.Name }}
   name: {{ template "exporter-node.fullname" . }}
 spec:
+  selector:
+    matchLabels:
+      app: {{ template "name" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
       labels:

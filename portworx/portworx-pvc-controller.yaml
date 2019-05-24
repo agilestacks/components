@@ -72,6 +72,10 @@ metadata:
   name: portworx-pvc-controller
   namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      name: portworx-pvc-controller
+      tier: control-plane
   replicas: 3
   strategy:
     rollingUpdate:
