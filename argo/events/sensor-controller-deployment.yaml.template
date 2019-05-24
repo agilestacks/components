@@ -5,6 +5,9 @@ metadata:
   name: sensor-controller
   namespace: ${component.argo.namespace}
 spec:
+  selector:
+    matchLabels:
+      app: sensor-controller
   replicas: 1
   template:
     metadata:
