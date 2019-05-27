@@ -84,6 +84,7 @@ data "ignition_config" "main" {
 }
 
 data "aws_ami" "coreos_ami" {
+  owners      = ["595879546273"]
   most_recent = true
 
   filter {
@@ -99,11 +100,6 @@ data "aws_ami" "coreos_ami" {
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
-  }
-
-  filter {
-    name   = "owner-id"
-    values = ["595879546273"]
   }
 }
 
