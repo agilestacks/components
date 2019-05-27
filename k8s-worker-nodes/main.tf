@@ -87,6 +87,8 @@ data "aws_ami" "coreos_ami" {
   owners      = ["595879546273"]
   most_recent = true
 
+  owners = ["595879546273"]
+
   filter {
     name   = "name"
     values = ["CoreOS-${var.container_linux_channel}-${local.instance_gpu == "true" ? format("%s-%s",var.container_linux_version_gpu,"*") : "*"}"]
@@ -100,6 +102,11 @@ data "aws_ami" "coreos_ami" {
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
+  }
+
+  filter {
+    name   = "owner-id"
+    values = ["595879546273"]
   }
 }
 
