@@ -78,11 +78,6 @@ data "aws_ami" "eks_worker" {
 
   most_recent = true
   owners      = ["602401143452"] # Amazon
-
-  filter {
-    name   = "owner-id"
-    values = ["602401143452"]
-  }
 }
 
 # https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2019-02-11/amazon-eks-nodegroup.yaml
