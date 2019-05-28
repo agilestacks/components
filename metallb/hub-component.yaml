@@ -1,0 +1,34 @@
+---
+version: 1
+kind: component
+meta:
+  name: metallb
+  brief: load-balancer for bare metal Kubernetes clusters
+  source:
+      dir: ../../components/metallb
+
+requires:
+  - kubernetes
+
+parameters:
+  - name: component.metallb.namespace
+    brief: kubernetes namespace where MetalLB will be installed
+    value: metallb-system
+  - name: component.metallb.controllerImage
+    brief: container image to use for the MetalLB "controller"
+    value: metallb/controller
+  - name: component.metallb.speakerImage
+    brief: container image to use for the MetalLB "speakers"
+    value: metallb/speaker
+  - name: component.metallb.version
+    brief: version of MetalLB to deploy
+    value: v0.7.3
+  - name: component.metallb.addressPoolName
+    brief: name of the address pool being defined
+    value: default
+  - name: component.metallb.addressPool
+    brief: list of addresses and ranges to be managed by MetalLB as VIPs
+
+templates:
+  files:
+    - '*.yaml.template'
