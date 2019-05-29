@@ -25,7 +25,7 @@ parameters:
     value: jenkins
     env: NAMESPACE
   - name: image
-    value: docker.io/agilestacks/jenkins:2.150.3
+    value: docker.io/agilestacks/jenkins:20190529-73d40df
   - name: admin.user
     value: admin
   - name: admin.password
