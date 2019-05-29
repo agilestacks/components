@@ -14,6 +14,9 @@ deploy:
 	- $(kubectl) create configmap script-approvals --from-file=approvals/
 	- $(kubectl) label --overwrite configmap/init-scripts provider=agilestacks.com project=jenkins qualifier=init-scripts
 	- $(kubectl) label --overwrite configmap/script-approvals provider=agilestacks.com project=jenkins qualifier=script-approvals
+ifneq ($(BUCKET_KIND),)	
+	- $(kubectl) apply -f config-storage.yaml
+endif
 	- $(kubectl) apply -f secrets.yaml
 	- $(kubectl) apply -f config.yaml
 	- $(kubectl) apply -f volume-claims.yaml
@@ -33,6 +36,9 @@ undeploy:
 	- $(kubectl) delete -f service.yaml
 	- $(kubectl) delete -f secrets.yaml
 	- $(kubectl) delete -f config.yaml
+ifneq ($(BUCKET_KIND),)	
+	- $(kubectl) delete -f config-storage.yaml	
+endif
 	- $(kubectl) delete configmap script-approvals
 	- $(kubectl) delete configmap init-scripts
 	- $(MAKE) wait_shutdown

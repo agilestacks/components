@@ -44,7 +44,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: GIT_REMOTE
-          value: https://github.com/agilestacks/jenkins.git
+          value: ${component.jenkins.initGroovy.gitRepo}
         - name: BRANCH
           value: master
         - name: SUBPATH
@@ -63,7 +63,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: GIT_REMOTE
-          value: https://github.com/agilestacks/jenkins.git
+          value: ${component.jenkins.initGroovy.gitRepo}
         - name: BRANCH
           value: master
         - name: SUBPATH

@@ -54,6 +54,14 @@ parameters:
   env: STATE_BUCKET
 - name: terraform.bucket.region
   env: STATE_REGION
+- name: component.bucket
+  parameters:
+  - name: kind
+    empty: allow
+    env: BUCKET_KIND
+  - name: name
+    empty: allow
+    env: BUCKET_NAME
 
 outputs:
 - name:  component.jenkins.serviceaccount.user
