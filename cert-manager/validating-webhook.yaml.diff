@@ -1,0 +1,23 @@
+--- charts/cert-manager/webhook/templates/validating-webhook.yaml~	2019-05-29 22:45:09.000000000 +0300
++++ charts/cert-manager/webhook/templates/validating-webhook.yaml	2019-05-29 22:46:13.000000000 +0300
+@@ -39,6 +39,7 @@
+         name: kubernetes
+         namespace: default
+         path: /apis/admission.certmanager.k8s.io/v1beta1/certificates
++      caBundle: ""
+   - name: issuers.admission.certmanager.k8s.io
+     namespaceSelector:
+       matchExpressions:
+@@ -66,6 +67,7 @@
+         name: kubernetes
+         namespace: default
+         path: /apis/admission.certmanager.k8s.io/v1beta1/issuers
++      caBundle: ""
+   - name: clusterissuers.admission.certmanager.k8s.io
+     namespaceSelector:
+       matchExpressions:
+@@ -93,3 +95,4 @@
+         name: kubernetes
+         namespace: default
+         path: /apis/admission.certmanager.k8s.io/v1beta1/clusterissuers
++      caBundle: ""

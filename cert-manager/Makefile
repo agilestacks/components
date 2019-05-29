@@ -24,12 +24,14 @@ init:
 	@mkdir -p $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
 
+# https://github.com/jetstack/cert-manager/pull/1694
 fetch:
 	$(helm) repo add jetstack https://charts.jetstack.io
 	$(helm) fetch \
 		--destination charts \
 		--untar $(HELM_CHART) \
 		--version $(CHART_VERSION)
+	patch -i validating-webhook.yaml.diff charts/cert-manager/charts/webhook/templates/validating-webhook.yaml
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
