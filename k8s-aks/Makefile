@@ -71,8 +71,8 @@ createsa: context
 .PHONY: createsa
 
 deletesa: context
-	$(kubectl) delete clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding
-	$(kubectl) delete -n default serviceaccount $(SERVICE_ACCOUNT)
+	-$(kubectl) delete clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding
+	-$(kubectl) delete -n default serviceaccount $(SERVICE_ACCOUNT)
 .PHONY: deletesa
 
 token:
