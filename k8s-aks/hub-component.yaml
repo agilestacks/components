@@ -38,6 +38,7 @@ parameters:
       parameters:
       - name: aksResourceGroupName
         env: TF_VAR_aks_resource_group_name
+        value: ${cloud.azureResourceGroupName}
 
   - name: terraform.bucket.name
     env: STATE_BUCKET
