@@ -39,13 +39,8 @@ data "aws_route53_zone" "main" {
   name = "${var.domain}"
 }
 
-module "drop_elb" {
-  source = "github.com/agilestacks/terraform-modules.git//r53"
-  elb    = "${local.elb}"
-}
-
 resource "aws_route53_record" "main" {
-  r53_zone_id = "${data.aws_route53_zone.main.zone_id}"
+  zone_id = "${data.aws_route53_zone.main.zone_id}"
   name    = "${var.record}"
   type    = "CNAME"
   ttl     = "30"
