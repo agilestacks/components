@@ -38,7 +38,7 @@ parameters:
       env:   COMPONENT_NAME
     - name:  operator.version
       brief: etcd-operator version
-      value: v0.9.5
+      value: v0.9.4.1
     - name:  cluster.enabled
       brief: Start etcd cluster
       value: true
