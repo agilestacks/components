@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 .DEFAULT_GOAL := deploy
 
 DOMAIN_NAME    ?= superaks.azure.dev.superhub.io
