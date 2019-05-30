@@ -134,5 +134,5 @@ harbor/hybrid/minio/values-harbor.yaml
 cert-manager/charts/
 storage-class/*.yaml
 deployment-manager/deployment.yaml
-harbor/aws/acm/acm-annotations.yaml
+harbor/aws/acm/nginx-service.yaml
 harbor/aws/storage-class.yaml
