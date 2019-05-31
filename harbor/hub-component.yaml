@@ -87,7 +87,7 @@ parameters:
 
 outputs:
 - name: component.docker.registry.url
-  brief: Name of the pull secret to access harbor
+  brief: Harbor URL
   fromTfVar: harbor_url
 - name: component.docker.registry.pullSecret.name
   brief: Name of the pull secret to access harbor
@@ -98,22 +98,14 @@ outputs:
 - name: component.harbor.url
   brief: Harbor URL
   fromTfVar: harbor_url
+# TODO rename?
 - name: component.docker.registry.pullSecret
   brief: Name of the pull secret to access harbor
   fromTfVar: pull_secret
-- name: component.harbor.url
-  brief: Harbor URL
-  fromTfVar: harbor_url
 
 templates:
   files:
   - "aws/*.template"
-  - "aws/acm/*.template"
-  - "aws/letsencrypt/*.template"
-  - "aws/local/*.template"
-  - "aws/minio/*.template"
-  - "aws/minio/*.template"
-  - "aws/s3/*.template"
-  - "aws/s3/*.template"
-  - "hybrid/local/*.template"
-  - "hybrid/minio/*.template"
+  - "aws/*/*.template"
+  - "hybrid/*.template"
+  - "hybrid/*/*.template"
