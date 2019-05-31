@@ -8,9 +8,9 @@ meta:
     dir: ../../components/ecr
 
 requires:
-  - aws
+- aws
 provides:
-  - ecr
+- ecr
 
 parameters:
 - name: component.ecr
@@ -30,14 +30,11 @@ parameters:
     env: STATE_REGION
 
 outputs:
+- name: component.ecr.image
+  brief: Docker image of this component
+  fromTfVar: repository_url
 - name: component.docker.registry.kind
   value: ecr
 - name: component.docker.image
   brief: Docker image of this component
-  fromTfVar: repository_url
-- name: component.ecr.image
-  brief: Docker image of this component
-  fromTfVar: repository_url
-- name: component.ecr.registry_id
-  brief: ECR registry id
-  fromTfVar: registry_id
+  value: ${component.ecr.image}
