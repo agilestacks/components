@@ -15,15 +15,14 @@ TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
 TIMEOUT     ?= 600
 
+DRYRUN := $(shell $(kubectl) patch service $(COMPONENT_NAME) --patch "$$(cat nginx-service.yaml)" --dry-run)
+ifeq (,$(findstring "no change","$(DRYRUN)"))
 patch_service:
 	$(kubectl) patch service $(COMPONENT_NAME) --patch "$$(cat nginx-service.yaml)"
 	$(kubectl) get service $(COMPONENT_NAME) -o json \
 		| $(jq) 'del(.status, .metadata.uid, .metadata.resourceVersion, .metadata.selfLink, .metadata.creationTimestamp, .metadata.annotations."kubectl.kubernetes.io/last-applied-configuration")' \
 		| $(kubectl) replace --wait --force -f -
 
-
-DRYRUN := $(shell $(kubectl) patch service $(COMPONENT_NAME) --patch "$$(cat nginx-service.yaml)" --dry-run)
-ifeq (,$(findstring "no change","$(DRYRUN)"))
 DEPLOY_PREREQS += patch_service
 endif
 DEPLOY_PREREQS += wait_elb init plan apply $(PULL_SECRET)
