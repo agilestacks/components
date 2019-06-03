@@ -32,7 +32,8 @@ purge:
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
-	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
+#	rely on the default storage class provided by platform
+# 	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART) \
 			--name $(COMPONENT_NAME) \
