@@ -3,3 +3,7 @@ acme:
     name: azure
     azure:
       AZURE_RESOURCE_GROUP: "${cloud.azureResourceGroupName}"
+      AZURE_CLIENT_ID: "${cloud.azureClientId}"
+      AZURE_CLIENT_SECRET: "${cloud.azureClientSecret}"
+      AZURE_SUBSCRIPTION_ID: "${cloud.azureSubscriptionId}"
+      AZURE_TENANT_ID: ${cloud.azureTenantId}

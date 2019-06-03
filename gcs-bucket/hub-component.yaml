@@ -1,0 +1,39 @@
+---
+version: 1
+kind: component
+meta:
+  name: gcs-bucket
+  brief: GCS bucket component
+  source:
+    dir: ../../components/gcs-bucket
+
+requires:
+- gcp
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: cloud.gcpProjectId
+  env: TF_VAR_project
+- name: component.gcs
+  parameters:
+  - name: name
+    value: bucket.${dns.domain}
+    env: COMPONENT_NAME
+  - name: location
+    value: ${cloud.region}
+    env: TF_VAR_location
+- name: terraform.bucket
+  parameters:
+  - name: name
+    env: STATE_BUCKET
+  - name: region
+    env: STATE_REGION
+
+outputs:
+- name: component.gcs.bucket
+  fromTfVar: bucket
+- name: component.gcs.url
+  fromTfVar: url
+- name: component.gcs.consoleUrl
+  value: https://console.cloud.google.com/storage/browser/${component.gcs.bucket}/?project=${cloud.gcpProjectId}

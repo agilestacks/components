@@ -3,7 +3,6 @@
 export DOMAIN_NAME ?= default
 export NAMESPACE   ?= jenkins
 
-VOLUME_TYPE ?= nfs
 TIMEOUT     ?= 600
 
 KUBECTL_ARGS := --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
@@ -15,20 +14,17 @@ deploy:
 	- $(kubectl) create configmap script-approvals --from-file=approvals/
 	- $(kubectl) label --overwrite configmap/init-scripts provider=agilestacks.com project=jenkins qualifier=init-scripts
 	- $(kubectl) label --overwrite configmap/script-approvals provider=agilestacks.com project=jenkins qualifier=script-approvals
-
-ifeq ($(VOLUME_TYPE),nfs)
-	$(kubectl) apply --force -f job-nfs-mkdirs.yaml
-	$(MAKE) wait_complete
+ifneq ($(BUCKET_KIND),)	
+	- $(kubectl) apply -f config-storage.yaml
 endif
-	$(kubectl) apply -f secrets.yaml
-	$(kubectl) apply -f config.yaml
-	$(kubectl) apply -f volume-$(VOLUME_TYPE).yaml
-	$(kubectl) apply -f volume-claims.yaml
-	$(kubectl) apply -f service.yaml
-	$(kubectl) apply -f ingress.yaml
-	$(kubectl) apply -f rbac.yaml
-	$(kubectl) apply -f rbac-operator.yaml
-	$(kubectl) apply -f deployment.yaml
+	- $(kubectl) apply -f secrets.yaml
+	- $(kubectl) apply -f config.yaml
+	- $(kubectl) apply -f volume-claims.yaml
+	- $(kubectl) apply -f service.yaml
+	- $(kubectl) apply -f ingress.yaml
+	- $(kubectl) apply -f rbac.yaml
+	- $(kubectl) apply -f rbac-operator.yaml
+	- $(kubectl) apply -f deployment.yaml
 	- $(MAKE) wait_up
 
 undeploy:
@@ -40,29 +36,12 @@ undeploy:
 	- $(kubectl) delete -f service.yaml
 	- $(kubectl) delete -f secrets.yaml
 	- $(kubectl) delete -f config.yaml
-	- $(kubectl) delete -f volume-$(VOLUME_TYPE).yaml
-ifeq ($(VOLUME_TYPE), nfs)
-	- $(kubectl) delete -f job-nfs-mkdirs.yaml
+ifneq ($(BUCKET_KIND),)	
+	- $(kubectl) delete -f config-storage.yaml	
 endif
 	- $(kubectl) delete configmap script-approvals
 	- $(kubectl) delete configmap init-scripts
 	- $(MAKE) wait_shutdown
-
-wait_complete:
-	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
-	$(eval get_job=$(kubectl) get --output=json -f job-nfs-mkdirs.yaml)
-	@ echo 'Waiting for job to finish'
-	@ while [ `date +%s` -le "$(timeout)" ]; do \
-		if [ `$(get_job) | jq -M '.status.succeeded or .status.failed'` == 'true' ]; then \
-			printf ' done\n---\n'; \
-			$(get_job) | jq .;\
-			test `$(get_job) | jq -M '.status.succeeded' | xargs` == "1" && exit 0; \
-		fi; \
-		printf "."; \
-		sleep 2; \
-	done; \
-	echo " ERROR timeout $(TIMEOUT)sec"; \
-	exit 1
 
 wait_up:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))

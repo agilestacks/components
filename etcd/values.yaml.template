@@ -42,7 +42,7 @@ etcdOperator:
   name: etcd-operator
   replicaCount: 1
   image:
-    repository: quay.io/coreos/etcd-operator
+    repository: agilestacks/etcd-operator
     tag: ${component.etcd.operator.version}
     pullPolicy: Always
   resources:
@@ -54,13 +54,27 @@ etcdOperator:
   ## additional command arguments go here; will be translated to `--key=value` form
   ## e.g., analytics: true
   commandArgs: {}
-
+## Configurable health checks against the /readyz endpoint that etcd-operator exposes
+  readinessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  livenessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
 # backup spec
 backupOperator:
   name: etcd-backup-operator
   replicaCount: 1
   image:
-    repository: quay.io/coreos/etcd-operator
+    repository: agilestacks/etcd-operator
     tag: ${component.etcd.operator.version}
     pullPolicy: Always
   resources:
@@ -83,7 +97,7 @@ restoreOperator:
   name: etcd-restore-operator
   replicaCount: 1
   image:
-    repository: quay.io/coreos/etcd-operator
+    repository: agilestacks/etcd-operator
     tag: ${component.etcd.operator.version}
     pullPolicy: Always
   port: 19999

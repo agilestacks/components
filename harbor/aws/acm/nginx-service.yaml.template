@@ -1,0 +1,21 @@
+metadata:
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "ssl"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "${component.acm.certificateArn}"
+    api.service.kubernetes.io/path: "${component.harbor.name}.svc.${dns.domain}"
+spec:
+  type: LoadBalancer
+  ports:
+  # People from Kubernetes decided to enable health checks on first port
+  # see: https://github.com/kubernetes/cloud-provider-aws/blob/8f6e1e3d2cfa20a0deac088b9c4022d433500369/pkg/cloudprovider/providers/aws/aws.go#L3606
+  # This doesn't go good with 301,302 return code as explained here:
+  #  https://aws.amazon.com/premiumsupport/knowledge-center/troubleshoot-classic-health-checks/
+  #  we need to ensure that first port goes to https
+  - name: https
+    port: 443
+    targetPort: 443
+  - name: http
+    port: 80
+    targetPort: 80

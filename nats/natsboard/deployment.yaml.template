@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name:      ${component.nats.name}-natsboard
@@ -11,6 +11,11 @@ spec:
   replicas: 1
   strategy:
     type: RollingUpdate
+  selector:
+    matchLabels:
+      provider:  agilestacks.com
+      component: ${component.nats.name}
+      app: ${component.nats.name}-natsboard
   template:
     metadata:
       labels:

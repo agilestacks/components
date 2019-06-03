@@ -1,10 +1,10 @@
 terraform {
   required_version = ">= 0.11.10"
-  backend "s3" {}
+  backend          "s3"             {}
 }
 
 provider "aws" {
-  version = "1.60.0"
+  version = "2.11.0"
 }
 
 provider "ignition" {
@@ -65,7 +65,6 @@ resource "aws_s3_bucket_object" "bootstrap_script" {
   acl          = "private"
 }
 
-
 data "ignition_config" "main" {
   append {
     source = "${format("s3://%s/%s",
@@ -74,7 +73,7 @@ data "ignition_config" "main" {
   }
 
   // conditional operator cannot be used with list values
-  arrays = ["${local.nvme[local.nvme_ndevices > 1 ? "raid" : "empty"]}"]
+  arrays      = ["${local.nvme[local.nvme_ndevices > 1 ? "raid" : "empty"]}"]
   filesystems = ["${local.nvme[local.instance_ephemeral_nvme ? "docker" : "empty"]}"]
 
   systemd = [
@@ -85,6 +84,8 @@ data "ignition_config" "main" {
 
 data "aws_ami" "coreos_ami" {
   most_recent = true
+
+  owners = ["595879546273"]
 
   filter {
     name   = "name"
@@ -99,11 +100,6 @@ data "aws_ami" "coreos_ami" {
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
-  }
-
-  filter {
-    name   = "owner-id"
-    values = ["595879546273"]
   }
 }
 

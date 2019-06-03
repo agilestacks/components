@@ -2,7 +2,7 @@
 
 dirname   := $(notdir $(abspath ..))
 registry  ?= docker.io
-version   ?= 2.150.3
+version   ?= $(shell git log -n 1 --pretty='format:%cd' --date=format:'%Y%m%d')-$(shell git rev-parse --short HEAD)
 image     ?= $(registry)/agilestacks/$(dirname):$(version)
 container ?= jenkins
 UC_DISABLED ?= true

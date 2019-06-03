@@ -20,10 +20,9 @@ lifecycle:
     - undeploy
     - upgrade
   readyConditions:
-    - dns: ${component.ingress.ssoFqdn}
+    - pauseSeconds: 30
+      dns: ${component.ingress.ssoFqdn}
       url: ${component.ingress.protocol}://${component.ingress.ssoFqdn}
-    - dns: auth.${dns.domain}
-      url: ${component.ingress.protocol}://auth.${dns.domain}
 
 parameters:
   - name: terraform.bucket.name
@@ -44,6 +43,15 @@ parameters:
   - name: cloud.gcpProjectId
     empty: allow
     env: TF_VAR_project
+
+  - name: cloud.azureClientId
+    empty: allow
+  - name: cloud.azureTenantId
+    empty: allow
+  - name: cloud.azureClientSecret
+    empty: allow
+  - name: cloud.azureSubscriptionId
+    empty: allow
 
   - name: component.ingress
     parameters:
@@ -148,9 +156,6 @@ parameters:
       env: CHART_VERSION
     - name: app.version
       value: 1.7.11
-    - name: bin.terraform
-      value: terraform-v0.11
-      env: terraform
     - name: kubernetes.nodeSelector
       value: '{}'
     - name: kubernetes.tolerations

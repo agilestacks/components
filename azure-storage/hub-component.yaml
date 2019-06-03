@@ -1,0 +1,65 @@
+---
+version: 1
+kind: component
+meta:
+  name: azure-storage
+  brief: Azure Storage account
+  source:
+    dir: ../../components/azure-storage
+
+requires:
+- azure
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: cloud.region
+  env: TF_VAR_azure_location
+- name: cloud.azureResourceGroupName
+  env: TF_VAR_azure_resource_group_name
+- name: cloud.azureClientId
+  env: TF_VAR_azure_client_id
+- name: cloud.azureClientSecret
+  env: TF_VAR_azure_client_secret
+- name: cloud.azureTenantId
+  env: TF_VAR_azure_tenant_id
+- name: cloud.azureSubscriptionId
+  env: TF_VAR_azure_subscription_id
+
+- name: component.azure-storage
+  parameters:
+  - name: name
+    brief: Component name
+    value: ${dns.domain}
+    env: COMPONENT_NAME
+  - name: containerName
+    value: blobs
+    env: TF_VAR_container_name
+
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.container
+  env: STATE_CONTAINER
+- name: terraform.bucket.region
+  env: STATE_REGION
+
+outputs:
+- name: component.azure-storage.bucket
+  fromTfVar: storage_account_name
+- name: component.azure-storage.container
+  fromTfVar: storage_container_name
+- name: component.azure-storage.region
+  fromTfVar: storage_account_region
+- name: component.azure-storage.endpoint
+  fromTfVar: storage_primary_blob_endpoint
+# - name: component.azure-storage.url
+#   brief: URL to the Azure portal
+#   value:
+- name: component.bucket.kind
+  value: azure-storage
+- name: component.bucket.name
+  value: ${component.azure-storage.bucket}/${component.azure-storage.container}
+- name: component.bucket.region
+  value: ${component.azure-storage.region}
+- name: component.bucket.endpoint
+  value: ${component.azure-storage.endpoint}

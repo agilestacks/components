@@ -1,13 +1,14 @@
-provider "azurerm" {
-  version = "~>1.5"
-}
-
 terraform {
+  required_version = ">= 0.11.10"
   backend "azurerm" {}
 }
 
+provider "azurerm" {
+  version = "1.29.0"
+}
+
 provider "kubernetes" {
-  version        = "1.3.0"
+  version        = "1.6.2"
   config_context = "${var.kubeconfig_context}"
 }
 

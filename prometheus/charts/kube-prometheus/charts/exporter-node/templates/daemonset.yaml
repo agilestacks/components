@@ -1,5 +1,5 @@
 {{- if .Values.enableDaemonSet }}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   labels:
@@ -10,6 +10,10 @@ metadata:
     release: {{ .Release.Name }}
   name: {{ template "exporter-node.fullname" . }}
 spec:
+  selector:
+    matchLabels:
+      app: {{ template "name" . }}
+      release: {{ .Release.Name }}
   template:
     metadata:
       labels:

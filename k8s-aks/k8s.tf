@@ -1,16 +1,6 @@
 data "azurerm_kubernetes_cluster" "k8s" {
   name                = "${var.cluster_name}"
-  resource_group_name = "${var.resource_group_name}"
-}
-
-resource "local_file" "client_key" {
-  content  = "${base64decode(data.azurerm_kubernetes_cluster.k8s.kube_config.0.client_key)}"
-  filename = "${path.cwd}/.terraform/${var.name}.${var.base_domain}/client_key.pem"
-}
-
-resource "local_file" "client_certificate" {
-  content  = "${base64decode(data.azurerm_kubernetes_cluster.k8s.kube_config.0.client_certificate)}"
-  filename = "${path.cwd}/.terraform/${var.name}.${var.base_domain}/client_certificate.pem"
+  resource_group_name = "${var.aks_resource_group_name}"
 }
 
 resource "local_file" "cluster_ca_certificate" {

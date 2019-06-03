@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= postgresql-rds
-DOMAIN_NAME    ?= dev.superhub.io
+DOMAIN_NAME    ?= test.dev.superhub.io
 
 STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1

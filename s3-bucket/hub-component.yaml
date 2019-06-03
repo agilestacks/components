@@ -35,3 +35,14 @@ outputs:
   fromTfVar: region
 - name: component.s3.endpoint
   fromTfVar: endpoint
+- name: component.s3.url
+  brief: URL to the AWS web console with bucket
+  fromTfVar: console_url
+- name: component.bucket.kind
+  value: s3
+- name: component.bucket.name
+  fromTfVar: bucket
+- name: component.bucket.endpoint
+  fromTfVar: endpoint
+- name: component.bucket.region
+  fromTfVar: region

@@ -1,4 +1,4 @@
-  apiVersion: extensions/v1beta1
+  apiVersion: apps/v1
   kind: Deployment
   metadata:
     name:      mongodb-dashboard
@@ -12,6 +12,12 @@
     replicas: 1
     strategy:
       type: RollingUpdate
+    selector:
+      matchLabels:
+        provider:  agilestacks.com
+        project:   mongodb-dashboard
+        component: mongodb-web
+        qualifier: master
     template:
       metadata:
         name:      mongodb-dashboard

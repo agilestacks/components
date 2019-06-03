@@ -1,10 +1,10 @@
 terraform {
-  required_version = ">= 0.11.3"
+  required_version = ">= 0.11.10"
   backend "s3" {}
 }
 
 provider "aws" {
-  version = "1.60.0"
+  version = "2.11.0"
 }
 
 variable "name" {
@@ -22,8 +22,4 @@ output "repository_url" {
 
 output "name" {
   value = "${module.ecr.name}"
-}
-
-output "registry_id" {
-  value = "${module.ecr.registry_id}"
 }

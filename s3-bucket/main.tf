@@ -45,8 +45,13 @@ variable "acl" {
   default = "private"
 }
 
+locals {
+  bucket = "${replace(lower(var.name), ".", "-")}"
+}
+
+
 resource "aws_s3_bucket" "main" {
-    bucket = "${var.name}"
+    bucket = "${local.bucket}"
 
     acl = "${var.acl}"
 
@@ -66,7 +71,7 @@ resource "aws_s3_bucket" "main" {
 }
 
 output "endpoint" {
-  value = "${var.endpoints[ data.aws_region.current.name ]}"
+  value = "https://${var.endpoints[ data.aws_region.current.name ]}"
 }
 
 output "bucket" {
@@ -83,4 +88,8 @@ output "domain" {
 
 output "region" {
   value = "${aws_s3_bucket.main.region}"
+}
+
+output "console_url" {
+  value = "https://s3.console.aws.amazon.com/s3/buckets/${aws_s3_bucket.main.bucket}/"
 }

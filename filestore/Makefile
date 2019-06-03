@@ -1,27 +1,22 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= efs
-DOMAIN_NAME    ?= dev.stacks.delivery
+COMPONENT_NAME ?= filestore
+DOMAIN_NAME    ?= test.gcp.superhub.io
 
-STATE_BUCKET ?= terraform.agilestacks.com
-STATE_REGION ?= us-east-1
-
-export AWS_DEFAULT_REGION ?= us-east-2
+STATE_BUCKET ?= gcp-superhub-io
+STATE_REGION ?= us-central1
 
 export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
-export TF_VAR_name             := $(COMPONENT_NAME)
-export TF_VAR_performance_mode ?= generalPurpose
-export TF_VAR_subnet_id        ?=
-export TF_VAR_sgs              ?=
+export TF_VAR_name := $(COMPONENT_NAME)
 
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-deploy: init plan apply
+deploy: init import plan apply
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
@@ -29,10 +24,8 @@ $(TF_DATA_DIR):
 init: $(TF_DATA_DIR)
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
-        -backend-config="bucket=$(STATE_BUCKET)" \
-        -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(DOMAIN_NAME)/efs/$(COMPONENT_NAME)/terraform.tfstate" \
-        -backend-config="profile=$(AWS_PROFILE)"
+		-backend-config="bucket=$(STATE_BUCKET)" \
+		-backend-config="prefix=$(DOMAIN_NAME)/filestore/$(COMPONENT_NAME)"
 
 plan:
 	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
@@ -46,10 +39,13 @@ apply:
 output:
 	@$(terraform) output -no-color
 
-undeploy: init destroy apply
+undeploy: init import destroy apply
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
+
+import:
+	-$(terraform) import $(TF_CLI_ARGS) google_filestore_instance.main $(TF_VAR_project)/$(TF_VAR_zone)/$(TF_VAR_name)
 
 clean:
 	rm -rf .terraform

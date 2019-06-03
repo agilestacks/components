@@ -5,7 +5,7 @@ metadata:
   name: ${component.metrics-server.name}
   namespace: ${component.metrics-server.namespace}
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ${component.metrics-server.name}

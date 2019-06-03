@@ -10,7 +10,7 @@ TLS_KIND              ?= letsencrypt
 
 # storage kind: {s3, local}
 STORAGE_KIND          ?= s3
-CHART_VERSION         := 8008f7d830282545a55e0340495c5ed3700dedf5	# Apr 4, 2019  Merge pull request #183 from paulczar/gce-ingress
+CHART_VERSION         := 71b28b46fbb87a51bedc7d405f74167e9ee25143 # Apr 4, 2019  Merge pull request #183 from paulczar/gce-ingress
 CHART_ORIGIN          := https://github.com/goharbor/harbor-helm.git
 CHART_DIR             := $(HELM_HOME)/$(COMPONENT_NAME)
 

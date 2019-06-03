@@ -30,7 +30,6 @@ init: $(TF_DATA_DIR)
         -backend-config="region=$(STATE_REGION)" \
         -backend-config="key=$(DOMAIN_NAME)/ecr/$(subst /,-,$(COMPONENT_NAME))/terraform.tfstate" \
         -backend-config="profile=$(AWS_PROFILE)"
-.PHONY: init
 
 plan:
 	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)

@@ -1,0 +1,49 @@
+---
+version: 1
+kind: component
+meta:
+  name: filestore
+  brief: GCP Filestore component
+  source:
+    dir: ../../components/filestore
+
+requires:
+- gcp
+provides:
+- nfs
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: cloud.gcpProjectId
+  env: TF_VAR_project
+- name: cloud.availabilityZone
+  env: TF_VAR_zone
+- name: cloud.network.name
+  env: TF_VAR_network
+- name: component.filestore
+  parameters:
+  - name: name
+    value: ${dns.name}-${hub.componentName}
+    env: COMPONENT_NAME
+  - name: tier
+    value: STANDARD
+  # value: PREMIUM
+    env: TF_VAR_tier
+  - name: share.name
+    value: share1
+    env: TF_VAR_share_name
+  - name: share.capacity
+    value: 1024
+    env: TF_VAR_share_capacity
+- name: terraform.bucket
+  parameters:
+  - name: name
+    env: STATE_BUCKET
+  - name: region
+    env: STATE_REGION
+
+outputs:
+- name: nfs.server
+  brief: NFS (Filestore) server endpoint
+  fromTfVar: ip_address

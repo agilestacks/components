@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "2.10.0"
+  version = "2.11.0"
 }
 
 locals {
@@ -54,25 +54,33 @@ locals {
 }
 
 # https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html
-# GPU users must subscribe to https://aws.amazon.com/marketplace/pp/B07GRHFXGM
-# Kubernetes 1.11
-# Region                             Amazon EKS-optimized AMI  with GPU support
-# US West (Oregon)      (us-west-2)  ami-094fa4044a2a3cf52     ami-014f4e495a19d3e4f
-# US East (N. Virginia) (us-east-1)  ami-0b4eb1d8782fc3aea     ami-08a0bb74d1c9a5e2f
-# US East (Ohio)        (us-east-2)  ami-053cbe66e0033ebcf     ami-04a758678ae5ebad5
-# EU (Ireland)          (eu-west-1)  ami-0a9006fb385703b54     ami-050db3f5f9dbd4439
-# EU (Stockholm)        (eu-north-1) ami-082e6cf1c07e60241     ami-69b03e17
+# https://aws.amazon.com/blogs/opensource/improvements-eks-worker-node-provisioning/
+# Kubernetes 1.12.7
+# Region                                    Amazon EKS-optimized AMI  with GPU support
+# US West (Oregon) (us-west-2)              ami-0923e4b35a30a5f53     ami-0bebf2322fd52a42e
+# US East (N. Virginia) (us-east-1)         ami-0abcb9f9190e867ab     ami-0cb7959f92429410a
+# US East (Ohio) (us-east-2)                ami-04ea7cb66af82ae4a     ami-0118b61dc2312dee2
+# EU (Frankfurt) (eu-central-1)             ami-0d741ed58ca5b342e     ami-0c57db5b204001099
+# EU (Stockholm) (eu-north-1)               ami-0c65a309fc58f6907     ami-09354b076296f5946
+# EU (Ireland) (eu-west-1)                  ami-08716b70cac884aaa     ami-0fbc930681258db86
+# EU (London) (eu-west-2)                   ami-0c7388116d474ee10     ami-0d832fced2cfe0f7b
+# EU (Paris) (eu-west-3)                    ami-0560aea042fec8b12     ami-0f8fa088b406ebba2
+# Asia Pacific (Tokyo) (ap-northeast-1)     ami-0bfedee6a7845c26d     ami-08e41cc84f4b3f27f
+# Asia Pacific (Seoul) (ap-northeast-2)     ami-0a904348b703e620c     ami-0c43b885e33fdc29e
+# Asia Pacific (Mumbai) (ap-south-1)        ami-09c3eb35bb3be46a4     ami-0d3ecaf4f3318c714
+# Asia Pacific (Singapore) (ap-southeast-1) ami-07b922b9b94d9a6d2     ami-0655b4dbbe2d46703
+# Asia Pacific (Sydney) (ap-southeast-2)    ami-0f0121e9e64ebd3dc     ami-07079cd9ff1b312da
 data "aws_ami" "eks_worker" {
   filter {
     name   = "name"
-    values = ["amazon-eks-node-1.11-*", "amazon-eks-gpu-node-1.11-*"]
+    values = ["amazon-eks-node-1.12-*", "amazon-eks-gpu-node-1.12-*"]
   }
 
   most_recent = true
-  owners      = ["${local.instance_gpu ? "679593333241" : "602401143452"}"] # Amazon
+  owners      = ["602401143452"] # Amazon
 }
 
-# https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2018-12-10/amazon-eks-nodegroup.yaml
+# https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2019-02-11/amazon-eks-nodegroup.yaml
 locals {
   userdata = <<USERDATA
 #!/bin/sh

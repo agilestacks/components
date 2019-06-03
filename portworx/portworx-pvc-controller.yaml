@@ -62,7 +62,7 @@ roleRef:
   name: portworx-pvc-controller-role
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -72,6 +72,10 @@ metadata:
   name: portworx-pvc-controller
   namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      name: portworx-pvc-controller
+      tier: control-plane
   replicas: 3
   strategy:
     rollingUpdate:

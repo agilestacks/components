@@ -1,6 +1,6 @@
 {{- if .Values.enableDaemonSet }}
 {{- if .Values.global.pspEnable }}
-apiVersion: extensions/v1beta1
+apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   labels:

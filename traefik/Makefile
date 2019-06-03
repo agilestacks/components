@@ -13,8 +13,9 @@ CHART_VERSION       ?= 1.67.1
 CHART               ?= stable/traefik
 HUB_PROVIDES        ?=
 
-STATE_BUCKET ?= terraform.agilestacks.com
-STATE_REGION ?= us-east-1
+STATE_BUCKET    ?= terraform.agilestacks.com
+STATE_REGION    ?= us-east-1
+STATE_CONTAINER ?= agilestacks
 
 export AWS_DEFAULT_REGION ?= us-east-2
 export HELM_HOME          ?= $(shell pwd)/.helm
@@ -27,8 +28,6 @@ helm        ?= helm --kube-context="$(TF_VAR_kubeconfig_context)" --tiller-names
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
-
-STATE_CONTAINER ?= agilestacks
 
 VALUES_FILE:=values.yaml
 ifneq (,$(ACM_CERTIFICATE_ARN))
@@ -60,10 +59,10 @@ STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
 else ifeq ($(CLOUD_KIND),azure)
 STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$${STATE_BUCKET//./}" \
 				-backend-config="container_name=$(STATE_CONTAINER)" \
-				-backend-config="resource_group_name=$(TF_VAR_resource_group_name)" \
+				-backend-config="resource_group_name=$(TF_VAR_azure_resource_group_name)" \
 				-backend-config="key=$(DOMAIN_NAME)/$(TF_VAR_component)/terraform.tfstate"
 else
-	$(error cloud.kind / CLOUD_KIND must be one of: aws, gcp, hybrid, azure)
+	$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, hybrid)
 endif
 
 $(TF_DATA_DIR):

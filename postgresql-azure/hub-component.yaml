@@ -1,0 +1,83 @@
+---
+version: 1
+kind: component
+meta:
+  name: postgresql-azure
+  brief: PostgreSQL on Azure
+  source:
+    dir: ../../components/postgresql-azure
+
+requires:
+- azure
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: cloud.region
+  env: TF_VAR_azure_location
+- name: cloud.azureResourceGroupName
+  env: TF_VAR_azure_resource_group_name
+- name: cloud.azureClientId
+  env: TF_VAR_azure_client_id
+- name: cloud.azureClientSecret
+  env: TF_VAR_azure_client_secret
+- name: cloud.azureTenantId
+  env: TF_VAR_azure_tenant_id
+- name: cloud.azureSubscriptionId
+  env: TF_VAR_azure_subscription_id
+
+- name: component.postgresql
+  parameters:
+  - name: name
+    brief: Component name
+    value: ${dns.domain}-${dns.name}-${hub.componentName}
+    env: COMPONENT_NAME
+  - name: azure.name
+    brief: Azure database server instance name
+    value: ${dns.name}-${hub.componentName}
+    env: TF_VAR_server_name
+
+  - name: database
+    value: agilestacks
+    env: TF_VAR_database_name
+  - name: user
+    value: postgres
+    env: TF_VAR_database_username
+  - name: password
+    env: TF_VAR_database_password
+
+  # https://github.com/terraform-providers/terraform-provider-azurerm/issues/3327
+  - name: azure.version
+    value: "10.0"
+    env: TF_VAR_database_version
+
+  - name: azure.sku.name
+    value: B_Gen5_2
+    env: TF_VAR_database_sku_name
+  - name: azure.sku.capacity
+    value: 2
+    env: TF_VAR_database_sku_capacity
+  - name: azure.sku.tier
+    value: Basic
+    env: TF_VAR_database_sku_tier
+  - name: azure.sku.family
+    value: Gen5
+    env: TF_VAR_database_sku_family
+
+  - name: azure.storage.mb
+    value: 5120
+    env: TF_VAR_database_storage_mb
+
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.container
+  env: STATE_CONTAINER
+- name: terraform.bucket.region
+  env: STATE_REGION
+
+outputs:
+- name: component.postgresql.host
+  fromTfVar: hostname
+- name: component.postgresql.port
+  value: 5432
+- name: component.postgresql.user
