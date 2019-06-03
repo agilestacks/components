@@ -1,0 +1,53 @@
+---
+version: 1
+kind: component
+meta:
+  name: azurecr
+  brief: Azure Container Registry
+  source:
+    dir: ../../components/azurecr
+
+requires:
+- azure
+
+parameters:
+- name: cloud.region
+  env: TF_VAR_azure_location
+- name: cloud.azureResourceGroupName
+  env: TF_VAR_azure_resource_group_name
+- name: cloud.azureClientId
+  env: TF_VAR_azure_client_id
+- name: cloud.azureClientSecret
+  env: TF_VAR_azure_client_secret
+- name: cloud.azureTenantId
+  env: TF_VAR_azure_tenant_id
+- name: cloud.azureSubscriptionId
+  env: TF_VAR_azure_subscription_id
+
+- name: component.azurecr
+  parameters:
+  - name: name
+    brief: Component name
+    value: ${dns.domain}
+    env: COMPONENT_NAME
+
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.container
+  env: STATE_CONTAINER
+- name: terraform.bucket.region
+  env: STATE_REGION
+
+outputs:
+- name: component.azurecr.url
+  fromTfVar: url
+- name: component.docker.registry.kind
+  value: azurecr
+- name: component.docker.registry.url
+  value: ${component.azurecr.url}
+- name: component.docker.auth.host
+  fromTfVar: login_server
+- name: component.docker.auth.basic.username
+  fromTfVar: username
+- name: component.docker.auth.basic.password
+  fromTfVar: password
