@@ -4,8 +4,8 @@
 controller:
   name: controller
   image:
-    repository: ${component.harbor.nginx.image.repository}
-    tag: ${component.harbor.nginx.version}
+    repository: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
+    tag: "0.24.1"
     pullPolicy: IfNotPresent
 
   config: {}
