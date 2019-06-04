@@ -7,7 +7,9 @@ expose:
     notarySecretName: ${component.harbor.name}-tls
     commonName: ${component.harbor.name}.${component.ingress.fqdn}
   ingress:
-    host: ${component.harbor.name}.${component.ingress.fqdn}
+    hosts:
+      core: ${component.harbor.name}.${component.ingress.fqdn}
+      notary: notary.${component.harbor.name}.${component.ingress.fqdn}
     annotations:
       kubernetes.io/tls-acme: "true"
       ingress.kubernetes.io/ssl-redirect: "true"
