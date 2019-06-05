@@ -16,10 +16,25 @@ module "ecr" {
   name   = "${var.name}"
 }
 
-output "repository_url" {
-  value = "${coalesce("${module.ecr.repository_url}", "** unset **")}"
+locals {
+  region = "${element(split(".", module.ecr.repository_url), 3)}"
+  s = "${split("/", module.ecr.repository_url)}"
+  host = "${element(local.s, 0)}"
+  path = "${join("/", slice(local.s, 1, length(local.s)))}"
 }
 
 output "name" {
   value = "${module.ecr.name}"
+}
+
+output "host" {
+  value = "${local.host}"
+}
+
+output "image" {
+  value = "${module.ecr.repository_url}"
+}
+
+output "console_url" {
+  value = "https://${local.region}.console.aws.amazon.com/ecr/repositories/${local.path}/"
 }
