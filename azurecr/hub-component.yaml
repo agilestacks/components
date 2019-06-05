@@ -39,12 +39,12 @@ parameters:
   env: STATE_REGION
 
 outputs:
-- name: component.azurecr.url
-  fromTfVar: url
+# Azure portal URL cannot be formatted here
+# - name: component.azurecr.url
 - name: component.docker.registry.kind
   value: azurecr
 - name: component.docker.registry.url
-  value: ${component.azurecr.url}
+  fromTfVar: url
 - name: component.docker.auth.host
   fromTfVar: login_server
 - name: component.docker.auth.basic.username
