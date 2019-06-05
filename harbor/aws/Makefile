@@ -62,7 +62,7 @@ output:
 ifeq ("$(TLS_KIND)","acm")
 	@ echo harbor_host = $(COMPONENT_NAME).svc.$(DOMAIN_NAME)
 	@ echo harbor_repo = $(COMPONENT_NAME).svc.$(DOMAIN_NAME)/library
-	@ echo harbor_url = https://$(COMPONENT_NAME).$(INGRESS_FQDN)/library
+	@ echo harbor_url = https://$(COMPONENT_NAME).svc.$(DOMAIN_NAME)
 else
 	@ echo harbor_host = $(COMPONENT_NAME).$(INGRESS_FQDN)
 	@ echo harbor_repo = $(COMPONENT_NAME).$(INGRESS_FQDN)/library
