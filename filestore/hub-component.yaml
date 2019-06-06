@@ -47,3 +47,6 @@ outputs:
 - name: nfs.server
   brief: NFS (Filestore) server endpoint
   fromTfVar: ip_address
+- name: nfs.share
+  brief: NFS (Filestore) share
+  value: ${nfs.server}:/${component.filestore.share.name}
