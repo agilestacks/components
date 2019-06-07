@@ -11,6 +11,9 @@ requires:
 - azure
 
 parameters:
+- name: dns.domain
+  env:  DOMAIN_NAME
+
 - name: cloud.region
   env: TF_VAR_azure_location
 - name: cloud.azureResourceGroupName
