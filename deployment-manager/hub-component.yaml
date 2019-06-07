@@ -2,7 +2,7 @@
 version: 1
 kind: component
 meta:
-  name: deplyment-manager
+  name: deployment-manager
   brief: GCP Cloud Deployment Manager
   source:
     dir: ../../components/deployment-manager
