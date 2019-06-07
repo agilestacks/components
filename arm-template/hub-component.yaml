@@ -1,0 +1,28 @@
+---
+version: 1
+kind: component
+meta:
+  name: arm-template
+  brief: Azure Resource Manager template
+  source:
+    dir: ../../components/arm-template
+
+requires:
+- azure
+
+parameters:
+- name: dns.domain
+- name: cloud.region
+- name: cloud.azureResourceGroupName
+  env: RESOURCE_GROUP_NAME
+- name: component.arm-template.name
+  value: ${dns.domain}-${hub.componentName}
+  env: COMPONENT_NAME
+
+outputs:
+- name: component.arm-template.bucket
+  fromTfVar: bucket
+
+templates:
+  files:
+  - '*.template'

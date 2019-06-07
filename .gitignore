@@ -136,3 +136,4 @@ storage-class/*.yaml
 deployment-manager/deployment.yaml
 harbor/aws/acm/nginx-service.yaml
 harbor/aws/storage-class.yaml
+arm-template/params.json

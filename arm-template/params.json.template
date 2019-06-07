@@ -1,0 +1,8 @@
+{
+  "storageAccountName": {
+    "value": "${dns.domain}"
+  },
+  "location": {
+    "value": "${cloud.region}"
+  }
+}
