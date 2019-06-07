@@ -36,6 +36,8 @@ resources:
 debug:
   enabled: false
 
+# logLevel: error
+
 deploymentStrategy: {}
   # rollingUpdate:
   #   maxSurge: 1
@@ -108,6 +110,8 @@ ssl:
   # cipherSuites: []
   # https://docs.traefik.io/configuration/entrypoints/#specify-minimum-tls-version
   # tlsMinVersion: VersionTLS12
+  # https://docs.traefik.io/configuration/entrypoints/#strict-sni-checking
+  # sniStrict: false
   defaultCert:
   defaultKey:
   # Basic auth to protect all the routes. Can use htpasswd to generate passwords
@@ -457,3 +461,8 @@ tracing:
 #   forwarding:
 #     dialTimeout: 30s
 #     responseHeaderTimeout: 0s
+
+# forwardAuth:
+#   entryPoints: ["http", "https"]
+#   address: https://authserver.com/auth
+#   trustForwardHeader: true
