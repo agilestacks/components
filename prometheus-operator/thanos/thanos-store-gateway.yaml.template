@@ -23,7 +23,6 @@ spec:
         - store
         - --log.level=debug
         - --data-dir=/data
-        - --cluster.disable
         - --index-cache-size=500MB
         - --chunk-pool-size=500MB
         - --objstore.config=$(OBJSTORE_CONFIG)

@@ -59,7 +59,6 @@ spec:
         - query
         - --log.level=debug
         - --query.replica-label=replica
-        - --cluster.disable
         # Discover local store APIs using DNS SRV.
         - --store=dnssrv+_grpc._tcp.thanos-store-gateway.${component.promoper.namespace}.svc
         - --store=dnssrv+_grpc._tcp.thanos-sidecar.${component.promoper.namespace}.svc
