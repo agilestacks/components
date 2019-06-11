@@ -51,6 +51,7 @@ spec:
             - --log.level=debug
             - --data-dir=/data
             - --eval-interval=15s
+            - --cluster.disable
             - --rule-file=/etc/thanos-ruler/*.rules.yaml
             - --alertmanagers.url=http://prometheus-operator-alertmanager.${component.promoper.namespace}.svc:9093
             - --query=dnssrv+_http._tcp.thanos-querier.${component.promoper.namespace}.svc

@@ -82,7 +82,7 @@ parameters:
     parameters:
     - name: version
       brief: Thanos version
-      value: v0.5.0
+      value: v0.4.0
     - name: bucket.name
       value: thanos-storage
       env: BUCKET_NAME
@@ -96,6 +96,7 @@ parameters:
 templates:
   files:
     - "thanos/*.template"
+    - "oidc-crd.yaml.template"
   extra:
   - kind: mustache
     files:
