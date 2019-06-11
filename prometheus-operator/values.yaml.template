@@ -396,11 +396,11 @@ grafana:
     #  name: Dex
     #  enabled: true
     #  scopes: openid profile email
-    #  client_id: {{component.promoper.grafana.oidcId}}
-    #  client_secret: {{component.promoper.grafana.oidcSecret}}
-    #  auth_url: {{component.dex.issuer}}/auth
-    #  token_url: {{component.dex.issuer}}/token
-    #  api_url: {{component.dex.issuer}}/userinfo
+    #  client_id: component.promoper.grafana.oidcId
+    #  client_secret: component.promoper.grafana.oidcSecret
+    #  auth_url: component.dex.issuer/auth
+    #  token_url: component.dex.issuer/token
+    #  api_url: component.dex.issuer/userinfo
 
   ingress:
     ## If true, Grafana Ingress will be created

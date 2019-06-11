@@ -96,7 +96,6 @@ parameters:
 templates:
   files:
     - "thanos/*.template"
-    - "oidc-crd.yaml.template"
   extra:
   - kind: mustache
     files:
