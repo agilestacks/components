@@ -18,6 +18,7 @@ provides:
 parameters:
   - name: component.ingress.ssoFqdn
   - name: component.ingress.protocol
+  - name: component.dex.issuer
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.ingress.kubernetes.ingressClass
@@ -78,6 +79,10 @@ parameters:
       value: grafana
     - name: adminPassword
       value: asiPromOp3r
+    - name: oidcId
+      value: grafana-client
+    - name: oidcSecret
+      value: SDndcn378ddfg4-57yDSDfjeuDVQEW
   - name: component.promoper.thanos
     parameters:
     - name: version
@@ -96,6 +101,7 @@ parameters:
 templates:
   files:
     - "thanos/*.template"
+    - "oidc-crd.yaml.template"
   extra:
   - kind: mustache
     files:

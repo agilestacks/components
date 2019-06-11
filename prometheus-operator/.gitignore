@@ -1,4 +1,5 @@
 charts/
 .helm/
 values.yaml
+oidc-crd.yaml
 thanos/*.yaml

@@ -372,14 +372,16 @@ grafana:
       logs: /var/log/grafana
       plugins: /var/lib/grafana/plugins
       provisioning: /etc/grafana/provisioning
-    auth.anonymous:
-      enabled: true
+#    auth.anonymous:
+ #     enabled: true
       # Organization name that should be used for unauthenticated users
-      org_name: "Main Org."
+  #    org_name: "Main Org."
       # Role for unauthenticated users, other valid values are `Editor` and `Admin`
-      org_role: Admin
-#    server:
-      #root_url: {{component.ingress.protocol}}://{{component.promoper.grafana.ingress.urlPrefix}}.{{component.ingress.ssoFqdn}}
+   #   org_role: Admin
+    users:
+      auto_assign_org_role: Admin
+    server:
+      root_url: {{component.ingress.protocol}}://{{component.promoper.grafana.ingress.urlPrefix}}.{{component.ingress.ssoFqdn}}
     analytics:
       check_for_updates: true
     log:
@@ -392,15 +394,15 @@ grafana:
     #   enabled: true
     #   allow_sign_up: true
     #   config_file: /etc/grafana/ldap.toml
-    #auth.generic_oauth:
-    #  name: Dex
-    #  enabled: true
-    #  scopes: openid profile email
-    #  client_id: component.promoper.grafana.oidcId
-    #  client_secret: component.promoper.grafana.oidcSecret
-    #  auth_url: component.dex.issuer/auth
-    #  token_url: component.dex.issuer/token
-    #  api_url: component.dex.issuer/userinfo
+    auth.generic_oauth:
+      name: AgileStacks
+      enabled: true
+      scopes: openid profile email
+      client_id: {{component.promoper.grafana.oidcId}}
+      client_secret: {{component.promoper.grafana.oidcSecret}}
+      auth_url: {{component.dex.issuer}}/auth
+      token_url: {{component.dex.issuer}}/token
+      api_url: {{component.dex.issuer}}/userinfo
 
   ingress:
     ## If true, Grafana Ingress will be created

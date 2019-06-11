@@ -32,6 +32,7 @@ install:
 	-$(kubectl) create namespace $(NAMESPACE)
 	$(MAKE) -C $(CLOUD_TYPE) $@
 #	-$(kubectl) create secret generic thanos-objstore-config --from-file=thanos.yaml=thanos-config.yaml
+	-$(kubectl) create -f oidc-crd.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \
@@ -49,6 +50,7 @@ install:
 	-$(kubectl) apply -f thanos/service-monitors.yaml
 
 undeploy: init
+	-$(kubectl) delete -f oidc-crd.yaml | true
 	-$(kubectl) delete -f thanos/thanos-compactor.yaml
 	-$(kubectl) delete -f thanos/thanos-querier.yaml
 	-$(kubectl) delete -f thanos/thanos-ruler.yaml
