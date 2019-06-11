@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ceph
+  namespace: ${component.ceph.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   ceph
+  annotations:
+    agilestacks.com/stack-component: ceph
+spec:
+  rules:
+  - host: ${component.ceph.namespace}.${component.ingress.ssoFqdn}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rook-ceph-mgr-dashboard
+          servicePort: ${component.ceph.dashboard.port}
