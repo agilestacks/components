@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := deploy
 
-export NAMESPACE   ?= rook-ceph
+export NAMESPACE ?= rook-ceph
 KUBECTL_ARGS := --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 kubectl ?= kubectl $(KUBECTL_ARGS)
 CEPH_DASHBOARD_ROLE ?= admin-no-iscsi
@@ -12,18 +12,18 @@ deploy: install configure_storage config_dashboard
 install:
 	- $(kubectl) create namespace $(NAMESPACE)
 	- $(kubectl) create -f rbac.yaml
-	- $(kubectl) create -f operator.yaml
-	- $(kubectl) create -f cluster.yaml
+	- $(kubectl) create -f ceph-operator.yaml
+	- $(kubectl) create -f ceph-cluster.yaml
 	- $(kubectl) create -f ingress.yaml
 
 configure_storage:
-	- $(kubectl) create -f storageclass.yaml
+	- $(kubectl) create -f ceph-blockdevice.yaml
 
 undeploy:
-	- $(kubectl) delete -f storageclass.yaml
 	- $(kubectl) delete -f ingress.yaml
-	- $(kubectl) delete -f cluster.yaml
-	- $(kubectl) delete -f operator.yaml
+	- $(kubectl) delete -f ceph-blockdevice.yaml
+	- $(kubectl) delete -f ceph-cluster.yaml
+	- $(kubectl) delete -f ceph-operator.yaml
 	- $(kubectl) delete -f rbac.yaml
 	- $(kubectl) delete namespace $(NAMESPACE)
 
