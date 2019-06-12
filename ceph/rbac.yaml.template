@@ -11,10 +11,10 @@
 ###################################################################################################################
 
 # Namespace where the operator and other rook resources are created
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: rook-ceph
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: ${component.ceph.namespace}
 ---
 # OLM: BEGIN CEPH CRD
 # The CRD declarations

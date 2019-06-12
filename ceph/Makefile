@@ -10,7 +10,8 @@ CEPH_DASHBOARD_PASS ?= 12345678
 deploy: install configure_storage config_dashboard
 
 install:
-	- $(kubectl) create -f common.yaml
+	- $(kubectl) create namespace $(NAMESPACE)
+	- $(kubectl) create -f rbac.yaml
 	- $(kubectl) create -f operator.yaml
 	- $(kubectl) create -f cluster.yaml
 	- $(kubectl) create -f ingress.yaml
@@ -23,7 +24,8 @@ undeploy:
 	- $(kubectl) delete -f ingress.yaml
 	- $(kubectl) delete -f cluster.yaml
 	- $(kubectl) delete -f operator.yaml
-	- $(kubectl) delete -f common.yaml
+	- $(kubectl) delete -f rbac.yaml
+	- $(kubectl) delete namespace $(NAMESPACE)
 
 config_dashboard:
 	@ echo "Configure CEPH dashboard"
