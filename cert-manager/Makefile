@@ -24,6 +24,8 @@ init:
 	@mkdir -p $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
 
+# TODO check the patch is still needed with Helm v2.14.1
+# https://github.com/helm/helm/releases/tag/v2.14.1 ##Changelog
 # https://github.com/jetstack/cert-manager/pull/1694
 fetch:
 	$(helm) repo add jetstack https://charts.jetstack.io
