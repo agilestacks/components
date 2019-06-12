@@ -1,10 +1,10 @@
 terraform {
   required_version = ">= 0.11.3"
-  backend "s3" {}
+  backend          "s3"             {}
 }
 
 provider "aws" {
-  version = "2.11.0"
+  version = "2.14.0"
 }
 
 # data "aws_region" "current" {}
@@ -50,13 +50,15 @@ resource "aws_route53_record" "parent" {
 }
 
 resource "aws_route53_zone" "internal" {
-  name          = "i.${var.name}.${data.aws_route53_zone.base.name}"
-# We can't be sure enableDnsHostnames, enableDnsSupport are set on the EKS VPC created
-# out of our control, but AWS EKS VPC example do have DNS options enabled.
-# Terraform aws_vpc resource:
-# enable_dns_hostnames = true
-# enable_dns_support   = true
-  vpc_id        = "${var.vpc_id}"
+  name = "i.${var.name}.${data.aws_route53_zone.base.name}"
+
+  # We can't be sure enableDnsHostnames, enableDnsSupport are set on the EKS VPC created
+  # out of our control, but AWS EKS VPC example do have DNS options enabled.
+  # Terraform aws_vpc resource:
+  # enable_dns_hostnames = true
+  # enable_dns_support   = true
+  vpc_id = "${var.vpc_id}"
+
   force_destroy = true
 }
 

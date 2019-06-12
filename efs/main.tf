@@ -1,10 +1,10 @@
 terraform {
   required_version = ">= 0.11.10"
-  backend "s3" {}
+  backend          "s3"             {}
 }
 
 provider "aws" {
-  version = "2.11.0"
+  version = "2.14.0"
 }
 
 data "aws_region" "current" {}
@@ -39,7 +39,6 @@ variable "provisioned_throughput" {
   default = "0"
 }
 
-
 resource "aws_security_group" "efs" {
   count = "${var.sgs == "" ? 1 : 0}"
 
@@ -65,8 +64,8 @@ resource "aws_efs_file_system" "main" {
     Name = "${var.name}"
   }
 
-  performance_mode = "${var.performance_mode}"
-  throughput_mode = "${var.provisioned_throughput > 0 ? "provisioned" : "bursting"}"
+  performance_mode                = "${var.performance_mode}"
+  throughput_mode                 = "${var.provisioned_throughput > 0 ? "provisioned" : "bursting"}"
   provisioned_throughput_in_mibps = "${var.provisioned_throughput}"
 }
 
