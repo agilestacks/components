@@ -139,54 +139,21 @@ parameters:
 outputs:
   - name: component.bucket.kind
     value: minio
-  - name: component.minio.service.host
-    brief: Bucket endpoint for reference by other service
-    value: ${component.minio.name}.${component.minio.namespace}.svc.cluster.local
-  - name: component.minio.service.port
-    value: ${component.minio.service.port}
-  - name: component.minio.endpoint.ingress
-    brief: External minio endpoint
-    value: ${component.minio.name}.${component.minio.ingress.baseDomain}
-  - name: component.minio.endpoint.url
-    brief: Minio UI
-    value: ${component.ingress.protocol}://${component.minio.endpoint.ingress}
-  - name: component.minio.secret.name
-    brief: Kubenetes secret that holds access and secret key info
-    fromTfVar: secret_name
-  - name: component.minio.namespace
-    fromTfVar: secret_namespace
-  - name: component.bucket.namespace
-    fromTfVar: secret_namespace
-  - name: component.minio.secret.accessKeyRef
-    brief: Kubenetes secret data field that holds Access Key9
-    value: accesskey
-  - name: component.minio.secret.secretKeyRef
-    brief: Kubenetes secret data field that holds Secret Key
-    value: secretkey
-  - name: component.minio.arn
-    value: arn:minio:sqs:${component.minio.region}:1:nats
-  - name: component.minio.region
-    value: ${component.minio.region}
   - name: component.bucket.name
     brief: Name of the default bucket
     value: ${component.minio.default.bucket.name}
-  - name: component.bucket.region
-    value: ${component.minio.region}
+  - name: component.bucket.accessKey
+    kind: secret
+    value: ${component.minio.accessKey}
+  - name: component.bucket.secretKey
+    kind: secret
+    value: ${component.minio.secretKey}
   - name: component.bucket.endpoint.internal
     value: http://${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.service.port}
   - name: component.bucket.endpoint
     value: ${component.ingress.protocol}://${component.minio.name}.${component.minio.ingress.baseDomain}
-  - name: component.bucket.secret.name
-    fromTfVar: secret_name
-  - name: component.bucket.secret.namespace
-    fromTfVar: secret_namespace
-  - name: component.bucket.secret.accessKeyRef
-    value: accesskey
-  - name: component.bucket.secret.secretKeyRef
-    value: secretkey
-  - name: component.minio.nats.subject
-    brief: NATS subject used for minio events publishing
-
+  - name: component.bucket.region
+    value: ${component.minio.region}
 templates:
   files:
     - "*.template"
