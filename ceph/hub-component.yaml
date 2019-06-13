@@ -52,9 +52,9 @@ parameters:
 
 outputs:
   - name:  component.ceph.dashboard.fqdn
-    value: ${component.ceph.namespace}
+    value: ${component.ceph.namespace}.${component.ingress.ssoFqdn}
   - name:  component.ceph.dashboard.url
-    value: ${component.ingress.protocol}://${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.ceph.dashboard.fqdn}
 
 templates:
   files:
