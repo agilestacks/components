@@ -9,7 +9,7 @@ persistence:
       bucket: ${component.bucket.name}
       accesskey: ${component.bucket.accessKey}
       secretkey: ${component.bucket.secretKey}
-      regionendpoint: ${component.ingress.protocol}://${component.bucket.endpoint}
+      regionendpoint: ${component.bucket.endpoint}
       rootdirectory: /docker/${component.harbor.name}-${dns.domain}
       secure: true
       v4auth: true
