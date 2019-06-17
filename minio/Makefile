@@ -112,6 +112,6 @@ clean:
 output:
 	@ echo
 	@ echo Outputs:
-	@ echo secret_name = $(SECRET)
+	@ echo secret = $(SECRET)
 
 -include ../Mk/phonies
