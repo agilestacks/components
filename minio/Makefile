@@ -113,6 +113,5 @@ output:
 	@ echo
 	@ echo Outputs:
 	@ echo secret_name = $(SECRET)
-	@ echo secret_namespace = $(NAMESPACE)
 
 -include ../Mk/phonies
