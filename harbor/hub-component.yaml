@@ -101,6 +101,7 @@ outputs:
 - name: component.docker.auth.basic.username
   value: ${component.harbor.user}
 - name: component.docker.auth.basic.password
+  kind: secret
   value: ${component.harbor.password}
 
 templates:
