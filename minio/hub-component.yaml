@@ -157,6 +157,9 @@ outputs:
   - name: component.minio.secret
     brief: Name of the secret associated with minio credentials
     fromTfVar: secret
+  - name: component.minio.url
+    value: ${component.ingress.protocol}://${component.minio.name}.${component.minio.ingress.baseDomain}/minio
+    brief: Minio web console UI url
 templates:
   files:
     - "*.template"
