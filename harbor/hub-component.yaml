@@ -33,19 +33,21 @@ parameters:
     empty: allow
   - name: endpoint
     empty: allow
-- name: component.minio
+
+- name: component.bucket
   parameters:
+  - name: kind
+    empty: allow
   - name: region
     empty: allow
-    env: MINIO_REGION
   - name: accessKey
     empty: allow
   - name: secretKey
     empty: allow
-  - name: default.bucket.name
-    value: default
-- name: component.bucket.endpoint
-  empty: allow
+  - name: endpoint
+    empty: allow
+  - name: name
+    empty: allow
 
 - name: component.ingress
   parameters:
@@ -99,6 +101,7 @@ outputs:
 - name: component.docker.auth.basic.username
   value: ${component.harbor.user}
 - name: component.docker.auth.basic.password
+  kind: secret
   value: ${component.harbor.password}
 
 templates:

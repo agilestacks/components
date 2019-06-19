@@ -1,0 +1,61 @@
+---
+version: 1
+kind: component
+meta:
+  name: ceph
+  brief: Private cloud storage
+  source:
+      dir: ../../components/ceph
+
+requires:
+  - kubernetes
+
+provides:
+  - ceph
+
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
+
+parameters:
+  - name: component.ingress
+    parameters:
+    - name: fqdn
+    - name: ssoFqdn
+    - name: protocol
+  - name: component.bucket.kind
+    brief: "ceph"
+    value: "ceph"
+  - name: dns.name
+    env: DOMAIN
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.ceph
+    parameters:
+    - name: namespace
+      value: rook-ceph
+      env: NAMESPACE
+    - name: storage.path
+      value: /var/lib/rook
+    - name: mon.replicas
+      value: 3
+    - name: dashboard.port
+      value: 8443
+    - name: ingress.baseDomain
+      value: ${component.ingress.fqdn}
+      env: INGRESS_DOMAIN
+    - name: image.name
+      value: ceph/ceph
+    - name: image.tag
+      value: v14.2.1-20190430
+
+outputs:
+  - name:  component.ceph.dashboard.fqdn
+    value: ${component.ceph.namespace}.${component.ingress.ssoFqdn}
+  - name:  component.ceph.dashboard.url
+    value: ${component.ingress.protocol}://${component.ceph.dashboard.fqdn}
+
+templates:
+  files:
+    - "*.template"

@@ -1,10 +1,10 @@
 terraform {
   required_version = ">= 0.11.10"
-  backend "s3" {}
+  backend          "s3"             {}
 }
 
 provider "aws" {
-  version = "2.11.0"
+  version = "2.14.0"
 }
 
 variable "name" {
@@ -18,9 +18,9 @@ module "ecr" {
 
 locals {
   region = "${element(split(".", module.ecr.repository_url), 3)}"
-  s = "${split("/", module.ecr.repository_url)}"
-  host = "${element(local.s, 0)}"
-  path = "${join("/", slice(local.s, 1, length(local.s)))}"
+  s      = "${split("/", module.ecr.repository_url)}"
+  host   = "${element(local.s, 0)}"
+  path   = "${join("/", slice(local.s, 1, length(local.s)))}"
 }
 
 output "name" {

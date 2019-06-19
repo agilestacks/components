@@ -5,11 +5,11 @@ persistence:
     type: s3
       #maxthreads: 100
     s3:
-      region: ${component.minio.region}
-      bucket: ${component.minio.default.bucket.name}
-      accesskey: ${component.minio.accessKey}
-      secretkey: ${component.minio.secretKey}
-      regionendpoint: ${component.ingress.protocol}://${component.bucket.endpoint}
+      region: ${component.bucket.region}
+      bucket: ${component.bucket.name}
+      accesskey: ${component.bucket.accessKey}
+      secretkey: ${component.bucket.secretKey}
+      regionendpoint: ${component.bucket.endpoint}
       rootdirectory: /docker/${component.harbor.name}-${dns.domain}
       secure: true
       v4auth: true

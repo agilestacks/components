@@ -15,6 +15,7 @@ parameters:
   env: DOMAIN_NAME
 - name: cloud.gcpProjectId
   env: TF_VAR_project
+
 - name: component.gcs
   parameters:
   - name: name
@@ -23,6 +24,7 @@ parameters:
   - name: location
     value: ${cloud.region}
     env: TF_VAR_location
+
 - name: terraform.bucket
   parameters:
   - name: name

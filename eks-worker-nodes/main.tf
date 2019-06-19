@@ -1,10 +1,10 @@
 terraform {
   required_version = ">= 0.11.10"
-  backend "s3" {}
+  backend          "s3"             {}
 }
 
 provider "aws" {
-  version = "2.11.0"
+  version = "2.14.0"
 }
 
 locals {
@@ -19,7 +19,7 @@ locals {
     "g3s.xlarge",
     "g3.4xlarge",
     "g3.8xlarge",
-    "g3.16xlarge"
+    "g3.16xlarge",
   ]
 
   name1 = "worker-${var.name}"
@@ -39,6 +39,7 @@ locals {
       propagate_at_launch = true
     },
   ]
+
   autoscaling_tags = [
     {
       key                 = "k8s.io/cluster-autoscaler/enabled"
@@ -48,7 +49,7 @@ locals {
   ]
 
   tags = {
-    default_tags = "${local.default_tags}"
+    default_tags     = "${local.default_tags}"
     autoscaling_tags = "${concat(local.default_tags, local.autoscaling_tags)}"
   }
 }
@@ -112,7 +113,7 @@ resource "aws_launch_configuration" "worker_conf" {
 }
 
 resource "aws_autoscaling_group" "workers" {
-  name                 = "${local.name2}"
+  name = "${local.name2}"
 
   # if autoscale not enabled then pool_max_size is 1 (default)
   max_size             = "${max(var.pool_max_count, var.pool_count)}"

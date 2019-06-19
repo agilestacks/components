@@ -9,7 +9,7 @@ export TF_VAR_azure_resource_group_name ?= superhub-eastus2
 
 CLOUD_KIND          ?= aws
 ACM_CERTIFICATE_ARN ?=
-CHART_VERSION       ?= 1.67.1
+CHART_VERSION       ?= 1.68.5
 CHART               ?= stable/traefik
 HUB_PROVIDES        ?=
 

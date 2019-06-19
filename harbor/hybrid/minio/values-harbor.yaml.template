@@ -8,7 +8,7 @@ ingress:
   annotations:
     ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    kubernetes.io/ingress.class: "nginx"    
+    kubernetes.io/ingress.class: "nginx"
     certmanager.k8s.io/issuer: "letsencrypt-prod"
     certmanager.k8s.io/acme-challenge-type: http01
   tls:
@@ -32,11 +32,11 @@ externalPort:
 registry:
   storage:
     type: s3
-    s3: 
-      region: ${component.minio.region}
-      bucket: ${component.minio.default.bucket.name}
-      accesskey: ${component.minio.accessKey}
-      secretkey: ${component.minio.secretKey}
+    s3:
+      region: ${component.bucket.region}
+      bucket: ${component.bucket.name}
+      accesskey: ${component.bucket.accessKey}
+      secretkey: ${component.bucket.secretKey}
       regionendpoint: ${component.ingress.protocol}://${component.bucket.endpoint}
 
 database:

@@ -5,6 +5,7 @@
 .PHONY: connect
 .PHONY: delete
 .PHONY: deploy
+.PHONY: deploy-test
 .PHONY: destroy
 .PHONY: disconnect
 .PHONY: enable
@@ -25,6 +26,7 @@
 .PHONY: test
 .PHONY: unconfigure
 .PHONY: undeploy
+.PHONY: undeploy-test
 .PHONY: uninstall
 .PHONY: upgrade
 .PHONY: usage

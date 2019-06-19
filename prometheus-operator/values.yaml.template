@@ -116,7 +116,7 @@ alertmanager:
   ##
   templateFiles: {}
   #
-  # An example template:
+  ## An example template:
   #   template_1.tmpl: |-
   #       {{ define "cluster" }}{{ .ExternalURL | reReplaceAll ".*alertmanager\\.(.*)" "$1" }}{{ end }}
   #
@@ -362,6 +362,48 @@ grafana:
     tag: {{component.promoper.grafana.version}}
     pullPolicy: IfNotPresent
 
+  ## Grafana's primary configuration
+  ## NOTE: values in map will be converted to ini format
+  ## ref: http://docs.grafana.org/installation/configuration/
+  ##
+  grafana.ini:
+    paths:
+      data: /var/lib/grafana/data
+      logs: /var/log/grafana
+      plugins: /var/lib/grafana/plugins
+      provisioning: /etc/grafana/provisioning
+#    auth.anonymous:
+ #     enabled: true
+      # Organization name that should be used for unauthenticated users
+  #    org_name: "Main Org."
+      # Role for unauthenticated users, other valid values are `Editor` and `Admin`
+   #   org_role: Admin
+    users:
+      auto_assign_org_role: Admin
+    server:
+      root_url: {{component.ingress.protocol}}://{{component.promoper.grafana.ingress.urlPrefix}}.{{component.ingress.ssoFqdn}}
+    analytics:
+      check_for_updates: true
+    log:
+      mode: console
+    grafana_net:
+      url: https://grafana.net
+  ## LDAP Authentication can be enabled with the following values on grafana.ini
+  ## NOTE: Grafana will fail to start if the value for ldap.toml is invalid
+    # auth.ldap:
+    #   enabled: true
+    #   allow_sign_up: true
+    #   config_file: /etc/grafana/ldap.toml
+    auth.generic_oauth:
+      name: AgileStacks
+      enabled: true
+      scopes: openid profile email
+      client_id: {{component.promoper.grafana.oidcId}}
+      client_secret: {{component.promoper.grafana.oidcSecret}}
+      auth_url: {{component.dex.issuer}}/auth
+      token_url: {{component.dex.issuer}}/token
+      api_url: {{component.dex.issuer}}/userinfo
+
   ingress:
     ## If true, Grafana Ingress will be created
     ##
@@ -522,6 +564,28 @@ kubelet:
     # 	relabel configs to apply to samples before ingestion.
     ##
     cAdvisorRelabelings: []
+    # - sourceLabels: [__meta_kubernetes_pod_node_name]
+    #   separator: ;
+    #   regex: ^(.*)$
+    #   target_label: nodename
+    #   replacement: $1
+    #   action: replace
+
+    metricRelabelings: []
+    # - sourceLabels: [__name__, image]
+    #   separator: ;
+    #   regex: container_([a-z_]+);
+    #   replacement: $1
+    #   action: drop
+    # - sourceLabels: [__name__]
+    #   separator: ;
+    #   regex: container_(network_tcp_usage_total|network_udp_usage_total|tasks_state|cpu_load_average_10s)
+    #   replacement: $1
+    #   action: drop
+
+    # 	relabel configs to apply to samples before ingestion.
+    ##
+    relabelings: []
     # - sourceLabels: [__meta_kubernetes_pod_node_name]
     #   separator: ;
     #   regex: ^(.*)$
@@ -1160,6 +1224,22 @@ prometheus:
     ## External labels to add to any time series or alerts when communicating with external systems
     ##
     externalLabels: {}
+
+    ## Name of the external label used to denote replica name
+    ##
+    replicaExternalLabelName: ""
+
+    ## If true, the Operator won't add the external label used to denote replica name
+    ##
+    replicaExternalLabelNameClear: false
+
+    ## Name of the external label used to denote Prometheus instance name
+    ##
+    prometheusExternalLabelName: ""
+
+    ## If true, the Operator won't add the external label used to denote Prometheus instance name
+    ##
+    prometheusExternalLabelNameClear: false
 
     ## External URL at which Prometheus will be reachable.
     ##

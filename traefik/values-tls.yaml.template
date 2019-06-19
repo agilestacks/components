@@ -15,22 +15,13 @@ acme:
   logging: true
   domains:
     enabled: true
-    # https://github.com/containous/traefik/issues/4585
-    # https://github.com/containous/traefik/pull/4821
     domainsList:
-    - main: "*.${component.ingress.ssoUrlPrefix}.${dns.domain}"
+    - main: "${dns.domain}"
     - sans:
+    #  - "${component.ingress.urlPrefix}.${dns.domain}"
       - "${component.ingress.ssoUrlPrefix}.${dns.domain}"
-    - main: "*.${component.ingress.urlPrefix}.${dns.domain}"
-    - sans:
-      - "${component.ingress.urlPrefix}.${dns.domain}"
-    # domainsList:
-    # - main: "${dns.domain}"
-    # - sans:
-    #   - "${component.ingress.urlPrefix}.${dns.domain}"
-    #   - "${component.ingress.ssoUrlPrefix}.${dns.domain}"
-    #   - "*.${component.ingress.urlPrefix}.${dns.domain}"
-    #   - "*.${component.ingress.ssoUrlPrefix}.${dns.domain}"
+      - "*.${component.ingress.urlPrefix}.${dns.domain}"
+      - "*.${component.ingress.ssoUrlPrefix}.${dns.domain}"
   challengeType: dns-01
   delayBeforeCheck: 60
   dnsProvider:

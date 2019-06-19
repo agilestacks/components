@@ -52,3 +52,6 @@ outputs:
 - name: nfs.server
   brief: NFS (EFS) server endpoint
   fromTfVar: efs_endpoint
+- name: nfs.share
+  brief: NFS (EFS) share
+  value: ${nfs.server}:/

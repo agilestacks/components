@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: cleanup-rook-ceph
+  namespace: ${component.ceph.namespace}
+spec:
+  template:
+    metadata:
+      labels:
+        app: cleanup-rook-ceph
+    spec:
+      containers:
+        - name: cleanup
+          image: alpine:3.5
+          command: ["/bin/sh"]
+          args: ["-c", "rm -rf ${component.ceph.storage.path}/* > /dev/termination-log && sleep 10"]
+          volumeMounts:
+          - name: rook-data
+            mountPath: ${component.ceph.storage.path}
+      volumes:
+      - name: rook-data
+        hostPath:
+          path: ${component.ceph.storage.path}
