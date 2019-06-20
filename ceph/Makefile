@@ -42,24 +42,23 @@ delete_data:
 config_dashboard:
 	@ echo "Configure CEPH dashboard"
 	$(eval ceph_toolbox=$(shell $(kubectl) get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}'))
-	- $(kubectl) exec -it $(ceph_toolbox) -- bash -c "ceph dashboard ac-role-create $(CEPH_DASHBOARD_ROLE)"
+	- $(kubectl) exec -i $(ceph_toolbox) -- bash -c "ceph dashboard ac-role-create $(CEPH_DASHBOARD_ROLE)"
 	@ for scope in dashboard-settings log rgw prometheus grafana nfs-ganesha manager hosts rbd-image config-opt rbd-mirroring cephfs user osd pool monitor; do \
-		$(kubectl) exec -it $(ceph_toolbox) -- bash -c "ceph dashboard ac-role-add-scope-perms $(CEPH_DASHBOARD_ROLE) $${scope} create delete read update"; \
+		$(kubectl) exec -i $(ceph_toolbox) -- bash -c "ceph dashboard ac-role-add-scope-perms $(CEPH_DASHBOARD_ROLE) $${scope} create delete read update"; \
 	done
-	- $(kubectl) exec -it $(ceph_toolbox) -- bash -c "ceph dashboard ac-user-set-roles admin $(CEPH_DASHBOARD_ROLE)"
-	- $(kubectl) exec -it $(ceph_toolbox) -- bash -c "ceph dashboard ac-user-set-password $(CEPH_DASHBOARD_USER) $(CEPH_DASHBOARD_PASS)"
+	- $(kubectl) exec -i $(ceph_toolbox) -- bash -c "ceph dashboard ac-user-set-roles admin $(CEPH_DASHBOARD_ROLE)"
+	- $(kubectl) exec -i $(ceph_toolbox) -- bash -c "ceph dashboard ac-user-set-password $(CEPH_DASHBOARD_USER) $(CEPH_DASHBOARD_PASS)"
 
 ceph_tools:
 	- $(kubectl) exec -it $(shell $(kubectl) get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') bash
 
 wait_up:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
-	$(eval count=$(shell $(kubectl) get pods --no-headers --output=json -l 'app=rook-ceph-agent' --output=json | jq -M '.items[0].spec.containers | length'))
 	$(eval get_pod=$(kubectl) get pods --no-headers -l 'app=rook-ceph-osd' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}')
 	@ echo "Waiting for ceph osd pod up and running [container count: $(count)]"
 
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
-		if [[ `$(get_pod) | wc -w | xargs` -ge '$(count)' ]]; then \
+		if [[ `$(get_pod) | wc -w | xargs` -ge 1 ]]; then \
 			echo " done"; \
 			exit 0; \
 		fi; \
