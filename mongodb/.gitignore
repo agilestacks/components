@@ -1,5 +1,2 @@
 charts
 values.yaml
-volume-claim.yaml
-volume-hostpath.yaml
-aws-storage-class.yaml

@@ -32,8 +32,6 @@ purge:
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
-#	rely on the default storage class provided by platform
-# 	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART) \
 			--name $(COMPONENT_NAME) \
@@ -60,7 +58,7 @@ wait:
 						echo done; \
 						exit 0; \
 				fi; \
-				printf "."; \
+				echo 'still waiting'; \
 				sleep 8; \
 		done; \
 		echo "ERROR timeout $(TIMEOUT)sec"; \
