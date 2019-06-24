@@ -43,9 +43,8 @@ parameters:
       env: TF_VAR_spot_price
       value: 0.06
     - name: shortName
-      value: pool-1
+      value: ${hub.componentName}
     - name: name
-      kind: link
       env: TF_VAR_name
       value: ${component.k8s-worker-nodes.shortName}-${dns.domain}
     - name: autoscale.enabled
