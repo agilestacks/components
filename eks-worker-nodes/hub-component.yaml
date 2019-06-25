@@ -37,15 +37,14 @@ parameters:
   - name: component.k8s-worker-nodes
     parameters:
     - name: size
-      env: TF_VAR_worker_instance_type
+      env: TF_VAR_instance_type
       value: r4.large
     - name: spotPrice
-      env: TF_VAR_worker_spot_price
+      env: TF_VAR_spot_price
       value: 0.06
     - name: shortName
-      value: pool-1
+      value: ${hub.componentName}
     - name: name
-      kind: link
       env: TF_VAR_name
       value: ${component.k8s-worker-nodes.shortName}-${dns.domain}
     - name: autoscale.enabled

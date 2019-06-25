@@ -149,7 +149,7 @@ persistence:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  # storageClass: ${component.mongodb.storageClass}
+  storageClass: ${component.mongodb.storageClass}
   accessModes:
     - ReadWriteOnce
   size: ${component.mongodb.volumeSize}

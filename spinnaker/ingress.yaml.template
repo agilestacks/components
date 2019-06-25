@@ -5,8 +5,8 @@ metadata:
   namespace: ${component.spinnaker.namespace}
   labels:
     k8s-addon: ingress-nginx.addons.k8s.io
-  annotations:
-    kubernetes.io/tls-acme: "true"
+  # annotations:
+  #   kubernetes.io/tls-acme: "true"
 spec:
   # tls:
   # - hosts:
@@ -28,8 +28,8 @@ metadata:
   namespace: ${component.spinnaker.namespace}
   labels:
     k8s-addon: ingress-nginx.addons.k8s.io
-  annotations:
-    kubernetes.io/tls-acme: "true"
+  # annotations:
+  #   kubernetes.io/tls-acme: "true"
 spec:
   # tls:
   # - hosts:

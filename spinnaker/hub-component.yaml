@@ -76,8 +76,8 @@ parameters:
       env: JENKINS_PASSWORD
 
 outputs:
-- name:  component.spinnaker.fqdn
-  value: ${component.spinnaker.name}.${component.ingress.fqdn}
+- name:  component.spinnaker.url
+  value: ${component.ingress.protocol}://${component.spinnaker.name}.${component.ingress.fqdn}
 
 templates:
   files:

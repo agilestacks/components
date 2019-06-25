@@ -33,12 +33,10 @@ parameters:
       value: b0d41457fcac49689186667dbdfbef5f
     - name:  database
       value: mongodb
-    - name:  volumeType
-      value: gp2
     - name:  volumeSize
       value: 8Gi
     - name:  storageClass
-      value: "${cloud.kind}-storage"
+      value: default
     - name:  port
       value: 27017
       env:   PORT
@@ -61,4 +59,3 @@ outputs:
 templates:
   files:
     - "*.template"
-

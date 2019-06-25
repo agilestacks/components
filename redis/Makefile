@@ -63,7 +63,7 @@ output:
 		if password=$$($(kubectl) get secret $$secret -o jsonpath='{.data.redis-password}'); then \
 			echo; \
 			echo Outputs:; \
-			echo password=$$password; \
+			echo password=$$password | $(HUB) util otp; \
 			echo; \
 			exit 0; \
 		fi; \

@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 0.11.10"
-  backend          "s3"             {}
+  backend "s3" {}
 }
 
 provider "aws" {
@@ -8,6 +8,7 @@ provider "aws" {
 }
 
 locals {
+  version = "1.13"
   gpu_instance_types = [
     "p2.xlarge",
     "p2.8xlarge",
@@ -56,29 +57,29 @@ locals {
 
 # https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html
 # https://aws.amazon.com/blogs/opensource/improvements-eks-worker-node-provisioning/
-# Kubernetes 1.12.7
+# Kubernetes 1.13.7
 # Region                                    Amazon EKS-optimized AMI  with GPU support
-# US West (Oregon) (us-west-2)              ami-0923e4b35a30a5f53     ami-0bebf2322fd52a42e
-# US East (N. Virginia) (us-east-1)         ami-0abcb9f9190e867ab     ami-0cb7959f92429410a
-# US East (Ohio) (us-east-2)                ami-04ea7cb66af82ae4a     ami-0118b61dc2312dee2
-# EU (Frankfurt) (eu-central-1)             ami-0d741ed58ca5b342e     ami-0c57db5b204001099
-# EU (Stockholm) (eu-north-1)               ami-0c65a309fc58f6907     ami-09354b076296f5946
-# EU (Ireland) (eu-west-1)                  ami-08716b70cac884aaa     ami-0fbc930681258db86
-# EU (London) (eu-west-2)                   ami-0c7388116d474ee10     ami-0d832fced2cfe0f7b
-# EU (Paris) (eu-west-3)                    ami-0560aea042fec8b12     ami-0f8fa088b406ebba2
-# Asia Pacific (Tokyo) (ap-northeast-1)     ami-0bfedee6a7845c26d     ami-08e41cc84f4b3f27f
-# Asia Pacific (Seoul) (ap-northeast-2)     ami-0a904348b703e620c     ami-0c43b885e33fdc29e
-# Asia Pacific (Mumbai) (ap-south-1)        ami-09c3eb35bb3be46a4     ami-0d3ecaf4f3318c714
-# Asia Pacific (Singapore) (ap-southeast-1) ami-07b922b9b94d9a6d2     ami-0655b4dbbe2d46703
-# Asia Pacific (Sydney) (ap-southeast-2)    ami-0f0121e9e64ebd3dc     ami-07079cd9ff1b312da
+# US East (Ohio) (us-east-2)                ami-07ebcae043cf995aa     ami-01f82bb66c17faf20
+# US East (N. Virginia) (us-east-1)         ami-08c4955bcc43b124e     ami-02af865c0f3b337f2
+# US West (Oregon) (us-west-2)              ami-089d3b6350c1769a6     ami-08e5329e1dbf22c6a
+# Asia Pacific (Mumbai) (ap-south-1)        ami-0410a80d323371237     ami-094beaac92afd72eb
+# Asia Pacific (Tokyo) (ap-northeast-1)     ami-04c0f02f5e148c80a     ami-0f409159b757b0292
+# Asia Pacific (Seoul) (ap-northeast-2)     ami-0b7997a20f8424fb1     ami-066623eb3f5a82878
+# Asia Pacific (Singapore) (ap-southeast-1) ami-087e0fca60fb5737a     ami-0d660fb17b06078d9
+# Asia Pacific (Sydney) (ap-southeast-2)    ami-082dfea752d9163f6     ami-0d11124f8f06f8a4f
+# EU (Frankfurt) (eu-central-1)             ami-02d5e7ca7bc498ef9     ami-085b174e2e2b41f33
+# EU (Ireland) (eu-west-1)                  ami-09bbefc07310f7914     ami-093009474b04965b3
+# EU (London) (eu-west-2)                   ami-0f03516f22468f14e     ami-08a5d542db43e17ab
+# EU (Paris) (eu-west-3)                    ami-051015c2c2b73aaea     ami-05cbcb1bc3dbe7a3d
+# EU (Stockholm) (eu-north-1)               ami-0c31ee32297e7397d     ami-0f66f596ae68c0353
 data "aws_ami" "eks_worker" {
   filter {
     name   = "name"
-    values = ["amazon-eks-node-1.12-*", "amazon-eks-gpu-node-1.12-*"]
+    values = ["amazon-eks-${local.instance_gpu ? "gpu-" : ""}node-${local.version}-*"]
   }
 
   most_recent = true
-  owners      = ["602401143452"] # Amazon
+  owners      = ["amazon"]
 }
 
 # https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2019-02-11/amazon-eks-nodegroup.yaml
