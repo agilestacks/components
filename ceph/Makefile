@@ -9,13 +9,13 @@ CEPH_DASHBOARD_USER ?= admin
 CEPH_DASHBOARD_PASS ?= 12345678
 TIMEOUT     		?= 600
 
-deploy: install config_dashboard
+deploy: install_ceph config_ceph_dashboard install_nfs
 
-undeploy: unistall delete_data
+undeploy: uninstall_nfs unistall_ceph delete_data
 
-install:
+install_ceph:
 	- $(kubectl) create namespace $(NAMESPACE)
-	- $(kubectl) create -f rbac.yaml
+	- $(kubectl) create -f ceph-rbac.yaml
 	- $(kubectl) create -f ceph-operator.yaml
 	- $(kubectl) create -f ceph-cluster.yaml
 	- $(kubectl) create -f ceph-blockdevice.yaml
@@ -23,7 +23,7 @@ install:
 	- $(kubectl) create -f ingress.yaml
 	- $(MAKE) wait_up
 
-unistall:
+unistall_ceph:
 	- $(kubectl) delete -f ingress.yaml
 	- $(kubectl) delete -f ceph-blockdevice.yaml
 	- $(kubectl) delete -f ceph-toolbox.yaml
@@ -31,15 +31,27 @@ unistall:
 	- $(kubectl) delete -f ceph-operator.yaml
 	- $(kubectl) delete ds rook-discover
 	- $(kubectl) delete ds rook-ceph-agent
-	- $(kubectl) delete -f rbac.yaml
+	- $(kubectl) delete -f ceph-rbac.yaml
 	- $(MAKE) wait_shutdown
+
+install_nfs:
+	- $(kubectl) create -f nfs/ceph-nfs-rbac.yaml
+	- $(kubectl) create -f nfs/ceph-nfs-operator.yaml
+	- $(kubectl) create -f nfs/ceph-nfs-server.yaml
+	- $(kubectl) create -f nfs/ceph-nfs-storageclass.yaml
+
+uninstall_nfs:
+	- $(kubectl) delete -f nfs/ceph-nfs-storageclass.yaml
+	- $(kubectl) delete -f nfs/ceph-nfs-server.yaml
+	- $(kubectl) delete -f nfs/ceph-nfs-operator.yaml
+	- $(kubectl) delete -f nfs/ceph-nfs-rbac.yaml
 
 delete_data:
 	- $(kubectl) create -f cleanup.yaml
 	sleep 10
 	- $(kubectl) delete -f cleanup.yaml
 
-config_dashboard:
+config_ceph_dashboard:
 	@ echo "Configure CEPH dashboard"
 	$(eval ceph_toolbox=$(shell $(kubectl) get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}'))
 	- $(kubectl) exec -i $(ceph_toolbox) -- bash -c "ceph dashboard ac-role-create $(CEPH_DASHBOARD_ROLE)"

@@ -49,6 +49,8 @@ parameters:
       value: ceph/ceph
     - name: image.tag
       value: v14.2.1-20190430
+    - name: nfs.pvc.size
+      value: 5Gi
 
 outputs:
   - name:  component.ceph.dashboard.fqdn
@@ -59,3 +61,4 @@ outputs:
 templates:
   files:
     - "*.template"
+    - "nfs/*.template"
