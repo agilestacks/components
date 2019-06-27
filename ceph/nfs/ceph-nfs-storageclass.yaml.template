@@ -3,7 +3,7 @@ kind: StorageClass
 metadata:
   labels:
     app: rook-nfs
-  name: rook-nfs-share1
+  name: ${component.ceph.nfs.pvc.storageclass}
 parameters:
   exportName: share1
   nfsServerName: rook-nfs

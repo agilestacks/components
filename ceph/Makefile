@@ -11,7 +11,7 @@ TIMEOUT     		?= 600
 
 deploy: install_ceph config_ceph_dashboard install_nfs
 
-undeploy: uninstall_nfs unistall_ceph delete_data
+undeploy: uninstall_nfs unistall_ceph  delete_data
 
 install_ceph:
 	- $(kubectl) create namespace $(NAMESPACE)
@@ -42,9 +42,12 @@ install_nfs:
 
 uninstall_nfs:
 	- $(kubectl) delete -f nfs/ceph-nfs-storageclass.yaml
+	  # technical debt, the pvc is can't be deleted properly, that's why 'patch'
+	- $(kubectl) patch pvc nfs-ceph-claim -p '{"metadata":{"finalizers":null}}'
 	- $(kubectl) delete -f nfs/ceph-nfs-server.yaml
 	- $(kubectl) delete -f nfs/ceph-nfs-operator.yaml
 	- $(kubectl) delete -f nfs/ceph-nfs-rbac.yaml
+
 
 delete_data:
 	- $(kubectl) create -f cleanup.yaml
