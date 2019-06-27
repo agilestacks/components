@@ -70,7 +70,7 @@ ceph_tools:
 wait_up:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
 	$(eval get_pod=$(kubectl) get pods --no-headers -l 'app=rook-ceph-osd' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}')
-	@ echo "Waiting for ceph osd pod up and running [container count: $(count)]"
+	@ echo "Waiting for ceph osd pod up and running [container count: 1]"
 
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
 		if [[ `$(get_pod) | wc -w | xargs` -ge 1 ]]; then \
