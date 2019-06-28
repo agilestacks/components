@@ -6,11 +6,11 @@ terraform {
 
 provider "google" {
   project = "${var.project}"
-  version = "2.6.0"
+  version = "2.7.0"
 }
 
 provider "random" {
-  version = "~> 2.1"
+  version = "2.1.2"
 }
 
 resource "random_id" "db_name_suffix" {
