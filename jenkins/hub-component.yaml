@@ -62,6 +62,17 @@ parameters:
   - name: name
     empty: allow
     env: BUCKET_NAME
+- name: component.ceph
+  parameters:
+  - name: nfs.pvc.storageclass
+    empty: allow
+    env: NFS_PVC_STORAGECLASS
+  - name: nfs.pvc.name
+    empty: allow
+    value: rook-nfs-pv-claim
+  - name: blockdevice.pvc.storageclass
+    empty: allow
+    env: BLOCKDEVICE_PVC_STORAGECLASS
 
 outputs:
 - name:  component.jenkins.serviceaccount.user

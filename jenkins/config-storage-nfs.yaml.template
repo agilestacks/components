@@ -1,0 +1,15 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: storage-config
+  namespace: ${component.jenkins.namespace}
+  labels:
+    provider:  agilestacks.com
+    project:   jenkins
+    qualifier: storage-config
+data:
+  BUCKET_KIND: ${component.bucket.kind}
+  NFS_PVC_STORAGECLASS: ${component.ceph.nfs.pvc.storageclass}
+  NFS_PVC_NAME: ${component.ceph.nfs.pvc.name}
+  BLOCKDEVICE_PVC_STORAGECLASS: ${component.ceph.blockdevice.pvc.storageclass}
+  
