@@ -40,6 +40,9 @@ parameters:
         env: TF_VAR_aks_resource_group_name
         value: ${cloud.azureResourceGroupName}
 
+  - name: component.traefik.helm.timeout
+    value: 30
+
   - name: terraform.bucket.name
     env: STATE_BUCKET
   - name: terraform.bucket.region
@@ -70,3 +73,4 @@ outputs:
     fromTfVar: api_ca_crt
   - name: kubernetes.api.token
     fromTfVar: token
+  - name: component.traefik.helm.timeout
