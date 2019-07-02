@@ -119,6 +119,13 @@ gcsgateway:
   # Google cloud project-id
   projectId: ""
 
+ingress:
+  enabled: true
+  annotations: {}
+  path: /
+  hosts:
+    - ${component.minio.name}.${component.minio.ingress.baseDomain}
+
 ## Use minio on NAS backend
 ## https://docs.minio.io/docs/minio-gateway-for-nas
 

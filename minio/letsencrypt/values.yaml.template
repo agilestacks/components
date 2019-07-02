@@ -1,10 +1,6 @@
 ingress:
-  enabled: true
   annotations:
     kubernetes.io/tls-acme: "true"
-  path: /
-  hosts:
-    - ${component.minio.name}.${component.minio.ingress.baseDomain}
   tls:
   - secretName: ${component.minio.name}-tls
     hosts:

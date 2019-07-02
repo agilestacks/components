@@ -1,7 +1,2 @@
 ingress:
-  enabled: true
-  annotations: {}
-  path: /
-  hosts:
-    - ${component.minio.name}.${component.minio.ingress.baseDomain}
   tls: []
