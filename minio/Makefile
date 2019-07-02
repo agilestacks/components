@@ -9,7 +9,6 @@ INGRESS_DOMAIN ?= localhost
 PROTOCOL       ?= http
 ALIAS          ?= $(COMPONENT_NAME)
 DOMAIN         ?= minio
-TLS_KIND ?= shold-be-set
 
 DEFAULT_BUCKET ?= default
 
@@ -53,6 +52,15 @@ ifeq ($(NATS_ENABLED),true)
 	MINIO_NOTIFICATIONS += nats-notifications
 endif
 
+HELM_OPTS := --values values.yaml
+HELM_OPTS += --set 'accessKey=$(ACCESS_KEY)'
+HELM_OPTS += --set 'secretKey=$(SECRET_KEY)'
+HELM_OPTS += --set 'fullnameOverride=$(SECRET)'
+
+ifneq ($(TLS_KIND),)
+HELM_OPTS += --values $(TLS_KIND)/values.yaml
+endif
+
 deploy: clean init fetch purge install configure $(MINIO_NOTIFICATIONS) output
 
 init:
@@ -78,15 +86,11 @@ purge:
 install: namespace
 	@ echo Running helm install charts/minio...
 	@ $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
-		$(helm) install charts/minio \
+		$(helm) install charts/minio $(HELM_OPTS) \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--replace \
-			--wait \
-			--values $(TLS_KIND)/values.yaml \
-			--set 'accessKey=$(ACCESS_KEY)' \
-			--set 'secretKey=$(SECRET_KEY)' \
-			--set 'fullnameOverride=$(SECRET)'
+			--wait
 
 configure:
 	@ sleep 60s

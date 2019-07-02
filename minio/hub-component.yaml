@@ -26,6 +26,7 @@ lifecycle:
 parameters:
   - name: component.tls.kind
     env: TLS_KIND
+    empty: allow
   - name: dns.name
     env: DOMAIN
   - name: dns.domain

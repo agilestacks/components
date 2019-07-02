@@ -78,19 +78,6 @@ service:
     # prometheus.io/path:   '/minio/prometheus/metrics'
     # prometheus.io/port:   '9000'
 
-ingress:
-  enabled: true
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  path: /
-  hosts:
-    - ${component.minio.name}.${component.minio.ingress.baseDomain}
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
 ## Node labels for pod assignment
 ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
 ##
