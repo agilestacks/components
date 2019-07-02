@@ -45,6 +45,8 @@ ifeq ($(BUCKET_KIND),s3)
 endif
 ifeq ($(BUCKET_KIND), ceph)
 	- $(kubectl) delete -f config-storage-nfs.yaml
+	# technical debt, the pvc is can't be deleted properly, that's why 'patch'
+	- $(kubectl) patch pvc rook-nfs-pv-claim -p '{"metadata":{"finalizers":null}}'
 	- $(kubectl) delete -f volume-claims-nfs.yaml
 endif
 	- $(kubectl) delete configmap script-approvals
