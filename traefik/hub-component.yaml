@@ -169,6 +169,9 @@ parameters:
     - name: kubernetes.kubeconfigContext
       value: ${dns.domain}
       env: TF_VAR_kubeconfig_context
+    - name: helm.timeout
+      value: 10
+      env: HELM_TIMEOUT
 
 outputs:
 - name: component.ingress.fqdn
