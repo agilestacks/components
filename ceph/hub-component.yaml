@@ -38,6 +38,8 @@ parameters:
       env: NAMESPACE
     - name: storage.path
       value: /var/lib/rook
+    - name: flex.volume.path
+      value: '#{cloud.kind == "gcp" ? "/home/kubernetes/flexvolume" : "/var/lib/kubelet/volumeplugins"}'
     - name: mon.replicas
       value: 3
     - name: dashboard.port
