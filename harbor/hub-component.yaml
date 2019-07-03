@@ -110,3 +110,5 @@ templates:
   - "aws/*/*.template"
   - "hybrid/*.template"
   - "hybrid/*/*.template"
+  - "gcp/*.template"
+  - "gcp/*/*.template"
