@@ -170,7 +170,7 @@ parameters:
       value: ${dns.domain}
       env: TF_VAR_kubeconfig_context
     - name: helm.timeout
-      value: 10
+      value: 900
       env: HELM_TIMEOUT
 
 outputs:
