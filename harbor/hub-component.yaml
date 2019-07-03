@@ -16,7 +16,7 @@ parameters:
 - name: dns.domain
   env: DOMAIN_NAME
 - name: cloud.region
-  kind: user
+  empty: allow
   env: AWS_DEFAULT_REGION
 - name: cloud.kind
   env: CLOUD_KIND
