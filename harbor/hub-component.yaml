@@ -80,7 +80,7 @@ parameters:
   - name: password
     env: ADMIN_PASSWORD
   - name: storageClass
-    value: harbor-storage-class
+    value: default
 - name: component.cert-manager
   parameters:
   - name: issuer-email
