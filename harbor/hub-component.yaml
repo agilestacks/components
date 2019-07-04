@@ -80,7 +80,7 @@ parameters:
   - name: password
     env: ADMIN_PASSWORD
   - name: storageClass
-    value: default
+    value: '#{cloud.kind == "gcp" ? "standard" : "default"}'
 - name: component.cert-manager
   parameters:
   - name: issuer-email
@@ -112,3 +112,5 @@ templates:
   - "hybrid/*/*.template"
   - "gcp/*.template"
   - "gcp/*/*.template"
+  - "azure/*.template"
+  - "azure/*/*.template"

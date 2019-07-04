@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := deploy
 
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+
 deploy: $(PULL_SECRET)
 undeploy: delete-$(PULL_SECRET)
 
