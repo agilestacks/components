@@ -36,7 +36,7 @@ parameters:
       env: SERVICE_ACCOUNT
     - name: aks
       parameters:
-      - name: aksResourceGroupName
+      - name: resourceGroupName
         env: TF_VAR_aks_resource_group_name
         value: ${cloud.azureResourceGroupName}
 
