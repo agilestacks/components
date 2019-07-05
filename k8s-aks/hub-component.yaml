@@ -19,6 +19,9 @@ lifecycle:
   readyConditions:
     - dns: ${kubernetes.api.endpoint}
       url: https://${kubernetes.api.endpoint}
+  options:
+    random:
+      bytes: 2048
 
 parameters:
   - name: kubernetes.aks.cluster
@@ -47,19 +50,21 @@ parameters:
   - name: cloud.azureResourceGroupName
     env: CLOUD_RESOURCE_GROUP
 
-
 outputs:
   - name: cloud.kind
     value: azure
-  - name: kubernetes.flavor
-    value: aks
   - name: cloud.region
+  - name: cloud.availabilityZone
+    value: 1
   - name: cloud.azureResourceGroupName
   - name: dns.domain
   - name: dns.name
     fromTfVar: dns_name
   - name: dns.baseDomain
     fromTfVar: dns_base_domain
+  - name: kubernetes.aks.cluster
+  - name: kubernetes.flavor
+    value: aks
   - name: kubernetes.api.host
     fromTfVar: fqdn
   - name: kubernetes.api.port
@@ -69,4 +74,4 @@ outputs:
   - name: kubernetes.api.caCert
     fromTfVar: api_ca_crt
   - name: kubernetes.api.token
-    fromTfVar: token
+    fromTfVar: token/base64
