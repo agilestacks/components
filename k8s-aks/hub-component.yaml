@@ -56,7 +56,10 @@ outputs:
   - name: cloud.region
   - name: cloud.availabilityZone
     value: 1
+  # we won't be able to handle a cluster in the resource group that's
+  # different from the cloud account resource group though
   - name: cloud.azureResourceGroupName
+    # value: ${component.kubernetes.aks.resourceGroupName}
   - name: dns.domain
   - name: dns.name
     fromTfVar: dns_name
