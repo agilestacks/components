@@ -45,8 +45,7 @@ install_nfs:
 uninstall_nfs:
 	- $(kubectl) delete -f nfs/ceph-nfs-storageclass.yaml
 	  # technical debt, the pvc is can't be deleted properly, that's why 'patch'
-	- $(kubectl) patch pvc nfs-ceph-claim -p '{"metadata":{"finalizers":null}}'
-	- $(kubectl) delete -f nfs/ceph-nfs-pvc.yaml
+	- $(kubectl) delete -f nfs/ceph-nfs-pvc.yaml & sleep 5 && $(kubectl) patch pvc nfs-ceph-claim -p '{"metadata":{"finalizers":null}}'
 	- $(kubectl) delete -f nfs/ceph-nfs-server.yaml
 	- $(kubectl) delete -f nfs/ceph-nfs-operator.yaml
 	- $(kubectl) delete -f nfs/ceph-nfs-rbac.yaml
