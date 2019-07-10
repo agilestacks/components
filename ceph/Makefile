@@ -37,6 +37,8 @@ unistall_ceph:
 install_nfs:
 	- $(kubectl) create -f nfs/ceph-nfs-rbac.yaml
 	- $(kubectl) create -f nfs/ceph-nfs-operator.yaml
+	- $(kubectl) create -f nfs/ceph-nfs-pvc.yaml && sleep 15
+	- $(MAKE) wait_pvc_bound
 	- $(kubectl) create -f nfs/ceph-nfs-server.yaml
 	- $(kubectl) create -f nfs/ceph-nfs-storageclass.yaml
 
@@ -44,6 +46,7 @@ uninstall_nfs:
 	- $(kubectl) delete -f nfs/ceph-nfs-storageclass.yaml
 	  # technical debt, the pvc is can't be deleted properly, that's why 'patch'
 	- $(kubectl) patch pvc nfs-ceph-claim -p '{"metadata":{"finalizers":null}}'
+	- $(kubectl) delete -f nfs/ceph-nfs-pvc.yaml
 	- $(kubectl) delete -f nfs/ceph-nfs-server.yaml
 	- $(kubectl) delete -f nfs/ceph-nfs-operator.yaml
 	- $(kubectl) delete -f nfs/ceph-nfs-rbac.yaml
@@ -66,6 +69,22 @@ config_ceph_dashboard:
 
 ceph_tools:
 	- $(kubectl) exec -it $(shell $(kubectl) get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') bash
+
+wait_pvc_bound:
+	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
+	$(eval get_pvc=$(kubectl) get pvc --no-headers -l 'pvc-name=nfs-ceph-claim' --output=jsonpath='{.items..spec.volumeName}')
+	@ echo "Waiting for blockdevice pvc to be bound"
+
+	@ while [ `date +%s` -le "$(timeout)" ]; do \
+		if [[ `$(get_pvc) | wc -w | xargs` -ge 1 ]]; then \
+			echo " done"; \
+			exit 0; \
+		fi; \
+		printf "."; \
+		sleep 8; \
+	done; \
+	echo " ERROR timeout $(TIMEOUT)sec"; \
+	exit 1
 
 wait_up:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))

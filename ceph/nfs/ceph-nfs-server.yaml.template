@@ -2,19 +2,6 @@
 # A rook ceph cluster must be running
 # Create a rook ceph cluster using examples in rook/cluster/examples/kubernetes/ceph
 # Refer to https://rook.io/docs/rook/master/ceph-quickstart.html for a quick rook cluster setup
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: ${component.ceph.blockdevice.pvc.name}
-  namespace: ${component.ceph.namespace}
-spec:
-  storageClassName: ${component.ceph.blockdevice.pvc.storageclass}
-  accessModes:
-  - ReadWriteMany
-  resources:
-    requests:
-      storage: ${component.ceph.nfs.pvc.size}
----
 apiVersion: nfs.rook.io/v1alpha1
 kind: NFSServer
 metadata:
