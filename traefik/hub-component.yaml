@@ -188,7 +188,7 @@ outputs:
   value: ${component.traefik.kubernetes.ingressClass}
 - name: component.ingress.dashboard.url
   value: ${component.ingress.protocol}://${component.ingress.ssoFqdn}/dashboard/
-- name: component.ingress.load-balancer
+- name: component.ingress.loadBalancer
   fromTfVar: load_balancer
 
 templates:
