@@ -15,6 +15,9 @@ undeploy: uninstall_nfs unistall_ceph  delete_data
 
 install_ceph:
 	- $(kubectl) create namespace $(NAMESPACE)
+ifeq ($(CLOUD_KIND), azure)
+	- $(kubectl) apply -f azure-ceph-flexvolume-installer.yaml
+endif
 	- $(kubectl) create -f ceph-rbac.yaml
 	- $(kubectl) create -f ceph-operator.yaml
 	- $(kubectl) create -f ceph-cluster.yaml
@@ -33,6 +36,9 @@ unistall_ceph:
 	- $(kubectl) delete ds rook-ceph-agent
 	- $(kubectl) delete -f ceph-rbac.yaml
 	- $(MAKE) wait_shutdown
+ifeq ($(CLOUD_KIND), azure)
+	- $(kubectl) delete -f azure-ceph-flexvolume-installer.yaml
+endif
 
 install_nfs:
 	- $(kubectl) create -f nfs/ceph-nfs-rbac.yaml
@@ -41,6 +47,7 @@ install_nfs:
 	- $(MAKE) wait_pvc_bound
 	- $(kubectl) create -f nfs/ceph-nfs-server.yaml
 	- $(kubectl) create -f nfs/ceph-nfs-storageclass.yaml
+
 
 uninstall_nfs:
 	- $(kubectl) delete -f nfs/ceph-nfs-storageclass.yaml

@@ -31,6 +31,8 @@ parameters:
     env: DOMAIN
   - name: dns.domain
     env: DOMAIN_NAME
+  - name: cloud.kind
+    env: CLOUD_KIND
   - name: component.ceph
     parameters:
     - name: namespace
