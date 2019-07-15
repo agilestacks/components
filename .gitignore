@@ -79,6 +79,8 @@ kube-dashboard/rbac-view-all.yaml
 kube-dashboard/service.yaml
 kube-dashboard/serviceaccount.yaml
 minio/charts
+Mk/requires-provides-node/node_modules
+Mk/requires-provides-node/package-lock.json
 namespace.yaml
 nats/charts
 nats/mon-ingress.yaml
