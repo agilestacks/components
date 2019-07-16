@@ -11,6 +11,7 @@ requires:
   - kubernetes
   - helm
   - tiller
+  - etcd
 provides:
   - vault
 
