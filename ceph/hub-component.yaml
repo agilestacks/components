@@ -31,6 +31,8 @@ parameters:
     env: DOMAIN
   - name: dns.domain
     env: DOMAIN_NAME
+  - name: cloud.kind
+    env: CLOUD_KIND
   - name: component.ceph
     parameters:
     - name: namespace
@@ -38,6 +40,8 @@ parameters:
       env: NAMESPACE
     - name: storage.path
       value: /var/lib/rook
+    - name: flex.volume.path
+      value: '#{cloud.kind == "gcp" ? "/home/kubernetes/flexvolume" : cloud.kind == "azure" ? "/etc/kubernetes/volumeplugins" : "/var/lib/kubelet/volumeplugins"}'
     - name: mon.replicas
       value: 3
     - name: dashboard.port
@@ -49,13 +53,32 @@ parameters:
       value: ceph/ceph
     - name: image.tag
       value: v14.2.1-20190430
+    - name: nfs
+      parameters:
+      - name: pvc.storageclass
+        value: rook-nfs-share1
+      - name: pvc.size
+        value: 5Gi
+    - name: blockdevice
+      parameters:
+      - name: pvc.name
+        value: nfs-ceph-claim
+      - name: pvc.storageclass
+        value: rook-ceph-block
 
 outputs:
+  - name: component.ceph.nfs.pvc.storageclass
+    value: ${component.ceph.nfs.pvc.storageclass}
+  - name: component.ceph.blockdevice.pvc.storageclass
+    value: ${component.ceph.blockdevice.pvc.storageclass}
   - name:  component.ceph.dashboard.fqdn
     value: ${component.ceph.namespace}.${component.ingress.ssoFqdn}
   - name:  component.ceph.dashboard.url
     value: ${component.ingress.protocol}://${component.ceph.dashboard.fqdn}
+  - name: component.bucket.kind
+    value: ${component.bucket.kind}
 
 templates:
   files:
     - "*.template"
+    - "nfs/*.template"

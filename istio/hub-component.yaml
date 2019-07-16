@@ -19,36 +19,38 @@ parameters:
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.ingress.protocol
-  - name: component.ingress.ssoFqdn
+  - name: component.ingress.fqdn
   - name: component.istio
     parameters:
     - name: namespace
       value: istio-system
       env: NAMESPACE
     - name: version.release
-      value: 1.0.5
+      value: 1.2.2
       env: ISTIO_VERSION
     - name: version.repository
-     #value: docker.io/istio
       value: gcr.io/istio-release
+     #value: docker.io/istio
     - name: version.image
-     #value: 1.0.5
-      value: release-1.0-latest-daily
+      value: release-1.2-latest-daily
+     #value: 1.2.2
     - name: tracing.enabled
       value: false
     - name: prometheus.enabled
       value: true
     - name: grafana.enabled
       value: false
-    - name: servicegraph.enabled
+    - name: certmanager.enabled
+      value: false
+    - name: kiali.enabled
       value: true
-    - name: servicegraph.urlPrefix
-      value: istio-servicegraph
+    - name: kiali.urlPrefix
+      value: istio-kiali
 
 outputs:
-  - name: component.istio.servicegraph.url
+  - name: component.istio.kiali.url
     brief: Istio Service Graph
-    value: ${component.ingress.protocol}://${component.istio.servicegraph.urlPrefix}.${component.ingress.ssoFqdn}/force/forcegraph.html
+    value: ${component.ingress.protocol}://${component.istio.kiali.urlPrefix}.${component.ingress.fqdn}/kiali
 
 templates:
   files:

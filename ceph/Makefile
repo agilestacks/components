@@ -9,13 +9,16 @@ CEPH_DASHBOARD_USER ?= admin
 CEPH_DASHBOARD_PASS ?= 12345678
 TIMEOUT     		?= 600
 
-deploy: install config_dashboard
+deploy: install_ceph config_ceph_dashboard install_nfs
 
-undeploy: unistall delete_data
+undeploy: uninstall_nfs unistall_ceph  delete_data
 
-install:
+install_ceph:
 	- $(kubectl) create namespace $(NAMESPACE)
-	- $(kubectl) create -f rbac.yaml
+ifeq ($(CLOUD_KIND), azure)
+	- $(kubectl) apply -f azure-ceph-flexvolume-installer.yaml
+endif
+	- $(kubectl) create -f ceph-rbac.yaml
 	- $(kubectl) create -f ceph-operator.yaml
 	- $(kubectl) create -f ceph-cluster.yaml
 	- $(kubectl) create -f ceph-blockdevice.yaml
@@ -23,7 +26,7 @@ install:
 	- $(kubectl) create -f ingress.yaml
 	- $(MAKE) wait_up
 
-unistall:
+unistall_ceph:
 	- $(kubectl) delete -f ingress.yaml
 	- $(kubectl) delete -f ceph-blockdevice.yaml
 	- $(kubectl) delete -f ceph-toolbox.yaml
@@ -31,15 +34,36 @@ unistall:
 	- $(kubectl) delete -f ceph-operator.yaml
 	- $(kubectl) delete ds rook-discover
 	- $(kubectl) delete ds rook-ceph-agent
-	- $(kubectl) delete -f rbac.yaml
+	- $(kubectl) delete -f ceph-rbac.yaml
 	- $(MAKE) wait_shutdown
+ifeq ($(CLOUD_KIND), azure)
+	- $(kubectl) delete -f azure-ceph-flexvolume-installer.yaml
+endif
+
+install_nfs:
+	- $(kubectl) create -f nfs/ceph-nfs-rbac.yaml
+	- $(kubectl) create -f nfs/ceph-nfs-operator.yaml
+	- $(kubectl) create -f nfs/ceph-nfs-pvc.yaml && sleep 15
+	- $(MAKE) wait_pvc_bound
+	- $(kubectl) create -f nfs/ceph-nfs-server.yaml
+	- $(kubectl) create -f nfs/ceph-nfs-storageclass.yaml
+
+
+uninstall_nfs:
+	- $(kubectl) delete -f nfs/ceph-nfs-storageclass.yaml
+	  # technical debt, the pvc is can't be deleted properly, that's why 'patch'
+	- $(kubectl) delete -f nfs/ceph-nfs-pvc.yaml & sleep 5 && $(kubectl) patch pvc nfs-ceph-claim -p '{"metadata":{"finalizers":null}}'
+	- $(kubectl) delete -f nfs/ceph-nfs-server.yaml
+	- $(kubectl) delete -f nfs/ceph-nfs-operator.yaml
+	- $(kubectl) delete -f nfs/ceph-nfs-rbac.yaml
+
 
 delete_data:
 	- $(kubectl) create -f cleanup.yaml
 	sleep 10
 	- $(kubectl) delete -f cleanup.yaml
 
-config_dashboard:
+config_ceph_dashboard:
 	@ echo "Configure CEPH dashboard"
 	$(eval ceph_toolbox=$(shell $(kubectl) get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}'))
 	- $(kubectl) exec -i $(ceph_toolbox) -- bash -c "ceph dashboard ac-role-create $(CEPH_DASHBOARD_ROLE)"
@@ -52,10 +76,26 @@ config_dashboard:
 ceph_tools:
 	- $(kubectl) exec -it $(shell $(kubectl) get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') bash
 
+wait_pvc_bound:
+	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
+	$(eval get_pvc=$(kubectl) get pvc --no-headers -l 'pvc-name=nfs-ceph-claim' --output=jsonpath='{.items..spec.volumeName}')
+	@ echo "Waiting for blockdevice pvc to be bound"
+
+	@ while [ `date +%s` -le "$(timeout)" ]; do \
+		if [[ `$(get_pvc) | wc -w | xargs` -ge 1 ]]; then \
+			echo " done"; \
+			exit 0; \
+		fi; \
+		printf "."; \
+		sleep 8; \
+	done; \
+	echo " ERROR timeout $(TIMEOUT)sec"; \
+	exit 1
+
 wait_up:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
 	$(eval get_pod=$(kubectl) get pods --no-headers -l 'app=rook-ceph-osd' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}')
-	@ echo "Waiting for ceph osd pod up and running [container count: $(count)]"
+	@ echo "Waiting for ceph osd pod up and running [container count: 1]"
 
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
 		if [[ `$(get_pod) | wc -w | xargs` -ge 1 ]]; then \

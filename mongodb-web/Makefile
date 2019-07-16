@@ -15,20 +15,20 @@ kubernetes:
 	$(kubectl) apply -f ingress.yaml
 	$(kubectl) apply -f deployment.yaml
 
+mongo_ready_container=$(kubectl) get pods -l 'project=mongodb-dashboard,qualifier=master' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}'
 wait:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
-	$(eval get_pod=$(kubectl) get pods -l 'project=mongodb-dashboard,qualifier=master' --output=jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}')
 	@echo "Waiting for MongoDB Dashboard pod is up and running"
 
 	@while [ `date +%s` -le "$(timeout)" ]; do \
-		if [[ `$(get_pod)` ]]; then \
+		if test -n "`$(mongo_ready_container)`"; then \
 			echo done; \
 			exit 0; \
 		fi; \
-		printf "."; \
+		echo 'still waiting'; \
 		sleep 8; \
 	done; \
-	echo "ERROR timeout $(TIMEOUT) sec"; \
+	echo "ERROR timeout $(TIMEOUT)sec"; \
 	exit 1
 
 undeploy:

@@ -1,15 +1,16 @@
 .DEFAULT_GOAL := deploy
 
-HELM_HOME      ?= ./.helm
 COMPONENT_NAME ?= istio
 NAMESPACE      ?= istio-system
 DOMAIN_NAME    ?= default
-ISTIO_VERSION  ?= 1.0.5
+ISTIO_VERSION  ?= 1.2.2
+
+export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy: clean init fetch patch namespace purge install usage
+deploy: clean init repo namespace purge install usage
 
 namespace:
 	$(kubectl) apply -f namespace.yaml
@@ -18,45 +19,61 @@ init:
 	@mkdir -p $(HELM_HOME)
 	$(helm) init --client-only --upgrade --wait
 
-# https://github.com/istio/istio/issues/7505
-fetch: istio-$(ISTIO_VERSION)
-
-istio-$(ISTIO_VERSION):
-	curl -L https://github.com/istio/istio/archive/$(ISTIO_VERSION).tar.gz | \
-		tar xz istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio
-
-# https://github.com/istio/istio/pull/7625
-# https://github.com/istio/istio/blob/master/install/kubernetes/helm/subcharts/servicegraph/templates/ingress.yaml
-patch:
-	-@sed -i~ -e 's/serviceName: .*/serviceName: servicegraph/' \
-			istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/charts/servicegraph/templates/ingress.yaml && \
-		rm -f istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio/charts/servicegraph/templates/ingress.yaml~
-.PHONY: patch
+repo:
+	$(helm) repo add istio https://storage.googleapis.com/istio-release/releases/$(ISTIO_VERSION)/charts/
+.PHONY: repo
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-init$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME)-init && \
 		$(kubectl) get crd -o name | grep -F istio.io | xargs $(kubectl) delete || exit 0
 
-install:
+install: install-init wait-crds install-app
+
+install-init:
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-init$$' || \
+		$(helm) install istio/istio-init \
+			--name $(COMPONENT_NAME)-init \
+			--namespace $(NAMESPACE) \
+			--replace \
+			--wait \
+			--values values.yaml.$(ISTIO_VERSION)
+.PHONY: install-init
+
+wait-crds:
+	@echo "Waiting for CRDs to install"; \
+	for i in $$(seq 1 60); do \
+		if test $$($(kubectl) get crds | grep -F .istio.io | wc -l) -ge 23; then \
+			echo "done"; \
+			exit 0; \
+		fi; \
+		echo "still waiting"; \
+		sleep 10; \
+	done; \
+	echo "timeout"; \
+	exit 1;
+.PHONY: wait-crds
+
+install-app:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
-		$(helm) install istio-$(ISTIO_VERSION)/install/kubernetes/helm/istio \
+		$(helm) install istio/istio \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--replace \
 			--wait \
 			--values values.yaml.$(ISTIO_VERSION)
+.PHONY: install-app
 
 usage:
-	@echo
-	@echo Enable automatic sidecar injection by labeling a namespace:
-	@echo kubectl label namespace NAMESPACE istio-injection=enabled
 	@echo https://istio.io/docs/setup/kubernetes/sidecar-injection/
-	@echo
 
 undeploy:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-init$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME)-init || exit 0
 	-$(kubectl) get crd -o name | grep -F istio.io | xargs $(kubectl) delete
 
 clean:

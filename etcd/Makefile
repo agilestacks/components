@@ -58,13 +58,13 @@ wait_etcd_pods%:
 	@if test "$(CLUSTER_ENABLED)" = true; then echo "Waiting for etcd cluster pods to stand up"; \
 	for i in $$(seq 1 60); do \
 		if test $$($(running_etcd_pods) | wc -l) -eq $(ETCD_CLUSTER_SIZE); then \
-			echo " done"; \
+			echo "done"; \
 			exit 0; \
 		fi; \
-		printf "."; \
+		echo "still waiting"; \
 		sleep 10; \
 	done; \
-	echo " timeout"; \
+	echo "timeout"; \
 	exit 1; fi
 .PHONY: wait_etcd_pods%
 
@@ -86,10 +86,10 @@ backup: unbackup backup_config
 	@ echo "Waiting for $(crd)"
 	@ for i in $$(seq 60); do \
 		if test "$$($(get_crd) | jq -r '.status.succeeded')" != null; then \
-			echo " done"; \
+			echo "done"; \
 			break; \
 		fi; \
-		printf "."; \
+		echo "still waiting"; \
 		sleep 2; \
 	done;
 
@@ -119,10 +119,10 @@ restore: wait_etcd_pods_seed unrestore restore_config
 	@ echo "Waiting for $(crd)"
 	@ for i in $$(seq 60); do \
 		if test "$$($(get_crd) | jq -r '.status.succeeded')" != null; then \
-			echo " done"; \
+			echo "done"; \
 			break; \
 		fi; \
-		printf "."; \
+		echo "still waiting"; \
 		sleep 5; \
 	done;
 

@@ -1,0 +1,13 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  labels:
+    app: rook-nfs
+  name: ${component.ceph.nfs.pvc.storageclass}
+parameters:
+  exportName: share1
+  nfsServerName: rook-nfs
+  nfsServerNamespace: ${component.ceph.namespace}
+provisioner: rook.io/nfs-provisioner
+reclaimPolicy: Delete
+volumeBindingMode: Immediate

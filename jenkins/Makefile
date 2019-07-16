@@ -14,8 +14,12 @@ deploy:
 	- $(kubectl) create configmap script-approvals --from-file=approvals/
 	- $(kubectl) label --overwrite configmap/init-scripts provider=agilestacks.com project=jenkins qualifier=init-scripts
 	- $(kubectl) label --overwrite configmap/script-approvals provider=agilestacks.com project=jenkins qualifier=script-approvals
-ifneq ($(BUCKET_KIND),)	
-	- $(kubectl) apply -f config-storage.yaml
+ifeq ($(BUCKET_KIND), s3)
+	- $(kubectl) apply -f config-storage-s3.yaml
+endif
+ifeq ($(BUCKET_KIND), ceph)
+	- $(kubectl) apply -f config-storage-nfs.yaml
+	- $(kubectl) apply -f volume-claims-nfs.yaml
 endif
 	- $(kubectl) apply -f secrets.yaml
 	- $(kubectl) apply -f config.yaml
@@ -36,8 +40,14 @@ undeploy:
 	- $(kubectl) delete -f service.yaml
 	- $(kubectl) delete -f secrets.yaml
 	- $(kubectl) delete -f config.yaml
-ifneq ($(BUCKET_KIND),)	
-	- $(kubectl) delete -f config-storage.yaml	
+ifeq ($(BUCKET_KIND),s3)
+	- $(kubectl) delete -f config-storage.yaml
+endif
+ifeq ($(BUCKET_KIND), ceph)
+	- $(kubectl) delete -f config-storage-nfs.yaml
+	# technical debt, the pvc is can't be deleted properly, that's why 'patch'
+	- $(kubectl) patch pvc rook-nfs-pv-claim -p '{"metadata":{"finalizers":null}}'
+	- $(kubectl) delete -f volume-claims-nfs.yaml
 endif
 	- $(kubectl) delete configmap script-approvals
 	- $(kubectl) delete configmap init-scripts

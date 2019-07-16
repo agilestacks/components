@@ -16,7 +16,7 @@ parameters:
 - name: dns.domain
   env: DOMAIN_NAME
 - name: cloud.region
-  kind: user
+  empty: allow
   env: AWS_DEFAULT_REGION
 - name: cloud.kind
   env: CLOUD_KIND
@@ -80,7 +80,7 @@ parameters:
   - name: password
     env: ADMIN_PASSWORD
   - name: storageClass
-    value: harbor-storage-class
+    value: '#{cloud.kind == "gcp" ? "standard" : "default"}'
 - name: component.cert-manager
   parameters:
   - name: issuer-email
@@ -110,3 +110,7 @@ templates:
   - "aws/*/*.template"
   - "hybrid/*.template"
   - "hybrid/*/*.template"
+  - "gcp/*.template"
+  - "gcp/*/*.template"
+  - "azure/*.template"
+  - "azure/*/*.template"

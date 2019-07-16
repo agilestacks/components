@@ -14,9 +14,11 @@ SERVICE_ACCOUNT ?= asi
 
 LOCATION := $(REGION)
 LOCATION_KIND :=--region
+DEFAULT_ZONE := $(REGION)-b
 ifneq (,$(ZONE))
-	LOCATION=$(ZONE)
-	LOCATION_KIND=--zone
+	LOCATION := $(ZONE)
+	LOCATION_KIND := --zone
+	DEFAULT_ZONE := $(ZONE)
 endif
 
 export TF_VAR_base_domain ?= $(BASE_DOMAIN)
@@ -35,7 +37,7 @@ TF_CLI_ARGS := -no-color -input=false -lock=false
 TFPLAN := $(TF_DATA_DIR)/$(DOMAIN_NAME).tfplan
 
 gcloud ?= gcloud
-kubectl ?= kubectl
+kubectl ?= kubectl --context=gke_$(PROJECT)_$(LOCATION)_$(CLUSTER_NAME)
 
 init:
 	@mkdir -p $(TF_DATA_DIR)
@@ -58,18 +60,11 @@ gcontext:
 .PHONY: gcontext
 
 createsa: gcontext
-	@if $(kubectl) get -n default serviceaccount $(SERVICE_ACCOUNT) ; then \
-		echo "Service Account $(SERVICE_ACCOUNT) exists"; \
-	else \
-		$(kubectl) create -n default serviceaccount $(SERVICE_ACCOUNT); \
-	fi
-	@if $(kubectl) get clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding ; then \
-		echo "Clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding exists"; \
-	else \
-		$(kubectl) create clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding \
-			--clusterrole=cluster-admin --serviceaccount=default:$(SERVICE_ACCOUNT); \
-	fi
-	@sleep 10s
+	$(kubectl) get -n default serviceaccount $(SERVICE_ACCOUNT) || \
+		($(kubectl) create -n default serviceaccount $(SERVICE_ACCOUNT) && sleep 7)
+	$(kubectl) get clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding || \
+		($(kubectl) create clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding \
+			--clusterrole=cluster-admin --serviceaccount=default:$(SERVICE_ACCOUNT) && sleep 7)
 .PHONY: createsa
 
 storage:
@@ -79,9 +74,8 @@ storage:
 token:
 	$(eval SECRET=$(shell $(kubectl) get serviceaccount $(SERVICE_ACCOUNT) -o json | \
 		jq '.secrets[] | select(.name | contains("token")).name'))
-	$(eval TOKEN_BASE64=$(shell $(kubectl) get secret $(SECRET) -o json | \
+	$(eval TOKEN=$(shell $(kubectl) get secret $(SECRET) -o json | \
 		jq '.data.token'))
-	$(eval TOKEN=$(shell openssl enc -A -base64 -d <<< $(TOKEN_BASE64)))
 .PHONY: token
 
 deletesa: gcontext
@@ -98,8 +92,9 @@ output:
 	@echo Outputs:
 	@echo dns_name = $(NAME)
 	@echo dns_base_domain = $(BASE_DOMAIN)
-	@echo token = $(TOKEN)
+	@echo token = $(TOKEN) | $(HUB) util otp
 	@echo region = $(REGION)
+	@echo zone = $(DEFAULT_ZONE)
 	@echo
 .PHONY: output
 

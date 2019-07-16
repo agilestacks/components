@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ${component.ceph.nfs.pvc.name}
+  namespace: jenkins
+  labels:
+    provider:  agilestacks.com
+    project:   jenkins
+    storage:   ceph-nfs
+    qualifier: jobs
+spec:
+  storageClassName: ${component.ceph.nfs.pvc.storageclass}
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi

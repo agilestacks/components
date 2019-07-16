@@ -1,0 +1,21 @@
+{
+  "name": "requires-provides",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node gen.js",
+    "lint": "eslint gen.js"
+  },
+  "dependencies": {
+    "js-yaml": "^3.13.1",
+    "lodash": "^4.17.14"
+  },
+  "devDependencies": {
+    "eslint": "^5.15.3",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.18.0"
+  },
+  "engines": {
+    "node": ">=10.16",
+    "npm": ">=6.9"
+  }
+}

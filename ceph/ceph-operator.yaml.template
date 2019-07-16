@@ -45,7 +45,7 @@ spec:
         - name: ROOK_CURRENT_NAMESPACE_ONLY
           value: "true"
         - name: FLEXVOLUME_DIR_PATH
-          value: "/var/lib/kubelet/volumeplugins"
+          value: ${component.ceph.flex.volume.path}
         # To disable RBAC, uncomment the following:
         # - name: RBAC_ENABLED
         #  value: "false"

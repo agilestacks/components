@@ -169,6 +169,9 @@ parameters:
     - name: kubernetes.kubeconfigContext
       value: ${dns.domain}
       env: TF_VAR_kubeconfig_context
+    - name: helm.timeout
+      value: 900
+      env: HELM_TIMEOUT
 
 outputs:
 - name: component.ingress.fqdn
@@ -185,7 +188,7 @@ outputs:
   value: ${component.traefik.kubernetes.ingressClass}
 - name: component.ingress.dashboard.url
   value: ${component.ingress.protocol}://${component.ingress.ssoFqdn}/dashboard/
-- name: component.ingress.load-balancer
+- name: component.ingress.loadBalancer
   fromTfVar: load_balancer
 
 templates:

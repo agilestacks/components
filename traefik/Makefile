@@ -11,6 +11,7 @@ CLOUD_KIND          ?= aws
 ACM_CERTIFICATE_ARN ?=
 CHART_VERSION       ?= 1.68.5
 CHART               ?= stable/traefik
+HELM_TIMEOUT 				?= 10
 HUB_PROVIDES        ?=
 
 STATE_BUCKET    ?= terraform.agilestacks.com
@@ -101,6 +102,7 @@ install:
 			--namespace $(TF_VAR_namespace) \
 			--replace \
 			--wait \
+			--timeout $(HELM_TIMEOUT) \
 			--values $(VALUES_FILE) \
 			$(ACM_VALUES_FILE) \
 			$(TLS_VALUES_FILE) \

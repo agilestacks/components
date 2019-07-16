@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "google" {
-  version = "2.6.0"
+  version = "2.7.0"
   project = "${var.project}"
 }
 
