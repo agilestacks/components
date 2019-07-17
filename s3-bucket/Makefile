@@ -14,7 +14,7 @@ export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
 export TF_VAR_name := $(COMPONENT_NAME)
 
-terraform   ?= terraform-v0.11
+terraform   ?= terraform-v0.12
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
@@ -34,7 +34,7 @@ init: $(TF_DATA_DIR)
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -out=$(TFPLAN)
 
 refresh:
 	$(terraform) refresh $(TF_CLI_ARGS)
@@ -51,7 +51,8 @@ destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
 import:
-	-$(terraform) import $(TF_CLI_ARGS) aws_s3_bucket.main $$(echo $(TF_VAR_name) | sed -e 's/\./-/g')
+	$(eval bucket=$(shell echo $(TF_VAR_name) | sed -e 's/\./-/g'))
+	-$(terraform) import $(TF_CLI_ARGS) aws_s3_bucket.main $(bucket)
 
 clean:
 	rm -rf .terraform
