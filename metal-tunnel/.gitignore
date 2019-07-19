@@ -1,0 +1,4 @@
+
+templates/deployment.yaml
+templates/service.yaml
+aws/variables.tf
