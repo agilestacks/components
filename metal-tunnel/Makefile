@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := deploy
 
+export PROXY_SPACE ?= proxy
 export CLOUD_KIND  ?= aws
 
 deploy:

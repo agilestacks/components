@@ -40,7 +40,7 @@ resource "aws_route53_record" "main" {
   }
 }
 
-module "drop_elb" {
-  source = "github.com/agilestacks/terraform-modules.git//elb-sweeper"
-  elb    = "${local.elb}"
-}
+#module "drop_nlb" {
+#  source = "github.com/agilestacks/terraform-modules.git//elb-sweeper"
+#  elb    = "${local.elb}"
+#}

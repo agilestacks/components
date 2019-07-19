@@ -1,9 +1,6 @@
 .DEFAULT_GOAL := deploy
 
-export TF_VAR_domain       := $(DOMAIN_NAME)
-export TF_VAR_service_name := $(COMPONENT_NAME)
-export TF_VAR_namespace    := $(NAMESPACE)
-export TF_VAR_record       := $(COMPONENT_NAME).svc
+export EXTERNAL_SERVICE_NAME := external-$(COMPONENT_NAME)
 export TF_DATA_DIR         := .terraform
 
 kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
@@ -20,6 +17,10 @@ k8s_resources:
 	$(kubectl) apply -f ../templates/deployment.yaml
 	$(kubectl) apply -f ../templates/service.yaml
 
+rm_k8s:
+	$(kubectl) delete -f ../templates/deployment.yaml
+	$(kubectl) delete -f ../templates/service.yaml
+
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
@@ -28,7 +29,7 @@ init: $(TF_DATA_DIR)
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
         -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(DOMAIN_NAME)/metal-tunnel/$(COMPONENT_NAME)/terraform.tfstate" \
+        -backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate" \
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
@@ -40,12 +41,12 @@ apply:
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
-undeploy: init destroy apply
+undeploy: init destroy apply rm_k8s
 
 wait_nlb:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
-	$(eval get_svc=$(kubectl) get --output=json service $(COMPONENT_NAME))
-	@ echo 'Waiting for $(COMPONENT_NAME) service elb'
+	$(eval get_svc=$(kubectl) get --output=json service $(EXTERNAL_SERVICE_NAME))
+	@ echo 'Waiting for $(EXTERNAL_SERVICE_NAME) service elb'
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
 		if [ `$(get_svc) | $(jq) '.status.loadBalancer.ingress' | xargs` != "null" ]; then \
 			printf ' done\n---\n'; \
