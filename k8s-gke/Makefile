@@ -1,4 +1,3 @@
-SHELL := /bin/bash
 .DEFAULT_GOAL := deploy
 
 DOMAIN_NAME    ?= supergke.gcp.superhub.io
