@@ -36,7 +36,7 @@ export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 TF_CLI_ARGS := -no-color -input=false -lock=false
 TFPLAN := $(TF_DATA_DIR)/$(DOMAIN_NAME).tfplan
 
-PROJECT ?= TF_VAR_project
+PROJECT ?= $(TF_VAR_project)
 
 gcloud ?= gcloud
 kubectl ?= kubectl --context=gke_$(PROJECT)_$(LOCATION)_$(CLUSTER_NAME)
