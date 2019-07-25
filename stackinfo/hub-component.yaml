@@ -1,0 +1,22 @@
+---
+version: 1
+kind: component
+meta:
+  name: stackinfo
+  brief: Create a container where to store stack metadata
+  source:
+    dir: ../../components/stackinfo
+
+requires:
+  - kubernetes
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.stackinfo.containerName
+  env: CONTAINER_NAME
+  value: asi-metadata
+
+templates:
+  files:
+  - "*.yaml.template"
