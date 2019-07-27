@@ -1,0 +1,30 @@
+---
+version: 1
+kind: component
+meta:
+  name: external-dns
+  brief: synchronizes exposed Kubernetes Services and Ingresses with DNS providers
+  source:
+      dir: ../../components/external-dns
+
+requires:
+  - kubernetes
+
+parameters:
+  - name: dns.name
+  - name: component.external-dns.provider
+    brief: the type of DNS service provider to use
+    value: rfc2136
+  - name: component.external-dns.rfc2136.host
+    brief: IP of DNS (BIND) server to talk to
+  - name: component.external-dns.rfc2136.port
+    brief: port of the DNS server
+    value: 53
+  - name: component.external-dns.rfc2136.tsig-secret
+    brief: contents of your TSIG key for updating BIND
+  - name: component.external-dns.rfc2136.tsig-keyname
+    brief: the name of your TSIG key
+
+templates:
+  files:
+    - '*.yaml.template'
