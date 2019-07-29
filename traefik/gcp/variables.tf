@@ -35,6 +35,6 @@ variable "component" {
   default = "traefik"
 }
 
-variable "project" {
+variable "gcp_project_id" {
   type = "string"
 }

@@ -5,7 +5,7 @@ terraform {
 
 provider "google" {
   version = "2.7.0"
-  project = "${var.project}"
+  project = "${var.gcp_project_id}"
 }
 
 provider "kubernetes" {
@@ -18,8 +18,7 @@ provider "null" {
 }
 
 data "google_dns_managed_zone" "ext_zone" {
-  project = "${var.project}"
-  name    = "${replace(var.domain_name,".","-")}"
+  name = "${replace(var.domain_name, ".", "-")}"
 }
 
 data "kubernetes_service" "traefik" {
