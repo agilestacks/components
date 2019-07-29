@@ -100,4 +100,4 @@ output:
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
-undeploy: check init destroy apply deletesa
+undeploy: context check init destroy apply deletesa
