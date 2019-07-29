@@ -75,6 +75,14 @@ enable:
 		fi; \
 	fi;
 
+$(UNSEAL_FILE):
+	if test ! -f $(UNSEAL_FILE) || jq -e 'has("keys")|not' < $(UNSEAL_FILE); then \
+		$(HUB) render restore/unseal-outputs.json.template && \
+		mkdir -p .vault && \
+		mv restore/unseal-outputs.json $(UNSEAL_FILE); \
+	fi;
+.PHONY: $(UNSEAL_FILE)
+
 mount: login
 	@if ! $(vault) secrets list | grep ^secret/; then \
 		echo "Enable KV v1 secrets"; \
@@ -82,19 +90,14 @@ mount: login
 	fi
 .PHONY: mount
 
-backup:
-	if test ! -f $(UNSEAL_FILE) || jq -e 'has("keys")|not' < $(UNSEAL_FILE); then \
-		$(HUB) render restore/unseal-outputs.json.template && \
-		mkdir -p .vault && \
-		mv restore/unseal-outputs.json $(UNSEAL_FILE); \
-	fi;
+backup: $(UNSEAL_FILE)
 	@echo Outputs:
 	@echo component.vault.unseal.file = $$(base64 < $(UNSEAL_FILE))
 	@echo
 
-unseal:
+unseal: $(UNSEAL_FILE)
 	set -e; for i in $$(seq 1 $(SECRET_THRESHOLD)); do \
-		$(vault) operator unseal `cat $(UNSEAL_FILE) | jq -Mr .keys[$$i]`; \
+		$(vault) operator unseal $$(jq -r .keys[$$i] < $(UNSEAL_FILE)); \
 	done;
 .PHONY: unseal
 
@@ -102,7 +105,7 @@ seal:
 	$(vault) operator seal
 .PHONY: seal
 
-login:
+login: $(UNSEAL_FILE)
 	$(vault) login $(shell cat $(UNSEAL_FILE) | jq -rM .root_token)
 
 connect: disconnect
