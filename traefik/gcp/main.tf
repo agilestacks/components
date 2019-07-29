@@ -29,14 +29,6 @@ data "kubernetes_service" "traefik" {
   }
 }
 
-resource "google_dns_record_set" "dns_auth_ext" {
-  managed_zone = "${data.google_dns_managed_zone.ext_zone.name}"
-  name         = "${var.auth_url_prefix}.${data.google_dns_managed_zone.ext_zone.dns_name}"
-  type         = "A"
-  ttl          = "300"
-  rrdatas      = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.ip}"]
-}
-
 resource "google_dns_record_set" "dns_app1_ext" {
   managed_zone = "${data.google_dns_managed_zone.ext_zone.name}"
   name         = "${var.url_prefix}.${data.google_dns_managed_zone.ext_zone.dns_name}"

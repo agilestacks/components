@@ -24,14 +24,6 @@ data "kubernetes_service" "traefik" {
   }
 }
 
-resource "azurerm_dns_a_record" "dns_auth_ext" {
-  name                = "${var.auth_url_prefix}"
-  zone_name           = "${data.azurerm_dns_zone.ext_zone.name}"
-  resource_group_name = "${var.azure_resource_group_name}"
-  ttl                 = 60
-  records             = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.ip}"]
-}
-
 resource "azurerm_dns_a_record" "dns_app1_ext" {
   name                = "${var.url_prefix}"
   zone_name           = "${data.azurerm_dns_zone.ext_zone.name}"

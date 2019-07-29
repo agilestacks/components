@@ -30,14 +30,6 @@ data "kubernetes_service" "traefik" {
   }
 }
 
-resource "aws_route53_record" "dns_auth_ext" {
-  zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
-  name    = "${var.auth_url_prefix}"
-  type    = "CNAME"
-  ttl     = "300"
-  records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
-}
-
 resource "aws_route53_record" "dns_app1_ext" {
   zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
   name    = "${var.url_prefix}"
