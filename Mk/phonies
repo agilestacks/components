@@ -18,6 +18,7 @@
 .PHONY: login
 .PHONY: namespace
 .PHONY: output
+.PHONY: patch
 .PHONY: plan
 .PHONY: purge
 .PHONY: refresh

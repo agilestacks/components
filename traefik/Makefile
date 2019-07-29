@@ -89,7 +89,6 @@ patch:
 	-@sed -i~ -e 's/servicePort: dashboard-http/servicePort: 80/' \
 			charts/traefik/templates/dashboard-ingress.yaml && \
 		rm -f charts/traefik/templates/dashboard-ingress.yaml~
-.PHONY: patch
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
@@ -150,3 +149,5 @@ uninstall:
 
 clean:
 	rm -rf $(HELM_HOME) charts $(TF_DATA_DIR)
+
+-include ../Mk/phonies
