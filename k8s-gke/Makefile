@@ -113,4 +113,4 @@ deploy: createsa storage region init plan apply token output
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
-undeploy: init destroy apply deletesa
+undeploy: check init destroy apply deletesa

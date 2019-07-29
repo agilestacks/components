@@ -141,7 +141,7 @@ output:
 deploy: account check patch storage token init vars plan apply output
 
 undeploy: DISCOVERY_KUBE_CTX:=--context=$(DOMAIN_NAME)
-undeploy: init vars destroy apply
+undeploy: check init vars destroy apply
 	-$(oc) --context=$(DOMAIN_NAME) delete -f $(ASI_SCC).yaml
 	-$(oc) --context=$(DOMAIN_NAME) delete serviceaccount $(ASI_ACCOUNT)
 
