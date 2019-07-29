@@ -15,3 +15,7 @@ variable "url_prefix" {
   type = "string"
   default = "auth"
 }
+
+variable "gcp_project_id" {
+  type = "string"
+}
