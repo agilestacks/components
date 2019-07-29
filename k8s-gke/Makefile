@@ -60,7 +60,16 @@ gcontext:
 	$(gcloud) container clusters get-credentials $(CLUSTER_NAME) $(LOCATION_KIND) $(TF_VAR_location)
 .PHONY: gcontext
 
-createsa: gcontext
+check:
+	$(eval EXISTING_DOMAIN:=$(shell $(kubectl) get stackinfo asi-metadata -o json | jq -r .spec.domainName))
+	@if [ "$(EXISTING_DOMAIN)" != "" ] && [ "$(EXISTING_DOMAIN)" != "$(DOMAIN_NAME)" ]; then\
+    echo "Error: This cluster has already been imported using domain name: $(EXISTING_DOMAIN)";\
+		echo "Error: Change of the domain name is not supported. This deployment will fail...";\
+		exit 1;\
+  fi
+.PHONY: check
+
+createsa: gcontext check
 	$(kubectl) get -n default serviceaccount $(SERVICE_ACCOUNT) || \
 		($(kubectl) create -n default serviceaccount $(SERVICE_ACCOUNT) && sleep 7)
 	$(kubectl) get clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding || \
