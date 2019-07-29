@@ -22,6 +22,8 @@ lifecycle:
     - connect
     - login
     - disconnect
+    - seal
+    - unseal
 
 parameters:
   - name: dns.domain

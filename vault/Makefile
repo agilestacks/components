@@ -93,18 +93,14 @@ backup:
 	@echo
 
 unseal:
-	@for i in $$(seq 1 $(SECRET_THRESHOLD)); do \
+	set -e; for i in $$(seq 1 $(SECRET_THRESHOLD)); do \
 		$(vault) operator unseal `cat $(UNSEAL_FILE) | jq -Mr .keys[$$i]`; \
 	done;
 .PHONY: unseal
 
-seal: login
-	$(vault) seal
+seal:
+	$(vault) operator seal
 .PHONY: seal
-
-undeploy: init disconnect
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 login:
 	$(vault) login $(shell cat $(UNSEAL_FILE) | jq -rM .root_token)
@@ -140,6 +136,10 @@ force-disconnect:
 disconnect:
 	@echo Drop connection to Vault pod
 	-@ps aux | grep -E "kubectl.*port-forward.*$(VAULT_LOCAL_PORT):$(VAULT_PORT)" | grep -v grep | awk '{print $$2}' | xargs kill
+
+undeploy: init disconnect
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 clean:
 	rm -rf $(HELM_HOME) charts
