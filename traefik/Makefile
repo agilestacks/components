@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 export TF_VAR_component          ?= traefik
-export TF_VAR_domain_name        ?= dev.kubernetes.delivery
+export TF_VAR_domain_name        ?= test.dev.superhub.io
 export TF_VAR_namespace          ?= ingress
 export TF_VAR_kubeconfig_context ?= $(TF_VAR_domain_name)
 
@@ -67,7 +67,7 @@ else
 endif
 
 $(TF_DATA_DIR):
-	@rm -rf $@ && mkdir -p $@
+	@mkdir -p $@
 
 init: $(TF_DATA_DIR)
 	@mkdir -p $(HELM_HOME) charts
