@@ -193,6 +193,8 @@ outputs:
   value: ${component.ingress.protocol}://${component.ingress.ssoFqdn}/dashboard/
 - name: component.ingress.loadBalancer
   fromTfVar: load_balancer
+- name: component.ingress.loadBalancerDnsRecordType
+  fromTfVar: load_balancer_dns_record_type
 
 templates:
   files:

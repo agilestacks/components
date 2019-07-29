@@ -9,3 +9,7 @@ output "sso_ingress_fqdn" {
 output "load_balancer" {
   value = "${var.ingress_static_ip}"
 }
+
+output "load_balancer_dns_record_type" {
+  value = "A"
+}
