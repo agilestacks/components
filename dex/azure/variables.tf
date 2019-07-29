@@ -15,3 +15,7 @@ variable "url_prefix" {
   type = "string"
   default = "auth"
 }
+
+variable "azure_resource_group_name" {
+  type = "string"
+}
