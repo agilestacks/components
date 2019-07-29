@@ -13,10 +13,39 @@ requires:
   - tiller
 
 parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+  - name: terraform.bucket.container
+    empty: allow
+    env: STATE_CONTAINER
+  - name: cloud.kind
+    env: CLOUD_KIND
+  - name: cloud.region
+    env: AWS_DEFAULT_REGION
+  - name: cloud.azureResourceGroupName
+    value: superhub-${cloud.region}
+    env: TF_VAR_azure_resource_group_name
+  - name: cloud.gcpProjectId
+    empty: allow
+    env: TF_VAR_gcp_project_id
+
   - name: component.ingress.ssoUrlPrefix
   - name: component.ingress.protocol
+  - name: component.ingress.loadBalancer
+    env: TF_VAR_load_balancer
+  - name: component.ingress.loadBalancerDnsRecordType
+    value: '#{matches(component.ingress.loadBalancer, r"^[\d.]+$") ? "A" : "CNAME"}'
+    env: TF_VAR_load_balancer_dns_record_type
+
+  - name: component.dex.urlPrefix
+    value: auth
+    env: TF_VAR_url_prefix
   - name: component.dex.oidcIssuerFqdn
-    value: auth.${dns.domain}
+    value: ${component.dex.urlPrefix}.${dns.domain}
   - name: component.dex.namespace
     brief: Kubernetes namespace to install into
     value: kube-system
@@ -45,14 +74,6 @@ parameters:
     value: "'*'"
   - name: component.dex.authproxy.cookieExpire
     value: "'8h0m0s'"
-  - name: dns.domain
-    env: DOMAIN_NAME
-  - name: dns.name
-    env: TF_VAR_name
-  - name: terraform.bucket
-    parameters:
-    - name: name
-    - name: region
 
 outputs:
   - name: component.dex.issuer
@@ -60,4 +81,4 @@ outputs:
 
 templates:
   files:
-    - "*.yaml.template"
+    - "kubernetes/*.yaml.template"

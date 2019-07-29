@@ -1,4 +1,2 @@
-*.yaml
-ssl
-!hub-component.yaml
-!auth_v1alpha1_oidc.yaml
+kubernetes/*.yaml
+!kubernetes/auth_v1alpha1_oidc.yaml
