@@ -72,7 +72,7 @@ account:
 	fi
 
 check:
-	$(eval EXISTING_DOMAIN:=$(shell $(oc) get stackinfo asi-metadata -o json | jq -r .spec.domainName))
+	$(eval EXISTING_DOMAIN:=$(shell $(oc) $(DISCOVERY_KUBE_CTX) get stackinfo asi-metadata -o json | jq -r .spec.domainName))
 	@if [ "$(EXISTING_DOMAIN)" != "" ] && [ "$(EXISTING_DOMAIN)" != "$(DOMAIN_NAME)" ]; then\
     echo "Error: This cluster has already been imported using domain name: $(EXISTING_DOMAIN)";\
 		echo "Error: Change of the domain name is not supported. This deployment will fail...";\
