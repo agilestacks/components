@@ -31,7 +31,7 @@ parameters:
       value: https://charts.gitlab.io
       env: HELM_REPO 
     - name: chart.version
-      value: 1.7.5
+      value: 1.8.5
       env: CHART_VERSION
     - name:  name
       value: gitlab-cn
@@ -53,20 +53,20 @@ parameters:
       value: true
     - name:  ingress.path
       value: /
-    - name: bot.name
-      value: gitbot
-    - name: bot.password
-      value: ASIWinning@Gitlab
-  - name: component.minio
+    - name: serviceaccount.username
+      value: ""
+      empty: allow
+    - name: serviceaccount.password
+      value: ""
+      empty: allow
+  - name: component.minio.secret
+  - name: component.bucket
     parameters:
     - name: namespace
-    - name: secret.name
-    - name: secret.accessKeyRef
-    - name: secret.secretKeyRef
-    - name: service.host
-    - name: service.port
-    - name: endpoint.ingress
-    - name: endpoint.url
+    - name: name
+    - name: accessKey
+    - name: secretKey
+    - name: endpoint
 
 templates:
   files:

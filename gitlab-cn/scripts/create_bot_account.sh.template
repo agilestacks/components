@@ -3,8 +3,8 @@
 KUBE="kubectl --context={{dns.domain}} --namespace={{component.gitlab.namespace}}"
 ROOT_PASSWORD=$($KUBE get secret gitlab-cn-gitlab-initial-root-password -o json | jq --raw-output '.data | map_values(@base64d) | .password')
 
-BOT_NAME={{component.gitlab.bot.name}}
-BOT_PASSWORD={{component.gitlab.bot.password}}
+BOT_NAME={{component.gitlab.serviceaccount.username}}
+BOT_PASSWORD={{component.gitlab.serviceaccount.password}}
 TOKEN=
 
 REQUEST="grant_type=password&username=root&password=${ROOT_PASSWORD}"
