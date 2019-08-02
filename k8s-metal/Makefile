@@ -60,8 +60,8 @@ output:
 	@echo Outputs:
 	@echo dns_name = $(NAME)
 	@echo dns_base_domain = $(BASE_DOMAIN)
-# if endpoint is IP then output api.domain, else output it as is
-	@echo api_endpoint = $(if $(shell echo $(API_ENDPOINT) | sed -e 's/[0-9.:]//g'),api.$(DOMAIN_NAME):$(API_PORT),$(API_ENDPOINT))
+# if endpoint is not an IP then output it as is, else output api.domain:port
+	@echo api_endpoint = $(if $(shell echo $(API_ENDPOINT) | sed -e 's/[0-9.:]//g'),$(API_ENDPOINT),api.$(DOMAIN_NAME):$(API_PORT))
 	@echo
 
 undeploy: init destroy apply
