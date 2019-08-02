@@ -19,3 +19,7 @@ variable "sso_url_prefix" {
 variable "ingress_static_ip" {
   type = "string"
 }
+
+variable "ingress_static_host" {
+  type = "string"
+}

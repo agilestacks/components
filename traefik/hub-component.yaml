@@ -135,6 +135,9 @@ parameters:
     - name: staticIp
       empty: allow
       env: TF_VAR_ingress_static_ip
+    - name: staticHost
+      empty: allow
+      env: TF_VAR_ingress_static_host
     - name: kubernetes.serviceType
       value: LoadBalancer
     - name: kubernetes.nodePort.http
