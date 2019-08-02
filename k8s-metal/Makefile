@@ -49,6 +49,7 @@ refresh:
 
 apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
+	@echo
 
 storage:
 	$(kubectl) apply -f storage-class.yaml
