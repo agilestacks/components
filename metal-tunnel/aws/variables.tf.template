@@ -1,0 +1,18 @@
+
+variable "namespace" {
+  default = "${component.metal-tunnel.namespace}"
+}
+
+variable "domain" {
+  default = "${dns.domain}"
+}
+
+variable "service_name" {
+  description = "name of kubenretes service to that contains nlb"
+  default = "external-${component.metal-tunnel.name}"
+}
+
+variable "record" {
+  description = "name of dns record to create"
+  default = "${component.metal-tunnel.name}"
+}

@@ -15,7 +15,7 @@ parameters:
   env: AWS_DEFAULT_REGION
 - name: dns.domain
   env:  DOMAIN_NAME
-- name: component.s3
+- name: component.bucket
   parameters:
   - name: name
     value: bucket.${dns.domain}
@@ -25,14 +25,10 @@ parameters:
     env: ACL
 
 outputs:
-- name: component.s3.bucket
-  fromTfVar: bucket
 - name: component.s3.arn
   fromTfVar: arn
 - name: component.s3.domain
   fromTfVar: domain
-- name: component.s3.region
-  fromTfVar: region
 - name: component.s3.endpoint
   fromTfVar: endpoint
 - name: component.s3.url

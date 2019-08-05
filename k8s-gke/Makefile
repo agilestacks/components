@@ -1,4 +1,3 @@
-SHELL := /bin/bash
 .DEFAULT_GOAL := deploy
 
 DOMAIN_NAME    ?= supergke.gcp.superhub.io
@@ -36,6 +35,8 @@ export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 TF_CLI_ARGS := -no-color -input=false -lock=false
 TFPLAN := $(TF_DATA_DIR)/$(DOMAIN_NAME).tfplan
 
+PROJECT ?= $(TF_VAR_project)
+
 gcloud ?= gcloud
 kubectl ?= kubectl --context=gke_$(PROJECT)_$(LOCATION)_$(CLUSTER_NAME)
 
@@ -59,7 +60,16 @@ gcontext:
 	$(gcloud) container clusters get-credentials $(CLUSTER_NAME) $(LOCATION_KIND) $(TF_VAR_location)
 .PHONY: gcontext
 
-createsa: gcontext
+check:
+	$(eval EXISTING_DOMAIN:=$(shell $(kubectl) get stackinfo asi-metadata -o json | jq -r .spec.domainName))
+	@if [ "$(EXISTING_DOMAIN)" != "" ] && [ "$(EXISTING_DOMAIN)" != "$(DOMAIN_NAME)" ]; then\
+    echo "Error: This cluster has already been imported using domain name: $(EXISTING_DOMAIN)";\
+		echo "Error: Change of the domain name is not supported. This deployment will fail...";\
+		exit 1;\
+  fi
+.PHONY: check
+
+createsa: gcontext check
 	$(kubectl) get -n default serviceaccount $(SERVICE_ACCOUNT) || \
 		($(kubectl) create -n default serviceaccount $(SERVICE_ACCOUNT) && sleep 7)
 	$(kubectl) get clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding || \
@@ -103,4 +113,4 @@ deploy: createsa storage region init plan apply token output
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
-undeploy: init destroy apply deletesa
+undeploy: gcontext check init destroy apply deletesa

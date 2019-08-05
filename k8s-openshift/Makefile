@@ -71,6 +71,15 @@ account:
 		$(oc) adm policy add-scc-to-group $(ASI_SCC) system:serviceaccounts:applications; \
 	fi
 
+check:
+	$(eval EXISTING_DOMAIN:=$(shell $(oc) $(DISCOVERY_KUBE_CTX) get stackinfo asi-metadata -o json | jq -r .spec.domainName))
+	@if [ "$(EXISTING_DOMAIN)" != "" ] && [ "$(EXISTING_DOMAIN)" != "$(DOMAIN_NAME)" ]; then\
+    echo "Error: This cluster has already been imported using domain name: $(EXISTING_DOMAIN)";\
+		echo "Error: Change of the domain name is not supported. This deployment will fail...";\
+		exit 1;\
+  fi
+.PHONY: check
+
 patch:
 	echo "Disable default storageclass (if exists)"
 	-$(oc) patch storageclass gp2 -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "false"}}}'
@@ -129,10 +138,10 @@ output:
 	@echo sa_token=$(TOKEN)
 	@echo
 
-deploy: account patch storage token init vars plan apply output
+deploy: account check patch storage token init vars plan apply output
 
 undeploy: DISCOVERY_KUBE_CTX:=--context=$(DOMAIN_NAME)
-undeploy: init vars destroy apply
+undeploy: check init vars destroy apply
 	-$(oc) --context=$(DOMAIN_NAME) delete -f $(ASI_SCC).yaml
 	-$(oc) --context=$(DOMAIN_NAME) delete serviceaccount $(ASI_ACCOUNT)
 

@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 0.11.10"
-  backend          "s3"             {}
+  backend "s3" {}
 }
 
 provider "aws" {
@@ -28,14 +28,6 @@ data "kubernetes_service" "traefik" {
     name      = "${var.component == "traefik" ? "traefik" : "${var.component}-traefik"}"
     namespace = "${var.namespace}"
   }
-}
-
-resource "aws_route53_record" "dns_auth_ext" {
-  zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
-  name    = "${var.auth_url_prefix}"
-  type    = "CNAME"
-  ttl     = "300"
-  records = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"]
 }
 
 resource "aws_route53_record" "dns_app1_ext" {

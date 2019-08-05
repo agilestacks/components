@@ -75,6 +75,14 @@ enable:
 		fi; \
 	fi;
 
+$(UNSEAL_FILE):
+	if test ! -f $(UNSEAL_FILE) || jq -e 'has("keys")|not' < $(UNSEAL_FILE); then \
+		$(HUB) render restore/unseal-outputs.json.template && \
+		mkdir -p .vault && \
+		mv restore/unseal-outputs.json $(UNSEAL_FILE); \
+	fi;
+.PHONY: $(UNSEAL_FILE)
+
 mount: login
 	@if ! $(vault) secrets list | grep ^secret/; then \
 		echo "Enable KV v1 secrets"; \
@@ -82,31 +90,22 @@ mount: login
 	fi
 .PHONY: mount
 
-backup:
-	if test ! -f $(UNSEAL_FILE) || jq -e 'has("keys")|not' < $(UNSEAL_FILE); then \
-		$(HUB) render restore/unseal-outputs.json.template && \
-		mkdir -p .vault && \
-		mv restore/unseal-outputs.json $(UNSEAL_FILE); \
-	fi;
+backup: $(UNSEAL_FILE)
 	@echo Outputs:
 	@echo component.vault.unseal.file = $$(base64 < $(UNSEAL_FILE))
 	@echo
 
-unseal:
-	@for i in $$(seq 1 $(SECRET_THRESHOLD)); do \
-		$(vault) operator unseal `cat $(UNSEAL_FILE) | jq -Mr .keys[$$i]`; \
+unseal: $(UNSEAL_FILE)
+	set -e; for i in $$(seq 1 $(SECRET_THRESHOLD)); do \
+		$(vault) operator unseal $$(jq -r .keys[$$i] < $(UNSEAL_FILE)); \
 	done;
 .PHONY: unseal
 
-seal: login
-	$(vault) seal
+seal:
+	$(vault) operator seal
 .PHONY: seal
 
-undeploy: init disconnect
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-
-login:
+login: $(UNSEAL_FILE)
 	$(vault) login $(shell cat $(UNSEAL_FILE) | jq -rM .root_token)
 
 connect: disconnect
@@ -140,6 +139,10 @@ force-disconnect:
 disconnect:
 	@echo Drop connection to Vault pod
 	-@ps aux | grep -E "kubectl.*port-forward.*$(VAULT_LOCAL_PORT):$(VAULT_PORT)" | grep -v grep | awk '{print $$2}' | xargs kill
+
+undeploy: init disconnect
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 clean:
 	rm -rf $(HELM_HOME) charts

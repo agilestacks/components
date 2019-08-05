@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 export TF_VAR_component          ?= traefik
-export TF_VAR_domain_name        ?= dev.kubernetes.delivery
+export TF_VAR_domain_name        ?= test.dev.superhub.io
 export TF_VAR_namespace          ?= ingress
 export TF_VAR_kubeconfig_context ?= $(TF_VAR_domain_name)
 
@@ -58,16 +58,16 @@ STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
 				-backend-config="prefix=$(TF_VAR_domain_name)/$(TF_VAR_component)" \
 				-backend-config="credentials=$(GOOGLE_APPLICATION_CREDENTIALS)"
 else ifeq ($(CLOUD_KIND),azure)
-STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$${STATE_BUCKET//./}" \
+STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$(STATE_BUCKET)" \
 				-backend-config="container_name=$(STATE_CONTAINER)" \
 				-backend-config="resource_group_name=$(TF_VAR_azure_resource_group_name)" \
-				-backend-config="key=$(DOMAIN_NAME)/$(TF_VAR_component)/terraform.tfstate"
+				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate"
 else
 	$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, hybrid)
 endif
 
 $(TF_DATA_DIR):
-	@rm -rf $@ && mkdir -p $@
+	@mkdir -p $@
 
 init: $(TF_DATA_DIR)
 	@mkdir -p $(HELM_HOME) charts
@@ -89,7 +89,6 @@ patch:
 	-@sed -i~ -e 's/servicePort: dashboard-http/servicePort: 80/' \
 			charts/traefik/templates/dashboard-ingress.yaml && \
 		rm -f charts/traefik/templates/dashboard-ingress.yaml~
-.PHONY: patch
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
@@ -150,3 +149,5 @@ uninstall:
 
 clean:
 	rm -rf $(HELM_HOME) charts $(TF_DATA_DIR)
+
+-include ../Mk/phonies

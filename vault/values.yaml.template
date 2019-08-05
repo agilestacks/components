@@ -40,5 +40,4 @@ resources:
     memory: ${component.vault.resources.limits.memory}
   requests:
 #    cpu: 100m
-    memory: ${component.vault.resources.limits.memory}
-
+    memory: ${component.vault.resources.requests.memory}

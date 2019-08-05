@@ -1,13 +1,11 @@
 terraform {
-  required_version = ">= 0.11.3"
+  required_version = ">= 0.11.10"
   backend "s3" {}
 }
 
 provider "aws" {
-  version = "1.60.0"
+  version = "2.14.0"
 }
-
-# data "aws_region" "current" {}
 
 # variables
 
@@ -21,12 +19,16 @@ variable "base_domain" {
   type        = "string"
 }
 
-variable "api_ip" {
-  description = "API endpoint IP address"
+variable "api_host" {
+  description = "API endpoint IP address or hostname"
   type        = "string"
 }
 
 # DNS
+
+locals {
+  type = "${replace(var.api_host, "/^[\\d.]+$/", "") == "" ? "A" : "CNAME"}"
+}
 
 data "aws_route53_zone" "base" {
   name = "${var.base_domain}"
@@ -41,16 +43,16 @@ resource "aws_route53_record" "parent" {
   zone_id = "${data.aws_route53_zone.base.zone_id}"
   name    = "${var.name}"
   type    = "NS"
-  ttl     = "60"
+  ttl     = "300"
   records = ["${aws_route53_zone.main.name_servers}"]
 }
 
 resource "aws_route53_record" "api" {
   zone_id = "${aws_route53_zone.main.zone_id}"
   name    = "api"
-  type    = "A"
-  ttl     = "60"
-  records = ["${var.api_ip}"]
+  type    = "${local.type}"
+  ttl     = "300"
+  records = ["${var.api_host}"]
 }
 
 # outputs

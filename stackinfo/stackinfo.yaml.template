@@ -1,0 +1,6 @@
+apiVersion: "agilestacks.com/v1"
+kind: StackInfo
+metadata:
+  name: ${component.stackinfo.containerName}
+spec:
+  domainName: "${dns.domain}"

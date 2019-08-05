@@ -77,7 +77,7 @@ namespace:
 	- $(kubectl) create namespace $(NAMESPACE)
 
 nats-notifications:
-	$(mc) event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
+	$(mc) --insecure event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
@@ -93,13 +93,11 @@ install: namespace
 			--wait
 
 configure:
-	@ sleep 60s
-	@ echo "Let's wait until tls certs are issued, otherwise commands below will fail"
-	@ $(mc) config host add $(ALIAS) \
+	@ $(mc) --insecure config host add $(ALIAS) \
 		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
 		$(ACCESS_KEY) $(SECRET_KEY) \
 		S3v4
-	@ $(mc) config host list
+	@ $(mc) --insecure config host list
 
 unconfigure:
 	- $(mc) config host rm $(ALIAS)

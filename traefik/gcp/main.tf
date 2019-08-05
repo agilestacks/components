@@ -5,7 +5,7 @@ terraform {
 
 provider "google" {
   version = "2.7.0"
-  project = "${var.project}"
+  project = "${var.gcp_project_id}"
 }
 
 provider "kubernetes" {
@@ -18,8 +18,7 @@ provider "null" {
 }
 
 data "google_dns_managed_zone" "ext_zone" {
-  project = "${var.project}"
-  name    = "${replace(var.domain_name,".","-")}"
+  name = "${replace(var.domain_name, ".", "-")}"
 }
 
 data "kubernetes_service" "traefik" {
@@ -28,14 +27,6 @@ data "kubernetes_service" "traefik" {
     name      = "${var.component == "traefik" ? "traefik" : "${var.component}-traefik"}"
     namespace = "${var.namespace}"
   }
-}
-
-resource "google_dns_record_set" "dns_auth_ext" {
-  managed_zone = "${data.google_dns_managed_zone.ext_zone.name}"
-  name         = "${var.auth_url_prefix}.${data.google_dns_managed_zone.ext_zone.dns_name}"
-  type         = "A"
-  ttl          = "300"
-  rrdatas      = ["${data.kubernetes_service.traefik.load_balancer_ingress.0.ip}"]
 }
 
 resource "google_dns_record_set" "dns_app1_ext" {

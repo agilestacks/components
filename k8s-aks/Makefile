@@ -59,7 +59,16 @@ context:
 	$(az) aks get-credentials --resource-group $(TF_VAR_aks_resource_group_name) --name $(TF_VAR_cluster_name)
 .PHONY: context
 
-createsa: context
+check:
+	$(eval EXISTING_DOMAIN:=$(shell $(kubectl) get stackinfo asi-metadata -o json | jq -r .spec.domainName))
+	@if [ "$(EXISTING_DOMAIN)" != "" ] && [ "$(EXISTING_DOMAIN)" != "$(DOMAIN_NAME)" ]; then\
+    echo "Error: This cluster has already been imported using domain name: $(EXISTING_DOMAIN)";\
+		echo "Error: Change of the domain name is not supported. This deployment will fail...";\
+		exit 1;\
+  fi
+.PHONY: check
+
+createsa: context check
 	$(kubectl) get -n default serviceaccount $(SERVICE_ACCOUNT) || \
 		($(kubectl) create -n default serviceaccount $(SERVICE_ACCOUNT) && sleep 7)
 	$(kubectl) get clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding || \
@@ -91,4 +100,4 @@ output:
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
-undeploy: init destroy apply deletesa
+undeploy: context check init destroy apply deletesa

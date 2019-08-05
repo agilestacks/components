@@ -3,6 +3,7 @@ kind: StorageClass
 metadata:
   name: aws-storage
 provisioner: kubernetes.io/aws-ebs
+volumeBindingMode: WaitForFirstConsumer
 parameters:
   type: gp2
   encrypted: "true"

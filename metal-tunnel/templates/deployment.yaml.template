@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:      ${component.metal-tunnel.name}
+  namespace: ${component.metal-tunnel.namespace}
+  labels:
+    provider:  agilestacks.com
+    component: ${component.metal-tunnel.name}
+    app: ${component.metal-tunnel.name}
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      provider:  agilestacks.com
+      component: ${component.metal-tunnel.name}
+      app: ${component.metal-tunnel.name}
+  template:
+    metadata:
+      labels:
+        provider:  agilestacks.com
+        component: ${component.metal-tunnel.name}
+        app: ${component.metal-tunnel.name}
+    spec:
+      containers:
+      - name: ${component.metal-tunnel.name}
+        image: jpillora/chisel
+        args:
+        - "server"
+        - "--port"
+        - "${component.metal-tunnel.primary-port}"
+        - "--auth"
+        - "${component.metal-tunnel.user}:${component.metal-tunnel.password}"
+        - "--reverse"
+
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 80
+        - name: tls1
+          containerPort: 443
+        - name: tls2
+          containerPort: 444
+        - name: tls3
+          containerPort: 445
+        - name: tls4
+          containerPort: 446
+        - name: apitls1
+          containerPort: 6443
+        - name: apitls2
+          containerPort: 6444
+        - name: apitls3
+          containerPort: 6445
+        - name: apitls4
+          containerPort: 6446

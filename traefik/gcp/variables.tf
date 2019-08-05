@@ -1,8 +1,3 @@
-variable "name" {
-  type        = "string"
-  description = "Google DNS managed zone name"
-}
-
 variable "domain_name" {
   type        = "string"
   description = "Domain name associated with Google DNS managed zone"
@@ -25,16 +20,11 @@ variable "sso_url_prefix" {
   type = "string"
 }
 
-variable "auth_url_prefix" {
-  type    = "string"
-  default = "auth"
-}
-
 variable "component" {
   type    = "string"
   default = "traefik"
 }
 
-variable "project" {
+variable "gcp_project_id" {
   type = "string"
 }

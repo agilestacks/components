@@ -22,6 +22,8 @@ lifecycle:
     - connect
     - login
     - disconnect
+    - seal
+    - unseal
 
 parameters:
   - name: dns.domain
@@ -44,8 +46,10 @@ parameters:
       value: IfNotPresent
     - name:  replicaCount
       value: 1
-    - name:  resources.limits.memory
+    - name:  resources.requests.memory
       value: "128Mi"
+    - name:  resources.limits.memory
+      value: "512Mi"
     - name:  namespace
       brief: Kubernetes namespace to install into
       value: vault

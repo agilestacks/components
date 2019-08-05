@@ -1,0 +1,49 @@
+# This is divided into two services.  One exposes port 80 to the internet as a LoadBalancer type service using nlb. 
+# The other is for internal access to the API and other services of the bare-metal, on-prem cluster. 
+# At some point we might want to expose 443 and other ports to the internet as a means to provide the customer with
+# a convenient way to serve things to the internet without opening firewall ports on-prem
+# We also name the API service agilestacks-metal-tunnel because we have to put this DNS name in the SAN for the 
+# API cluster certificates
+kind: Service
+apiVersion: v1
+metadata:
+  name: agilestacks-${component.metal-tunnel.name}
+  namespace: ${component.metal-tunnel.namespace}
+  labels:
+    k8s-app: ${component.metal-tunnel.name}
+    provider:  agilestacks.com
+    component: ${component.metal-tunnel.name}
+    app: ${component.metal-tunnel.name}
+spec:
+  ports:
+  - name: tls1
+    port: 443
+    targetPort: 443
+  - name: apitls1
+    port: 6443
+    targetPort: 6443
+  selector:
+    component: ${component.metal-tunnel.name}
+    app: ${component.metal-tunnel.name}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: external-${component.metal-tunnel.name}
+  namespace: ${component.metal-tunnel.namespace}
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+  labels:
+    k8s-app: ${component.metal-tunnel.name}
+    provider:  agilestacks.com
+    component: ${component.metal-tunnel.name}
+    app: ${component.metal-tunnel.name}
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  selector:
+    component: ${component.metal-tunnel.name}
+    app: ${component.metal-tunnel.name}

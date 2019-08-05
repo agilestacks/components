@@ -140,6 +140,8 @@ parameters:
 outputs:
   - name: component.bucket.kind
     value: minio
+  - name: component.bucket.namespace
+    value: ${component.minio.namespace}
   - name: component.bucket.name
     brief: Name of the default bucket
     value: ${component.minio.default.bucket.name}

@@ -7,5 +7,9 @@ output "sso_ingress_fqdn" {
 }
 
 output "load_balancer" {
-  value = "${data.kubernetes_service.traefik.load_balancer_ingress.0.hostname}"
+  value = "${data.kubernetes_service.traefik.load_balancer_ingress.0.ip}"
+}
+
+output "load_balancer_dns_record_type" {
+  value = "A"
 }

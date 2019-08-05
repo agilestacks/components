@@ -1,0 +1,64 @@
+---
+version: 1
+kind: component
+meta:
+  name: metal-tunnel
+  brief: TCP over HTTP Tunnel for Metal environments and more!
+  source:
+    dir: ../../components/metal-tunnel
+
+requires:
+  - kubernetes
+
+provides:
+  - metal-tunnel
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: cloud.region
+  empty: allow
+  env: AWS_DEFAULT_REGION
+- name: cloud.kind
+  env: CLOUD_KIND
+- name: terraform.bucket.region
+  env: STATE_REGION
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: component.metal-tunnel
+  parameters:
+  - name: proxyspace
+    description: The name of the proxy which will use this tunnel, this must be unique for each deployment into the same cluster
+    env: PROXY_SPACE
+  - name: name
+    value: ${component.metal-tunnel.proxyspace}-${hub.componentName}
+    env: COMPONENT_NAME
+  - name: namespace
+    value: automation-hub
+    env: NAMESPACE
+  - name: user
+    value: tunnelme
+    env: TUNNEL_USER
+  - name: password
+    env: TUNNEL_PASSWORD
+  - name: primary-port
+    description: the port used to listen for incoming tunnel-clients
+    value: 80
+
+outputs:
+- name: component.metal-tunnel.external-url
+  value: http://${component.metal-tunnel.name}.${dns.domain}
+- name: component.metal-tunnel.internal-url
+  value: http://${component.metal-tunnel.name}.${component.metal-tunnel.namespace}
+- name: component.metal-tunnel.user
+  value: ${component.metal-tunnel.user}
+- name: component.metal-tunnel.password
+  kind: secret
+  value: ${component.metal-tunnel.password}
+
+templates:
+  files:
+  - "templates/*.template"
+  - "aws/*.template"
+  - "gcp/*.template"
+  - "azure/*.template"

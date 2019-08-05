@@ -9,6 +9,9 @@ meta:
 
 requires:
 - azure
+provides:
+- azurecr
+- docker-registry
 
 parameters:
 - name: dns.domain

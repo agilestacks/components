@@ -19,6 +19,9 @@ lifecycle:
   readyConditions:
     - dns: api.${dns.domain}
       url: https://api.${dns.domain}
+  options:
+    random:
+      bytes: 2048
 
 parameters:
   - name: kubernetes.flavor

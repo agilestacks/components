@@ -29,6 +29,9 @@ parameters:
     env: STATE_BUCKET
   - name: terraform.bucket.region
     env: STATE_REGION
+  - name: terraform.bucket.container
+    empty: allow
+    env: STATE_CONTAINER
   - name: cloud.region
     env: AWS_DEFAULT_REGION
   - name: cloud.kind
@@ -42,7 +45,7 @@ parameters:
     env: TF_VAR_azure_resource_group_name
   - name: cloud.gcpProjectId
     empty: allow
-    env: TF_VAR_project
+    env: TF_VAR_gcp_project_id
 
   - name: cloud.azureClientId
     empty: allow
@@ -132,6 +135,9 @@ parameters:
     - name: staticIp
       empty: allow
       env: TF_VAR_ingress_static_ip
+    - name: staticHost
+      empty: allow
+      env: TF_VAR_ingress_static_host
     - name: kubernetes.serviceType
       value: LoadBalancer
     - name: kubernetes.nodePort.http
@@ -190,6 +196,8 @@ outputs:
   value: ${component.ingress.protocol}://${component.ingress.ssoFqdn}/dashboard/
 - name: component.ingress.loadBalancer
   fromTfVar: load_balancer
+- name: component.ingress.loadBalancerDnsRecordType
+  fromTfVar: load_balancer_dns_record_type
 
 templates:
   files:

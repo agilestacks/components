@@ -11,6 +11,7 @@ requires:
   - kubernetes
 provides:
   - harbor
+  - docker-registry
 
 parameters:
 - name: dns.domain

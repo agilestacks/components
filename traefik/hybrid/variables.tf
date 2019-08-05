@@ -3,10 +3,10 @@ variable "domain_name" {
   description = "Domain name associated with R53 hosted zone"
 }
 
-variable "namespace" {
-  type = "string"
-  default = "ingress"
-}
+# variable "namespace" {
+#   type = "string"
+#   default = "ingress"
+# }
 
 variable "url_prefix" {
   type = "string"
@@ -16,11 +16,10 @@ variable "sso_url_prefix" {
   type = "string"
 }
 
-variable "auth_url_prefix" {
+variable "ingress_static_ip" {
   type = "string"
-  default = "auth"
 }
 
-variable "ingress_static_ip" {
+variable "ingress_static_host" {
   type = "string"
 }

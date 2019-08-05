@@ -1,13 +1,13 @@
 terraform {
-  required_version = ">= 0.11.3"
+  required_version = ">= 0.12.2"
   backend "s3" {}
 }
 
-data "aws_region" "current" {}
-
 provider "aws" {
-  version = "1.60.0"
+  version = "~> 2.7"
 }
+
+data "aws_region" "current" {}
 
 variable "endpoints" {
   type    = "map"
@@ -57,12 +57,14 @@ resource "aws_s3_bucket" "main" {
 
     force_destroy = true
 
+  # versioning is still a resource block
     versioning {
         enabled = false
     }
 
-    tags {
-        Name = "${var.name}"
+    # tags is now a map (not resource block)
+    tags = {
+        "Name" = "${var.name}"
     }
 #    logging {
 #       target_bucket = "${aws_s3_bucket.log_bucket.id}"
