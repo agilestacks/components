@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= ecr
-DOMAIN_NAME    ?= dev.kubernetes.delivery
+DOMAIN_NAME    ?= test.dev.superhub.io
 
 STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1
@@ -25,11 +25,11 @@ $(TF_DATA_DIR):
 
 init: $(TF_DATA_DIR)
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
-        -backend=true -reconfigure \
-        -backend-config="bucket=$(STATE_BUCKET)" \
-        -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(DOMAIN_NAME)/ecr/$(subst /,-,$(COMPONENT_NAME))/terraform.tfstate" \
-        -backend-config="profile=$(AWS_PROFILE)"
+		-backend=true -reconfigure \
+		-backend-config="bucket=$(STATE_BUCKET)" \
+		-backend-config="region=$(STATE_REGION)" \
+		-backend-config="key=$(DOMAIN_NAME)/ecr/$(subst /,-,$(COMPONENT_NAME))/terraform.tfstate" \
+		-backend-config="profile=$(AWS_PROFILE)"
 
 plan:
 	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)

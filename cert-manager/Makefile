@@ -4,7 +4,7 @@ COMPONENT_NAME ?= cert-manager
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE 	   ?= cert-manager
 HELM_CHART     ?= jetstack/cert-manager
-CHART_VERSION  ?= v0.8.0
+CHART_VERSION  ?= v0.9.0
 KUBE_FLAVOR    ?=
 
 export HELM_HOME ?= $(shell pwd)/.helm
@@ -24,16 +24,12 @@ init:
 	@mkdir -p $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
 
-# TODO check the patch is still needed with Helm v2.14.1
-# https://github.com/helm/helm/releases/tag/v2.14.1 ##Changelog
-# https://github.com/jetstack/cert-manager/pull/1694
 fetch:
 	$(helm) repo add jetstack https://charts.jetstack.io
 	$(helm) fetch \
 		--destination charts \
 		--untar $(HELM_CHART) \
 		--version $(CHART_VERSION)
-	patch -i validating-webhook.yaml.diff charts/cert-manager/charts/webhook/templates/validating-webhook.yaml
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
@@ -42,7 +38,7 @@ purge:
 
 install:
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply -f crds.yaml
+	$(kubectl) apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \

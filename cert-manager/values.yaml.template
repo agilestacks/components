@@ -33,7 +33,7 @@ image:
   repository: quay.io/jetstack/cert-manager-controller
   # Override the image tag to deploy by setting this variable.
   # If no value is set, the chart's appVersion will be used.
-  tag: v0.8.0
+  tag: v0.9.0
   pullPolicy: IfNotPresent
 
 # Override the namespace used to store DNS provider credentials etc. for ClusterIssuer
@@ -54,6 +54,8 @@ extraArgs:
   # Use this flag to set a namespace that cert-manager will use to store
   # supporting resources required for each ClusterIssuer (default is kube-system)
   # - --cluster-resource-namespace=kube-system
+  # When this flag is enabled, secrets will be automatically removed when the certificate resource is deleted
+  # - --enable-certificate-owner-ref=true
 
 extraEnv: []
 # - name: SOME_VAR
@@ -92,6 +94,16 @@ ingressShim:
   defaultIssuerKind: "${component.cert-manager.defaultIssuerKind}"
   # defaultACMEChallengeType: ""
   # defaultACMEDNS01ChallengeProvider: ""
+
+prometheus:
+  enabled: false
+  servicemonitor:
+    enabled: false
+    prometheusInstance: default
+    targetPort: 9402
+    path: /metrics
+    interval: 60s
+    scrapeTimeout: 30s
 
 webhook:
   enabled: true
