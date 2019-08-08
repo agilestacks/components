@@ -68,7 +68,7 @@ spec:
     spec:
       containers:
       - name: cerebro
-        image: agilestacks/cerebro:0.8.2
+        image: agilestacks/cerebro:${component.efk.cerebro.version}
         imagePullPolicy: Always
         readinessProbe:
           httpGet:
