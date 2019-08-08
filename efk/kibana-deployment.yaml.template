@@ -58,8 +58,8 @@ spec:
           httpGet:
             path: /api/status
             port: ui
-            initialDelaySeconds: 5
-            timeoutSeconds: 10
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
         readinessProbe:
           httpGet:
             path: /api/status
