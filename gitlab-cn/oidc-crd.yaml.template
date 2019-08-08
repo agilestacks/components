@@ -1,0 +1,12 @@
+apiVersion: auth.agilestacks.com/v1alpha1
+kind: Oidc
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: oidc-gitlab
+spec:
+  id: ${component.gitlab.omniauth.identifier}
+  secret: ${component.gitlab.omniauth.secret}
+  redirectURIs:
+  - ${component.gitlab.omniauth.callback.url}
+  name: 'Gitlab'

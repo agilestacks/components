@@ -1,0 +1,11 @@
+name: openid_connect
+label: OIDC
+args:
+  name: ${component.gitlab.omniauth.provider.name}
+  scope: ['openid', 'profile', 'email'] 
+  discovery: true
+  issuer: ${component.dex.issuer}
+  client_options:
+   identifier: ${component.gitlab.omniauth.identifier}
+   secret: ${component.gitlab.omniauth.secret}
+   redirect_uri: ${component.gitlab.omniauth.callback.url}

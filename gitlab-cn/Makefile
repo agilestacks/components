@@ -35,6 +35,8 @@ purge:
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
+	-$(kubectl) create -f oidc-crd.yaml
+	-$(kubectl) create secret generic gitlab-dex-oicd --from-file=provider=gitlab-dex-provider.yaml
 	-scripts/create_minio_secret.sh
 	$(MAKE) -C $(CLOUD_KIND) $@
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
@@ -54,6 +56,9 @@ install:
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 	  $(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	-$(kubectl) delete secret generic gitlab-dex-oicd
+	-$(kubectl) delete -f oidc-crd.yaml | true
+	
 
 clean:
 	rm -rf $(HELM_HOME) $(notdir $(HELM_CHART))
