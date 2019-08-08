@@ -22,19 +22,10 @@ spec:
       - name: kibana-logging
         image: docker.elastic.co/kibana/kibana-oss:${component.efk.kibana.version}
         resources:
-          # need more cpu upon initialization, therefore burstable class
           limits:
             cpu: 1000m
           requests:
             cpu: 100m
-        readinessProbe:
-          httpGet:
-            path: /status
-            port: 5601
-          initialDelaySeconds: 20
-          periodSeconds: 3
-          timeoutSeconds: 1
-          successThreshold: 1
         env:
           - name: ELASTICSEARCH_HOSTS
             valueFrom:
@@ -63,6 +54,18 @@ spec:
         - containerPort: 5601
           name: ui
           protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /api/status
+            port: ui
+            initialDelaySeconds: 5
+            timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/status
+            port: ui
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
       volumes:
       - name: es-config
         configMap:
