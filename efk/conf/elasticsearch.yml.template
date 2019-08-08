@@ -7,10 +7,9 @@ node:
 
 network.host: 0.0.0.0
 
-discovery:
-  zen:
-    ping.unicast.hosts: elasticsearch-discovery.${component.efk.namespace}.svc.cluster.local
-    minimum_master_nodes: ${component.efk.elastic.quorum}
+discovery.type: single-node
+discovery.seed_hosts: elasticsearch-discovery.${component.efk.namespace}.svc.cluster.local
+    
 
 path:
   logs: /data/log
@@ -18,4 +17,3 @@ path:
 
 
 bootstrap.memory_lock: false
-
