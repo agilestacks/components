@@ -5,7 +5,6 @@ metadata:
   namespace: ${component.efk.namespace}
   labels:
     k8s-app: elasticsearch-logging
-    kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
     kubernetes.io/name: "Elasticsearch"
 spec:
@@ -23,7 +22,6 @@ metadata:
   namespace: ${component.efk.namespace}
   labels:
     k8s-app: elasticsearch-logging
-    kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
     kubernetes.io/name: "Elasticsearch"
 spec:
