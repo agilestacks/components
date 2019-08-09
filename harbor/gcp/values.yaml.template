@@ -53,7 +53,7 @@ persistence:
 nginx:
   image:
     repository: goharbor/nginx-photon
-    tag: ${component.harbor.version}
+    tag: ${component.harbor.version}-dev
   replicas: 1
   nodeSelector: {}
   tolerations: []
@@ -127,7 +127,7 @@ registry:
   registry:
     image:
       repository: goharbor/registry-photon
-      tag: ${component.harbor.version}
+      tag: ${component.harbor.version}-dev
   controller:
     image:
       repository: goharbor/harbor-registryctl
@@ -147,7 +147,7 @@ chartmuseum:
   enabled: true
   image:
     repository: goharbor/chartmuseum-photon
-    tag: ${component.harbor.version}
+    tag: ${component.harbor.version}-dev
   replicas: 1
   # resources:
   #  requests:
@@ -163,7 +163,7 @@ clair:
   enabled: true
   image:
     repository: goharbor/clair-photon
-    tag: ${component.harbor.version}
+    tag: ${component.harbor.version}-dev
   replicas: 1
   # The http(s) proxy used to update vulnerabilities database from internet
   httpProxy:
@@ -186,12 +186,12 @@ notary:
   server:
     image:
       repository: goharbor/notary-server-photon
-      tag: ${component.harbor.version}
+      tag: ${component.harbor.version}-dev
     replicas: 1
   signer:
     image:
       repository: goharbor/notary-signer-photon
-      tag: ${component.harbor.version}
+      tag: ${component.harbor.version}-dev
     replicas: 1
   nodeSelector: {}
   tolerations: []
@@ -236,7 +236,7 @@ redis:
   internal:
     image:
       repository: goharbor/redis-photon
-      tag: ${component.harbor.version}
+      tag: ${component.harbor.version}-dev
     # resources:
     #  requests:
     #    memory: 256Mi
