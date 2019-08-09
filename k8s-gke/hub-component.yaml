@@ -28,6 +28,7 @@ parameters:
     value: gke
   - name: kubernetes.gke.cluster
     env: CLUSTER_NAME
+    value: ${dns.name}
   - name: dns.domain
     env: DOMAIN_NAME
   - name: cloud.region
