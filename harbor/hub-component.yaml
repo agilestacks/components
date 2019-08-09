@@ -82,6 +82,8 @@ parameters:
     env: ADMIN_PASSWORD
   - name: storageClass
     value: '#{cloud.kind == "gcp" ? "standard" : "default"}'
+  - name: version
+    value: "v1.8.1"
 - name: component.cert-manager
   parameters:
   - name: issuer-email
