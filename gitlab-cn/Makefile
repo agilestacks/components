@@ -43,7 +43,6 @@ install:
 	  $(helm) install charts/$(notdir $(HELM_CHART)) \
 	  --timeout 600 \
 	  --name $(COMPONENT_NAME) \
-	  --name-template $(COMPONENT_NAME) \
 	  --namespace $(NAMESPACE) \
 	  --replace \
 	  --wait \
