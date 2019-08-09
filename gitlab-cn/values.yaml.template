@@ -197,17 +197,6 @@ global:
       #   encryption: 'plain'
 
     ## doc/charts/globals.md#omniauth
-    # omniauth:
-    #   enabled: false
-    #   autoSignInWithProvider:
-    #   syncProfileFromProvider: []
-    #   syncProfileAttributes: ['email']
-    #   allowSingleSignOn: ['saml']
-    #   blockAutoCreatedUsers: true
-    #   autoLinkLdapUser: false
-    #   autoLinkSamlUser: false
-    #   externalProviders: []
-    #   providers: []
     omniauth:
       enabled: true
       autoSignInWithProvider:
@@ -437,6 +426,8 @@ shared-secrets:
   enabled: true
   rbac:
     create: true
+  image:
+    tag: 28a3e18b1d65ab0e7a8e086b3c6e6ebbed4aeca3
 
 ## Installation & configuration of gitlab/gitlab-runner
 ## See requirements.yaml for current version
