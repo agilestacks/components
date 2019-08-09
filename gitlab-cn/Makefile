@@ -1,15 +1,15 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME   ?= gitlab-cn
-HELM_CHART   	 ?= gitlab
-HELM_PROJECT     ?= gitlab
-DOMAIN_NAME      ?= dev.kubernetes.delivery
-NAMESPACE 	 ?= gitlab
-CHART_VERSION    ?= 1.7.5 
-CLOUD_KIND   	 ?= aws
-HELM_REPO        ?= https://charts.gitlab.io/
+COMPONENT_NAME ?= gitlab-cn
+HELM_CHART     ?= gitlab
+HELM_PROJECT   ?= gitlab
+DOMAIN_NAME    ?= test.dev.superhub.io
+NAMESPACE      ?= gitlab
+CHART_VERSION  ?= 1.7.5
+CLOUD_KIND     ?= aws
+HELM_REPO      ?= https://charts.gitlab.io/
 
-export HELM_HOME           ?= $(shell pwd)/.helm
+export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
@@ -57,7 +57,6 @@ undeploy: init
 	  $(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	-$(kubectl) delete secret generic gitlab-dex-oicd
 	-$(kubectl) delete -f oidc-crd.yaml | true
-	
 
 clean:
 	rm -rf $(HELM_HOME) $(notdir $(HELM_CHART))
