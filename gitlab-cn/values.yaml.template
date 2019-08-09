@@ -198,18 +198,18 @@ global:
 
     ## doc/charts/globals.md#omniauth
     omniauth:
-      enabled: false
+      enabled: true
       autoSignInWithProvider:
       syncProfileFromProvider: []
       syncProfileAttributes: ['email']
-      allowSingleSignOn: ['saml']
-      blockAutoCreatedUsers: true
+      allowSingleSignOn: ['${component.gitlab.omniauth.provider.name}']
+      blockAutoCreatedUsers: false
       autoLinkLdapUser: false
       autoLinkSamlUser: false
       externalProviders: []
-      providers: []
-      # - secret: gitlab-google-oauth2
-      #   key: provider
+      providers:
+        - secret: gitlab-dex-oicd
+
   ## End of global.appConfig
 
   ## doc/charts/globals.md#configure-gitlab-shell-settings
@@ -426,6 +426,8 @@ shared-secrets:
   enabled: true
   rbac:
     create: true
+  image:
+    tag: 28a3e18b1d65ab0e7a8e086b3c6e6ebbed4aeca3
 
 ## Installation & configuration of gitlab/gitlab-runner
 ## See requirements.yaml for current version

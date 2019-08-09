@@ -22,7 +22,7 @@ parameters:
       env:   COMPONENT_NAME
     - name:  version
       brief: sysdig agent version
-      value: 0.90.2
+      value: 0.90.3
     - name:  namespace
       brief: Kubernetes namespace to install into
       value: sysdig

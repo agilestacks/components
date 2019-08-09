@@ -37,12 +37,14 @@ parameters:
       value: logs
     - name:  ingress.kibanaUrlPrefix
       value: kibana
+    - name: cerebro.version
+      value: 0.8.4
     - name:  fluentd.version
-      value: v1.4.1
+      value: v1.5.2
     - name:  kibana.version
-      value: 6.7.1
+      value: 7.2.1
     - name:  elastic.version
-      value: 6.7.1
+      value: 7.2.1
     - name: elastic.masters
       value: 1
       # (number of master nodes / 2) + 1

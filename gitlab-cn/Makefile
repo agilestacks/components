@@ -1,15 +1,15 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME   ?= gitlab-cn
-HELM_CHART   	 ?= gitlab
-HELM_PROJECT     ?= gitlab
-DOMAIN_NAME      ?= dev.kubernetes.delivery
-NAMESPACE 	 ?= gitlab
-CHART_VERSION    ?= 1.7.5 
-CLOUD_KIND   	 ?= aws
-HELM_REPO        ?= https://charts.gitlab.io/
+COMPONENT_NAME ?= gitlab-cn
+HELM_CHART     ?= gitlab
+HELM_PROJECT   ?= gitlab
+DOMAIN_NAME    ?= test.dev.superhub.io
+NAMESPACE      ?= gitlab
+CHART_VERSION  ?= 1.7.5
+CLOUD_KIND     ?= aws
+HELM_REPO      ?= https://charts.gitlab.io/
 
-export HELM_HOME           ?= $(shell pwd)/.helm
+export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
@@ -35,13 +35,14 @@ purge:
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
+	-$(kubectl) create -f oidc-crd.yaml
+	-$(kubectl) create secret generic gitlab-dex-oicd --from-file=provider=gitlab-dex-provider.yaml
 	-scripts/create_minio_secret.sh
 	$(MAKE) -C $(CLOUD_KIND) $@
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 	  $(helm) install charts/$(notdir $(HELM_CHART)) \
 	  --timeout 600 \
 	  --name $(COMPONENT_NAME) \
-	  --name-template $(COMPONENT_NAME) \
 	  --namespace $(NAMESPACE) \
 	  --replace \
 	  --wait \
@@ -54,6 +55,8 @@ install:
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 	  $(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	-$(kubectl) delete secret generic gitlab-dex-oicd
+	-$(kubectl) delete -f oidc-crd.yaml | true
 
 clean:
 	rm -rf $(HELM_HOME) $(notdir $(HELM_CHART))

@@ -26,7 +26,6 @@ parameters:
 
   - name: cloud.vpc.worker.subnet.ids
     env: SUBNET_IDS
-    empty: allow
   - name: cloud.vpc.worker.sg.id
     env: SG_IDS
   - name: cloud.iam.worker.instanceProfile
@@ -55,7 +54,7 @@ parameters:
       value: 1
       env: TF_VAR_pool_count
     - name: maxCount
-      value: 1
+      value: ${component.k8s-worker-nodes.count}
       env: TF_VAR_pool_max_count
     - name: volume.size
       env: TF_VAR_root_volume_size
