@@ -32,7 +32,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "1.41.0"
+  version = "2.14.0"
 }
 
 {% endif %}
@@ -128,11 +128,11 @@ def request_certificate(domain, additional_names=[]):
 
 # wait until certificate will conform to json schema
 def wait_to_propogate(arn):
-  print "Wait for certificate {} to propogate ".format(arn)
+  print("Wait for certificate {} to propagate ".format(arn))
   for _ in range(60):
     cert = cert_by_arn(arn)
     if valid(cert, schema):
-      print ' done'
+      print(' done')
       return cert
     time.sleep(3)
     sys.stdout.write('.')
@@ -173,13 +173,13 @@ if __name__ == "__main__":
   cert = cert_by_domain( domain )
   if cert:
     arn  = cert['Certificate']['CertificateArn']
-  # print json.dumps(cert, sort_keys=True, indent=4, separators=(',', ': '), default=json_util.default)
+  # print(json.dumps(cert, sort_keys=True, indent=4, separators=(',', ': '), default=json_util.default))
 
   if args['request']:
     if not cert:
       cert = request_certificate( domain, args['<additional_names>'] )
     else:
-      log.warn("Certificate for %s already requested, see details %s", domain, cert)
+      log.warning("Certificate for %s already requested, see details %s", domain, cert)
 
   elif args['gen']:
     if cert != None:
@@ -187,21 +187,21 @@ if __name__ == "__main__":
       if args['--save-to']:
         with open(args['--save-to'], "w") as f:
           f.write(tf)
-        print 'Done!'
+        print('Done!')
       else:
-        print tf
+        print(tf)
 
   elif args['delete']:
     if cert != None:
       resp = delete_certificate( cert )
       log.debug('Deleted certificate: %s', resp)
-      print 'Done!'
+      print('Done!')
     else:
-      log.warn("Certificate for %s has not been found", domain)
+      log.warning("Certificate for %s has not been found", domain)
 
   elif args['arn']:
     if cert != None:
-      print cert['Certificate']['CertificateArn']
+      print(cert['Certificate']['CertificateArn'])
     else:
       raise Exception('Cannot find ACM certificate for: {}'.format(domain))
   elif args['wait']:
@@ -211,15 +211,15 @@ if __name__ == "__main__":
       if not desired:
         desired = ['ISSUED']
 
-      print 'Wait {} until in status {}'.format(arn, desired)
+      print('Wait {} until in status {}'.format(arn, desired))
       while (time.time() < timeout ):
         cert = cert_by_domain( domain )
         status = cert.get('Certificate', {}).get('Status', None)
         if status in desired:
-          print 'Done!'
+          print('Done!')
           exit(0)
         time.sleep(10)
-        print "Certertificate is {}, {} sec, retry...".format(status, int(timeout - time.time()) )
-      raise Exception('Timed out waiting {} to become in status {}'.format(arn, desired))
+        print("Certificate is {}, {} sec, retry...".format(status, int(timeout - time.time())))
+      raise Exception('Timeout waiting {} to become in status {}'.format(arn, desired))
     else:
       raise Exception('Cannot find ACM certificate for: {}'.format(domain))

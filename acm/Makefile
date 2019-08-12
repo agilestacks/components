@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME         ?= acm
-DOMAIN_NAME            ?= dev.kubernetes.delivery
+DOMAIN_NAME            ?= test.dev.superhub.io
 ADDITIONAL_NAMES       ?=
 ACM_DELETE_CERTIFICATE ?= false
 TIMEOUT                ?= 1200
@@ -21,8 +21,8 @@ TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
 TF_GENERATED_DIR := $(DOMAIN_NAME)-$(COMPONENT_NAME)
 
-python := . .venv/bin/activate && python
-pip    := . .venv/bin/activate && pip
+python := . .venv/bin/activate && python3
+pip    := . .venv/bin/activate && pip3
 
 deploy: install cert init plan apply wait output
 
@@ -59,7 +59,7 @@ delete:
 	$(python) main.py delete $(DOMAIN_NAME)
 
 .venv:
-	virtualenv .venv
+	virtualenv-3.7 .venv || virtualenv .venv
 
 install: .venv
 	$(pip) install -r requirements.txt --upgrade
@@ -77,9 +77,6 @@ $(TF_GENERATED_DIR)/generated.tf:
 
 wait: .venv
 	$(python) main.py wait $(DOMAIN_NAME) --timeout $(TIMEOUT)
-
-test:
-	python test_main.py
 
 output:
 	$(eval CERTIFICATE_ARN:=$(shell $(python) main.py arn $(DOMAIN_NAME)))
