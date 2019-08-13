@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "~> 2.7"
+  version = "2.14.0"
 }
 
 data "aws_region" "current" {}
