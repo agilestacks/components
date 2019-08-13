@@ -5,6 +5,7 @@ metadata:
   namespace: ${component.spinnaker.namespace}
   annotations:
     kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
+    kubernetes.io/tls-acme: "true"
 spec:
   rules:
   - host: ${component.spinnaker.name}.${component.ingress.fqdn}
@@ -14,6 +15,11 @@ spec:
         backend:
           serviceName: spin-deck
           servicePort: 9000
+  tls:
+  - hosts:
+    - ${component.ingress.fqdn}
+    - ${component.spinnaker.name}.${component.ingress.fqdn}
+    secretName: ${component.spinnaker.name}-tls
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -22,6 +28,7 @@ metadata:
   namespace: ${component.spinnaker.namespace}
   annotations:
     kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
+    kubernetes.io/tls-acme: "true"
 spec:
   rules:
   - host: api.${component.spinnaker.name}.${component.ingress.fqdn}
@@ -31,3 +38,8 @@ spec:
         backend:
           serviceName: spin-gate
           servicePort: 8084
+  tls:
+  - hosts:
+    - ${component.ingress.fqdn}
+    - api.${component.spinnaker.name}.${component.ingress.fqdn}
+    secretName: ${component.spinnaker.name}-api-tls
