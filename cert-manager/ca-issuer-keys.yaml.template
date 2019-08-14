@@ -5,4 +5,4 @@ metadata:
   name: ${component.cert-manager.caIssuer.name}-keys
 data:
   tls.key: ${component.cert-manager.caIssuer.key/base64}
-  tls.crt: ${component.cert-manager.caIssuer.certificate/base64}
+  tls.crt: ${component.cert-manager.caIssuer.cert/base64}

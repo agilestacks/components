@@ -43,7 +43,7 @@ parameters:
     - name: name
       value: ca-issuer
     - name: key
-    - name: certificate
+    - name: cert
 # alias for CEL expression
 - name: certmanager.caIssuer.key
   value: ${component.cert-manager.caIssuer.key}
