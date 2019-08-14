@@ -13,11 +13,15 @@ kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 ADDITIONAL_VALUES :=
+
+deploy: clean init fetch purge install
 ifeq ($(KUBE_FLAVOR),openshift)
-deploy: clean init fetch purge install openshift issuer
+deploy: openshift
 ADDITIONAL_VALUES := --values values-openshift.yaml
-else
-deploy: clean init fetch purge install issuer
+endif
+deploy: issuer
+ifeq ($(CA_ISSUER_ENABLED),true)
+deploy: ca-issuer
 endif
 
 init:
@@ -63,6 +67,11 @@ issuer:
 	exit 1
 	$(kubectl) apply -f staging-cluster-issuer.yaml
 .PHONY: issuer
+
+ca-issuer:
+	$(kubectl) apply -f ca-issuer-keys.yaml
+	$(kubectl) apply -f ca-cluster-issuer.yaml
+.PHONY: ca-issuer
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \

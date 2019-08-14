@@ -18,6 +18,7 @@ parameters:
 - name: dns.domain
   env: DOMAIN_NAME
 - name: kubernetes.flavor
+  empty: allow
   env: KUBE_FLAVOR
 - name: component.cert-manager
   parameters:
@@ -32,9 +33,23 @@ parameters:
   - name: defaultIssuerName
     value: letsencrypt-prod
    #value: letsencrypt-staging
+   #value: ca-issuer
   - name: defaultIssuerKind
     value: ClusterIssuer
    #value: Issuer
+  - name: caIssuer
+    empty: allow
+    parameters:
+    - name: name
+      value: ca-issuer
+    - name: key
+    - name: certificate
+# alias for CEL expression
+- name: certmanager.caIssuer.key
+  value: ${component.cert-manager.caIssuer.key}
+- name: component.cert-manager.caIssuer.enabled
+  value: '#{size(certmanager.caIssuer.key) > 1}'
+  env: CA_ISSUER_ENABLED
 
 outputs:
 - name: component.tls.kind

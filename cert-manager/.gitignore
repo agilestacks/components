@@ -1,2 +1,1 @@
-cert-manager-cs.yaml
-*-issuer.yaml
+*-issuer*.yaml
