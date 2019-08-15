@@ -14,8 +14,13 @@ function write(filename, value) {
 
 function extract(components) {
     return keyBy(
-        components.map(([name, meta]) => (
-            {name, brief: meta.meta.brief, requires: meta.requires || [], provides: meta.provides || []})),
+        components.map(([name, {meta: {brief, version}, requires, provides}]) => ({
+            name,
+            ...(brief ? {brief} : {}),
+            ...(version ? {version} : {}),
+            requires: requires || [],
+            provides: provides || []
+        })),
         'name');
 }
 
