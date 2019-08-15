@@ -3,7 +3,7 @@ const path = require('path');
 const yaml = require('js-yaml');
 const {get, keyBy, pick} = require('lodash');
 
-const outputFilename = get(process.argv, '[2]') || 'requires-provides.json';
+const outputFilename = get(process.argv, '[2]') || 'components-meta.json';
 const componentsDirectory = get(process.argv, '[3]') || '../../../components';
 
 function write(filename, value) {

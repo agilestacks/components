@@ -1,4 +1,0 @@
-%requires-provides.json:
-	cd $(or $(REQUIRES_PROVIDES_NODE_DIR),$(dir $(filter %/requires-provides,$(MAKEFILE_LIST)))requires-provides-node) && \
-		npm start -- $(CURDIR)/$@ $(or $(COMPONENTS_DIR),../..)
-.PHONY: %requires-provides.json
