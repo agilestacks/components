@@ -31,7 +31,7 @@ parameters:
       env: HELM_CHART
     - name: repo
       value: https://charts.gitlab.io
-      env: HELM_REPO 
+      env: HELM_REPO
     - name: chart.version
       value: 2.1.6
       env: CHART_VERSION
@@ -94,7 +94,6 @@ templates:
         - "scripts/*.template"
         - "aws/*.yaml.template"
         - "aws/*.sh.template"
-        
 
 outputs:
   - name: component.gitlab.url
