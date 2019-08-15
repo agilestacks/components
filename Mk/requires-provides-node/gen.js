@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-const {get, keyBy} = require('lodash');
+const {get, keyBy, pick} = require('lodash');
 
 const outputFilename = get(process.argv, '[2]') || 'requires-provides.json';
 const componentsDirectory = get(process.argv, '[3]') || '../../../components';
@@ -14,10 +14,9 @@ function write(filename, value) {
 
 function extract(components) {
     return keyBy(
-        components.map(([name, {meta: {brief, version}, requires, provides}]) => ({
+        components.map(([name, {meta, requires, provides}]) => ({
             name,
-            ...(brief ? {brief} : {}),
-            ...(version ? {version} : {}),
+            ...pick(meta, ['brief', 'version', 'maturity']),
             requires: requires || [],
             provides: provides || []
         })),
