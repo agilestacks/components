@@ -44,6 +44,7 @@ deploy:
 .PHONY: deploy
 
 undeploy:
+	$(MAKE) init
 	$(MAKE) plan TF_OPTS="-destroy -no-color"
 	$(MAKE) apply
 .PHONY: undeploy
