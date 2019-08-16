@@ -4,4 +4,5 @@ ingress:
   tls:
   - secretName: ${component.minio.name}-tls
     hosts:
+    - ${component.ingress.fqdn}
     - ${component.minio.name}.${component.minio.ingress.baseDomain}
