@@ -166,5 +166,4 @@ outputs:
 templates:
   files:
     - "*.template"
-    - "acm/values.yaml.template"
     - "letsencrypt/values.yaml.template"
