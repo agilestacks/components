@@ -199,7 +199,7 @@ global:
     ## doc/charts/globals.md#omniauth
     omniauth:
       enabled: true
-      autoSignInWithProvider: '${component.gitlab.omniauth.provider.name}'
+      autoSignInWithProvider:
       syncProfileFromProvider: ['${component.gitlab.omniauth.provider.name}']
       syncProfileAttributes: ['email']
       allowSingleSignOn: ['${component.gitlab.omniauth.provider.name}']
