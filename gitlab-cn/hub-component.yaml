@@ -20,6 +20,9 @@ parameters:
     env: CLOUD_KIND
   - name: dns.domain
     env: DOMAIN_NAME
+  - name: dns.name
+  - name: cloud.azureResourceGroupName
+    empty: allow
   - name: component.ingress.kubernetes.ingressClass
     empty: allow
   - name: component.ingress.protocol
@@ -94,7 +97,8 @@ templates:
         - "scripts/*.template"
         - "aws/*.yaml.template"
         - "aws/*.sh.template"
-
+        - "azure/*.yaml.template"
+        - "azure/*.sh.template"
 outputs:
   - name: component.gitlab.url
     brief: Gitlab URL

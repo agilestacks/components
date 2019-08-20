@@ -1,0 +1,16 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: pv-{{cloud.kind}}
+  labels:
+    kubernetes.io/cluster-service: "true"
+  resourceVersion: "281"
+  selfLink: /apis/storage.k8s.io/v1/storageclasses/managed-premium
+  uid: 319dafe8-bdcb-11e9-af9b-2a57a0a7bb9f
+parameters:
+  cachingmode: ReadOnly
+  kind: Managed
+  storageaccounttype: Premium_LRS
+provisioner: kubernetes.io/azure-disk
+reclaimPolicy: Retain
+volumeBindingMode: Immediate

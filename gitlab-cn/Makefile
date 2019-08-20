@@ -41,7 +41,7 @@ install:
 	$(MAKE) -C $(CLOUD_KIND) $@
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 	  $(helm) install charts/$(notdir $(HELM_CHART)) \
-	  --timeout 600 \
+	  --timeout 700 \
 	  --name $(COMPONENT_NAME) \
 	  --namespace $(NAMESPACE) \
 	  --replace \
