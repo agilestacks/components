@@ -11,7 +11,6 @@ requires:
   - kubernetes
   - helm
   - tiller
-  - azure
 
 provides:
   - gitlab
