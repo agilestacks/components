@@ -32,7 +32,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "2.14.0"
+  version = "1.60.0"
 }
 
 {% endif %}
