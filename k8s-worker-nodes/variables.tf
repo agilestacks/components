@@ -115,10 +115,25 @@ variable "s3_bucket" {
   type = "string"
 
   description = <<EOF
-S3 bucket name to download igniniton config of cluster existing worker nodes from
+S3 bucket name to download igniniton config of
+cluster existing worker nodes from
+EOF
+}
 
-Example:
- * `files.mycluster.myaccount.demo01.kubernetes.delivery`
+variable "s3_bucket_region" {
+  type    = "string"
+  default = "us-east-1"
+  description = "Region of s3 bucket (default: us-east-1)"
+}
+
+variable "bootstrap_script_key" {
+  type    = "string"
+  default = ""
+  description = <<EOF
+Path in s3 bucket to ignition key
+If empty (backward compatibility) then
+default location from stack-k8s-aws
+<DOMAIN_NAME>/stack-k8s-aws/ignition/ignition_worker.json
 EOF
 }
 
@@ -147,4 +162,15 @@ EOF
 variable "cluster_tag" {
   type        = "string"
   description = "Tag to enable worker nodes to join the Kube cluster"
+}
+
+variable "virtualization_type" {
+  type        = "string"
+  default     = "hvm"
+  description = "Worker pool ec2 instance vrtualization type (default: hvm)"
+}
+
+variable "domain_name" {
+  type        = "string"
+  description = "Domain name of the cluster that for worker pool"
 }
