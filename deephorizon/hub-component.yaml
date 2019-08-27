@@ -1,0 +1,55 @@
+---
+version: 1
+kind: component
+meta:
+  name: deephorizon
+  brief: A k8s controller to automate the updates of DNS for ingress/services
+  source:
+    dir: ../../components/deephorizon
+
+requires:
+- kubernetes
+provides:
+- deephorizon
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: kubernetes.flavor
+  empty: allow
+  env: KUBE_FLAVOR
+- name: component.deephorizon
+  parameters:
+  - name: name
+    value: deephorizon
+    env: COMPONENT_NAME
+  - name: namespace
+    value: deephorizon
+    env: NAMESPACE
+  - name: image
+    value: agilestacks/deephorizon
+  - name: zone
+    env: DOMAIN_NAME
+  - name: cluster
+    env: NAME
+  - name: views
+    value: []
+    #- name: view1
+    #- hmacType: hmac-sha512
+    #- key: aaabbbbbccccddddeeeeee
+  - name: poolMap
+    value: []
+    #- [ '192.168.123.201', '10.23.45.6', '56.43.21.9' ]
+    #- [ '192.168.123.202', '10.23.45.16' ]
+    #- [ '192.168.123.203', '', '56.43.21.19' ]
+  - name: targetServer
+
+outputs:
+- name: component.deephorizon.zone
+  value: ${component.deephorizon.zone}
+
+templates:
+  extra:
+  - kind: mustache
+    files:
+    - 'manifests.yaml.template'

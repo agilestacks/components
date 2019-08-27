@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: deephorizon
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: deephorizon-acc
+  namespace: {{component.deephorizon.namespace}}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: deephorizon
+rules:
+- apiGroups:
+  - ""
+  - extensions
+  resources:
+  - configmaps
+  - services
+  - ingresses
+  verbs:
+  - get
+  - watch
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: deephorizon
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: deephorizon
+subjects:
+- kind: ServiceAccount
+  name: deephorizon-acc
+  namespace: {{component.deephorizon.namespace}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deephorizon-config
+  namespace: {{component.deephorizon.namespace}}
+data:
+  config: |
+    zone: {{components.deephorizon.zone}}
+    cluster: {{components.deephorizon.cluster}}
+    servers:
+    - addr: {{components.deephorizon.targetServer}}
+      port: 53
+    views:
+    {{#component.deephorizon.views}}
+    - keyname: {{#name}}
+      hmac: {{#hmacType}}
+      key: {{#key}}
+    {{/component.deephorizon.views}}
+    poolMap:
+    {{#component.deephorizon.poolMap}}
+    - {{.}}
+    {{/component.deephorizon.pool}}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: deephorizon
+  namespace: {{component.deephorizon.namespace}}
+spec:
+  containers:
+  - name: deephorizon
+    image: {{components.deephorizon.image}}
+    imagePullPolicy: Always
+    env:
+    - name: LOG_LEVEL
+      value: "info"
+  serviceAccountName: deephorizon-acc
+  tolerations:
+  - key: "node-role.kubernetes.io/master"
+    operator: Exists
+    effect: NoSchedule
