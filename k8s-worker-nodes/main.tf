@@ -7,6 +7,12 @@ provider "aws" {
   version = "2.14.0"
 }
 
+provider "aws" {
+  alias  = "bucket"
+  region = "${var.s3_bucket_region}"
+  version = "2.14.0"
+}
+
 provider "ignition" {
   version = "1.0.1"
 }
@@ -15,9 +21,17 @@ provider "template" {
   version = "~> 2.1"
 }
 
+resource "random_string" "rnd" {
+  length = 4
+  special = false
+  upper = false
+  special = false
+}
+
 data "aws_s3_bucket_object" "bootstrap_script" {
-  bucket = "${var.s3_bucket}"
-  key    = "ignition_worker.json"
+  provider = "aws.bucket"
+  bucket   = "${var.s3_bucket}"
+  key      = "${local.bootstrap_script_key}"
 }
 
 locals {
@@ -49,11 +63,17 @@ locals {
       },
     ]
   }
+
+  default_key          = "${var.domain_name}/stack-k8s-aws/ignition/ignition_worker.json"
+  bootstrap_script_key = "${coalesce(var.bootstrap_script_key, local.default_key)}"
+  coreos_image         = "CoreOS-${var.container_linux_channel}-${local.instance_gpu == "true" ? format("%s-%s",var.container_linux_version_gpu,"*") : "*"}"
+
+  dest_script_key      = "${dirname(local.bootstrap_script_key)}/pool/${var.name}/${basename(local.bootstrap_script_key)}"
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
   bucket = "${var.s3_bucket}"
-  key    = "k8s-worker-nodes/${var.name}/ignition_worker.json"
+  key    = "${local.dest_script_key}"
 
   content = "${local.instance_gpu ?
     replace(data.aws_s3_bucket_object.bootstrap_script.body,
@@ -67,9 +87,8 @@ resource "aws_s3_bucket_object" "bootstrap_script" {
 
 data "ignition_config" "main" {
   append {
-    source = "${format("s3://%s/%s",
-      "${var.s3_bucket}",
-      "k8s-worker-nodes/${var.name}/ignition_worker.json")}"
+    source = "s3://${aws_s3_bucket_object.bootstrap_script.bucket}/${aws_s3_bucket_object.bootstrap_script.key}"
+    verification = "sha512-${sha512(aws_s3_bucket_object.bootstrap_script.content)}"
   }
 
   // conditional operator cannot be used with list values
@@ -89,7 +108,7 @@ data "aws_ami" "coreos_ami" {
 
   filter {
     name   = "name"
-    values = ["CoreOS-${var.container_linux_channel}-${local.instance_gpu == "true" ? format("%s-%s",var.container_linux_version_gpu,"*") : "*"}"]
+    values = ["${local.coreos_image}"]
   }
 
   filter {
@@ -99,7 +118,7 @@ data "aws_ami" "coreos_ami" {
 
   filter {
     name   = "virtualization-type"
-    values = ["hvm"]
+    values = ["${var.virtualization_type}"]
   }
 }
 
@@ -135,7 +154,7 @@ resource "aws_autoscaling_group" "workers" {
   vpc_zone_identifier  = "${var.subnet_ids}"
   termination_policies = ["ClosestToNextInstanceHour", "default"]
 
-  # Because of https://github.com/hashicorp/terraform/issues/12453 conditional operator cannot be used with list values
+  # Because of https://github.com/hashifcorp/terraform/issues/12453 conditional operator cannot be used with list values
   # TODO: change this when will use terraform >=0.12
   tags = "${local.tags[var.autoscale_enabled == "true" ? "autoscaling_tags" : "default_tags"]}"
 
@@ -149,4 +168,12 @@ resource "aws_autoscaling_attachment" "workers" {
   count                  = "${length(var.load_balancers)}"
   autoscaling_group_name = "${aws_autoscaling_group.workers.name}"
   elb                    = "${var.load_balancers[count.index]}"
+}
+
+resource "local_file" "bootstrap_script" {
+  content  = "${aws_s3_bucket_object.bootstrap_script.content}"
+  filename = "${path.cwd}/.terraform/${var.name}-${random_string.rnd.result}.pem"
+  lifecycle {
+    create_before_destroy = true
+  }
 }
