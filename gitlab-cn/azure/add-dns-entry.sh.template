@@ -40,3 +40,9 @@ else
                             -n {{dns.name}} -a ${ELB}     
 fi
 
+for i in $(seq 1 60); do
+  host {{component.gitlab.fqdn}} | grep ${ELB} && break
+  echo "Wait to propagate DNS record"
+  sleep 3
+done
+

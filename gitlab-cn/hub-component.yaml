@@ -64,10 +64,14 @@ parameters:
     - name: serviceaccount.password
       value: ""
       empty: allow
+    - name: fqdn
+      value: gitlab.${dns.domain}
+    - name: registry.fqdn
+      value: registry.${dns.domain}
     - name: url
-      value: ${component.ingress.protocol}://gitlab.${dns.domain}
+      value: ${component.ingress.protocol}://${component.gitlab.fqdn}
     - name: registryUrl
-      value: ${component.ingress.protocol}://registry.${dns.domain}
+      value: ${component.ingress.protocol}://${component.gitlab.registry.fqdn}
     - name: omniauth
       parameters:
       - name: provider.name
@@ -99,10 +103,18 @@ templates:
         - "aws/*.sh.template"
         - "azure/*.yaml.template"
         - "azure/*.sh.template"
+        - "gcp/*.yaml.template"
+        - "gcp/*.sh.template"
 outputs:
   - name: component.gitlab.url
+    brief: Gitlab URL
+    value: ${component.gitlab.url}
+  - name: component.gitlab.server.url
     brief: Gitlab URL
     value: ${component.gitlab.url}
   - name: component.gitlab.registryUrl
     brief: Gitlab Registry URL
     value: ${component.gitlab.registryUrl}
+  - name: component.gitlab.namespace
+    brief: Kubernetes namespace to install into
+    value: component.gitlab.namespace
