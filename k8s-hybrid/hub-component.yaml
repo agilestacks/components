@@ -21,15 +21,12 @@ lifecycle:
 
 parameters:
   - name: cloud.kind
-    value: metal
+    value: hybrid
   - name: cloud.region
     env: AWS_DEFAULT_REGION
   - name: dns.domain
-    env: CUSTOM_INGRESS_DOMAIN
-  - name: dns.name
-    env: CUSTOM_INGRESS_NAME
-  - name: dns.baseDomain
-    env: CUSTOM_INGRESS_BASE
+    env: DOMAIN_NAME
+
   - name: kubernetes.api.endpoint
     env: API_ENDPOINT
   - name: kubernetes.api.namespace
@@ -48,11 +45,15 @@ parameters:
 outputs:
   - name: dns.domain
   - name: dns.name
+    fromTfVar: dns_name
   - name: dns.baseDomain
+    fromTfVar: dns_base_domain
   - name: cloud.kind
   - name: cloud.region
+
   - name: kubernetes.flavor
   - name: kubernetes.api.endpoint
+    fromTfVar: api_endpoint
   - name: kubernetes.api.caCert
     kind: secret/certificate
   - name: kubernetes.api.clientCert

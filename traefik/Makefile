@@ -47,7 +47,7 @@ endif
 
 deploy: clean init fetch patch purge install plan output apply
 
-ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
+ifneq (,$(filter $(CLOUD_KIND),aws hybrid metal))
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate" \
