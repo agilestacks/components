@@ -1,0 +1,55 @@
+#!/bin/bash -x
+
+#To avoid race conditions, we need to set up the DNS as soon as the ELB becomes available
+KUBE="kubectl --context={{dns.domain}} --namespace={{component.gitlab.namespace}}"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DNS_DOMAIN={{dns.domain}}
+DNS_ZONE=${DNS_DOMAIN//./-}
+
+ELB=""
+echo "Waiting for Load Balancer"
+for i in {1..100}; do
+  ELB=$($KUBE get ingress gitlab-cn-unicorn -o json | jq --raw-output '.status.loadBalancer.ingress[0].ip')
+  if [ ! -z "${ELB}" ] && [ "${ELB}" != "null" ]; then
+    break
+  fi
+  echo "retry ${i}..."
+  sleep 3;
+done
+
+if [ -z "${ELB}" ]; then
+  echo "Failed to get gitlab ELB"
+  exit -1
+fi
+
+
+RECORD_EXIST=$(
+  gcloud dns record-sets list --zone=${DNS_ZONE} --name={{component.gitlab.fqdn}}. --format=json | jq --raw-output '.[0].rrdatas[0]'
+)
+
+echo "STATUS: ${RECORD_EXIST}"
+gcloud dns record-sets transaction abort --zone=${DNS_ZONE} | true
+
+if [ -z "${RECORD_EXIST}" ]; then
+  gcloud dns record-sets transaction start --zone=${DNS_ZONE}
+  gcloud dns record-sets transaction add --zone=${DNS_ZONE} \
+            --name={{component.gitlab.fqdn}}. --ttl 300 \
+            --type A ${ELB}
+  gcloud dns record-sets transaction execute --zone=${DNS_ZONE}        
+
+else
+  gcloud dns record-sets transaction start --zone=${DNS_ZONE}
+  gcloud dns record-sets transaction remove --zone=${DNS_ZONE} \
+            --name={{component.gitlab.fqdn}}. --ttl 300 \
+            --type A ${RECORD_EXIST}
+  gcloud dns record-sets transaction add --zone=${DNS_ZONE} \
+            --name={{component.gitlab.fqdn}}. --ttl 300 \
+            --type A ${ELB}
+  gcloud dns record-sets transaction execute --zone=${DNS_ZONE}   
+fi
+
+for i in $(seq 1 60); do
+  host {{component.gitlab.fqdn}} | grep ${ELB} && break
+  echo "Wait to propagate DNS record"
+  sleep 3
+done
