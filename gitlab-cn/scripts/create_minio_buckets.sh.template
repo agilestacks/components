@@ -63,7 +63,7 @@ createBucket() {
   # At this point, the bucket should exist, skip checking for existance
   # Set policy on the bucket
   echo "Setting policy of bucket '$BUCKET' to '$POLICY'."
-  mc policy $POLICY glminio/$BUCKET
+  mc policy set $POLICY glminio/$BUCKET
 }
 
 connectToMinio
