@@ -7,5 +7,5 @@ https://github.com/kubernetes-incubator/external-dns
 
 This expects 2 parameters to be supplied via a PET or some other mechhanism.  It needs the customer/cloud-account aws credentials in order to spin up domains in the appropriate account. 
 
-`component.external-dns.accessKeyId` 
-`component.external-dns.secretAccessKey`
+* `component.external-dns.accessKeyId` 
+* `component.external-dns.secretAccessKey`
