@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: traefik
-  brief: Traefik Server as ingress Controller
+  brief: Traefik Router as ingress Controller
   source:
     dir: ../../components/traefik
 

@@ -11,7 +11,7 @@ CLOUD_KIND          ?= aws
 ACM_CERTIFICATE_ARN ?=
 CHART_VERSION       ?= 1.68.5
 CHART               ?= stable/traefik
-HELM_TIMEOUT 				?= 10
+HELM_TIMEOUT        ?= 900
 HUB_PROVIDES        ?=
 
 STATE_BUCKET    ?= terraform.agilestacks.com
