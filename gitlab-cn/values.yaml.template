@@ -11,7 +11,7 @@ global:
   edition: ${component.gitlab.edition}
 
   ## doc/charts/globals.md#gitlab-version
-  gitlabVersion: ${component.gitlab.software.version} 
+  gitlabVersion: ${component.gitlab.software.version}
 
   ## doc/charts/globals.md#application-resource
   application:
@@ -20,7 +20,7 @@ global:
     allowClusterRoles: true
   ## doc/charts/globals.md#configure-host-settings
   hosts:
-    domain: ${dns.domain} 
+    domain: ${dns.domain}
     # hostSuffix:
     https: true
     externalIP:
@@ -74,7 +74,7 @@ global:
   ## doc/charts/globals.md#configure-minio-settings
   minio:
     enabled: false
-    credentials: 
+    credentials:
       secret: gitlab-rails-storage
       key: connection
 
@@ -129,27 +129,27 @@ global:
     ## doc/charts/globals.md#lfs-artifacts-uploads-packages-external-mr-diffs
     lfs:
       bucket: git-lfs
-      connection: 
+      connection:
         secret: gitlab-rails-storage
         key: connection
     artifacts:
       bucket: gitlab-artifacts
-      connection: 
+      connection:
         secret: gitlab-rails-storage
         key: connection
     uploads:
       bucket: gitlab-uploads
-      connection: 
+      connection:
         secret: gitlab-rails-storage
         key: connection
     packages:
       bucket: gitlab-packages
-      connection: 
+      connection:
         secret: gitlab-rails-storage
         key: connection
     externalDiffs:
       bucket: gitlab-mr-diffs
-      connection: 
+      connection:
         secret: gitlab-rails-storage
         key: connection
 
@@ -157,7 +157,7 @@ global:
     pseudonymizer:
       configMap:
       bucket: gitlab-pseudo
-      connection: 
+      connection:
         secret: gitlab-rails-storage
         key: connection
 
@@ -220,7 +220,7 @@ global:
     hostKeys: {}
       # secret:
 
-  ## Rails application secrets 
+  ## Rails application secrets
   ## Secret created according to doc/installation/secrets.md#gitlab-rails-secret
   ## If allowing shared-secrets generation, this is OPTIONAL.
   railsSecrets: {}
@@ -388,7 +388,7 @@ redis:
 redis-ha:
   enabled: false
   nameOverride: redis
-  
+
 ## Instllation & configuration of stable/prostgresql
 ## See requirements.yaml for current version
 postgresql:
@@ -462,18 +462,18 @@ gitlab:
   gitaly:
     persistence:
       storageClass: pv-${cloud.kind}
-      size: 100Gi
+      size: 10Gi
 
 ## doc/charts/gitlab/migrations
 #   migrations:
 #     enabled: false
-## doc/charts/gitlab/unicorn 
+## doc/charts/gitlab/unicorn
 #   unicorn:
 #     enabled: false
-## doc/charts/gitlab/sidekiq 
+## doc/charts/gitlab/sidekiq
 #   sidekiq:
 #     enabled: false
-## doc/charts/gitlab/gitaly 
+## doc/charts/gitlab/gitaly
 #   gitaly:
 #     enabled: false
 ## doc/charts/gitlab/gitlab-shell
