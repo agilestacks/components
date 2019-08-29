@@ -4,8 +4,8 @@ DOMAIN_NAME    ?= dev.superhub.io
 STATE_BUCKET   ?= terraform.agilestacks.com
 STATE_REGION   ?= us-east-1
 NAMESPACE      ?= monitoring
-BUCKET_NAME	   ?= thanos-storage
-IAM_USER	   ?= thanos
+BUCKET_NAME    ?= thanos
+IAM_USER       ?= thanos
 
 
 export TF_OPTS               ?= -no-color

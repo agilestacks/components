@@ -89,7 +89,7 @@ parameters:
       brief: Thanos version
       value: v0.4.0
     - name: bucket.name
-      value: thanos-storage
+      value: thanos
       env: BUCKET_NAME
     - name: iam_user
       value: thanos
