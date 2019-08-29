@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= pgweb
+RELEASE_NAME   := $(shell echo $(COMPONENT_NAME) | cut -c1-53)
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= postgresql
 
@@ -16,20 +17,20 @@ init:
 	$(helm) init --client-only --upgrade
 
 purge:
-	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(RELEASE_NAME)$$' && \
+		$(helm) delete --purge $(RELEASE_NAME) || exit 0
 
 install:
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(RELEASE_NAME)$$' || \
 		$(helm) install . \
-			--name $(COMPONENT_NAME) \
+			--name $(RELEASE_NAME) \
 			--namespace $(NAMESPACE) \
 			--replace \
 			--values values.yaml
 
 undeploy: init
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(RELEASE_NAME)$$' && \
+		$(helm) delete --purge $(RELEASE_NAME) || exit 0
 
 clean:
 	rm -rf $(HELM_HOME)
