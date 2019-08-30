@@ -20,20 +20,20 @@ parameters:
     env: DOMAIN_NAME
   - name: component.ingress.protocol
   - name: component.ingress.fqdn
+  - name: component.ingress.ssoFqdn
   - name: component.istio
     parameters:
     - name: namespace
       value: istio-system
       env: NAMESPACE
     - name: version.release
-      value: 1.2.2
+      value: 1.3.0-rc.0
       env: ISTIO_VERSION
     - name: version.repository
       value: gcr.io/istio-release
      #value: docker.io/istio
     - name: version.image
-      value: release-1.2-latest-daily
-     #value: 1.2.2
+      value: release-1.3-latest-daily
     - name: tracing.enabled
       value: false
     - name: prometheus.enabled
@@ -42,15 +42,23 @@ parameters:
       value: false
     - name: certmanager.enabled
       value: false
-    - name: kiali.enabled
-      value: true
-    - name: kiali.urlPrefix
-      value: istio-kiali
+    - name: kiali
+      parameters:
+      - name: enabled
+        value: true
+      - name: urlPrefix
+        value: istio-kiali
+      - name: auth.strategy
+        value: anonymous
+      - name: version.image
+        value: latest
+      - name: createDemoSecret
+        value: '#{component.istio.kiali.auth.strategy == "login" ? "true" : "false"}'
 
 outputs:
   - name: component.istio.kiali.url
     brief: Istio Service Graph
-    value: ${component.ingress.protocol}://${component.istio.kiali.urlPrefix}.${component.ingress.fqdn}/kiali
+    value: ${component.ingress.protocol}://${component.istio.kiali.urlPrefix}.${component.ingress.ssoFqdn}
 
 templates:
   files:

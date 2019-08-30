@@ -1,10 +1,10 @@
 terraform {
   required_version = ">= 0.11.3"
-  backend          "s3"             {}
+  backend "s3" {}
 }
 
 provider "aws" {
-  version = "1.41.0"
+  version = "2.14.0"
 }
 
 provider "kubernetes" {
@@ -44,4 +44,3 @@ resource "kubernetes_secret" "pull_secret" {
 
   type = "kubernetes.io/dockerconfigjson"
 }
-

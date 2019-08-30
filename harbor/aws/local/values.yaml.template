@@ -1,13 +1,13 @@
 # The persistence is enabled by default and a default StorageClass
-# is needed in the k8s cluster to provision volumes dynamicly. 
+# is needed in the k8s cluster to provision volumes dynamicly.
 # Specify another StorageClass in the "storageClass" or set "existingClaim"
 # if you have already existing persistent volumes to use
 #
-# For storing images and charts, you can also use "azure", "gcs", "s3", 
+# For storing images and charts, you can also use "azure", "gcs", "s3",
 # "swift" or "oss". Set it in the "imageChartStorage" section
 persistence:
   enabled: true
-  # Setting it to "keep" to avoid removing PVCs during a helm delete 
+  # Setting it to "keep" to avoid removing PVCs during a helm delete
   # operation. Leaving it empty will delete PVCs after the chart deleted
   resourcePolicy: ""
   persistentVolumeClaim:
@@ -20,7 +20,7 @@ persistence:
       storageClass: "${component.harbor.storageClass}"
       subPath: ""
       accessMode: ReadWriteOnce
-      size: 900Gi
+      size: 100Gi
     chartmuseum:
       existingClaim: ""
       storageClass: "${component.harbor.storageClass}"
@@ -33,7 +33,7 @@ persistence:
       subPath: ""
       accessMode: ReadWriteOnce
       size: 1Gi
-    # If external database is used, the following settings for database will 
+    # If external database is used, the following settings for database will
     # be ignored
     database:
       existingClaim: ""
@@ -41,7 +41,7 @@ persistence:
       subPath: ""
       accessMode: ReadWriteOnce
       size: 1Gi
-    # If external Redis is used, the following settings for Redis will 
+    # If external Redis is used, the following settings for Redis will
     # be ignored
     redis:
       existingClaim: ""

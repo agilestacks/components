@@ -41,6 +41,14 @@ terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
+HUB_PROVIDES ?=
+
+ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
+	INGRESS:=ingress-tls
+else
+	INGRESS:=ingress
+endif
+
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
@@ -136,7 +144,7 @@ deploy: init plan apply configure
 	$(hal) deploy apply
 	-$(hal) backup create
 
-	$(kubectl) apply -f ingress.yaml
+	$(kubectl) apply -f $(INGRESS).yaml
 
 	-tar cf - -C $(HOME)/.hal . | \
 		aws --region=$(STATE_REGION) s3 cp - s3://$(STATE_BUCKET)/$(DOMAIN_NAME)/spinnaker/$(COMPONENT_NAME)/halbackup-0.tar
@@ -146,7 +154,7 @@ destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
 undeploy: init destroy apply
-	-$(kubectl) delete -f ingress.yaml
+	-$(kubectl) delete -f $(INGRESS).yaml
 	-$(kubectl) delete namespace "$(NAMESPACE)"
 
 clean:

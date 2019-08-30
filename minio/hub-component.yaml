@@ -33,6 +33,7 @@ parameters:
     env: DOMAIN_NAME
   - name: component.ingress
     parameters:
+    - name: fqdn
     - name: protocol
       value: http
       env: PROTOCOL
@@ -166,5 +167,4 @@ outputs:
 templates:
   files:
     - "*.template"
-    - "acm/values.yaml.template"
     - "letsencrypt/values.yaml.template"

@@ -21,8 +21,8 @@ parameters:
   - name: cloud.sshKey
     value: agilestacks
     env: AWS_KEYPAIR
-  - name: component.s3.bucket
-    brief: Bucket for Spinnaker. Created by s3-bucket
+  - name: component.bucket.name
+    brief: Bucket for Spinnaker by s3-bucket
     env: AWS_S3_BUCKET
   - name: dns.name
     env: NAME
@@ -33,6 +33,8 @@ parameters:
     env: INGRESS_FQDN
   - name: component.ingress.protocol
     env: INGRESS_PROTOCOL
+  - name: component.ingress.kubernetes.ingressClass
+    empty: allow
   - name: component.spinnaker
     parameters:
     - name: name

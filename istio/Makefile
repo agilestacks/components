@@ -37,6 +37,7 @@ install-init:
 		$(helm) install istio/istio-init \
 			--name $(COMPONENT_NAME)-init \
 			--namespace $(NAMESPACE) \
+			--version $(ISTIO_VERSION) \
 			--replace \
 			--wait \
 			--values values.yaml.$(ISTIO_VERSION)
@@ -61,6 +62,7 @@ install-app:
 		$(helm) install istio/istio \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
+			--version $(ISTIO_VERSION) \
 			--replace \
 			--wait \
 			--values values.yaml.$(ISTIO_VERSION)

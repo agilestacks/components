@@ -7,7 +7,12 @@ meta:
   source:
     dir: ../../components/acm
 
+requires:
+- aws
+
 parameters:
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
 - name: dns.domain
   env: DOMAIN_NAME
 - name: component.acm.additionalNames
@@ -23,8 +28,6 @@ parameters:
   env: STATE_BUCKET
 - name: terraform.bucket.region
   env: STATE_REGION
-- name: cloud.region
-  env: AWS_DEFAULT_REGION
 
 outputs:
 - name: component.tls.kind

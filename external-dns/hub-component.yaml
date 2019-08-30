@@ -1,0 +1,43 @@
+---
+version: 1
+kind: component
+meta:
+  name: external-dns
+  brief: DNS Operator to update route53 for ingresses or Services with the appropriate annotations
+  source:
+      dir: ../../components/external-dns
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+
+provides:
+  - external-dns
+
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
+
+parameters:
+  - name: dns.name
+    env: DOMAIN
+  - name: dns.domain
+    env: TF_VAR_domain_name
+  - name: component.external-dns
+    parameters:
+    - name: namespace
+      value: kube-system
+      env: NAMESPACE
+    - name: name
+      value: external-dns
+      env: COMPONENT_NAME
+    - name: region
+      value: us-east-1
+    - name: accessKeyId
+    - name: secretAccessKey
+
+templates:
+  files:
+    - "manifests.yaml.template"

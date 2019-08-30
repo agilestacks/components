@@ -4,6 +4,8 @@ kind: component
 meta:
   name: kubernetes-dashboard
   brief: Kubernetes Dashboard
+  version: 1.10.1
+  maturity: stable
   source:
     dir: ../../components/kube-dashboard
 

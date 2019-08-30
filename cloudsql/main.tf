@@ -6,7 +6,7 @@ terraform {
 
 provider "google" {
   project = "${var.project}"
-  version = "2.7.0"
+  version = "2.13.0"
 }
 
 provider "random" {

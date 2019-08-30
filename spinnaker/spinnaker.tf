@@ -3,8 +3,8 @@ terraform {
   backend "s3" {}
 }
 
- provider "aws" {
-  version = "1.60.0"
+provider "aws" {
+  version = "2.14.0"
 }
 
 data "aws_caller_identity" "current" {}

@@ -20,6 +20,9 @@ parameters:
     env: CLOUD_KIND
   - name: dns.domain
     env: DOMAIN_NAME
+  - name: dns.name
+  - name: cloud.azureResourceGroupName
+    empty: allow
   - name: component.ingress.kubernetes.ingressClass
     empty: allow
   - name: component.ingress.protocol
@@ -31,9 +34,9 @@ parameters:
       env: HELM_CHART
     - name: repo
       value: https://charts.gitlab.io
-      env: HELM_REPO 
+      env: HELM_REPO
     - name: chart.version
-      value: 2.0.1
+      value: 2.1.6
       env: CHART_VERSION
     - name:  name
       value: gitlab-cn
@@ -46,7 +49,7 @@ parameters:
       env:   NAMESPACE
     - name:  software.version
       brief: Gitlab Version #TODO CHANGE THIS TO 11.9.10 or later as soon as its available
-      value: 12.0.1
+      value: 12.1.4
     - name:  rbac.enabled
       value: true
     - name:  psp.enabled
@@ -61,10 +64,14 @@ parameters:
     - name: serviceaccount.password
       value: ""
       empty: allow
+    - name: fqdn
+      value: gitlab.${dns.domain}
+    - name: registry.fqdn
+      value: registry.${dns.domain}
     - name: url
-      value: ${component.ingress.protocol}://gitlab.${dns.domain}
+      value: ${component.ingress.protocol}://${component.gitlab.fqdn}
     - name: registryUrl
-      value: ${component.ingress.protocol}://registry.${dns.domain}
+      value: ${component.ingress.protocol}://${component.gitlab.registry.fqdn}
     - name: omniauth
       parameters:
       - name: provider.name
@@ -94,12 +101,20 @@ templates:
         - "scripts/*.template"
         - "aws/*.yaml.template"
         - "aws/*.sh.template"
-        
-
+        - "azure/*.yaml.template"
+        - "azure/*.sh.template"
+        - "gcp/*.yaml.template"
+        - "gcp/*.sh.template"
 outputs:
   - name: component.gitlab.url
+    brief: Gitlab URL
+    value: ${component.gitlab.url}
+  - name: component.gitlab.server.url
     brief: Gitlab URL
     value: ${component.gitlab.url}
   - name: component.gitlab.registryUrl
     brief: Gitlab Registry URL
     value: ${component.gitlab.registryUrl}
+  - name: component.gitlab.namespace
+    brief: Kubernetes namespace to install into
+    value: component.gitlab.namespace

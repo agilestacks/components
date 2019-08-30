@@ -1,10 +1,10 @@
 terraform {
   required_version = ">= 0.11.3"
-  backend          "s3"             {}
+  backend "s3" {}
 }
 
 provider "aws" {
-  version = "1.60.0"
+  version = "2.14.0"
 }
 
 variable "name" {
@@ -40,7 +40,7 @@ resource "aws_route53_record" "parent" {
   zone_id = "${data.aws_route53_zone.base.zone_id}"
   name    = "${var.name}"
   type    = "NS"
-  ttl     = "60"
+  ttl     = "300"
   records = ["${aws_route53_zone.main.name_servers}"]
 }
 
@@ -48,7 +48,7 @@ resource "aws_route53_record" "api" {
   zone_id = "${aws_route53_zone.main.zone_id}"
   name    = "api"
   type    = "CNAME"
-  ttl     = "60"
+  ttl     = "300"
   records = ["${var.api_fqdn}"]
 }
 

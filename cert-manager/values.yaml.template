@@ -33,7 +33,7 @@ image:
   repository: quay.io/jetstack/cert-manager-controller
   # Override the image tag to deploy by setting this variable.
   # If no value is set, the chart's appVersion will be used.
-  tag: v0.9.0
+  tag: v0.9.1
   pullPolicy: IfNotPresent
 
 # Override the namespace used to store DNS provider credentials etc. for ClusterIssuer

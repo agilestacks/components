@@ -1,6 +1,6 @@
 {
-  "name": "requires-provides",
-  "version": "0.0.1",
+  "name": "components-meta",
+  "version": "0.0.2",
   "scripts": {
     "start": "node gen.js",
     "lint": "eslint gen.js"

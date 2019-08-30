@@ -1,0 +1,48 @@
+#!/bin/bash -x
+
+#To avoid race conditions, we need to set up the DNS as soon as the ELB becomes available
+KUBE="kubectl --context={{dns.domain}} --namespace={{component.gitlab.namespace}}"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+
+ELB=""
+echo "Waiting for Load Balancer"
+for i in {1..100}; do
+  ELB=$($KUBE get ingress gitlab-cn-unicorn -o json | jq --raw-output '.status.loadBalancer.ingress[0].ip')
+  if [ ! -z "${ELB}" ] && [ "${ELB}" != "null" ]; then
+    break
+  fi
+  echo "retry ${i}..."
+  sleep 3;
+done
+
+if [ -z "${ELB}" ]; then
+  echo "Failed to get gitlab ELB"
+  exit -1
+fi
+
+
+
+
+RECORD_EXIST=$(
+  az network dns record-set a show -n {{dns.name}} -g {{cloud.azureResourceGroupName}} -z {{dns.domain}}
+)
+
+if [ -z "${RECORD_EXIST}" ]; then
+  az network dns record-set a remove-record -a ${RECORD_EXIST} \
+                          -n {{dns.name}} -g {{cloud.azureResourceGroupName}} -z {{dns.domain}}
+
+  az network dns record-set a add-record -g {{cloud.azureResourceGroupName}} -z {{dns.domain}} \
+                            -n {{dns.name}} -a ${ELB}                        
+else
+  az network dns record-set a create --ttl 5 -n {{dns.name}} -g {{cloud.azureResourceGroupName}} -z {{dns.domain}}
+  az network dns record-set a add-record  -g {{cloud.azureResourceGroupName}} -z {{dns.domain}} \
+                            -n {{dns.name}} -a ${ELB}     
+fi
+
+for i in $(seq 1 60); do
+  host {{component.gitlab.fqdn}} | grep ${ELB} && break
+  echo "Wait to propagate DNS record"
+  sleep 3
+done
+
