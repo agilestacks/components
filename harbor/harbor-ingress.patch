@@ -1,0 +1,18 @@
+--- ingress.yaml	2019-09-02 15:36:45.000000000 +0300
++++ ingress-patched.yaml	2019-09-02 15:36:14.000000000 +0300
+@@ -19,6 +19,7 @@
+     {{- end }}
+     {{- if $ingress.hosts.core }}
+     hosts:
++    - {{ $ingress.hosts.base }}
+     - {{ $ingress.hosts.core }}
+     {{- end }}
+   {{- if .Values.notary.enabled }}
+@@ -31,6 +32,7 @@
+     {{- end }}
+     {{- if $ingress.hosts.notary }}
+     hosts:
++    - {{ $ingress.hosts.base }}
+     - {{ $ingress.hosts.notary }}
+     {{- end }}
+   {{- end }}
