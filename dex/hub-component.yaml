@@ -5,7 +5,7 @@ meta:
   name: dex
   brief: Dex OIDC and OAuth2 provider
   source:
-      dir: ../../components/dex
+    dir: ../../components/dex
 
 requires:
   - kubernetes
@@ -51,7 +51,7 @@ parameters:
     value: kube-system
     env: NAMESPACE
   - name: component.dex.image
-    value: agilestacks/dex:v2.12.1
+    value: quay.io/dexidp/dex:v2.18.0
   - name: component.dex.saml.id
     value: saml
   - name: component.dex.saml.name
@@ -70,6 +70,8 @@ parameters:
     value: unknown
   - name: component.dex.authproxy.image
     value: agilestacks/oauth2_proxy:v2.3
+  - name: component.dex.authOperator.image
+    value: agilestacks/auth-operator:0.1.0
   - name: component.dex.authproxy.emailDomain
     value: "'*'"
   - name: component.dex.authproxy.cookieExpire
