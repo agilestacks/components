@@ -54,11 +54,12 @@ output:
 
 # see https://github.com/hashicorp/terraform/issues/17599
 undeploy: init
-	$(eval TF_CLI_ARGS += -destroy)
 ifeq ($(RECLAIM),retain)
-	- $(MAKE) plan apply TF_CLI_ARGS="$(TF_CLI_ARGS)"
+	- $(MAKE) TF_CLI_ARGS="$(TF_CLI_ARGS) -destroy" plan \
+	&& $(MAKE) apply TF_CLI_ARGS="$(TF_CLI_ARGS)"
 else
-	$(MAKE) plan apply TF_CLI_ARGS="$(TF_CLI_ARGS)"
+	$(MAKE) TF_CLI_ARGS="$(TF_CLI_ARGS) -destroy" plan \
+	&& $(MAKE) apply TF_CLI_ARGS="$(TF_CLI_ARGS)"
 endif
 
 import:
