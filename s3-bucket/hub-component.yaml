@@ -23,6 +23,10 @@ parameters:
   - name: acl
     value: private
     env: ACL
+  - name: reclaim
+    brief: allowed values - retain (instruct not to delete bucket) or delete (default value)
+    value: delete
+    env: RECLAIM
 
 outputs:
 - name: component.s3.arn

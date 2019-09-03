@@ -7,7 +7,18 @@ provider "aws" {
   version = "2.14.0"
 }
 
+locals {
+  bucket = "${var.uglify == "true" ? replace(lower(var.name), ".", "-") : var.name}"
+}
 data "aws_region" "current" {}
+
+variable "versioning" {
+  default = "false"
+}
+
+variable "uglify" {
+  default = "false"
+}
 
 variable "endpoints" {
   type    = "map"
@@ -39,38 +50,13 @@ variable "name" {
   description = "Name of the bucket"
 }
 
+
 variable "acl" {
   type = "string"
   description = "S3 bucket ACL"
   default = "private"
 }
 
-locals {
-  bucket = "${replace(lower(var.name), ".", "-")}"
-}
-
-
-resource "aws_s3_bucket" "main" {
-    bucket = "${local.bucket}"
-
-    acl = "${var.acl}"
-
-    force_destroy = true
-
-  # versioning is still a resource block
-    versioning {
-        enabled = false
-    }
-
-    # tags is now a map (not resource block)
-    tags = {
-        "Name" = "${var.name}"
-    }
-#    logging {
-#       target_bucket = "${aws_s3_bucket.log_bucket.id}"
-#       target_prefix = "log/"
-#    }
-}
 
 output "endpoint" {
   value = "https://${var.endpoints[ data.aws_region.current.name ]}"
