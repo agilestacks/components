@@ -111,10 +111,12 @@ outputs:
     value: ${component.gitlab.url}
   - name: component.gitlab.server.url
     brief: Gitlab URL
-    value: ${component.gitlab.url}
+    value: ${component.gitlab.url}/api/v4
   - name: component.gitlab.registryUrl
     brief: Gitlab Registry URL
     value: ${component.gitlab.registryUrl}
   - name: component.gitlab.namespace
-    brief: Kubernetes namespace to install into
-    value: component.gitlab.namespace
+    value: apps
+    brief: Gitlab default group
+  - name: component.gitlab.token
+    fromTfVar: serviceaccount_token

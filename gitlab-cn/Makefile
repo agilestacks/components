@@ -14,7 +14,7 @@ export HELM_HOME ?= $(shell pwd)/.helm
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy: clean init fetch purge install output
+deploy: clean init fetch purge install generate_token output
 
 init:
 	@mkdir -p $(HELM_HOME) charts
@@ -51,6 +51,7 @@ install:
 	$(MAKE) -C $(CLOUD_KIND) dns
 	scripts/create_bot_account.sh
 	scripts/create_minio_buckets.sh
+	
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
@@ -60,5 +61,13 @@ undeploy: init
 
 clean:
 	rm -rf $(HELM_HOME) $(notdir $(HELM_CHART))
+
+generate_token:
+	@ echo "Generating gitlab token"
+	@ $(kubectl) run --generator=run-pod/v1 --rm -i gitlab-token-generation \
+		--image=docker.io/agilestacks/gitlab-token-generator:latest \
+		--env "GITLAB_URL=$(GITLAB_URL)" \
+		--env "GITLAB_ADMIN_USER=$(GITLAB_SERVICEACCOUNT)" \
+		--env "GITLAB_ADMIN_PASSWD=$(GITLAB_SERVICEACCOUNT_PASS)"
 
 -include ../Mk/phonies
