@@ -178,6 +178,12 @@ parameters:
     - name: helm.timeout
       value: 900
       env: HELM_TIMEOUT
+    - name: hybrid.aws.accessKey
+      empty: allow
+    - name: hybrid.aws.secretKey
+      empty: allow
+    - name: hybrid.acmeEnabled
+      value: '#{component.traefik.hybrid.aws.accessKey != "" && component.traefik.hybrid.aws.secretKey != ""}'
 
 outputs:
 - name: component.ingress.fqdn
@@ -207,4 +213,4 @@ templates:
   - aws
   - azure
   - gcp
-  # - hybrid
+  - hybrid
