@@ -4,8 +4,7 @@ COMPONENT_NAME ?= k8s-metal
 DOMAIN_NAME    ?= cluster1.metal.dev.superhub.io
 NAME           := $(shell echo $(DOMAIN_NAME) | cut -d. -f1)
 BASE_DOMAIN    := $(shell echo $(DOMAIN_NAME) | cut -d. -f2-)
-INGRESS_HOST   ?= $(error you forgot to set variable INGRESS_HOST)
-INGRESS_PORT   := $(word, 2, $(subst :, , $(INGRESS_HOST)))
+INGRESS_STATIC_HOST   ?= $(error you forgot to set variable INGRESS_STATIC_HOST)
 API_HOST       := $(shell echo $(API_ENDPOINT) | cut -d: -f1)
 API_PORT       := $(shell echo $(API_ENDPOINT) | cut -d: -f2)
 $(if $(API_PORT),,API_PORT:=6443)
@@ -21,7 +20,7 @@ export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
 export TF_VAR_name        := $(NAME)
 export TF_VAR_base_domain := $(BASE_DOMAIN)
-export TF_VAR_api_host    := $(INGRESS_HOST)
+export TF_VAR_api_host    := $(INGRESS_STATIC_HOST)
 
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan

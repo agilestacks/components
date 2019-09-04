@@ -27,7 +27,7 @@ parameters:
   - name: dns.domain
     env: DOMAIN_NAME
   - name: component.ingress.staticHost
-    env: INGRESS_HOST
+    env: INGRESS_STATIC_HOST
   - name: kubernetes.api.endpoint
     env: API_ENDPOINT
   - name: kubernetes.api.namespace

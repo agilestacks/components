@@ -45,6 +45,7 @@ resource "aws_route53_record" "parent" {
   type    = "NS"
   ttl     = "300"
   records = ["${aws_route53_zone.main.name_servers}"]
+  allow_overwrite = true
 }
 
 resource "aws_route53_record" "api" {
@@ -53,6 +54,7 @@ resource "aws_route53_record" "api" {
   type    = "${local.type}"
   ttl     = "300"
   records = ["${var.api_host}"]
+  allow_overwrite = true
 }
 
 # outputs
