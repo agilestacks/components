@@ -36,7 +36,7 @@ parameters:
   - name: kubernetes.api.clientCert
   - name: kubernetes.api.clientKey
   - name: kubernetes.flavor
-    value: metal
+    value: hybrid
 
   - name: terraform.bucket.name
     env: STATE_BUCKET

@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= k8s-metal
-DOMAIN_NAME    ?= cluster1.metal.dev.superhub.io
+COMPONENT_NAME ?= k8s-hybrid
+DOMAIN_NAME    ?= cluster1.hybrid.dev.superhub.io
 NAME           := $(shell echo $(DOMAIN_NAME) | cut -d. -f1)
 BASE_DOMAIN    := $(shell echo $(DOMAIN_NAME) | cut -d. -f2-)
 INGRESS_STATIC_HOST   ?= $(error you forgot to set variable INGRESS_STATIC_HOST)
@@ -38,7 +38,7 @@ init: $(TF_DATA_DIR)
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
         -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(DOMAIN_NAME)/k8s-metal/$(COMPONENT_NAME)/terraform.tfstate" \
+        -backend-config="key=$(DOMAIN_NAME)/k8s-hybrid/$(COMPONENT_NAME)/terraform.tfstate" \
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
