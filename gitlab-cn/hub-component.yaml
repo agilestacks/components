@@ -61,15 +61,18 @@ parameters:
     - name: serviceaccount.username
       value: ""
       empty: allow
+      env: GITLAB_SERVICEACCOUNT
     - name: serviceaccount.password
       value: ""
       empty: allow
+      env: GITLAB_SERVICEACCOUNT_PASS
     - name: fqdn
       value: gitlab.${dns.domain}
     - name: registry.fqdn
       value: registry.${dns.domain}
     - name: url
       value: ${component.ingress.protocol}://${component.gitlab.fqdn}
+      env: GITLAB_URL
     - name: registryUrl
       value: ${component.ingress.protocol}://${component.gitlab.registry.fqdn}
     - name: omniauth

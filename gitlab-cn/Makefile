@@ -63,7 +63,7 @@ clean:
 	rm -rf $(HELM_HOME) $(notdir $(HELM_CHART))
 
 generate_token:
-	@ echo "Generating gitlab token"
+	@ echo "Generating gitlab token for: $(GITLAB_URL)"
 	@ $(kubectl) run --generator=run-pod/v1 --rm -i gitlab-token-generation \
 		--image=docker.io/agilestacks/gitlab-token-generator:latest \
 		--env "GITLAB_URL=$(GITLAB_URL)" \
