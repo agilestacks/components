@@ -3,7 +3,7 @@
 DEFAULT_GATEWAY_ZONE ?= mesh
 DEFAULT_INGRESS_GATEWAY ?= ingressgateway
 export TF_VAR_domain       := $(DOMAIN_NAME)
-export TF_VAR_service_name := $(COMPONENT_NAME)-$(DEFAULT_INGRESS_GATEWAY)
+export TF_VAR_service_name := $(COMPONENT_NAME)-ingressgateway
 export TF_VAR_namespace    := $(NAMESPACE)
 export TF_VAR_record       := $(DEFAULT_GATEWAY_ZONE)
 export TF_DATA_DIR         := .terraform
@@ -15,6 +15,9 @@ terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 TIMEOUT     ?= 600
+
+$(TF_DATA_DIR):
+	@rm -rf $@ && mkdir -p $@
 
 init: $(TF_DATA_DIR)
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \

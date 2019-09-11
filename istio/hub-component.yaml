@@ -21,6 +21,8 @@ parameters:
   - name: component.ingress.protocol
   - name: component.ingress.fqdn
   - name: component.ingress.ssoFqdn
+  - name: cloud.kind
+    env: CLOUD_KIND
   - name: component.istio
     parameters:
     - name: namespace
