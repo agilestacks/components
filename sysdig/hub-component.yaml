@@ -4,6 +4,7 @@ kind: component
 meta:
   name: sysdig
   brief: sysdig monitor
+  commercial: true
   source:
       dir: ../../components/sysdig
 

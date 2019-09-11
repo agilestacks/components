@@ -4,6 +4,7 @@ kind: component
 meta:
   name: portworx
   brief: Cloud native storage and data management
+  commercial: true
   source:
       dir: ../../components/portworx
 

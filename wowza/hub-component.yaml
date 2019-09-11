@@ -4,6 +4,7 @@ kind: component
 meta:
   name: wowza
   brief: Wowza Streaming Engine
+  commercial: true
   source:
     dir: ../../components/wowza
 
