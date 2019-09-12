@@ -13,6 +13,8 @@ provides:
   - nvidia-driver
 
 parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
   - name: component.nvidia-driver
     parameters:
     - name: namespace
