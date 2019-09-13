@@ -58,7 +58,7 @@ parameters:
       - name: auth.strategy
         value: anonymous
       - name: version.image
-        value: latest
+        value: v1.4
       - name: createDemoSecret
         value: '#{component.istio.kiali.auth.strategy == "login" ? "true" : "false"}'
 
