@@ -4,6 +4,8 @@ kind: component
 meta:
   name: istio
   brief: An open platform to connect, manage, and secure microservices
+  version: 1.3.0
+  maturity: stable
   source:
       dir: ../../components/istio
 
