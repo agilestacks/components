@@ -18,7 +18,7 @@ function extract(components) {
     return keyBy(
         components.map(([name, {meta, requires = [], provides = []}]) => ({
             name,
-            ...pick(meta, ['brief', 'version', 'maturity']),
+            ...pick(meta, ['brief', 'version', 'maturity', 'licence']),
             ...(IS_TRUE.test(get(meta, 'commercial')) && {
                 commercial: true
             }),
