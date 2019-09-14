@@ -1,3 +1,5 @@
+ssl:
+  enforced: false  # we do this so that we can do http acme challenges
 acme:
   enabled: ${component.traefik.hybrid.acmeEnabled}
   dnsProvider:
