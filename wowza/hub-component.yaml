@@ -4,6 +4,9 @@ kind: component
 meta:
   name: wowza
   brief: Wowza Streaming Engine
+  version: 4.7.4
+  maturity: stable
+  licence: Wowza
   commercial: true
   source:
     dir: ../../components/wowza
@@ -50,4 +53,3 @@ outputs:
   - name: component.wowza.name
   - name: component.wowza.namespace
   - name: component.wowza.streamPrefix
-

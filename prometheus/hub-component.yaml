@@ -4,6 +4,9 @@ kind: component
 meta:
   name: prometheus
   brief: Prometheus monitoring service
+  version: 2.5.0
+  maturity: stable
+  licence: Apache License 2.0
   source:
     dir: ../../components/prometheus
 

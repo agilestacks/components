@@ -1,5 +1,5 @@
 image: "postgres"
-imageTag: "9.6.11"
+imageTag: '${component.postgresql.version}'
 
 postgresUser: '${component.postgresql.user}'
 postgresPassword: '${component.postgresql.password}'

@@ -4,6 +4,9 @@ kind: component
 meta:
   name: portworx
   brief: Cloud native storage and data management
+  version: 2.0.3.4
+  maturity: stable
+  licence: Apache License 2.0
   commercial: true
   source:
       dir: ../../components/portworx

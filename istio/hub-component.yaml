@@ -6,6 +6,7 @@ meta:
   brief: An open platform to connect, manage, and secure microservices
   version: 1.3.0
   maturity: stable
+  licence: Apache License 2.0
   source:
       dir: ../../components/istio
 

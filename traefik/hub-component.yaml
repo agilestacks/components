@@ -4,6 +4,9 @@ kind: component
 meta:
   name: traefik
   brief: Traefik Router as ingress Controller
+  version: 1.7.14
+  maturity: stable
+  licence: MIT
   source:
     dir: ../../components/traefik
 

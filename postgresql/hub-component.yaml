@@ -4,6 +4,9 @@ kind: component
 meta:
   name: postgresql
   brief: PostgreSQL
+  version: 9.6.11
+  maturity: stable
+  licence: BSD/MIT
   source:
     dir: ../../components/postgresql
 
@@ -19,6 +22,8 @@ parameters:
     env: DOMAIN_NAME
   - name: component.postgresql
     parameters:
+    - name: version
+      value: 9.6.11
     - name:  name
       value: postgresql-${dns.name}-${hub.componentName}
       env:   COMPONENT_NAME

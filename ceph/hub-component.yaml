@@ -4,6 +4,9 @@ kind: component
 meta:
   name: ceph
   brief: Private cloud storage
+  version: 14.2.1
+  maturity: stable
+  licence: LGPLv2.1
   source:
       dir: ../../components/ceph
 

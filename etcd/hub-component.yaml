@@ -4,6 +4,9 @@ kind: component
 meta:
   name: etcd
   brief: etcd distributed key value store
+  version: 3.2.26
+  maturity: stable
+  licence: Apache License 2.0
   source:
       dir: ../../components/etcd
 
