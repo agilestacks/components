@@ -44,7 +44,7 @@ install:
 	-scripts/create_minio_secret.sh
 	$(MAKE) -C $(CLOUD_KIND) $@
 ifeq ($(TLS_KIND), acm)
-	$(eval HELM_VALUES=$(shell echo "${HELM_VALUES} --set-file $(CLOUD_KIND)/$(TLS_KIND)/values.yaml"))
+	$(eval HELM_VALUES=$(shell echo "${HELM_VALUES} -f $(CLOUD_KIND)/$(TLS_KIND)/values.yaml"))
 endif
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 	  $(helm) install charts/$(notdir $(HELM_CHART)) \
