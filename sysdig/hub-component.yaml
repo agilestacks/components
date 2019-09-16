@@ -6,7 +6,6 @@ meta:
   brief: sysdig monitor
   version: 0.90.3
   maturity: stable
-  licence: multiple
   commercial: true
   source:
       dir: ../../components/sysdig

@@ -5,8 +5,7 @@ meta:
   name: wowza
   brief: Wowza Streaming Engine
   version: 4.7.4
-  maturity: stable
-  licence: Wowza
+  maturity: beta
   commercial: true
   source:
     dir: ../../components/wowza

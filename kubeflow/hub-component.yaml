@@ -6,7 +6,7 @@ meta:
   brief:
   version: 0.5.1
   maturity: stable
-  licence: Apache License 2.0
+  licence: Apache 2.0
   source:
     dir: ../../components/kubeflow
 
