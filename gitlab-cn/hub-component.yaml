@@ -30,6 +30,13 @@ parameters:
     empty: allow
   - name: component.ingress.protocol
     env: PROTOCOL
+  - name: component.acm.certificateArn
+    empty: allow
+    env: ACM_CERTIFICATE_ARN
+  - name: component.tls.kind
+    value: letsencrypt
+    env: TLS_KIND
+    empty: allow
   - name: component.gitlab
     parameters:
     - name: chart
@@ -101,6 +108,7 @@ parameters:
 templates:
   files:
     - "*.template"
+    - "aws/*/*.yaml.template"
   extra:
     - kind: mustache
       files:
