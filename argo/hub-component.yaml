@@ -5,7 +5,7 @@ meta:
   name: argo
   brief: The workflow engine for Kubernetes
   version: 2.2.0
-  maturity: stable
+  maturity: beta
   licence: Apache 2.0
   source:
     dir: ../../components/argo
