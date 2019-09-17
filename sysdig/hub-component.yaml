@@ -4,6 +4,9 @@ kind: component
 meta:
   name: sysdig
   brief: sysdig monitor
+  version: 0.90.3
+  maturity: stable
+  commercial: true
   source:
       dir: ../../components/sysdig
 

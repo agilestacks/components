@@ -37,13 +37,16 @@ storage-class:
 init: $(HELM_HOME)
 	$(helm) init --client-only --upgrade --wait
 
+patch:
+	patch $(CHART_DIR)/templates/ingress/ingress.yaml ../harbor-ingress.patch
+
 fetch: $(CHART_DIR)
 	- $(git) init
 	$(git) remote add origin $(CHART_ORIGIN)
 	$(git) fetch
 	$(git) reset --hard $(CHART_VERSION)
 
-install:
+install: patch
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm)	install $(CHART_DIR) \
 		    --name $(COMPONENT_NAME) \

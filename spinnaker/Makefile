@@ -68,6 +68,7 @@ refresh:
 
 apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
+	@echo
 
 install:
 	sudo $(SHELL) bin/$(shell uname -s | tr A-Z a-z)/InstallHalyard.sh

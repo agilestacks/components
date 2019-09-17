@@ -4,6 +4,9 @@ kind: component
 meta:
   name: jenkins
   brief: Jenkins CI Server
+  version: 2.164.3
+  maturity: stable
+  licence: MIT
   source:
     dir: components/jenkins
 

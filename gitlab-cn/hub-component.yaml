@@ -4,6 +4,9 @@ kind: component
 meta:
   name: gitlab-cn
   brief: Cloud-Native, multi-pod deployment of Gitlab
+  version: 12.1.4
+  maturity: stable
+  licence: MIT
   source:
     dir: ../../components/gitlab-cn
 
@@ -27,6 +30,13 @@ parameters:
     empty: allow
   - name: component.ingress.protocol
     env: PROTOCOL
+  - name: component.acm.certificateArn
+    empty: allow
+    env: ACM_CERTIFICATE_ARN
+  - name: component.tls.kind
+    value: letsencrypt
+    env: TLS_KIND
+    empty: allow
   - name: component.gitlab
     parameters:
     - name: chart
@@ -48,7 +58,7 @@ parameters:
       value: gitlab
       env:   NAMESPACE
     - name:  software.version
-      brief: Gitlab Version #TODO CHANGE THIS TO 11.9.10 or later as soon as its available
+      brief: Gitlab Version
       value: 12.1.4
     - name:  rbac.enabled
       value: true
@@ -61,15 +71,18 @@ parameters:
     - name: serviceaccount.username
       value: ""
       empty: allow
+      env: GITLAB_SERVICEACCOUNT
     - name: serviceaccount.password
       value: ""
       empty: allow
+      env: GITLAB_SERVICEACCOUNT_PASS
     - name: fqdn
       value: gitlab.${dns.domain}
     - name: registry.fqdn
       value: registry.${dns.domain}
     - name: url
       value: ${component.ingress.protocol}://${component.gitlab.fqdn}
+      env: GITLAB_URL
     - name: registryUrl
       value: ${component.ingress.protocol}://${component.gitlab.registry.fqdn}
     - name: omniauth
@@ -95,6 +108,7 @@ parameters:
 templates:
   files:
     - "*.template"
+    - "aws/*/*.yaml.template"
   extra:
     - kind: mustache
       files:
@@ -111,10 +125,12 @@ outputs:
     value: ${component.gitlab.url}
   - name: component.gitlab.server.url
     brief: Gitlab URL
-    value: ${component.gitlab.url}
+    value: ${component.gitlab.url}/api/v4
   - name: component.gitlab.registryUrl
     brief: Gitlab Registry URL
     value: ${component.gitlab.registryUrl}
   - name: component.gitlab.namespace
-    brief: Kubernetes namespace to install into
-    value: component.gitlab.namespace
+    value: apps
+    brief: Gitlab default group
+  - name: component.gitlab.token
+    fromTfVar: serviceaccount_token

@@ -1,0 +1,43 @@
+---
+version: 1
+kind: component
+meta:
+  name: nvidia-driver
+  brief: Nvidia driver and k8s-device-plugin installation for VMs and metal
+  source:
+    dir: ../../components/nvidia-driver
+
+requires:
+  - kubernetes
+provides:
+  - nvidia-driver
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.nvidia-driver
+    parameters:
+    - name: namespace
+      value: kube-system
+      env: NAMESPACE
+    - name: driver
+      parameters:
+      - name: init-image
+        # note that this value is for ubuntu targets only
+        value: gcr.io/google-containers/ubuntu-nvidia-driver-installer@sha256:7df76a0f0a17294e86f691c81de6bbb7c04a1b4b3d4ea4e7e2cccdc42e1f6d63
+      - name: version
+        value: "430.50"
+      - name: pod-image
+        value: gcr.io/google_containers/pause-amd64:3.1
+      - name: download-url
+        value: http://us.download.nvidia.com/XFree86/Linux-x86_64/430.50/NVIDIA-Linux-x86_64-430.50.run
+    - name: k8s-plugin
+      parameters:
+      - name: image
+        value: k8s.gcr.io/nvidia-gpu-device-plugin@sha256:0842734032018be107fa2490c98156992911e3e1f2a21e059ff0105b07dd8e9e
+      - name: memory
+        value: 30Mi
+
+templates:
+  files:
+    - "*.template"

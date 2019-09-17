@@ -123,6 +123,7 @@ traefik/aws/values-tls.yaml
 traefik/azure/values-tls.yaml
 traefik/charts
 traefik/gcp/values-tls.yaml
+traefik/hybrid/values-tls.yaml
 traefik/values-dashboard.yaml
 traefik/values-tls.yaml
 traefik/values.yaml

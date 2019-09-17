@@ -15,8 +15,10 @@ export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 export TF_VAR_name := $(COMPONENT_NAME)
 
 terraform   ?= terraform-v0.12
-TF_CLI_ARGS ?= -no-color -input=false
+TF_CLI_ARGS ?= -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+
+RECLAIM     ?= delete
 
 deploy: init plan
 	$(MAKE) apply || \
@@ -25,7 +27,12 @@ deploy: init plan
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
-init: $(TF_DATA_DIR)
+# Terraform doesn't allow interpolation for lifecycle
+bucket.tf:
+	yes | cp -rf bucket-$(RECLAIM).tf.ignore $@
+.PHONY: bucket.tf
+
+init: $(TF_DATA_DIR) bucket.tf
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
@@ -45,16 +52,21 @@ apply:
 output:
 	@$(terraform) output -no-color
 
-undeploy: init destroy apply
-
-destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
-destroy: plan
+# see https://github.com/hashicorp/terraform/issues/17599
+undeploy: init
+ifeq ($(RECLAIM),retain)
+	- $(MAKE) TF_CLI_ARGS="$(TF_CLI_ARGS) -destroy" plan \
+	&& $(MAKE) apply TF_CLI_ARGS="$(TF_CLI_ARGS)"
+else
+	$(MAKE) TF_CLI_ARGS="$(TF_CLI_ARGS) -destroy" plan \
+	&& $(MAKE) apply TF_CLI_ARGS="$(TF_CLI_ARGS)"
+endif
 
 import:
 	$(eval bucket=$(shell echo $(TF_VAR_name) | sed -e 's/\./-/g'))
 	-$(terraform) import $(TF_CLI_ARGS) aws_s3_bucket.main $(bucket)
 
 clean:
-	rm -rf .terraform
+	rm -rf .terraform bucket.tf
 
 -include ../Mk/phonies

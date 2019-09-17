@@ -10,7 +10,7 @@ connectToMinio() {
   MINIO_SECRET_KEY=$(echo $SECRETS | jq --raw-output '.secretkey')
   MINIO_ENDPOINT={{component.bucket.endpoint}}
   MC_COMMAND="mc config host add glminio $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY" ;
-  echo "${MC_COMMAND}"
+  # echo "${MC_COMMAND}"
   $MC_COMMAND ;
   STATUS=$? ;
   until [ $STATUS -eq 0 ] ;

@@ -10,7 +10,7 @@ export HELM_HOME ?= $(shell pwd)/.helm
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy: clean init repo namespace purge install usage
+deploy: clean init repo namespace purge install create-gateway usage
 
 namespace:
 	$(kubectl) apply -f namespace.yaml
@@ -71,7 +71,7 @@ install-app:
 usage:
 	@echo https://istio.io/docs/setup/kubernetes/sidecar-injection/
 
-undeploy:
+undeploy: drop-gateway
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-init$$' && \
@@ -80,5 +80,13 @@ undeploy:
 
 clean:
 	@rm -rf $(HELM_HOME)
+
+create-gateway:
+	$(kubectl) apply -f default-gateway.yaml
+	$(MAKE) -C $(CLOUD_KIND)/gateway-dns deploy
+
+drop-gateway:
+	$(MAKE) -C $(CLOUD_KIND)/gateway-dns undeploy
+	$(kubectl) delete -f default-gateway.yaml
 
 -include ../Mk/phonies

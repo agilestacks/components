@@ -1,0 +1,67 @@
+---
+version: 1
+kind: component
+meta:
+  name: k8s-hybrid
+  brief: Bare-metal Kubernetes adapter
+  source:
+    dir: ../../components/k8s-hybrid
+
+requires:
+# Request no kubectl to prevent kubeconfig file being created with IP address as endpoint,
+# which is not present in API server TLS cert DNS alt names.
+#  - kubectl
+provides:
+  - kubernetes
+
+lifecycle:
+  readyConditions:
+    - dns: ${kubernetes.api.endpoint}
+      url: https://${kubernetes.api.endpoint}/api/v1
+
+parameters:
+  - name: cloud.kind
+    value: hybrid
+  - name: cloud.region
+    env: AWS_DEFAULT_REGION
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.ingress.staticHost
+    env: INGRESS_STATIC_HOST
+  - name: kubernetes.api.endpoint
+    env: API_ENDPOINT
+  - name: kubernetes.api.namespace
+    value: kube-system
+  - name: kubernetes.api.caCert
+  - name: kubernetes.api.clientCert
+  - name: kubernetes.api.clientKey
+  - name: kubernetes.flavor
+    value: hybrid
+
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+
+outputs:
+  - name: dns.domain
+  - name: dns.name
+    fromTfVar: dns_name
+  - name: dns.baseDomain
+    fromTfVar: dns_base_domain
+  - name: cloud.kind
+  - name: cloud.region
+
+  - name: kubernetes.flavor
+  - name: kubernetes.api.endpoint
+    fromTfVar: api_endpoint
+  - name: kubernetes.api.caCert
+    kind: secret/certificate
+  - name: kubernetes.api.clientCert
+    kind: secret/certificate
+  - name: kubernetes.api.clientKey
+    kind: secret/privateKey
+
+templates:
+  files:
+    - "*.template"

@@ -8,6 +8,7 @@ expose:
     commonName: ${component.harbor.name}.${component.ingress.fqdn}
   ingress:
     hosts:
+      base: ${component.ingress.fqdn}
       core: ${component.harbor.name}.${component.ingress.fqdn}
       notary: notary.${component.harbor.name}.${component.ingress.fqdn}
     annotations:

@@ -4,6 +4,9 @@ kind: component
 meta:
   name: spinnaker
   brief: Spinnaker CD Server
+  version: 1.10
+  maturity: preview
+  licence: Apache 2.0
   source:
       dir: ../../components/spinnaker
 

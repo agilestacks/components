@@ -11,92 +11,92 @@ metadata:
   creationTimestamp: null
   name: auth-operator-manager-role
 rules:
-- apiGroups:
-  - extensions
-  resources:
-  - ingresses
-  - ingresses/finalizers
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - auth.agilestacks.com
-  resources:
-  - oidcs
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - admissionregistration.k8s.io
-  resources:
-  - mutatingwebhookconfigurations
-  - validatingwebhookconfigurations
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - services
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses
+      - ingresses/finalizers
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - auth.agilestacks.com
+    resources:
+      - oidcs
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - mutatingwebhookconfigurations
+      - validatingwebhookconfigurations
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -108,9 +108,9 @@ roleRef:
   kind: ClusterRole
   name: auth-operator-manager-role
 subjects:
-- kind: ServiceAccount
-  name: auth-operator-manager
-  namespace: ${component.dex.namespace}
+  - kind: ServiceAccount
+    name: auth-operator-manager
+    namespace: ${component.dex.namespace}
 ---
 apiVersion: v1
 kind: Secret
@@ -128,7 +128,7 @@ metadata:
   namespace: ${component.dex.namespace}
 spec:
   ports:
-  - port: 443
+    - port: 443
   selector:
     control-plane: controller-manager
     controller-tools.k8s.io: "1.0"
@@ -155,48 +155,48 @@ spec:
     spec:
       serviceAccountName: auth-operator-manager
       containers:
-      - command:
-        - /root/manager
-        env:
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: SECRET_NAME
-          value: auth-operator-webhook-server-secret
-        - name: APROXY_IMAGE
-          value: ${component.dex.authproxy.image}
-        - name: APROXY_COOKIE_EXP
-          value: ${component.dex.authproxy.cookieExpire}
-        - name: APROXY_EMAIL_DOMAIN
-          value: ${component.dex.authproxy.emailDomain}
-        - name: APROXY_ING_PREFIX
-          value: ${component.ingress.ssoUrlPrefix}
-        - name: APROXY_ING_PROTO
-          value: ${component.ingress.protocol}
-        - name: APROXY_DEX_NAMESPACE
-          value: ${component.dex.namespace}
-        image: agilestacks/auth-operator:0.0.8
-        imagePullPolicy: Always
-        name: manager
-        ports:
-        - containerPort: 9876
-          name: webhook-server
-          protocol: TCP
-        resources:
-          limits:
-            cpu: 300m
-            memory: 100Mi
-          requests:
-            cpu: 100m
-            memory: 20Mi
-        volumeMounts:
-        - mountPath: /tmp/cert
-          name: cert
-          readOnly: true
+        - command:
+            - /root/manager
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: SECRET_NAME
+              value: auth-operator-webhook-server-secret
+            - name: APROXY_IMAGE
+              value: ${component.dex.authproxy.image}
+            - name: APROXY_COOKIE_EXP
+              value: ${component.dex.authproxy.cookieExpire}
+            - name: APROXY_EMAIL_DOMAIN
+              value: ${component.dex.authproxy.emailDomain}
+            - name: APROXY_ING_PREFIX
+              value: ${component.ingress.ssoUrlPrefix}
+            - name: APROXY_ING_PROTO
+              value: ${component.ingress.protocol}
+            - name: APROXY_DEX_NAMESPACE
+              value: ${component.dex.namespace}
+          image: ${component.dex.authOperator.image}
+          imagePullPolicy: Always
+          name: manager
+          ports:
+            - containerPort: 9876
+              name: webhook-server
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 300m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 20Mi
+          volumeMounts:
+            - mountPath: /tmp/cert
+              name: cert
+              readOnly: true
       terminationGracePeriodSeconds: 10
       volumes:
-      - name: cert
-        secret:
-          defaultMode: 420
-          secretName: auth-operator-webhook-server-secret
+        - name: cert
+          secret:
+            defaultMode: 420
+            secretName: auth-operator-webhook-server-secret

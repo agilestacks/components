@@ -4,6 +4,8 @@ kind: component
 meta:
   name: mongodb
   brief: MongoDB document database
+  version: 4.0.2
+  maturity: stable
   source:
     dir: ../../components/mongodb
 
