@@ -99,7 +99,6 @@ configure:
 	- $(ks) param set --env=$(KF_ENV) pipeline viewerCrdControllerImage gcr.io/ml-pipeline/viewer-crd-controller:$(PIPELINE_VERSION)
 	- $(ks) param set --env=$(KF_ENV) pipeline uiImage gcr.io/ml-pipeline/frontend:$(PIPELINE_VERSION)
 install:
-	- $(kubectl) apply -f default-storage-class.yaml
 	- $(ks) apply $(KF_ENV) -c ambassador --context=$(TF_VAR_domain_name)
 	- $(ks) apply $(KF_ENV) -c metacontroller --context=$(TF_VAR_domain_name)
 	- $(ks) apply $(KF_ENV) -c jupyter --context=$(TF_VAR_domain_name)
@@ -157,7 +156,6 @@ uninstall:
 	- $(ks) delete $(KF_ENV) -c tf-job-operator --context=$(TF_VAR_domain_name)
 	- $(ks) env rm $(KF_ENV)
 	- $(kubectl) delete pvc --all | true
-	- $(kubectl) delete -f default-storage-class.yaml | true
 	- $(kubectl) delete -f oidc-crd.yaml | true
 	- $(kubectl) delete -f oidc-deployment.yaml
 	- $(kubectl) delete -f oidc-ambassador-service.yaml | true
