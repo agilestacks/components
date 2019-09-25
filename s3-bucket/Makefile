@@ -63,8 +63,7 @@ else
 endif
 
 import:
-	$(eval bucket=$(shell echo $(TF_VAR_name) | sed -e 's/\./-/g'))
-	-$(terraform) import $(TF_CLI_ARGS) aws_s3_bucket.main $(bucket)
+	-$(terraform) import $(TF_CLI_ARGS) aws_s3_bucket.main $(TF_VAR_name)
 
 clean:
 	rm -rf .terraform bucket.tf
