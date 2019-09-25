@@ -29,7 +29,7 @@ $(TF_DATA_DIR):
 
 # Terraform doesn't allow interpolation for lifecycle
 bucket.tf:
-	yes | cp -rf bucket-$(RECLAIM).tf.ignore $@
+	cp -f bucket-$(RECLAIM).tf.ignore $@
 .PHONY: bucket.tf
 
 init: $(TF_DATA_DIR) bucket.tf
