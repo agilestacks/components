@@ -29,7 +29,7 @@ $(TF_DATA_DIR):
 
 # Terraform doesn't allow interpolation for lifecycle
 bucket.tf:
-	yes | cp -rf bucket-$(RECLAIM).tf.ignore $@
+	cp -f bucket-$(RECLAIM).tf.ignore $@
 .PHONY: bucket.tf
 
 init: $(TF_DATA_DIR) bucket.tf
@@ -63,8 +63,7 @@ else
 endif
 
 import:
-	$(eval bucket=$(shell echo $(TF_VAR_name) | sed -e 's/\./-/g'))
-	-$(terraform) import $(TF_CLI_ARGS) aws_s3_bucket.main $(bucket)
+	-$(terraform) import $(TF_CLI_ARGS) aws_s3_bucket.main $(TF_VAR_name)
 
 clean:
 	rm -rf .terraform bucket.tf

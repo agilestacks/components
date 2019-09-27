@@ -6,12 +6,10 @@ resource "aws_s3_bucket" "main" {
   versioning {
     enabled = "${var.versioning}"
   }
-
-    # tags is now a map (not resource block)
+  # tags is now a map (not resource block)
   tags = {
     "Name" = "${var.name}"
   }
-
   lifecycle {
     prevent_destroy = false
   }
