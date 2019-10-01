@@ -19,9 +19,6 @@ function extract(components) {
         components.map(([name, {meta, requires = [], provides = []}]) => ({
             name,
             ...pick(meta, ['brief', 'version', 'maturity', 'licence']),
-            ...(IS_TRUE.test(get(meta, 'commercial')) && {
-                commercial: true
-            }),
             requires,
             provides
         })),
