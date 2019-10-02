@@ -1,0 +1,74 @@
+---
+version: 1
+kind: component
+meta:
+  name: deephorizon
+  brief: An dns synchronization operator that can manage multiple zones
+  source:
+      dir: .
+
+requires:
+  - kubernetes
+
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
+  - kubernetes
+
+parameters:
+  - name: component.deephorizon
+    parameters:
+    - name: namespace
+      value: deephorizon
+      env: NAMESPACE
+    - name: image
+      value: crazyrad/deephorizon
+    - name: dns
+      parameters:
+      - name: zone
+      - name: domain
+      - name: pool-arr1
+        value: '[ "192.168.123.201", "10.23.45.6", "56.43.21.9" ]'
+      - name: pool-arr2
+        empty: allow
+        value: '[]'
+      - name: pool-arr3
+        empty: allow
+        value: '[]'
+      - name: servers-arr1
+        parameters:
+        - name: ip
+        - name: port
+      - name: servers-arr2
+        empty: allow
+        parameters:
+        - name: ip
+        - name: port
+      - name: servers-arr3
+        empty: allow
+        parameters:
+        - name: ip
+        - name: port
+      - name: views-arr1
+        parameters:
+        - name: keyname
+        - name: hmac
+        - name: key
+      - name: views-arr2
+        empty: allow
+        parameters:
+        - name: keyname
+        - name: hmac
+        - name: key
+      - name: views-arr3
+        empty: allow
+        parameters:
+        - name: keyname
+        - name: hmac
+        - name: key
+
+templates:
+  files:
+  - 'manifests/*.template'
+  - 'unflatten.py.template'
