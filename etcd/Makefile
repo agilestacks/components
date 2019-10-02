@@ -72,6 +72,7 @@ wait_etcd_pods%:
 backup_config:
 	@echo "[default]" > secret-config
 	@echo "region = $(BACKUP_REGION)" >> secret-config
+	@cat secret-config
 	$(kubectl) create secret generic $(AWS_SECRET_NAME) --from-file=config=secret-config
 .PHONY: backup_config
 
