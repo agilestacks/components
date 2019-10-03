@@ -6,7 +6,7 @@ meta:
   brief: Traefik Router as ingress Controller
   version: 1.7.14
   maturity: stable
-  licence: MIT
+  license: MIT
   source:
     dir: ../../components/traefik
 

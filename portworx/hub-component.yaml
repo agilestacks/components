@@ -6,7 +6,7 @@ meta:
   brief: Cloud native storage and data management
   version: 2.0.3.4
   maturity: beta
-  licence:  commercial
+  license:  commercial
   source:
       dir: ../../components/portworx
 

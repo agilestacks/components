@@ -6,7 +6,7 @@ meta:
   brief: PostgreSQL
   version: 9.6.11
   maturity: stable
-  licence: BSD/MIT
+  license: BSD/MIT
   source:
     dir: ../../components/postgresql
 

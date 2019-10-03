@@ -6,7 +6,7 @@ meta:
   brief: Dex OIDC and OAuth2 provider
   version: 2.18.0
   maturity: stable
-  licence: Apache 2.0
+  license: Apache 2.0
   source:
     dir: ../../components/dex
 
