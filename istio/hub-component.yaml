@@ -26,6 +26,10 @@ parameters:
   - name: component.ingress.ssoFqdn
   - name: cloud.kind
     env: CLOUD_KIND
+  - name: terraform.bucket.region
+    env: STATE_REGION
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
   - name: component.istio
     parameters:
     - name: namespace
