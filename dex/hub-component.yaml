@@ -11,6 +11,9 @@ meta:
     dir: ../../components/dex
 
 requires:
+  - aws
+  - azure
+  - gcp
   - kubernetes
   - helm
   - tiller

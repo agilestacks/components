@@ -11,6 +11,9 @@ meta:
     dir: ../../components/harbor
 
 requires:
+  - aws
+  - azure
+  - gcp
   - kubernetes
 provides:
   - harbor

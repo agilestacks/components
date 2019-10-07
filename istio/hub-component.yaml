@@ -11,6 +11,7 @@ meta:
       dir: ../../components/istio
 
 requires:
+  - aws
   - kubernetes
   - helm
   - tiller

@@ -11,6 +11,9 @@ meta:
     dir: ../../components/traefik
 
 requires:
+  - aws
+  - azure
+  - gcp
   - kubernetes
   - helm
   - tiller
