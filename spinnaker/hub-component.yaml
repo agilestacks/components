@@ -11,6 +11,7 @@ meta:
       dir: ../../components/spinnaker
 
 requires:
+  - aws
   - kubernetes
 
 parameters:
