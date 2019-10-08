@@ -1,5 +1,5 @@
 istio-*
-
+default-gateway.yaml
 values.yaml.*
 !values.yaml.*.dist
 !values.yaml.*.template
