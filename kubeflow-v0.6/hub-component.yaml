@@ -1,0 +1,65 @@
+---
+version: 1
+kind: component
+meta:
+  name: kubeflow
+  brief:
+  version: 0.6.2
+  maturity: stable
+  licence: Apache 2.0
+  source:
+    dir: ../../components/kubeflow-v0.6
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - kubeflow
+
+parameters:
+  - name: component.ingress.protocol
+    env: PROTOCOL
+  - name: component.acm.certificateArn
+    empty: allow
+    env: ACM_CERTIFICATE_ARN
+  - name: kubernetes.api.endpoint
+    env: K8S_API_SERVER
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+  - name: dns.domain
+    env: TF_VAR_domain_name
+  - name: dns.name
+    env: TF_VAR_name
+  - name: component.kubeflow
+    parameters:
+      - name: name
+        value: kubeflow
+        env: TF_VAR_component
+      - name: namespace
+        value: kubeflow
+        env: KUBEFLOW_NS
+      - name: istio.namespace
+        value: istio-system
+        env: TF_VAR_namespace
+      - name: version
+        value: v0.6.2
+        env: KUBEFLOW_VERSION
+      - name: urlPrefix
+        value: kubeflow.svc
+        env: TF_VAR_url_prefix
+      - name: kubernetes.kubeconfigContext
+        value: ${dns.domain}
+        env: TF_VAR_kubeconfig_context
+
+outputs:
+  - name: component.kubeflow.istio.protocol
+    fromTfVar: protocol
+    brief: Kubeflow Central Dashboard
+    value: ${component.kubeflow.istio.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/
+
+templates:
+  files:
+    - "*.template"
