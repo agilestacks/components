@@ -39,7 +39,10 @@ else
 endif
 
 
+
 deploy: clean init fetch purge install plan apply confgiure_gitlab output
+
+
 
 $(TF_DATA_DIR):
 	@mkdir -p $@
@@ -84,6 +87,7 @@ endif
 	  --wait \
 	  $(HELM_VALUES) \
 	  --version $(CHART_VERSION)
+	  $(MAKE) -C $(CLOUD_KIND) dns
 	
 
 undeploy: init destroy apply

@@ -9,5 +9,5 @@ install:
 .PHONY: install
 
 dns:
-	./add-dns-entry.sh
+	@echo "DNS for AWS created by TF, skipping"
 .PHONE: dns
