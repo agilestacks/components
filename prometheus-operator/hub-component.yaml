@@ -6,7 +6,7 @@ meta:
   brief: Prometheus monitoring service
   version: 2.5.0
   maturity: stable
-  licence: Apache 2.0
+  license: Apache 2.0
   source:
     dir: ../../components/prometheus-operator
 

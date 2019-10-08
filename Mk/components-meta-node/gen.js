@@ -12,16 +12,11 @@ function write(filename, value) {
     fs.closeSync(out);
 }
 
-const IS_TRUE = /^\s*(y(es)?|on?|t(rue)?)\s*$/i;
-
 function extract(components) {
     return keyBy(
         components.map(([name, {meta, requires = [], provides = []}]) => ({
             name,
-            ...pick(meta, ['brief', 'version', 'maturity', 'licence']),
-            ...(IS_TRUE.test(get(meta, 'commercial')) && {
-                commercial: true
-            }),
+            ...pick(meta, ['brief', 'version', 'maturity', 'license']),
             requires,
             provides
         })),

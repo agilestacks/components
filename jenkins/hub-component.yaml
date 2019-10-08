@@ -6,7 +6,7 @@ meta:
   brief: Jenkins CI Server
   version: 2.164.3
   maturity: stable
-  licence: MIT
+  license: MIT
   source:
     dir: components/jenkins
 

@@ -1,0 +1,52 @@
+
+import json
+
+obj = {
+    'views': [
+        {
+            'keyname': '${component.deephorizon.dns.views-arr1.keyname}',
+            'hmac': '${component.deephorizon.dns.views-arr1.hmac}',
+            'key': '${component.deephorizon.dns.views-arr1.key}',
+        },
+        {
+            'keyname': '${component.deephorizon.dns.views-arr2.keyname}',
+            'hmac': '${component.deephorizon.dns.views-arr2.hmac}',
+            'key': '${component.deephorizon.dns.views-arr2.key}',
+        },
+        {
+            'keyname': '${component.deephorizon.dns.views-arr3.keyname}',
+            'hmac': '${component.deephorizon.dns.views-arr3.hmac}',
+            'key': '${component.deephorizon.dns.views-arr3.key}',
+        }
+    ],
+    'servers': [
+        {
+            'ip': '${component.deephorizon.dns.servers-arr1.ip}',
+            'port': '${component.deephorizon.dns.servers-arr1.port}',
+        },
+        {
+            'ip': '${component.deephorizon.dns.servers-arr2.ip}',
+            'port': '${component.deephorizon.dns.servers-arr2.port}',
+        },
+        {
+            'ip': '${component.deephorizon.dns.servers-arr3.ip}',
+            'port': '${component.deephorizon.dns.servers-arr3.port}',
+        }
+    ],
+    'poolMap': [
+        ${component.deephorizon.dns.pool-arr1},
+        ${component.deephorizon.dns.pool-arr2},
+        ${component.deephorizon.dns.pool-arr3},
+    ]
+}
+
+
+newobj = {
+    'zone': '${component.deephorizon.dns.zone}',
+    'cluster': '${component.deephorizon.dns.domain}',
+    'views': [ v for v in obj['views'] if v['keyname'] != ''],
+    'servers': [ { 'ip': s['ip'], 'port': int(s['port']) } for s in obj['servers'] if s['ip'] != '' ],
+    'poolMap': [ p for p in obj['poolMap'] if len(p) > 0 ]
+}
+
+print(json.dumps(newobj))

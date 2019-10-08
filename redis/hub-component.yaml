@@ -6,7 +6,7 @@ meta:
   brief: Redis in-memory data structure store
   version: 4.0.13
   maturity: stable
-  licence: BSD
+  license: BSD
   source:
       dir: ../../components/redis
 

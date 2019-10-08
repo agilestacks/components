@@ -70,7 +70,9 @@ wait_etcd_pods%:
 
 # after all Makefile and shell/echo acrobatics I can't make --from-literal to insert newline into config= value
 backup_config:
-	@echo "[default]\nregion = $(BACKUP_REGION)" > secret-config
+	@echo "[default]" > secret-config
+	@echo "region = $(BACKUP_REGION)" >> secret-config
+	@cat secret-config
 	$(kubectl) create secret generic $(AWS_SECRET_NAME) --from-file=config=secret-config
 .PHONY: backup_config
 

@@ -4,6 +4,20 @@
 .terraform/
 *.log
 *.tfplan
+config.yaml
+Dockerfile.old
+errored.tfstate
+generated.tf
+ingress-tls.yaml
+ingress.yaml
+namespace.yaml
+rbac-operator.yaml
+rbac.yaml
+upsert.json
+values.yaml
+terraform.tfplan
+terraform.tfstate
+terraform.tfstate.backup
 acm/.venv
 argo/.go
 argo/charts
@@ -26,9 +40,7 @@ asi-demo-java.yaml
 asi-demo-nodejs.yaml
 cert-manager/charts/
 cloudformation/cloudformation.yaml
-config.yaml
 deployment-manager/deployment.yaml
-Dockerfile.old
 efk/conf/elasticsearch.yml
 efk/es-cerebro.yaml
 efk/es-service.yaml
@@ -38,11 +50,9 @@ efk/fluentd-es-ds.yaml
 efk/kibana-deployment.yaml
 efk/kibana-service.yaml
 efk/namespace.yaml
-errored.tfstate
 etcd/charts
 etcd/secret-config
 etcd/values.yaml
-generated.tf
 harbor/aws/acm/nginx-service.yaml
 harbor/aws/aws-storage-class.yaml
 harbor/aws/ingress-notary.yaml
@@ -56,8 +66,6 @@ harbor/hybrid/local/values-harbor.yaml
 harbor/hybrid/minio/values-harbor.yaml
 harbor/hybrid/values-harbor.yam
 harbor/hybrid/values-nginx.yam
-ingress-tls.yaml
-ingress.yaml
 jenkins-iam-role/.terraform
 jenkins/config.yaml
 jenkins/deployment.yaml
@@ -81,7 +89,6 @@ kube-dashboard/serviceaccount.yaml
 minio/charts
 Mk/components-meta-node/node_modules
 Mk/components-meta-node/package-lock.json
-namespace.yaml
 nats/charts
 nats/mon-ingress.yaml
 nats/natsboard/deployment.yaml
@@ -97,8 +104,6 @@ postgresql/volume-claim.yaml
 postgresql/volume-hostpath.yaml
 prometheus/values-kube-prometheus.yaml
 prometheus/values-operator.yaml
-rbac-operator.yaml
-rbac.yaml
 redis/charts
 redis/values-ha.yaml
 redis/values.yaml
@@ -114,9 +119,6 @@ spot-term-notifier/values.yaml
 storage-class/*.yaml
 sysdig/charts
 sysdig/values.yaml
-terraform.tfplan
-terraform.tfstate
-terraform.tfstate.backup
 tiller/tiller-rbac.yaml
 traefik/aws/values-acm.yaml
 traefik/aws/values-tls.yaml
@@ -127,8 +129,6 @@ traefik/hybrid/values-tls.yaml
 traefik/values-dashboard.yaml
 traefik/values-tls.yaml
 traefik/values.yaml
-upsert.json
-values.yaml
 vault/.vault
 vault/init.txt
 vault/values.yaml

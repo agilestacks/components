@@ -6,11 +6,14 @@ meta:
   brief: Cloud-Native, multi-pod deployment of Gitlab
   version: 12.1.4
   maturity: stable
-  licence: MIT
+  license: MIT
   source:
     dir: ../../components/gitlab-cn
 
 requires:
+  - aws
+  - azure
+  - gcp
   - kubernetes
   - helm
   - tiller
@@ -19,10 +22,17 @@ provides:
   - gitlab
 
 parameters:
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+  - name: terraform.bucket.container
+    empty: allow
+    env: STATE_CONTAINER
   - name: cloud.kind
     env: CLOUD_KIND
   - name: dns.domain
-    env: DOMAIN_NAME
+    env: TF_VAR_domain_name
   - name: dns.name
   - name: cloud.azureResourceGroupName
     empty: allow
@@ -39,6 +49,9 @@ parameters:
     empty: allow
   - name: component.gitlab
     parameters:
+    - name: name
+      env: TF_VAR_component
+      value: gitlab-cn
     - name: chart
       value: gitlab
       env: HELM_CHART
@@ -50,13 +63,13 @@ parameters:
       env: CHART_VERSION
     - name:  name
       value: gitlab-cn
-      env:   COMPONENT_NAME
+      env:   TF_VAR_component
     - name: edition
       value: ce
     - name:  namespace
       brief: Kubernetes namespace to install into
       value: gitlab
-      env:   NAMESPACE
+      env:   TF_VAR_namespace
     - name:  software.version
       brief: Gitlab Version
       value: 12.1.4
@@ -130,7 +143,7 @@ outputs:
     brief: Gitlab Registry URL
     value: ${component.gitlab.registryUrl}
   - name: component.gitlab.namespace
-    value: apps
+    value: ${component.gitlab.namespace}
     brief: Gitlab default group
   - name: component.gitlab.token
     fromTfVar: serviceaccount_token

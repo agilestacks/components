@@ -1,0 +1,4 @@
+
+*.py
+manifests/*.yaml
+manifests/configmap.yaml.part
