@@ -1,11 +1,11 @@
 .DEFAULT_GOAL := install
 
-DOMAIN_NAME    ?= dev.superhub.io
-NAMESPACE      ?= gitlab 
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+TF_VAR_domain_name    ?= dev.superhub.io
+TF_VAR_namespace      ?= gitlab 
+kubectl ?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
 
 install:
-	$(kubectl) -n $(NAMESPACE) apply -f storageclass.yaml | true
+	$(kubectl) -n $(TF_VAR_namespace) apply -f storageclass.yaml | true
 .PHONY: install
 
 dns:

@@ -35,7 +35,11 @@ parameters:
     env: TF_VAR_domain_name
   - name: dns.name
   - name: cloud.azureResourceGroupName
+    env: TF_VAR_azure_resource_group_name
     empty: allow
+  - name: cloud.gcpProjectId
+    empty: allow
+    env: TF_VAR_gcp_project_id
   - name: component.ingress.kubernetes.ingressClass
     empty: allow
   - name: component.ingress.protocol

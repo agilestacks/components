@@ -34,15 +34,23 @@ STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate" \
 				-backend-config="profile=$(AWS_PROFILE)"
+else ifeq ($(CLOUD_KIND),gcp)
+STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
+        		-backend-config="region=$(STATE_REGION)" \
+				-backend-config="prefix=$(TF_VAR_domain_name)/$(TF_VAR_component)" \
+				-backend-config="credentials=$(GOOGLE_APPLICATION_CREDENTIALS)"
+else ifeq ($(CLOUD_KIND),azure)
+STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$(STATE_BUCKET)" \
+				-backend-config="container_name=$(STATE_CONTAINER)" \
+				-backend-config="resource_group_name=$(TF_VAR_azure_resource_group_name)" \
+				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate"
 else
 	$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, hybrid)
 endif
 
 
-
 deploy: clean init fetch purge install plan apply confgiure_gitlab output
-
-
+#deploy: clean init fetch purge plan apply confgiure_gitlab output
 
 $(TF_DATA_DIR):
 	@mkdir -p $@
@@ -87,7 +95,7 @@ endif
 	  --wait \
 	  $(HELM_VALUES) \
 	  --version $(CHART_VERSION)
-	  $(MAKE) -C $(CLOUD_KIND) dns
+	  #$(MAKE) -C $(CLOUD_KIND) dns
 	
 
 undeploy: init destroy apply
