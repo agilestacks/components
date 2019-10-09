@@ -5,7 +5,7 @@ meta:
   name: harbor
   brief: Private Docker Registry
   version: 1.8.1
-  maturity: stable
+  maturity: ga
   license: Apache 2.0
   source:
     dir: ../../components/harbor

@@ -5,7 +5,7 @@ meta:
   name: gitlab-cn
   brief: Cloud-Native, multi-pod deployment of Gitlab
   version: 12.1.4
-  maturity: stable
+  maturity: ga
   license: MIT
   source:
     dir: ../../components/gitlab-cn

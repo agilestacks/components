@@ -5,7 +5,7 @@ meta:
   name: minio
   brief: Private cloud storage
   version: RELEASE.2018-09-01
-  maturity: stable
+  maturity: ga
   license: Apache 2.0
   source:
       dir: ../../components/minio

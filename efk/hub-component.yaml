@@ -5,7 +5,7 @@ meta:
   name: efk
   brief: Elasticsearch Fluentd and Kibana
   version: 7.2.1
-  maturity: stable
+  maturity: ga
   license: Apache 2.0
   source:
     dir: ../../components/efk

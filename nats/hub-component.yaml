@@ -5,7 +5,7 @@ meta:
   name: nats
   brief: NATS messaging system
   version: 1.3.0
-  maturity: stable
+  maturity: ga
   license: Apache 2.0
   source:
     dir: ../../components/nats

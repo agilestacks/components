@@ -5,7 +5,7 @@ meta:
   name: etcd
   brief: etcd distributed key value store
   version: 3.2.26
-  maturity: stable
+  maturity: ga
   license: Apache 2.0
   source:
       dir: ../../components/etcd

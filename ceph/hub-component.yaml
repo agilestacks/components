@@ -5,7 +5,7 @@ meta:
   name: ceph
   brief: Private cloud storage
   version: 14.2.1
-  maturity: stable
+  maturity: ga
   license: LGPLv2.1
   source:
       dir: ../../components/ceph

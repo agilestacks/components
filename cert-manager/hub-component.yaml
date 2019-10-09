@@ -5,7 +5,7 @@ meta:
   name: cert-manager
   brief: Automate the management and issuance of TLS certificates
   version: 0.9.1
-  maturity: stable
+  maturity: ga
   license: Apache 2.0
   source:
     dir: ../../components/cert-manager

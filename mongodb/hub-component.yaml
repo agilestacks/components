@@ -5,7 +5,7 @@ meta:
   name: mongodb
   brief: MongoDB document database
   version: 4.0.2
-  maturity: stable
+  maturity: ga
   source:
     dir: ../../components/mongodb
 
