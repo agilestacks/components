@@ -7,30 +7,6 @@ spec:
   platform: aws
   applications:
     - kustomizeConfig:
-        parameters:
-          - name: namespace
-            value: istio-system
-        repoRef:
-          name: manifests
-          path: istio/istio-crds
-      name: istio-crds
-    - kustomizeConfig:
-        parameters:
-          - name: namespace
-            value: istio-system
-        repoRef:
-          name: manifests
-          path: istio/istio-install
-      name: istio-install
-    - kustomizeConfig:
-        parameters:
-          - name: clusterRbacConfig
-            value: "OFF"
-        repoRef:
-          name: manifests
-          path: istio/istio
-      name: istio
-    - kustomizeConfig:
         repoRef:
           name: manifests
           path: application/application-crds
@@ -43,11 +19,6 @@ spec:
           path: application/application
       name: application
     - kustomizeConfig:
-        repoRef:
-          name: manifests
-          path: metacontroller
-      name: metacontroller
-    - kustomizeConfig:
         overlays:
           - istio
         repoRef:
@@ -55,6 +26,9 @@ spec:
           path: argo
       name: argo
     - kustomizeConfig:
+        #        parameters:
+        #          - name: userid-header
+        #            value: kubeflow-userid
         overlays:
           - istio
           - application
@@ -76,6 +50,9 @@ spec:
           path: admission-webhook/bootstrap
       name: bootstrap
     - kustomizeConfig:
+        #        parameters:
+        #          - name: userid-header
+        #            value: kubeflow-userid
         overlays:
           - istio
           - application
@@ -142,18 +119,6 @@ spec:
           name: manifests
           path: pytorch-job/pytorch-operator
       name: pytorch-operator
-    - kustomizeConfig:
-        parameters:
-          - initRequired: true
-            name: usageId
-            value: <randomly-generated-id>
-          - initRequired: true
-            name: reportUsage
-            value: "true"
-        repoRef:
-          name: manifests
-          path: common/spartakus
-      name: spartakus
     - kustomizeConfig:
         overlays:
           - istio
@@ -223,6 +188,9 @@ spec:
           path: pipeline/scheduledworkflow
       name: scheduledworkflow
     - kustomizeConfig:
+        #        parameters:
+        #          - name: userid-header
+        #            value: kubeflow-userid
         overlays:
           - istio
         repoRef:

@@ -38,7 +38,7 @@ init:
 
 fetch:
 	rm -rf $(KUBEFLOW_DIR)
-	- kfctl init $(KUBEFLOW_DIR) --config=$(shell pwd)/kfctl_aws_noistio.yaml -V
+	- kfctl init $(KUBEFLOW_DIR) --config=$(shell pwd)/kfctl_aws.yaml -V
 
 configure:
 	- $(kfctl) generate k8s -V

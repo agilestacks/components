@@ -9,11 +9,11 @@ spec:
     istio: ingressgateway
   filters:
     - filterConfig:
+        failureModeAllow: false
         httpService:
           serverUri:
             uri: http://authservice.istio-system.svc.cluster.local
             cluster: outbound|8080||authservice.istio-system.svc.cluster.local
-            #            failureModeAllow: false
             timeout: 10s
           authorizationRequest:
             allowedHeaders:

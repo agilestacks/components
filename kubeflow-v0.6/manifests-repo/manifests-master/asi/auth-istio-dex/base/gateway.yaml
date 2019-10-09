@@ -12,13 +12,13 @@ spec:
         name: http-dex
         protocol: HTTP
       hosts:
-        - "*"
+        - "kubeflow.svc.oleg108.dev.superhub.io"
     - port:
         number: 80
         name: http
         protocol: HTTP
       hosts:
-        - "*"
+        - "kubeflow.svc.oleg108.dev.superhub.io"
 
 ---
 apiVersion: networking.istio.io/v1alpha3
@@ -28,7 +28,7 @@ metadata:
   namespace: kubeflow
 spec:
   hosts:
-    - "*"
+    - "kubeflow.svc.oleg108.dev.superhub.io"
   gateways:
     - kubeflow-gateway
   http:
