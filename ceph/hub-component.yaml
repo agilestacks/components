@@ -44,7 +44,8 @@ parameters:
     - name: storage.path
       value: /var/lib/rook
     - name: flex.volume.path
-      value: '#{cloud.kind == "gcp" ? "/home/kubernetes/flexvolume" : cloud.kind == "azure" ? "/etc/kubernetes/volumeplugins" : "/var/lib/kubelet/volumeplugins"}'
+      value: '#{cloud.kind == "gcp" ? "/home/kubernetes/flexvolume" : cloud.kind == "hybrid" ? "/usr/libexec/kubernetes/kubelet-plugins/volume/exec" : "/var/lib/kubelet/volumeplugins"}'
+      env: FLEX_VOL_PATH
     - name: mon.replicas
       value: 3
     - name: dashboard.port
@@ -61,7 +62,7 @@ parameters:
       - name: pvc.storageclass
         value: rook-nfs-share1
       - name: pvc.size
-        value: 5Gi
+        value: 1Gi
     - name: blockdevice
       parameters:
       - name: pvc.name

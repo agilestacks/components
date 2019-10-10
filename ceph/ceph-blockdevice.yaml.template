@@ -31,4 +31,4 @@ parameters:
   # (Optional) Specify an existing Kubernetes secret name containing just one key holding the Ceph user secret.
   # The secret must exist in each namespace(s) where the storage will be consumed.
   #mountSecret: ceph-user1-secret
-reclaimPolicy: Retain
+reclaimPolicy: Delete

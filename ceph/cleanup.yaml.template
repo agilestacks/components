@@ -11,13 +11,29 @@ spec:
     spec:
       containers:
         - name: cleanup
-          image: alpine:3.5
-          command: ["/bin/sh"]
-          args: ["-c", "rm -rf ${component.ceph.storage.path}/* > /dev/termination-log && sleep 10"]
+          image: agilestacks/ceph-disk-cleanup:20190930-7e7b74e
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - lsblk -bJ | jq -r '.blockdevices[] | select(any (.children[]?; .name | contains("ceph") )).name' | xargs -I% sgdisk --zap-all /dev/%;
+              dmsetup ls | grep -e '^ceph' | awk '{print $1}' | xargs -I% -- dmsetup remove %;
+              rm -rf /dev/ceph-* && rm -rf ${component.ceph.storage.path}/*;
+          securityContext:
+            privileged: true
           volumeMounts:
           - name: rook-data
             mountPath: ${component.ceph.storage.path}
+          - mountPath: /dev
+            name: dev
+          - mountPath: /sys/bus
+            name: sysbus
       volumes:
       - name: rook-data
         hostPath:
           path: ${component.ceph.storage.path}
+      - name: dev
+        hostPath:
+          path: /dev
+      - name: sysbus
+        hostPath:
+          path: /sys/bus
