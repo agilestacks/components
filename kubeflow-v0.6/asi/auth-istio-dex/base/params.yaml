@@ -1,0 +1,25 @@
+varReference:
+  - path: spec/filters/filterConfig/httpService/serverUri/uri
+    kind: EnvoyFilter
+  - path: spec/filters/filterConfig/httpService/serverUri/cluster
+    kind: EnvoyFilter
+  - path: spec/filters/filterConfig/httpService/authorizationResponse/allowedUpstreamHeaders/patterns/exact
+    kind: EnvoyFilter
+  - path: spec/template/spec/containers/0/env/0/value
+    kind: Deployment
+  - path: spec/template/spec/containers/0/env/5/value
+    kind: Deployment
+  - path: spec/template/spec/containers/0/env/6/value
+    kind: Deployment
+  - path: spec/template/spec/containers/0/env/8/value
+    kind: Deployment
+  - path: spec/servers/hosts
+    kind: Gateway
+  - path: spec/hosts
+    kind: VirtualService
+  - path: spec/http/route/destination/host
+    kind: VirtualService
+  - path: spec/secret
+    kind: Oidc
+  - path: spec/redirectURIs
+    kind: Oidc

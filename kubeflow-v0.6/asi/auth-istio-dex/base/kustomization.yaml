@@ -1,0 +1,71 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - oidc-crd.yaml
+  - authservice.yaml
+  - gateway.yaml
+  - envoy-filter.yaml
+configMapGenerator:
+  - name: parameters-auth
+    env: params.env
+generatorOptions:
+  disableNameSuffixHash: true
+vars:
+  - name: namespace
+    objref:
+      kind: Service
+      name: authservice
+      apiVersion: v1
+    fieldref:
+      fieldpath: metadata.namespace
+  - name: clusterDomain
+    objref:
+      kind: ConfigMap
+      name: parameters-auth
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.clusterDomain
+  - name: userid-header
+    objref:
+      kind: ConfigMap
+      name: parameters-auth
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.userid-header
+  - name: dexUrl
+    objref:
+      kind: ConfigMap
+      name: parameters-auth
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.dexUrl
+  - name: dexHost
+    objref:
+      kind: ConfigMap
+      name: parameters-auth
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.dexHost
+  - name: kfUrl
+    objref:
+      kind: ConfigMap
+      name: parameters-auth
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.kfUrl
+  - name: kfHost
+    objref:
+      kind: ConfigMap
+      name: parameters-auth
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.kfHost
+  - name: oidcSecret
+    objref:
+      kind: ConfigMap
+      name: parameters-auth
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.oidcSecret
+configurations:
+  - params.yaml

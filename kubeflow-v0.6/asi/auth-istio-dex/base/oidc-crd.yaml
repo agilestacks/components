@@ -1,0 +1,13 @@
+apiVersion: auth.agilestacks.com/v1alpha1
+kind: Oidc
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: oidc-istio
+  namespace: kubeflow
+spec:
+  id: kubeflow-authservice-oidc
+  secret: $(oidcSecret)
+  redirectURIs:
+    - $(kfUrl)/login/oidc
+  name: "Kubeflow AI framework"

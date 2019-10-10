@@ -19,7 +19,7 @@ provides:
 
 parameters:
   - name: component.ingress.protocol
-    env: PROTOCOL
+  - name: component.dex.issuer
   - name: component.acm.certificateArn
     empty: allow
     env: ACM_CERTIFICATE_ARN
@@ -47,6 +47,9 @@ parameters:
       - name: version
         value: v0.6.2
         env: KUBEFLOW_VERSION
+      - name: manifests.git
+        value: 3e85b3c83de12fed7d675151d0d4f8474eb04790
+        env: KUBEFLOW_COMMIT
       - name: urlPrefix
         value: kubeflow.svc
         env: TF_VAR_url_prefix
@@ -55,10 +58,9 @@ parameters:
         env: TF_VAR_kubeconfig_context
 
 outputs:
-  - name: component.kubeflow.istio.protocol
-    fromTfVar: protocol
+  - name: component.kubeflow.url
     brief: Kubeflow Central Dashboard
-    value: ${component.kubeflow.istio.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/
+    value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/
 
 templates:
   files:
