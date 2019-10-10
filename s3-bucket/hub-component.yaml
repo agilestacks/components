@@ -6,6 +6,11 @@ meta:
   source:
     dir: .
 
+requires:
+- aws
+provides:
+- s3-bucket
+
 parameters:
 - name: terraform.bucket.name
   env: STATE_BUCKET
