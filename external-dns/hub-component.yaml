@@ -33,10 +33,27 @@ parameters:
     - name: name
       value: external-dns
       env: COMPONENT_NAME
-    - name: region
-      value: us-east-1
-    - name: accessKeyId
-    - name: secretAccessKey
+    - name: aws
+      empty: allow
+      parameters:
+      - name: region
+      - name: accessKeyId
+      - name: secretAccessKey
+    - name: rfc2136
+      empty: allow
+      parameters:
+      - name: host
+      - name: port
+      - name: zone
+      - name: tsig-secret
+      - name: tsig-secret-alg
+        value: hmac-sha256
+# alias for CEL expression
+- name: externaldns.awsAccessKeyId
+  value: ${component.external-dns.aws.accessKeyId}
+- name: component.external-dns.provider
+  value: '#{size(externaldns.awsAccesKeyId) > 1 ? "aws" : "rfc2136"}'
+  env: SERVICE_PROVIDER
 
 templates:
   files:
