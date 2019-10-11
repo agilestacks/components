@@ -24,9 +24,10 @@ parameters:
     value: metal
   - name: cloud.region
     env: AWS_DEFAULT_REGION
+  - name: dns.baseDomain
+    env: BASE_DOMAIN
   - name: dns.domain
-    env: DOMAIN_NAME
-
+    env: BASE_DOMAIN
   - name: kubernetes.api.endpoint
     env: API_ENDPOINT
   - name: kubernetes.api.namespace
