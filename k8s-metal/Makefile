@@ -9,47 +9,9 @@ API_HOST       := $(shell echo $(API_ENDPOINT) | cut -d: -f1)
 API_PORT       := $(shell echo $(API_ENDPOINT) | cut -d: -f2)
 $(if $(API_PORT),,API_PORT:=443)
 
-STATE_BUCKET   ?= terraform.agilestacks.com
-STATE_REGION   ?= us-east-1
-
-export AWS_DEFAULT_REGION ?= us-east-2
-
-export TF_LOG      ?= info
-export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
-export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
-
-export TF_VAR_name        := $(NAME)
-export TF_VAR_base_domain := $(BASE_DOMAIN)
-export TF_VAR_api_host    := $(API_HOST)
-
-TF_CLI_ARGS ?= -no-color -input=false
-TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
-
-terraform ?= terraform-v0.11
 kubectl   ?= kubectl --kubeconfig=./kubeconfig --insecure-skip-tls-verify=true
 
-deploy: init plan apply storage output
-
-$(TF_DATA_DIR):
-	@rm -rf $@ && mkdir -p $@
-
-init: $(TF_DATA_DIR)
-	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
-        -backend=true -reconfigure \
-        -backend-config="bucket=$(STATE_BUCKET)" \
-        -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(DOMAIN_NAME)/k8s-metal/$(COMPONENT_NAME)/terraform.tfstate" \
-        -backend-config="profile=$(AWS_PROFILE)"
-
-plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
-
-refresh:
-	$(terraform) refresh $(TF_CLI_ARGS)
-
-apply:
-	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
-	@echo
+deploy: storage output
 
 storage:
 	$(kubectl) apply -f storage-class.yaml
@@ -64,9 +26,7 @@ output:
 	@echo api_endpoint = $(if $(shell echo $(API_ENDPOINT) | sed -e 's/[0-9.:]//g'),$(API_ENDPOINT),api.$(DOMAIN_NAME):$(API_PORT))
 	@echo
 
-undeploy: init destroy apply
+undeploy:
 
-destroy: TF_OPTS=-destroy
-destroy: plan
 
 -include ../Mk/phonies

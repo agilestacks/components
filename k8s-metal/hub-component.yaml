@@ -21,7 +21,7 @@ lifecycle:
 
 parameters:
   - name: cloud.kind
-    value: hybrid
+    value: metal
   - name: cloud.region
     env: AWS_DEFAULT_REGION
   - name: dns.domain
@@ -36,11 +36,6 @@ parameters:
   - name: kubernetes.api.clientKey
   - name: kubernetes.flavor
     value: metal
-
-  - name: terraform.bucket.name
-    env: STATE_BUCKET
-  - name: terraform.bucket.region
-    env: STATE_REGION
 
 outputs:
   - name: dns.domain
