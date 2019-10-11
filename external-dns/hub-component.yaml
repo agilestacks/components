@@ -46,6 +46,7 @@ parameters:
       - name: port
       - name: zone
       - name: tsig-secret
+      - name: tsig-secret-keyname
       - name: tsig-secret-alg
         value: hmac-sha256
 # alias for CEL expression
@@ -58,3 +59,5 @@ parameters:
 templates:
   files:
     - "manifests.yaml.template"
+    - "aws/*.template"
+    - "metal/*.template"

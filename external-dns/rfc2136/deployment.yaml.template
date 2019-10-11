@@ -22,9 +22,16 @@ spec:
         args:
         - --source=service
         - --source=ingress
-        - --provider=aws
+        - --provider=rfc2136
         - --registry=txt
-        - --txt-owner-id=%%HOSTED_ZONE_ID%%
-#        - --domain-filter=${dns.domain} # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
+        - --txt-owner-id="edns-${dns.baseDomain}"
+        - --txt-prefix=asi
+        - --rfc2136-host=${component.external-dns.host}
+        - --rfc2136-port=${component.external-dns.port}
+        - --rfc2136-zone=${dns.baseDomain}
+        - --rfc2136-tsig-secret=${component.external-dns.tsig-secret}
+        - --rfc2136-tsig-secret-alg=${component.external-dns.tsig-secret-alg}
+        - --rfc2136-tsig-keyname=${component.external-dns.tsig-keyname}
+        - --rfc2136-tsig-axfr
+        - --domain-filter=${component.ingress.staticHost}
 #        - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
-#        - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
