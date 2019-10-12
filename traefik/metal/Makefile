@@ -18,15 +18,15 @@ HUB_PROVIDES        ?=
 # We can't be sure if cert-manager will be supplied by the platform
 # but it WILL be supplied somewhere
 PROTOCOL:=https
-TLS_VALUES_FILE:=--values values-tls.yaml --values values-tls.yaml
-DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
+TLS_VALUES_FILE:=--values values-tls.yaml
+DASHBOARD_VALUES_FILE:=--values ../values-dashboard.yaml
 PROVIDES:=tls-ingress
 
 export HELM_HOME          ?= $(shell pwd)/.helm
 
 helm        ?= helm --kube-context="$(TF_VAR_kubeconfig_context)" --tiller-namespace="kube-system"
 
-VALUES_FILE:=values.yaml
+VALUES_FILE:=../values.yaml
 
 
 deploy: clean init fetch install output
