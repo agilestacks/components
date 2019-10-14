@@ -59,7 +59,7 @@ delete:
 	$(python) main.py delete $(DOMAIN_NAME)
 
 .venv:
-	virtualenv-3.7 .venv || virtualenv .venv
+	virtualenv-3.7 .venv || virtualenv -p $$(which python3) .venv
 
 install: .venv
 	$(pip) install -r requirements.txt --upgrade
