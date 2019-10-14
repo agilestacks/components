@@ -24,10 +24,8 @@ parameters:
     value: metal
   - name: cloud.region
     env: AWS_DEFAULT_REGION
-  - name: dns.baseDomain
-    env: BASE_DOMAIN
   - name: dns.domain
-    env: BASE_DOMAIN
+    env: DOMAIN_NAME
   - name: kubernetes.api.endpoint
     env: API_ENDPOINT
   - name: kubernetes.api.namespace
@@ -40,13 +38,9 @@ parameters:
 
 outputs:
   - name: dns.domain
-  - name: dns.name
-    fromTfVar: dns_name
-  - name: dns.baseDomain
-    fromTfVar: dns_base_domain
+    fromTfVar: dns_domain
   - name: cloud.kind
   - name: cloud.region
-
   - name: kubernetes.flavor
   - name: kubernetes.api.endpoint
     fromTfVar: api_endpoint
