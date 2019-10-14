@@ -1,2 +1,0 @@
-ssl:
-  enforced: false  # we do this so that we can do http acme challenges

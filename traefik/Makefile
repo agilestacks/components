@@ -45,13 +45,7 @@ else
 endif
 endif
 
-ifeq ($(CLOUD_KIND), metal)
-deploy: deploy_metal
-undeploy: undeploy_metal
-else
 deploy: clean init fetch patch purge install plan output apply
-undeploy: init destroy apply uninstall
-endif
 
 ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
@@ -68,18 +62,9 @@ STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$(STATE_BUCKET)" \
 				-backend-config="container_name=$(STATE_CONTAINER)" \
 				-backend-config="resource_group_name=$(TF_VAR_azure_resource_group_name)" \
 				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate"
-else ifeq ($(CLOUD_KIND), metal)
-WINNING := true
 else
 	$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, hybrid)
 endif
-
-deploy_metal:
-	$(MAKE) -C metal/ deploy
-
-undeploy_metal:
-	$(MAKE) -C metal/ undeploy
-
 
 $(TF_DATA_DIR):
 	@mkdir -p $@
@@ -153,6 +138,7 @@ output:
 	@echo provides = $(PROVIDES)
 	@echo
 
+undeploy: init destroy apply uninstall
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
@@ -163,6 +149,5 @@ uninstall:
 
 clean:
 	rm -rf $(HELM_HOME) charts $(TF_DATA_DIR)
-
 
 -include ../Mk/phonies
