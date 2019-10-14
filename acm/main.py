@@ -27,10 +27,12 @@ terraform = '''#
 #
 {% if standalone: %}
 terraform {
-  required_version = ">= 0.11.3"
+  required_version = ">= 0.11.10"
   backend "s3" {}
 }
 
+# upgrades must be tested as 2.x provider has a Route53 bug
+# https://github.com/terraform-providers/terraform-provider-aws/issues/7918
 provider "aws" {
   version = "1.60.0"
 }
