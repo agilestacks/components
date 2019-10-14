@@ -75,11 +75,14 @@ r53     = session.client('route53')
 def cert_by_domain(domain):
   response = client.list_certificates(
     CertificateStatuses=['PENDING_VALIDATION', 'ISSUED'],
-    MaxItems=99
+    MaxItems=1000 # https://docs.aws.amazon.com/acm/latest/APIReference/API_ListCertificates.html
   )
-  arns = [ c.get('CertificateArn') for c in response.get('CertificateSummaryList',[]) if c.get('DomainName') == domain ]
-  return cert_by_arn(arns[0]) if arns else None
-
+  arns = [ c.get('CertificateArn') for c in response.get('CertificateSummaryList', []) if c.get('DomainName') == domain ]
+  if not arns:
+    return None
+  if len(arns) > 1:
+    log.warning("Certificate for %s has multiple instances, using first one", domain)
+  return cert_by_arn(arns[0])
 
 def render_terraform(cert, standalone=False):
   domains = cert.get('Certificate', {}).get('DomainValidationOptions', [])
