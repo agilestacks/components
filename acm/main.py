@@ -226,7 +226,7 @@ if __name__ == "__main__":
     else:
       raise Exception('Cannot find ACM certificate for: {}'.format(domain))
   elif args['wait']:
-    if cert!= None:
+    if cert != None:
       timeout = time.time() + int( args.get('<timeout>', 900) )
       desired = args.get('<status>', [])
       if not desired:
