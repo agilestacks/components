@@ -134,6 +134,14 @@ def request_certificate(domain, additional_names=[]):
   cert = wait_to_propogate( response['CertificateArn'] )
   return cert
 
+def additional_names_match(cert, domain, requested_additional_names=[]):
+  cert_additional_names = cert['Certificate'].get('SubjectAlternativeNames', [])
+  for name in requested_additional_names:
+    if name not in cert_additional_names:
+      return (False, 'Existing ACM certificate {} subject alternative names:\n\t{}\ndoes not match requested names:\n\t{}'.format(
+          domain, cert_additional_names, requested_additional_names))
+  return True, None
+
 # wait until certificate will conform to json schema
 def wait_to_propogate(arn):
   print("Wait for certificate {} to propagate ".format(arn))
@@ -184,10 +192,15 @@ if __name__ == "__main__":
   # print(json.dumps(cert, sort_keys=True, indent=4, separators=(',', ': '), default=json_util.default))
 
   if args['request']:
+    additional_names = args['<additional_names>']
     if not cert:
-      cert = request_certificate( domain, args['<additional_names>'] )
+      cert = request_certificate(domain, additional_names)
     else:
-      log.warning("Certificate for %s already requested, see details %s", domain, cert)
+      log.warning("Certificate for %s already requested", domain)
+      log.info("Certificate: %s", cert['Certificate'])
+      match, err = additional_names_match(cert, domain, additional_names)
+      if not match:
+        raise Exception(err)
 
   elif args['gen']:
     if cert != None:
