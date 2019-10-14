@@ -1,0 +1,7 @@
+ssl:
+  enabled: true
+  enforced: true
+  tlsMinVersion: VersionTLS12
+  defaultCert: ${component.ingress.tls.cert/base64}
+  defaultKey: ${component.ingress.tls.key/base64}
+
