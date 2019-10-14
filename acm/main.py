@@ -60,7 +60,10 @@ from docopt  import docopt
 from jinja2 import Template
 
 log.basicConfig(filename='python.log', level=log.DEBUG)
-
+console=log.StreamHandler() # intentionally log to stderr
+console.setFormatter(log.Formatter(log.BASIC_FORMAT))
+console.setLevel(log.WARNING)
+log.getLogger().addHandler(console)
 
 with open('acm-schema.json', 'r') as f:
     schema=json.loads( f.read().replace('\n', '') )
