@@ -1,0 +1,36 @@
+---
+version: 1
+kind: component
+meta:
+  name: calico
+  title: Calico
+  brief: Secure networking
+  description: >
+    Project Calico is an open source container networking provider and network policy engine.
+  category: Networking
+  disabled: true
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - calico
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.calico.api
+    brief: API endpoint
+    value: http://calico.${component.ingress.fqdn}

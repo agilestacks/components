@@ -1,0 +1,35 @@
+---
+version: 1
+kind: component
+meta:
+  name: gogs
+  title: Gogs
+  brief: Private Git server
+  description: A popular self-hosted Git service.
+  category: DevOps Stack
+  disabled: true
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - gogs
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.gogs.api
+    brief: API endpoint
+    value: http://gogs.${component.ingress.fqdn}

@@ -1,0 +1,31 @@
+---
+version: 1
+kind: component
+meta:
+  name: ambassador
+  brief: ambassador
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - ambassador
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.ambassador.api
+    brief: API endpoint
+    value: http://ambassador.${component.ingress.fqdn}

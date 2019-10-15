@@ -1,0 +1,37 @@
+---
+version: 1
+kind: component
+meta:
+  name: maria-db
+  title: MariaDB
+  brief: Relational database
+  description: >
+    MariaDB Server is one of the most popular database servers in the world.
+    It’s made by the original developers of MySQL and guaranteed to stay open source.
+  category: App Stack
+  disabled: true
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - maria-db
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.maria-db.api
+    brief: API endpoint
+    value: http://maria-db.${component.ingress.fqdn}

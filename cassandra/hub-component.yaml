@@ -1,0 +1,38 @@
+---
+version: 1
+kind: component
+meta:
+  name: cassandra
+  title: Cassandra
+  brief: Partitioned row store
+  description: >
+    The Apache Cassandra database is the right choice when you need scalability and high availability
+    without compromising performance. Linear scalability and proven fault-tolerance on commodity hardware
+    or cloud infrastructure make it the perfect platform for mission-critical data.
+  category: App Stack
+  disabled: true
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - cassandra
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.cassandra.api
+    brief: API endpoint
+    value: http://cassandra.${component.ingress.fqdn}

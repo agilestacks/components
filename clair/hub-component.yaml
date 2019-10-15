@@ -1,0 +1,36 @@
+---
+version: 1
+kind: component
+meta:
+  name: clair
+  title: Clair
+  brief: Vulnerability scanning
+  description: >
+    Clair is an open source project for the static analysis of vulnerabilities in appc and docker containers.
+  category: DevOps Stack
+  disabled: true
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - clair
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.clair.api
+    brief: API endpoint
+    value: http://clair.${component.ingress.fqdn}

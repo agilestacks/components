@@ -1,0 +1,36 @@
+---
+version: 1
+kind: component
+meta:
+  name: artifactory
+  title: Artifactory
+  brief: Artifact manager
+  description: >
+    Provides common repository for all major package formats, including docker images, npm, jar, python, apt and rpm.
+  category: Container Registry
+  disabled: true
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - artifactory
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.artifactory.api
+    brief: API endpoint
+    value: http://artifactory.${component.ingress.fqdn}
