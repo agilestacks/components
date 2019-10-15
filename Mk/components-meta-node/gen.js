@@ -16,7 +16,9 @@ function extract(components) {
     return keyBy(
         components.map(([name, {meta, requires = [], provides = []}]) => ({
             name,
-            ...pick(meta, ['brief', 'version', 'maturity', 'license', 'title', 'description']),
+            ...pick(meta, [
+                'brief', 'version', 'maturity', 'license', 'title', 'description', 'category', 'disabled'
+            ]),
             requires,
             provides
         })),
