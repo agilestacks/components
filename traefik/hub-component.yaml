@@ -172,7 +172,7 @@ parameters:
       value: 1.68.5
       env: CHART_VERSION
     - name: app.version
-      value: 1.7.14
+      value: 1.7.18
     - name: kubernetes.nodeSelector
       value: '{}'
     - name: kubernetes.tolerations
