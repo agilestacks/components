@@ -3,9 +3,16 @@ version: 1
 kind: component
 meta:
   name: kubeflow
-  brief:
+  title: Kubeflow
+  brief: Machine learning
+  description: >
+    Project is dedicated to making deployments of machine learning (ML) workflows
+    on Kubernetes simple, portable and scalable.
+    Kubeflow goal is provide a straightforward way to deploy industry standard ML
+    components such as Tensorflow, Jupiter Notebook etc.
+  category: AI and Machine Learning
   version: 0.6.2
-  maturity: stable
+  maturity: ga
   licence: Apache 2.0
   source:
     dir: ../../components/kubeflow-v0.6

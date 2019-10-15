@@ -3,7 +3,15 @@ version: 1
 kind: component
 meta:
   name: portworx
-  brief: Cloud native storage and data management
+  title: Portworx
+  brief: Data storage and management
+  description: >
+    Portworx is the cloud native storage company that enterprises depend on to reduce the cost and
+    complexity of rapidly deploying containerized applications across multiple clouds and on-prem environments.
+    With Portworx, you can manage any database or stateful service on any infrastructure using any container scheduler.
+    You get a single data management layer for all of your stateful services, no matter where they run.
+    Portworx thrives in multi-cloud environments.
+  category: Storage
   version: 2.0.3.4
   maturity: beta
   license:  commercial

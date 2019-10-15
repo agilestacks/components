@@ -3,7 +3,10 @@ version: 1
 kind: component
 meta:
   name: istio
-  brief: An open platform to connect, manage, and secure microservices
+  title: Istio
+  brief: Service mesh
+  description: An open platform to connect, manage, control, secure and observe services.
+  category: Networking
   version: 1.3.0
   maturity: beta
   license: Apache 2.0

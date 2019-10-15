@@ -53,3 +53,8 @@ service:
   type: ClusterIP
   port: 5432
   externalIPs: []
+
+tolerations:
+- key: node-role.kubernetes.io/master
+  effect: NoSchedule
+  operator: Exists

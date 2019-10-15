@@ -3,7 +3,12 @@ version: 1
 kind: component
 meta:
   name: traefik
-  brief: Traefik Router as ingress Controller
+  title: Traefik
+  brief: HTTP proxy
+  description: >
+    Træfik (pronounced like traffic) is a modern HTTP reverse proxy and load balancer made to deploy
+    microservices with ease.
+  category: Edge proxy
   version: 1.7.14
   maturity: ga
   license: MIT

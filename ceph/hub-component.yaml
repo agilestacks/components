@@ -3,7 +3,10 @@ version: 1
 kind: component
 meta:
   name: ceph
+  title: Ceph
   brief: Private cloud storage
+  description: >
+    Ceph is a unified, distributed storage system designed for excellent performance, reliability and scalability.
   version: 14.2.1
   maturity: ga
   license: LGPLv2.1

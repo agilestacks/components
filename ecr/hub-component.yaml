@@ -3,7 +3,12 @@ version: 1
 kind: component
 meta:
   name: ecr
-  brief: ECR component
+  title: Amazon ECR
+  brief: Elastic container registry
+  description: >
+    Amazon EC2 Container Registry (ECR) is a fully-managed Docker container registry that makes it easy for
+    developers to store, manage, and deploy Docker container images.
+  category: AWS Native
   source:
     dir: ../../components/ecr
 

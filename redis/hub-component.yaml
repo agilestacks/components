@@ -3,7 +3,10 @@ version: 1
 kind: component
 meta:
   name: redis
-  brief: Redis in-memory data structure store
+  title: Redis
+  brief: Data structures server
+  description: Redis is an open source, in-memory data structure store, used as a database, cache and message broker.
+  category: App Stack
   version: 4.0.13
   maturity: ga
   license: BSD

@@ -3,7 +3,12 @@ version: 1
 kind: component
 meta:
   name: wowza
-  brief: Wowza Streaming Engine
+  title: Wowza
+  brief: Video streaming solution
+  description: >
+    Wowza Streaming Engine is the gold standard of customizable streaming server software for building
+    and delivering professional-grade streaming at any scale.
+  category: App Stack
   version: 4.7.4
   maturity: beta
   license:  commercial

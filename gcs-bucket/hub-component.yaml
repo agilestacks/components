@@ -3,7 +3,14 @@ version: 1
 kind: component
 meta:
   name: gcs-bucket
-  brief: GCS bucket component
+  title: GCS Bucket
+  brief: Cloud storage
+  description: >
+    Cloud Storage allows world-wide storage and retrieval of any amount of data at any time.
+    You can use Cloud Storage for a range of scenarios including serving website content,
+    storing data for archival and disaster recovery, or distributing large data objects to
+    users via direct download.
+  category: GCP Native
   source:
     dir: ../../components/gcs-bucket
 

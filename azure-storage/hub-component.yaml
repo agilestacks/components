@@ -3,7 +3,13 @@ version: 1
 kind: component
 meta:
   name: azure-storage
-  brief: Azure Storage account
+  title: Azure Storage
+  brief: Cloud Storage
+  description: >
+    Azure Storage is a Microsoft-managed service providing cloud storage that is highly available,
+    secure, durable, scalable, and redundant. Azure Storage includes Azure Blobs (objects), Azure Data
+    Lake Storage Gen2, Azure Files, Azure Queues, and Azure Tables.
+  category: Azure Native
   source:
     dir: ../../components/azure-storage
 

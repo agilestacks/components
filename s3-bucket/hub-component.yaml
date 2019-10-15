@@ -3,6 +3,14 @@ version: 1
 kind: component
 meta:
   name: s3-bucket
+  title: S3 Bucket
+  brief: Simple storage bucket
+  description: >
+    Amazon Simple Storage Service (Amazon S3) is an object storage service that offers industry-leading
+    scalability, data availability, security, and performance. This means customers of all sizes and industries
+    can use it to store and protect any amount of data for a range of use cases, such as websites, mobile applications,
+    backup and restore, archive, enterprise applications, IoT devices, and big data analytics.
+  category: AWS Native
   source:
     dir: .
 

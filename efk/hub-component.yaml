@@ -3,7 +3,12 @@ version: 1
 kind: component
 meta:
   name: efk
-  brief: Elasticsearch Fluentd and Kibana
+  title: Elastic Stack
+  brief: Log management
+  description: >
+    Elasticsearch, along with Fluentd and Kibana, provides a powerful platform for indexing,
+    searching and analyzing your data.
+  category: Monitoring
   version: 7.2.1
   maturity: ga
   license: Apache 2.0

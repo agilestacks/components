@@ -3,7 +3,12 @@ version: 1
 kind: component
 meta:
   name: jenkins
-  brief: Jenkins CI Server
+  title: Jenkins
+  brief: CI/CD server
+  description: >
+    The leading open source automation server, Jenkins provides
+    hundreds of plugins to support building, deploying and automating any project.
+  category: DevOps Stack
   version: 2.164.3
   maturity: ga
   license: MIT

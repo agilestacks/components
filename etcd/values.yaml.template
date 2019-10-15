@@ -157,7 +157,7 @@ etcdCluster:
     ## Node labels for etcd pod assignment
     ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
     nodeSelector: {}
-    # tolerations:
-    # - key: node-role.kubernetes.io/master
-    #   effect: NoSchedule
-    #   operator: Exists
+    tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule
+      operator: Exists
