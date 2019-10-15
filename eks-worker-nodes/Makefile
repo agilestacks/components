@@ -5,7 +5,7 @@ STATE_REGION ?= us-east-1
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
-export DOMAIN_NAME      ?= default
+export DOMAIN_NAME ?= test.dev.superhub.io
 
 export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_name)
