@@ -39,6 +39,7 @@ purge:
 	  $(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 install_ceph:
+	- $(kubectl) delete $(CEPH_SC) default
 	- $(kubectl) create namespace $(NAMESPACE)
 	- $(helm) install charts/$(notdir $(HELM_CHART)) \
 		--namespace $(NAMESPACE) \
@@ -48,6 +49,7 @@ install_ceph:
 		--set agent.flexVolumeDirPath=$(FLEX_VOL_PATH)
 	- $(kubectl) create -f ceph-cluster.yaml
 	- $(kubectl) create -f ceph-blockdevice.yaml
+	- $(kubectl) patch sc $(CEPH_SC) -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 	- $(kubectl) create -f ceph-toolbox.yaml
 	- $(kubectl) create -f ingress.yaml
 	- @ echo "If Ceph boots for the first time on a cluster - it can take up to 5-10min to start"
@@ -88,6 +90,7 @@ uninstall_nfs:
 delete_data:
 	- $(kubectl) create -f cleanup.yaml && sleep 10
 	- $(kubectl) delete -f cleanup.yaml
+	- $(kubectl) delete $(CEPH_SC) default
 
 config_ceph_crushmap:
 	@ echo "Configuring CEPH crush map for kernel version 4"

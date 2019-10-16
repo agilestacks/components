@@ -71,7 +71,8 @@ parameters:
       - name: pvc.name
         value: nfs-ceph-claim
       - name: pvc.storageclass
-        value: rook-ceph-block
+        value: default
+        env: CEPH_SC
 
 outputs:
   - name: component.ceph.nfs.pvc.storageclass
