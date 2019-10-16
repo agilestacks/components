@@ -12,7 +12,7 @@ manifests := $(filter-out manifests/namespace.yaml manifests/serviceaccount.yaml
 
 configmap := $(shell python3 unflatten.py | yq r - | tr '\n' '^' | tr -d '\r')
 
-deploy: prepare apply
+deploy: purge prepare apply
 
 prepare:
 	yq w manifests/configmap.yaml.part data.config "$$(echo "$(configmap)" | tr '^' '\n ')" > manifests/configmap.yaml
@@ -27,6 +27,6 @@ undeploy: purge
 
 purge:
 	-$(kubectl) delete namespace $(NAMESPACE)
-	-$(kubectl delete clusterrole deephorizon
+	-$(kubectl) delete clusterrole deephorizon
 
 

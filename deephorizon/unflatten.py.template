@@ -21,15 +21,15 @@ obj = {
     ],
     'servers': [
         {
-            'ip': '${component.deephorizon.dns.servers-arr1.ip}',
+            'addr': '${component.deephorizon.dns.servers-arr1.ip}',
             'port': '${component.deephorizon.dns.servers-arr1.port}',
         },
         {
-            'ip': '${component.deephorizon.dns.servers-arr2.ip}',
+            'addr': '${component.deephorizon.dns.servers-arr2.ip}',
             'port': '${component.deephorizon.dns.servers-arr2.port}',
         },
         {
-            'ip': '${component.deephorizon.dns.servers-arr3.ip}',
+            'addr': '${component.deephorizon.dns.servers-arr3.ip}',
             'port': '${component.deephorizon.dns.servers-arr3.port}',
         }
     ],
@@ -45,7 +45,7 @@ newobj = {
     'zone': '${component.deephorizon.dns.zone}',
     'cluster': '${component.deephorizon.dns.domain}',
     'views': [ v for v in obj['views'] if v['keyname'] != ''],
-    'servers': [ { 'ip': s['ip'], 'port': int(s['port']) } for s in obj['servers'] if s['ip'] != '' ],
+    'servers': [ { 'addr': s['addr'], 'port': int(s['port']) } for s in obj['servers'] if s['addr'] != '' ],
     'poolMap': [ p for p in obj['poolMap'] if len(p) > 0 ]
 }
 
