@@ -64,10 +64,11 @@ The following tables lists the configurable parameters of this chart and their d
 | `resources`                       | Resources required (e.g. CPU, memory)       | `{}`                                                      |
 | `rbac.create` 		    | Use Role-based Access Control		  | `true`						      |
 | `podSecurityPolicy.enabled`	    | Create & use Pod Security Policy resources  | `false`						      |
+| `priorityClassName`   	    | Set pod priorityClassName                   | null						      |
 | `serviceAccount.create`	    | Should we create a ServiceAccount	          | `true`						      |
 | `serviceAccount.name`		    | Name of the ServiceAccount to use           | null						      |
 | `nodeSelector`                    | Node labels for pod assignment              | `{}`                                                      |
 | `affinity`                        | Affinity settings                           | `{}`                                                      |
 | `tolerations`                     | List of node taints to tolerate             | `[]`                                                      |
-| `metrics.port`                    | Port on which to provide prometheus metrics` | `0`                                                        |
+
 
