@@ -10,7 +10,6 @@ provider "aws" {
 provider "aws" {
   alias  = "bucket"
   region = "${var.s3_bucket_region}"
-  version = "2.14.0"
 }
 
 provider "ignition" {
@@ -72,8 +71,9 @@ locals {
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
-  bucket = "${var.s3_bucket}"
-  key    = "${local.dest_script_key}"
+  provider = "aws.bucket"
+  bucket   = "${var.s3_bucket}"
+  key      = "${local.dest_script_key}"
 
   content = "${local.instance_gpu ?
     replace(data.aws_s3_bucket_object.bootstrap_script.body,
