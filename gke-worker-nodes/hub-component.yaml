@@ -38,13 +38,12 @@ parameters:
     - name: poolName
       env: TF_VAR_pool_name
       value: ${component.k8s-worker-nodes.shortName}-${kubernetes.gke.cluster}
-    - name: maxCount
-      value: 6
-      env: TF_VAR_max_node_count
     - name: count
-      value: 0
+      value: 1
       env: TF_VAR_min_node_count
+    - name: maxCount
+      value: ${component.k8s-worker-nodes.count}
+      env: TF_VAR_max_node_count
     - name: preemptible
       value: true
       env: TF_VAR_preemptible
-
