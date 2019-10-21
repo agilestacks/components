@@ -140,9 +140,14 @@ parameters:
     - name: image.name
       value: minio/minio
     - name: image.tag
-      value: RELEASE.2018-09-01T00-38-25Z
+      value: RELEASE.2019-10-12T01-39-57Z 
+    - name: mc.image.name
+      value: minio/mc
+    - name: mc.image.tag
+      value: RELEASE.2019-10-09T22-54-57Z
     - name: chart.version
-      value: 2.2.0
+      value: 2.5.16
+      #value: 2.2.0
       # value: 1.6.5
       env: CHART_VERSION
 

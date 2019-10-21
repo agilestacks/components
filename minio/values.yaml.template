@@ -9,8 +9,8 @@ image:
 ## client used to create a default bucket).
 ##
 mcImage:
-  repository: minio/mc
-  tag: RELEASE.2018-08-18T02-13-04Z
+  repository: ${component.minio.mc.image.name}
+  tag: ${component.minio.mc.image.tag}
   pullPolicy: IfNotPresent
 
 ## minio server mode, i.e. standalone or distributed.
