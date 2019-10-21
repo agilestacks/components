@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "azurerm" {
-  version = "1.29.0"
+  version = "1.35.0"
 }
 
 data "azurerm_dns_zone" "zone" {

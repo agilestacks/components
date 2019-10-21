@@ -1,5 +1,5 @@
 provider "kubernetes" {
-  version        = "1.5.2"
+  version        = "1.9.0"
   config_context = "${var.domain}"
 }
 

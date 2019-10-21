@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  version        = "1.6.2"
+  version        = "1.9.0"
   config_context = "${var.kubeconfig_context}"
 }
 

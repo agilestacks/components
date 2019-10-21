@@ -1,16 +1,16 @@
-  
+
 terraform {
   required_version = ">= 0.11.10"
   backend "gcs" {}
 }
 
 provider "google" {
-  version = "2.13.0"
+  version = "2.17.0"
   project = "${var.gcp_project_id}"
 }
 
 provider "kubernetes" {
-  version        = "1.6.2"
+  version        = "1.9.0"
   config_context = "${var.kubeconfig_context}"
 }
 

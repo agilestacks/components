@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "1.29.0"
+  version = "1.35.0"
   alias  = "client"
 
   subscription_id = "${var.azure_subscription_id}"
