@@ -172,7 +172,7 @@ resource "aws_autoscaling_attachment" "workers" {
 
 resource "local_file" "bootstrap_script" {
   content  = "${aws_s3_bucket_object.bootstrap_script.content}"
-  filename = "${path.cwd}/.terraform/${var.name}-${random_string.rnd.result}.pem"
+  filename = "${path.cwd}/.terraform/${var.name}-${random_string.rnd.result}.json"
   lifecycle {
     create_before_destroy = true
   }
