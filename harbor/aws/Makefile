@@ -19,7 +19,7 @@ kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 git     ?= git -C $(CHART_DIR)
 
 
-deploy: clean init namespace storage-class fetch install $(TLS_KIND) output
+deploy: clean init namespace fetch install $(TLS_KIND) output
 
 undeploy: undeploy-$(TLS_KIND) init delete clean
 	- $(kubectl) delete pvc -l 'app=harbor,release=$(COMPONENT_NAME)'
@@ -30,9 +30,6 @@ $(TLS_KIND):
 
 undeploy-$(TLS_KIND):
 	$(MAKE) -C $(TLS_KIND) undeploy
-
-storage-class:
-	$(kubectl) apply -f storage-class.yaml
 
 init: $(HELM_HOME)
 	$(helm) init --client-only --upgrade --wait
