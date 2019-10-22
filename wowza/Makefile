@@ -8,7 +8,6 @@ kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy:
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply -f storage-class.yaml
 	$(kubectl) apply -f ebs-volume-claim.yaml
 	$(kubectl) apply -f secret.yaml
 	$(kubectl) create configmap configs --from-file=serverxml=conf/Server.xml \
