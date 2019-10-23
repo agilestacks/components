@@ -7,7 +7,7 @@ meta:
   brief: Service mesh
   description: An open platform to connect, manage, control, secure and observe services.
   category: Networking
-  version: 1.3.0
+  version: 1.3.3
   maturity: beta
   license: Apache 2.0
   source:
@@ -40,7 +40,7 @@ parameters:
         value: istio-system
         env: NAMESPACE
       - name: version.release
-        value: 1.3.2
+        value: 1.3.3
         env: ISTIO_VERSION
       - name: version.repository
         value: gcr.io/istio-release
