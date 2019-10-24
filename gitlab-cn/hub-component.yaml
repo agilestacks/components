@@ -8,7 +8,7 @@ meta:
   description: >
     GitLab includes Git repository management, issue tracking, code review, an IDE, activity streams, wikis, and more.
   category: DevOps Stack
-  version: 12.1.4
+  version: 12.4.0
   maturity: ga
   license: MIT
   source:
