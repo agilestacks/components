@@ -67,7 +67,7 @@ parameters:
       value: https://charts.gitlab.io
       env: HELM_REPO
     - name: chart.version
-      value: 2.1.6
+      value: 2.4.1
       env: CHART_VERSION
     - name:  name
       value: gitlab-cn
@@ -80,7 +80,7 @@ parameters:
       env:   TF_VAR_namespace
     - name:  software.version
       brief: Gitlab Version
-      value: 12.1.4
+      value: 12.4.0
     - name:  rbac.enabled
       value: true
     - name:  psp.enabled

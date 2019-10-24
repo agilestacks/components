@@ -6,6 +6,8 @@ global:
   ## GitLab operator is Alpha. Not for production use.
   operator:
     enabled: false
+    rollout:
+      autoPause: true
 
   ## doc/installation/deployment.md#deploy-the-community-edition
   edition: ${component.gitlab.edition}
@@ -77,6 +79,9 @@ global:
     credentials:
       secret: gitlab-rails-storage
       key: connection
+
+  grafana:
+    enabled: false
 
   ## doc/charts/globals.md#configure-appconfig-settings
   ## Rails based portions of this chart share many settings
@@ -417,6 +422,8 @@ registry:
   ingress:
     tls:
       secretName: registry-tls
+  networkpolicy:
+    enabled: false
 
 
 ## Automatic shared secret generation
@@ -426,8 +433,7 @@ shared-secrets:
   enabled: true
   rbac:
     create: true
-  image:
-    tag: 28a3e18b1d65ab0e7a8e086b3c6e6ebbed4aeca3
+
 
 ## Installation & configuration of gitlab/gitlab-runner
 ## See requirements.yaml for current version
