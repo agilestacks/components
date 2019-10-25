@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name:      jenkins
@@ -9,6 +9,11 @@ metadata:
     qualifier: master
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      provider:  agilestacks.com
+      project:   jenkins
+      qualifier: master
   strategy:
     type: RollingUpdate
   template:
