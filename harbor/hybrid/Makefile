@@ -1,110 +1,88 @@
 .DEFAULT_GOAL := deploy
 
-STATE_BUCKET ?= terraform.agilestacks.com
-STATE_REGION ?= us-east-1
+export DOMAIN_NAME    ?= dev.kubernetes.delivery
+export COMPONENT_NAME ?= harbor
+export NAMESPACE      ?= harbor
+export PULL_SECRET    ?= $(COMPONENT_NAME)-pull-secret
+export HELM_HOME      ?= $(shell pwd)/.helm
 
-export TF_VAR_domain             ?= dev.kubernetes.delivery
-export TF_VAR_component          ?= harbor
-export TF_VAR_namespace          ?= harbor
-export TF_VAR_service_prefix     ?= svc
-export TF_VAR_nginx_service_name ?= $(TF_VAR_component)-nginx-nginx-ingress-controller
-export TF_VAR_pull_secret ?= $(TF_VAR_component)-pull-secret
+TLS_KIND              ?= letsencrypt
 
-export TF_LOG      ?= info
-export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain)-$(TF_VAR_component)
-export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
+# storage kind: {s3, local}
+STORAGE_KIND          ?= s3
+CHART_VERSION         := 71b28b46fbb87a51bedc7d405f74167e9ee25143 # Apr 4, 2019  Merge pull request #183 from paulczar/gce-ingress
+CHART_ORIGIN          := https://github.com/goharbor/harbor-helm.git
+CHART_DIR             := $(HELM_HOME)/$(COMPONENT_NAME)
 
-export HELM_HOME ?= $(shell pwd)/.helm
-export STORAGE_KIND ?= local
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+git     ?= git -C $(CHART_DIR)
 
-NGINX_CHART          ?= stable/nginx-ingress
-NGINX_CHART_VERSION  ?= 0.26.0
-HARBOR_CHART_VERSION ?= 0.3.0
 
-terraform   ?= terraform-v0.11
-TF_CLI_ARGS ?= -no-color -input=false
-TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+deploy: clean init namespace fetch install $(TLS_KIND) output
 
-helm    ?= helm --kube-context="$(TF_VAR_domain)" --tiller-namespace="kube-system"
-kubectl ?= kubectl --context="$(TF_VAR_domain)" --namespace="$(TF_VAR_namespace)"
-git     ?= git
+undeploy: undeploy-$(TLS_KIND) init delete clean
+	- $(kubectl) delete pvc -l 'app=harbor,release=$(COMPONENT_NAME)'
 
-deploy: init purge harbor nginx zone
+$(TLS_KIND):
+	$(MAKE) -C $(TLS_KIND) deploy
+.PHONY: $(TLS_KIND)
 
-zone: init-tf plan apply
+undeploy-$(TLS_KIND):
+	$(MAKE) -C $(TLS_KIND) undeploy
+
+storage-class:
+	$(kubectl) apply -f storage-class.yaml
+
+init: $(HELM_HOME)
+	$(helm) init --client-only --upgrade --wait
+
+patch:
+	patch $(CHART_DIR)/templates/ingress/ingress.yaml ../harbor-ingress.patch
+
+fetch: $(CHART_DIR)
+	- $(git) init
+	$(git) remote add origin $(CHART_ORIGIN)
+	$(git) fetch
+	$(git) reset --hard $(CHART_VERSION)
+
+install: patch
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
+		$(helm)	install $(CHART_DIR) \
+		    --name $(COMPONENT_NAME) \
+			--namespace $(NAMESPACE) \
+			--wait \
+			--version $(CHART_VERSION) \
+			--values values.yaml \
+			--values $(TLS_KIND)/values.yaml \
+			--values $(STORAGE_KIND)/values.yaml \
+			--set "harborAdminPassword=$$ADMIN_PASSWORD" $(HELM_ARGS) \
+
+output:
+	@ echo
+	@ echo Outputs:
+	@ echo pull_secret = $(PULL_SECRET)
+ifeq ("$(TLS_KIND)","acm")
+	@ echo harbor_host = $(COMPONENT_NAME).svc.$(DOMAIN_NAME)
+	@ echo harbor_repo = $(COMPONENT_NAME).svc.$(DOMAIN_NAME)/library
+	@ echo harbor_url = https://$(COMPONENT_NAME).svc.$(DOMAIN_NAME)
+else
+	@ echo harbor_host = $(COMPONENT_NAME).$(INGRESS_FQDN)
+	@ echo harbor_repo = $(COMPONENT_NAME).$(INGRESS_FQDN)/library
+	@ echo harbor_url = https://$(COMPONENT_NAME).$(INGRESS_FQDN)
+endif
+	@ echo
 
 namespace:
-	- $(kubectl) create namespace $(TF_VAR_namespace)
+	- $(kubectl) create namespace $(NAMESPACE)
 
-init: namespace
-	@rm -rf harbor-helm
-	@mkdir -p charts
-
-purge:
-	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
-		$(helm) delete --purge $(TF_VAR_component) || exit 0
-	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)-nginx$$' && \
-		$(helm) delete --purge $(TF_VAR_component)-nginx || exit 0
-
-harbor:
-	$(helm) init --client-only --upgrade --wait
-	$(git) clone --single-branch -b $(HARBOR_CHART_VERSION) https://github.com/goharbor/harbor-helm
-	$(helm) dependency update harbor-helm
-	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
-		$(helm)	install harbor-helm \
-		    --name $(TF_VAR_component) \
-			--namespace $(TF_VAR_namespace) \
-			--wait \
-			--version $(HARBOR_CHART_VERSION) \
-			--values $(STORAGE_KIND)/values-harbor.yaml
-	$(kubectl) -n $(TF_VAR_namespace) apply -f prod-issuer.yaml
-	$(kubectl) -n $(TF_VAR_namespace) apply -f staging-issuer.yaml
-.PHONY: harbor
-
-nginx:
-	$(helm) fetch \
-		--destination charts \
-		--untar $(NGINX_CHART)
-	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)-nginx$$' || \
-		$(helm) install charts/$(notdir $(NGINX_CHART)) \
-			--name $(TF_VAR_component)-nginx \
-			--namespace $(TF_VAR_namespace) \
-			--wait \
-			--version $(NGINX_CHART_VERSION) \
-			--values values-nginx.yaml
-.PHONY: nginx
-
-$(TF_DATA_DIR):
-	@rm -rf $@ && mkdir -p $@
-
-init-tf: $(TF_DATA_DIR)
-	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
-        -backend=true -reconfigure \
-        -backend-config="bucket=$(STATE_BUCKET)" \
-        -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(TF_VAR_domain)/harbor/$(TF_VAR_component)/terraform.tfstate" \
-        -backend-config="profile=$(AWS_PROFILE)"
-
-plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
-
-refresh:
-	$(terraform) refresh $(TF_CLI_ARGS)
-
-apply:
-	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
-
-undeploy: init-tf destroy apply delete
-
-destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
-destroy: plan
+$(HELM_HOME) $(CHART_DIR):
+	mkdir -p $@
 
 delete:
-	-$(helm) delete --purge $(TF_VAR_component)-nginx
-	-$(helm) delete --purge $(TF_VAR_component)
-	@rm -f $(CLOUD_KIND).tf
+	- $(helm) delete --purge $(COMPONENT_NAME)
 
 clean:
-	@rm -rf .helm .terraform charts harbor-helm
+	rm -rf $(HELM_HOME)
 
 -include ../../Mk/phonies
