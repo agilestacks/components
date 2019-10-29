@@ -18,11 +18,11 @@ parameters:
   - name: cloud.sshKey
     env: TF_VAR_keypair
   - name: terraform.bucket.name
-    env: STATE_BUCKET
+    env: TF_VAR_s3_bucket
   - name: terraform.bucket.region
-    env: STATE_REGION
+    env: TF_VAR_s3_bucket_region
   - name: dns.domain
-    env: DOMAIN_NAME
+    env: TF_VAR_domain_name
 
   - name: cloud.vpc.worker.subnet.ids
     env: SUBNET_IDS
@@ -30,6 +30,9 @@ parameters:
     env: SG_IDS
   - name: cloud.iam.worker.instanceProfile
     env: TF_VAR_instance_profile
+  - name: cloud.ec2.master.ignitionProfileS3
+    env: TF_VAR_bootstrap_script_key
+    empty: allow
 
   - name: component.k8s-worker-nodes
     parameters:
@@ -65,3 +68,15 @@ parameters:
     - name: volume.iops
       env: TF_VAR_root_volume_iops
       value: 100
+    - name: vmType
+      env: TF_VAR_virtualization_type
+      value: hvm
+
+outputs:
+- name: component.k8s-worker-nodes.bootrapScript
+  type: secret
+  fromTfVar: bootstrap_script
+- name: component.k8s-worker-nodes.bootrapScriptS3
+  fromTfVar: bootstrap_script_s3
+- name: component.k8s-worker-nodes.vmType
+  value: "${component.k8s-worker-nodes.vmType}"

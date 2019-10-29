@@ -3,12 +3,15 @@ version: 1
 kind: component
 meta:
   name: istio
-  brief: An open platform to connect, manage, and secure microservices
-  version: 1.3.0
-  maturity: stable
+  title: Istio
+  brief: Service mesh
+  description: An open platform to connect, manage, control, secure and observe services.
+  category: Networking
+  version: 1.3.3
+  maturity: beta
   license: Apache 2.0
   source:
-      dir: ../../components/istio
+    dir: ../../components/istio
 
 requires:
   - aws
@@ -33,42 +36,42 @@ parameters:
     env: STATE_BUCKET
   - name: component.istio
     parameters:
-    - name: namespace
-      value: istio-system
-      env: NAMESPACE
-    - name: version.release
-      value: 1.3.0
-      env: ISTIO_VERSION
-    - name: version.repository
-      value: gcr.io/istio-release
-    - name: version.image
-      value: release-1.3-latest-daily
-    - name: tracing.enabled
-      value: false
-    - name: prometheus.enabled
-      value: true
-    - name: grafana.enabled
-      value: false
-    - name: certmanager.enabled
-      value: false
-    - name: ingressGateway.default.dnsZone
-      value: mesh
-      env: DEFAULT_GATEWAY_ZONE
-    - name: ingressGateway.default.name
-      value: default-ingressgateway
-      env: DEFAULT_INGRESS_GATEWAY
-    - name: kiali
-      parameters:
-      - name: enabled
-        value: true
-      - name: urlPrefix
-        value: istio-kiali
-      - name: auth.strategy
-        value: anonymous
+      - name: namespace
+        value: istio-system
+        env: NAMESPACE
+      - name: version.release
+        value: 1.3.3
+        env: ISTIO_VERSION
+      - name: version.repository
+        value: gcr.io/istio-release
       - name: version.image
-        value: v1.4
-      - name: createDemoSecret
-        value: '#{component.istio.kiali.auth.strategy == "login" ? "true" : "false"}'
+        value: release-1.3-latest-daily
+      - name: tracing.enabled
+        value: false
+      - name: prometheus.enabled
+        value: true
+      - name: grafana.enabled
+        value: false
+      - name: certmanager.enabled
+        value: false
+      - name: ingressGateway.default.dnsZone
+        value: mesh
+        env: DEFAULT_GATEWAY_ZONE
+      - name: ingressGateway.default.name
+        value: default-ingressgateway
+        env: DEFAULT_INGRESS_GATEWAY
+      - name: kiali
+        parameters:
+          - name: enabled
+            value: true
+          - name: urlPrefix
+            value: istio-kiali
+          - name: auth.strategy
+            value: anonymous
+          - name: version.image
+            value: v1.4
+          - name: createDemoSecret
+            value: '#{component.istio.kiali.auth.strategy == "login" ? "true" : "false"}'
 
 outputs:
   - name: component.istio.kiali.url

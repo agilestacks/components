@@ -1,0 +1,37 @@
+---
+version: 1
+kind: component
+meta:
+  name: weave
+  title: Weave
+  brief: Overlay network
+  description: >
+    Weave Net is a powerful cloud native networking toolkit. It creates a virtual network that connects
+    Docker containers across multiple hosts and enables their automatic discovery.
+  category: Networking
+  disabled: true
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - weave
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.weave.api
+    brief: API endpoint
+    value: http://weave.${component.ingress.fqdn}

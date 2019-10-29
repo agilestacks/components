@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: iozone
+spec:
+  serviceName: iozone
+  replicas: 3
+  selector:
+    matchLabels:
+      app: iozone
+  template:
+    metadata:
+      labels:
+        app: iozone
+    spec:
+      containers:
+      - name: iozone
+        image: agilestacks/iozone
+        workingDir: /data
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        # Random Read/Write, 4K requests, 32 threads:
+        command: ["iozone"]
+        args: ["-I", "-t", "32", "-M", "-O", "-r", "4k", "-s", "500m", "-+u", "-w", "-i", "2"]
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: default
+      resources:
+        requests:
+          storage: 2Gi

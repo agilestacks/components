@@ -3,7 +3,12 @@ version: 1
 kind: component
 meta:
   name: cloudsql
+  title: Cloud SQL
   brief: GCP CloudSQL component
+  description: >
+    Cloud SQL is a fully-managed database service that makes it easy to set up, maintain,
+    manage, and administer your relational databases on Google Cloud Platform.
+  category: GCP Native
   source:
     dir: ../../components/cloudsql
 

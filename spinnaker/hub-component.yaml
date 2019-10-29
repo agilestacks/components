@@ -3,9 +3,14 @@ version: 1
 kind: component
 meta:
   name: spinnaker
-  brief: Spinnaker CD Server
+  title: Spinnaker
+  brief: CD server
+  description: >
+    An open source, multi-cloud continuous delivery platform
+    for releasing software changes with high velocity and confidence.
+  category: DevOps Stack
   version: 1.10
-  maturity: preview
+  maturity: alpha
   license: Apache 2.0
   source:
       dir: ../../components/spinnaker

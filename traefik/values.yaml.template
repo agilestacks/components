@@ -62,11 +62,11 @@ kubernetes:
   namespaces: ${component.traefik.kubernetes.namespaces}
   labelSelector: ${component.traefik.kubernetes.labelSelector}
   ingressClass: ${component.traefik.kubernetes.ingressClass}
-  # ingressEndpoint:
+  ingressEndpoint:
   #   hostname: "localhost"
   #   ip: "127.0.0.1"
   #   publishedService: "namespace/servicename"
-  #   useDefaultPublishedService: false
+    useDefaultPublishedService: true
 proxyProtocol:
   enabled: false
   # trustedIPs is required when enabled

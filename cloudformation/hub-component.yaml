@@ -3,7 +3,13 @@ version: 1
 kind: component
 meta:
   name: cloudformation
-  brief: AWS CloudFormation example
+  title: AWS CloudFormation
+  brief: Infrastructure automation
+  description: >
+    AWS CloudFormation is an infrastructure automation service
+    that allows to create a collection of related AWS resources like
+    VPC, Auto Scaling groups, Amazon CloudWatch, etc.
+  category: AWS Native
   source:
     dir: ../../components/cloudformation
 

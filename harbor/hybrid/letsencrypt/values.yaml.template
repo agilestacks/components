@@ -1,0 +1,36 @@
+externalURL: https://${component.harbor.name}.${component.ingress.fqdn}
+expose:
+  type: ingress
+  tls:
+    enabled: true
+    secretName: ${component.harbor.name}-tls
+    notarySecretName: ${component.harbor.name}-tls
+    commonName: ${component.harbor.name}.${component.ingress.fqdn}
+  ingress:
+    hosts:
+      base: ${component.ingress.fqdn}
+      core: ${component.harbor.name}.${component.ingress.fqdn}
+      notary: notary.${component.harbor.name}.${component.ingress.fqdn}
+    annotations:
+      kubernetes.io/tls-acme: "true"
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "0"
+      agilestacks.com/stack-component: ${component.harbor.name}
+  clusterIP:
+    name: ${component.harbor.name}
+    ports:
+      httpPort: 80
+      httpsPort: 443
+      notaryPort: 4443
+  nodePort:
+    name: harbor
+    ports:
+      http:
+        port: 80
+        nodePort: 30002
+      https:
+        port: 443
+        nodePort: 30003
+      notary:
+        port: 4443
+        nodePort: 30004

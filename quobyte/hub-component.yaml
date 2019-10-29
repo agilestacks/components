@@ -1,0 +1,38 @@
+---
+version: 1
+kind: component
+meta:
+  name: quobyte
+  title: Quobyte
+  brief: Distributed file system
+  description: >
+    Quobyte’s next-generation file system unifies file, block and object storage for enterprise and
+    scientific applications. Backed by a decade of research, its parallel file system core serves
+    low-latency and high-throughput workloads within a single system.
+  category: Storage
+  disabled: true
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - quobyte
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.quobyte.api
+    brief: API endpoint
+    value: http://quobyte.${component.ingress.fqdn}

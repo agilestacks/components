@@ -3,9 +3,12 @@ version: 1
 kind: component
 meta:
   name: ceph
+  title: Ceph
   brief: Private cloud storage
+  description: >
+    Ceph is a unified, distributed storage system designed for excellent performance, reliability and scalability.
   version: 14.2.1
-  maturity: stable
+  maturity: ga
   license: LGPLv2.1
   source:
       dir: ../../components/ceph
@@ -44,7 +47,8 @@ parameters:
     - name: storage.path
       value: /var/lib/rook
     - name: flex.volume.path
-      value: '#{cloud.kind == "gcp" ? "/home/kubernetes/flexvolume" : cloud.kind == "azure" ? "/etc/kubernetes/volumeplugins" : "/var/lib/kubelet/volumeplugins"}'
+      value: '#{cloud.kind == "gcp" ? "/home/kubernetes/flexvolume" : cloud.kind == "hybrid" ? "/usr/libexec/kubernetes/kubelet-plugins/volume/exec" : "/var/lib/kubelet/volumeplugins"}'
+      env: FLEX_VOL_PATH
     - name: mon.replicas
       value: 3
     - name: dashboard.port
@@ -61,13 +65,14 @@ parameters:
       - name: pvc.storageclass
         value: rook-nfs-share1
       - name: pvc.size
-        value: 5Gi
+        value: 1Gi
     - name: blockdevice
       parameters:
       - name: pvc.name
         value: nfs-ceph-claim
       - name: pvc.storageclass
-        value: rook-ceph-block
+        value: default
+        env: CEPH_SC
 
 outputs:
   - name: component.ceph.nfs.pvc.storageclass

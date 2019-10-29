@@ -3,9 +3,14 @@ version: 1
 kind: component
 meta:
   name: mongodb
-  brief: MongoDB document database
+  title: MongoDB
+  brief: Document database
+  description: >
+    MongoDB is a document database with the scalability and flexibility that you want with the
+    querying and indexing that you need.
+  category: App Stack
   version: 4.0.2
-  maturity: stable
+  maturity: ga
   source:
     dir: ../../components/mongodb
 

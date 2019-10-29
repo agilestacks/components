@@ -1,0 +1,8 @@
+dashboard:
+  ingress:
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    tls:
+      - hosts:
+        - ${component.ingress.ssoUrlPrefix}.${dns.domain}
+        secretName: ${component.ingress.name}-tls

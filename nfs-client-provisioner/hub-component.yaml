@@ -1,0 +1,31 @@
+---
+version: 1
+kind: component
+meta:
+  name: nfs-client-provisioner
+  brief: Storage manager which mounts remote NFS shares into containers
+  source:
+    dir: ../../components/nfs-client-provisioner
+
+requires:
+  - kubernetes
+provides:
+  - nfs
+
+parameters:
+- name: component.nfs-client-provisioner
+  parameters:
+  - name: storageClass.name
+    value: nfs-client
+  - name: storageClass.allowVolumeExpansion
+    value: true
+  - name: storageClass.reclaimPolicy
+    value: Delete
+  - name: nfs.server
+    env: NFS_SERVER
+  - name: nfs.path
+    env: NFS_MOUNT_PATH
+  - name: nfs.mountOptions
+    empty: allow
+  - name: metrics.port
+    value: 9091

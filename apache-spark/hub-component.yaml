@@ -1,0 +1,38 @@
+---
+version: 1
+kind: component
+meta:
+  name: apache-spark
+  title: Apache Spark
+  description: >
+    Spark is a unified analytics engine for large-scale data processing. It provides high-level APIs in Scala,
+    Java, Python, and R, and an optimized engine that supports general computation graphs for data analysis.
+    It also supports a rich set of higher-level tools including Spark SQL for SQL and DataFrames, MLlib for machine
+    learning, GraphX for graph processing, and Structured Streaming for stream processing.
+  category: App Stack
+  disabled: true
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - apach-spark
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.apach-spark.api
+    brief: API endpoint
+    value: http://apach-spark.${component.ingress.fqdn}

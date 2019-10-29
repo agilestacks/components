@@ -3,9 +3,15 @@ version: 1
 kind: component
 meta:
   name: prometheus
-  brief: Prometheus monitoring service
+  title: Prometheus
+  brief: Cluster monitoring
+  description: >
+    Prometheus is a systems and service monitoring system. It collects metrics from configured targets at
+    given intervals, evaluates rule expressions, displays the results, and can trigger alerts if some condition
+    is observed to be true.
+  category: Monitoring
   version: 2.5.0
-  maturity: stable
+  maturity: ga
   license: Apache 2.0
   source:
     dir: ../../components/prometheus

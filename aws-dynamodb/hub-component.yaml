@@ -1,0 +1,36 @@
+---
+version: 1
+kind: component
+meta:
+  name: aws-dynamo-db
+  title: DynamoDB
+  brief: NoSQL database
+  description: >
+    Amazon DynamoDB is a fast and flexible NoSQL database service. Its flexible data model and reliable
+    performance make it a great fit for mobile, web, gaming, ad-tech, IoT, and many other applications.
+  category: AWS Native
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - aws-dynamo-db
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.aws-dynamo-db.api
+    brief: API endpoint
+    value: http://aws-dynamo-db.${component.ingress.fqdn}

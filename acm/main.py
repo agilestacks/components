@@ -27,10 +27,12 @@ terraform = '''#
 #
 {% if standalone: %}
 terraform {
-  required_version = ">= 0.11.3"
+  required_version = ">= 0.11.10"
   backend "s3" {}
 }
 
+# upgrades must be tested as 2.x provider has a Route53 bug
+# https://github.com/terraform-providers/terraform-provider-aws/issues/7918
 provider "aws" {
   version = "1.60.0"
 }
@@ -58,7 +60,10 @@ from docopt  import docopt
 from jinja2 import Template
 
 log.basicConfig(filename='python.log', level=log.DEBUG)
-
+console=log.StreamHandler() # intentionally log to stderr
+console.setFormatter(log.Formatter(log.BASIC_FORMAT))
+console.setLevel(log.WARNING)
+log.getLogger().addHandler(console)
 
 with open('acm-schema.json', 'r') as f:
     schema=json.loads( f.read().replace('\n', '') )
@@ -70,11 +75,14 @@ r53     = session.client('route53')
 def cert_by_domain(domain):
   response = client.list_certificates(
     CertificateStatuses=['PENDING_VALIDATION', 'ISSUED'],
-    MaxItems=99
+    MaxItems=1000 # https://docs.aws.amazon.com/acm/latest/APIReference/API_ListCertificates.html
   )
-  arns = [ c.get('CertificateArn') for c in response.get('CertificateSummaryList',[]) if c.get('DomainName') == domain ]
-  return cert_by_arn(arns[0]) if arns else None
-
+  arns = [ c.get('CertificateArn') for c in response.get('CertificateSummaryList', []) if c.get('DomainName') == domain ]
+  if not arns:
+    return None
+  if len(arns) > 1:
+    log.warning("Certificate for %s has multiple instances, using first one", domain)
+  return cert_by_arn(arns[0])
 
 def render_terraform(cert, standalone=False):
   domains = cert.get('Certificate', {}).get('DomainValidationOptions', [])
@@ -126,6 +134,14 @@ def request_certificate(domain, additional_names=[]):
   cert = wait_to_propogate( response['CertificateArn'] )
   return cert
 
+def additional_names_match(cert, domain, requested_additional_names=[]):
+  cert_additional_names = cert['Certificate'].get('SubjectAlternativeNames', [])
+  for name in requested_additional_names:
+    if name not in cert_additional_names:
+      return (False, 'Existing ACM certificate {} subject alternative names:\n\t{}\ndoes not match requested names:\n\t{}'.format(
+          domain, cert_additional_names, requested_additional_names))
+  return True, None
+
 # wait until certificate will conform to json schema
 def wait_to_propogate(arn):
   print("Wait for certificate {} to propagate ".format(arn))
@@ -176,10 +192,15 @@ if __name__ == "__main__":
   # print(json.dumps(cert, sort_keys=True, indent=4, separators=(',', ': '), default=json_util.default))
 
   if args['request']:
+    additional_names = args['<additional_names>']
     if not cert:
-      cert = request_certificate( domain, args['<additional_names>'] )
+      cert = request_certificate(domain, additional_names)
     else:
-      log.warning("Certificate for %s already requested, see details %s", domain, cert)
+      log.warning("Certificate for %s already requested", domain)
+      log.info("Certificate: %s", cert['Certificate'])
+      match, err = additional_names_match(cert, domain, additional_names)
+      if not match:
+        raise Exception(err)
 
   elif args['gen']:
     if cert != None:
@@ -205,7 +226,7 @@ if __name__ == "__main__":
     else:
       raise Exception('Cannot find ACM certificate for: {}'.format(domain))
   elif args['wait']:
-    if cert!= None:
+    if cert != None:
       timeout = time.time() + int( args.get('<timeout>', 900) )
       desired = args.get('<status>', [])
       if not desired:

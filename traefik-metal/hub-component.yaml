@@ -1,0 +1,176 @@
+---
+version: 1
+kind: component
+meta:
+  name: traefik-metal
+  brief: Traefik Router as ingress Controller for metal environments
+  version: 1.7.14
+  maturity: ga
+  license: MIT
+  source:
+    dir: ../../components/traefik-metal
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+provides:
+  - ingress
+
+lifecycle:
+  verbs:
+    - deploy
+    - undeploy
+    - upgrade
+  readyConditions:
+    - pauseSeconds: 30
+      dns: ${component.ingress.ssoFqdn}
+      url: ${component.ingress.protocol}://${component.ingress.ssoFqdn}
+
+parameters:
+  - name: terraform.bucket.container
+    empty: allow
+  - name: cloud.kind
+    env: CLOUD_KIND
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+  - name: component.ingress
+    parameters:
+    - name: urlPrefix
+      value: app
+      env: URL_PREFIX
+    - name: ssoUrlPrefix
+      value: apps
+      env: SSO_URL_PREFIX
+    - name: name
+      env: COMPONENT
+      value: traefik-metal
+    - name: namespace
+      value: ingress
+      env: NAMESPACE
+    - name: dashboard
+      value: true
+    - name: dashboard.auth
+      value: '{}'
+    - name: tls.cert
+      value: |
+        -----BEGIN CERTIFICATE-----
+        MIIEmzCCA4OgAwIBAgIJAJAGQlMmC0kyMA0GCSqGSIb3DQEBBQUAMIGPMQswCQYD
+        VQQGEwJVUzERMA8GA1UECBMIQ29sb3JhZG8xEDAOBgNVBAcTB0JvdWxkZXIxFDAS
+        BgNVBAoTC0V4YW1wbGVDb3JwMQswCQYDVQQLEwJJVDEWMBQGA1UEAxQNKi5leGFt
+        cGxlLmNvbTEgMB4GCSqGSIb3DQEJARYRYWRtaW5AZXhhbXBsZS5jb20wHhcNMTYx
+        MDI0MjEwOTUyWhcNMTcxMDI0MjEwOTUyWjCBjzELMAkGA1UEBhMCVVMxETAPBgNV
+        BAgTCENvbG9yYWRvMRAwDgYDVQQHEwdCb3VsZGVyMRQwEgYDVQQKEwtFeGFtcGxl
+        Q29ycDELMAkGA1UECxMCSVQxFjAUBgNVBAMUDSouZXhhbXBsZS5jb20xIDAeBgkq
+        hkiG9w0BCQEWEWFkbWluQGV4YW1wbGUuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+        AQ8AMIIBCgKCAQEAtuJ9mww9Bap6H4NuHXLPzwSUdZi4bra1d7VbEBZYfCI+Y64C
+        2uu8pu3aU5sauMbD97jQaoyW6G98OPreWo8oyfndIctErlnxjqzU2UTV7qDTy4nA
+        5OZeoReLfeqRxllJ14Via5QdgywGLhE9jg/c7e4YJznh9KWY2qcVxDuGD3iehsDn
+        aNzV4WF9cIfms8zwPvONNLfsAmw7uHT+3bK13IIhx27fevquVpCs41P6psu+VLn2
+        5HDy41thBCwOL+N+albtfKSqs7LAs3nQN1ltzHLvy0a5DhdjJTwkPrT+UxpoKB9H
+        4ZYk1+EDt7OPlhyo3741QhN/JCY+dJnALBsUjQIDAQABo4H3MIH0MB0GA1UdDgQW
+        BBRpeW5tXLtxwMroAs9wdMm53UUILDCBxAYDVR0jBIG8MIG5gBRpeW5tXLtxwMro
+        As9wdMm53UUILKGBlaSBkjCBjzELMAkGA1UEBhMCVVMxETAPBgNVBAgTCENvbG9y
+        YWRvMRAwDgYDVQQHEwdCb3VsZGVyMRQwEgYDVQQKEwtFeGFtcGxlQ29ycDELMAkG
+        A1UECxMCSVQxFjAUBgNVBAMUDSouZXhhbXBsZS5jb20xIDAeBgkqhkiG9w0BCQEW
+        EWFkbWluQGV4YW1wbGUuY29tggkAkAZCUyYLSTIwDAYDVR0TBAUwAwEB/zANBgkq
+        hkiG9w0BAQUFAAOCAQEAcGXMfk8NZsB+t9KBzl1Fl6yIjEkjHO0PVUlEcSD2B4b7
+        PxnMOjdmgPrauHb9unXEaL7zyAqaD6tbXWU6RxCAmgLajVJNZHOw45N0hrDkWgB8
+        EvZtQ56ammwC1qIhAiA6390D3Csex7gL6nJo7kbr1YWUG3zIvoxdz8YDrZNeWKLD
+        pRvWen0lMbpjIRP4XZsnC45C9gVXdh3LRe1+wyQq6h9QPiloxmD6NpE9imTOn2A5
+        /bJ3VKIzAMudeU6kpyYlJBzdG1uaHTjQOWosGiweCKVUXF6UtisVddrxQth6ENyW
+        vIFqaZx84+DlSCc93yfk/GlBt+SKG46zEHMB9hqPbA==
+        -----END CERTIFICATE-----
+    - name: tls.key
+      value: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAtuJ9mww9Bap6H4NuHXLPzwSUdZi4bra1d7VbEBZYfCI+Y64C
+        2uu8pu3aU5sauMbD97jQaoyW6G98OPreWo8oyfndIctErlnxjqzU2UTV7qDTy4nA
+        5OZeoReLfeqRxllJ14Via5QdgywGLhE9jg/c7e4YJznh9KWY2qcVxDuGD3iehsDn
+        aNzV4WF9cIfms8zwPvONNLfsAmw7uHT+3bK13IIhx27fevquVpCs41P6psu+VLn2
+        5HDy41thBCwOL+N+albtfKSqs7LAs3nQN1ltzHLvy0a5DhdjJTwkPrT+UxpoKB9H
+        4ZYk1+EDt7OPlhyo3741QhN/JCY+dJnALBsUjQIDAQABAoIBAHkLxdkGq6kBYd1T
+        z2E8aaD6xgxjrcbRtaBq77/hGmXnAGZXeVpO50mRao0lvvUH0hM3RvMO5J8pkw3f
+        taY41OWCNMO2V1oS/BfT+vlnXzWXSzePkJWwiHeVLuWDiULAPGiixzavDS2RyPFa
+        xeQuSatNiL0FybF0nYwzROvh/eRkcJVrQfVnuMfzQd8h236eoU1SpzRxR6Inl+9P
+        MsTvZnNBf9wAVpZ9sSL2puWX7HcR2Ugznh03YYFItkCfwmn+DlGokOXXpU3o6if9
+        THzpexwnmRVJagDo9m9PwkxAz09o4qq1trhSX5Sju+Lr4Ro8x9o+WuAuVupoIGwL
+        1elxDEECgYEA75ZXjuzsIGOO2F9M+raQPqs+DvvDJsCx2ftnvMVYRJqYbhkzbzlU
+        0HpBVy76a7ZazRlawtFgyc2ZrA8i3Aw+rzwZPrSIycbx/gQWnG6elQucAEUgW84M
+        GRmxJPif8dP5LlewQjQcPRpeZ139X82kxdRHGfkZlpyWBqKj0SXLQHECgYEAw2nA
+        mEWud3dRojnsnqNb0eawEPT+o0cgdrhCP96P+ZDzCaqDTnVJWmOyeqFY5yWRHFN/
+        slHWSiSEAcEtXg+9hiLsDWtuOw8Tg627ek8HuQKLokVXATXmMdoq9drAoH5NaWiD
+        dRcwDSa/jhH7tYWXJd08VJT6RIuO/1Vil0mlI90CgYEAoil6Hg0STWHVX3IxokhL
+        HX++Q1n4XpRyTH4zWruf4N9aaLq564A8fdchvqbXbGxCzStqGQ6qmiyE5MZh69qF
+        2wmsdJqxMxFq3Wla/IqK34q6Dhy7qCewXJTdJ474gy/cKpfDfyvSKTFd0Ez3oA6K
+        hjQF4/iMbzqQ+PDAPGF+TqECgYBd5bvgr2L1DsWQISs80xw00Rd7Hm4ZAP1tbn6O
+        +B/QeMD/vQpZMexsXYmOeWchsqB2rvymL8K7X656tVtaXk/gW3l3vU57XHQxCtMS
+        I1V/peR4tb7n2wFgpQeNmW6D8Ay8gLbiFaFGQH89AhEkGSwWyqbJschMFY9By8KT
+        FZUflQKBgEwW2dUJNdBLysrp8NLMUlkufrqnYiQ3SAHh4VsZH5Mu41nyb/y5E21n
+        2NywymXdeouIpVcqIUMyt/qJFhHpRMyQ2ZKOGD2XnXhCMVTe/AP42hwox6m6BFiB
+        ozfEkl0jNnfdDr6k/Zv2T5NqsilZErABVF90Jk7mPPHkD6GVLQBx
+        -----END RSA PRIVATE KEY-----
+    - name: kubernetes.serviceType
+      value: LoadBalancer
+    - name: kubernetes.nodePort.http
+      empty: allow
+    - name: kubernetes.nodePort.https
+      empty: allow
+
+  - name: component.cert-manager.issuerEmail
+    value: admin@superhub.io
+
+  - name: component.traefik
+    parameters:
+    - name: chart
+      value: stable/traefik
+      env: CHART
+    - name: chart.version
+      value: 1.68.5
+      env: CHART_VERSION
+    - name: app.version
+      value: 1.7.14
+    - name: kubernetes.nodeSelector
+      value: '{}'
+    - name: kubernetes.tolerations
+      value: '[]'
+    - name: kubernetes.namespaces
+      value: '[]'
+    - name: kubernetes.labelSelector
+      empty: allow
+    - name: kubernetes.ingressClass
+      empty: allow
+    - name: kubernetes.kubeconfigContext
+      value: ${dns.domain}
+      env: KUBECONFIG_CONTEXT
+    - name: helm.timeout
+      value: 900
+      env: HELM_TIMEOUT
+
+outputs:
+- name: component.ingress.fqdn
+  brief: FQDN of ingress
+  value: ${component.ingress.urlPrefix}.${dns.domain}
+- name: component.ingress.ssoFqdn
+  brief: FQDN of ingress protected by SSO
+  value: ${component.ingress.ssoUrlPrefix}.${dns.domain}
+- name: component.ingress.protocol
+  fromTfVar: ingress_protocol
+- name: component.ingress.urlPrefix
+  value: ${component.ingress.urlPrefix}
+- name: component.ingress.ssoUrlPrefix
+  value: ${component.ingress.ssoUrlPrefix}
+- name: component.ingress.kubernetes.ingressClass
+  value: ${component.traefik.kubernetes.ingressClass}
+- name: component.ingress.dashboard.url
+  value: ${component.ingress.protocol}://${component.ingress.ssoFqdn}/dashboard/
+- name: component.ingress.loadBalancer
+  fromTfVar: ingress_load_balancer
+- name: component.ingress.loadBalancerDnsRecordType
+  fromTfVar: load_balancer_dns_record_type
+
+templates:
+  files:
+  - values*.yaml.template

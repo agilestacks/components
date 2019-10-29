@@ -3,9 +3,13 @@ version: 1
 kind: component
 meta:
   name: etcd
-  brief: etcd distributed key value store
+  title: etcd
+  brief: Кey/value store
+  description: >
+    Distributed reliable key-value store for the most critical data of a distributed system.
+  category: App Stack
   version: 3.2.26
-  maturity: stable
+  maturity: ga
   license: Apache 2.0
   source:
       dir: ../../components/etcd

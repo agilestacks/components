@@ -3,7 +3,12 @@ version: 1
 kind: component
 meta:
   name: azurecr
-  brief: Azure Container Registry
+  title: Azure Container Registry
+  brief: Docker image registry
+  description: >
+    Azure Container Registry allows you to build, store, and manage images
+    for all types of container deployments.
+  category: Azure Native
   source:
     dir: ../../components/azurecr
 

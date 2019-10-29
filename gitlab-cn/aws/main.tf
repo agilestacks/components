@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  version        = "1.6.2"
+  version        = "1.9.0"
   config_context = "${var.kubeconfig_context}"
 }
 
@@ -33,7 +33,7 @@ resource "aws_route53_record" "dns_app1_ext" {
   zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
   name    = "gitlab.${var.domain_name}"
   type    = "CNAME"
-  ttl     = "300"
+  ttl     = "100"
   allow_overwrite = true
   records = ["${data.kubernetes_service.gitlab.load_balancer_ingress.0.hostname}"]
 }
@@ -42,7 +42,7 @@ resource "aws_route53_record" "dns_app2_ext" {
   zone_id = "${data.aws_route53_zone.ext_zone.zone_id}"
   name    = "registry.${var.domain_name}"
   type    = "CNAME"
-  ttl     = "300"
+  ttl     = "100"
   allow_overwrite = true
   records = ["${data.kubernetes_service.gitlab.load_balancer_ingress.0.hostname}"]
 }

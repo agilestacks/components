@@ -1,0 +1,464 @@
+## Default values for Traefik
+image: traefik
+imageTag: ${component.traefik.app.version}
+
+testFramework:
+  image: "dduportal/bats"
+  tag: "0.4.0"
+
+## can switch the service type to NodePort if required
+serviceType: ${component.ingress.kubernetes.serviceType}
+loadBalancerIP:
+# loadBalancerSourceRanges: []
+whiteListSourceRange: []
+externalTrafficPolicy: Cluster
+replicas: 1
+# startupArguments:
+#   - "--ping"
+#   - "--ping.entrypoint=http"
+
+podDisruptionBudget: {}
+  # maxUnavailable: 1
+  # minAvailable: 2
+
+# priorityClassName: ""
+
+# rootCAs: []
+
+resources:
+  requests:
+    cpu: 0
+    memory: 0
+  limits:
+    cpu: 0
+    memory: 0
+
+debug:
+  enabled: false
+
+# logLevel: error
+
+deploymentStrategy: {}
+  # rollingUpdate:
+  #   maxSurge: 1
+  #   maxUnavailable: 0
+  # type: RollingUpdate
+
+securityContext: {}
+env: {}
+
+nodeSelector: ${component.traefik.kubernetes.nodeSelector}
+  # key: value
+affinity: {}
+  # key: value
+tolerations: ${component.traefik.kubernetes.tolerations}
+# - key: "key"
+#   operator: "Equal|Exists"
+#   value: "value"
+#   effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+## Kubernetes ingress filters
+kubernetes:
+  # endpoint:
+  namespaces: ${component.traefik.kubernetes.namespaces}
+  labelSelector: ${component.traefik.kubernetes.labelSelector}
+  ingressClass: ${component.traefik.kubernetes.ingressClass}
+  ingressEndpoint:
+    useDefaultPublishedService: true
+  #   hostname: "localhost"
+  #   ip: "127.0.0.1"
+  #   publishedService: "namespace/servicename"
+proxyProtocol:
+  enabled: false
+  # trustedIPs is required when enabled
+  trustedIPs: []
+  # - 10.0.0.0/8
+forwardedHeaders:
+  enabled: false
+  # trustedIPs is required when enabled
+  trustedIPs: []
+  # - 10.0.0.0/8
+
+## Add arbitrary ConfigMaps to deployment
+## Will be mounted to /configs/, i.e. myconfig.json would
+## be mounted to /configs/myconfig.json.
+configFiles: {}
+  # myconfig.json: |
+  #   filecontents...
+
+## Add arbitrary Secrets to deployment
+## Will be mounted to /secrets/, i.e. file.name would
+## be mounted to /secrets/mysecret.txt.
+## The contents will be base64 encoded when added
+secretFiles: {}
+  # mysecret.txt: |
+  #   filecontents...
+
+ssl:
+  enabled: false
+  enforced: false
+  permanentRedirect: false
+  upstream: false
+  insecureSkipVerify: false
+  generateTLS: false
+  # defaultCN: "example.com"
+    # or *.example.com
+  defaultSANList: []
+    # - example.com
+    # - test1.example.com
+  defaultIPList: []
+    # - 1.2.3.4
+  # cipherSuites: []
+  # https://docs.traefik.io/configuration/entrypoints/#specify-minimum-tls-version
+  # tlsMinVersion: VersionTLS12
+  # https://docs.traefik.io/configuration/entrypoints/#strict-sni-checking
+  # sniStrict: false
+  defaultCert:
+  defaultKey:
+  # Basic auth to protect all the routes. Can use htpasswd to generate passwords
+  # > htpasswd -n -b testuser testpass
+  # > testuser:$apr1$JXRA7j2s$LpVns9vsme8FHN0r.aSt11
+  auth: {}
+    # basic:
+    #   testuser: $apr1$JXRA7j2s$LpVns9vsme8FHN0r.aSt11
+
+kvprovider:
+  ## If you want to run Traefik in HA mode, you will need to setup a KV Provider. Therefore you can choose one of
+  ## * etcd
+  ## * consul
+  ## * boltdb
+  ## * zookeeper
+  ##
+  ## ref: https://docs.traefik.io/user-guide/cluster/
+
+  ## storeAcme has to be enabled to support HA Support using acme, but at least one kvprovider is needed
+  storeAcme: false
+  importAcme: false
+
+  # etcd:
+    # endpoint: etcd-service:2379
+    # useAPIV3: false
+    # watch: true
+    # prefix: traefik
+
+    ## Override default configuration template.
+    ## For advanced users :)
+    ##
+    ## Optional
+    # filename: consul.tmpl
+    # username: foo
+    # password: bar
+    # tls:
+    #   ca: "/etc/ssl/ca.crt"
+    #   cert: "/etc/ssl/consul.crt"
+    #   key: "/etc/ssl/consul.key"
+    #   insecureSkipVerify: true
+    #
+  # consul:
+    # endpoint: consul-service:8500
+    # watch: true
+    # prefix: traefik
+
+    ## Override default configuration template.
+    ## For advanced users :)
+    ##
+    ## Optional
+    # filename: consul.tmpl
+    # username: foo
+    # password: bar
+    # tls:
+    #   ca: "/etc/ssl/ca.crt"
+    #   cert: "/etc/ssl/consul.crt"
+    #   key: "/etc/ssl/consul.key"
+    #   insecureSkipVerify: true
+
+    ## only relevant for etcd
+
+
+acme:
+  enabled: false
+  email: admin@example.com
+  onHostRule: true
+  staging: true
+  logging: false
+  # Configure a Let's Encrypt certificate to be managed by default.
+  # This is the only way to request wildcard certificates (works only with dns challenge).
+  domains:
+    enabled: false
+    # List of sets of main and (optional) SANs to generate for
+    # for wildcard certificates see https://docs.traefik.io/configuration/acme/#wildcard-domains
+    domainsList:
+      # - main: "*.example.com"
+      # - sans:
+      #   - "example.com"
+      # - main: "*.example2.com"
+      # - sans:
+      #   - "test1.example2.com"
+      #   - "test2.example2.com"
+  ## ACME challenge type: "tls-sni-01", "tls-alpn-01", "http-01" or "dns-01"
+  ## Note the chart's default of tls-sni-01 has been DEPRECATED and (except in
+  ## certain circumstances) DISABLED by Let's Encrypt. It remains as a default
+  ## value in this chart to preserve legacy behavior and avoid a breaking
+  ## change. Users of this chart should strongly consider making the switch to
+  ## the recommended "tls-alpn-01" (avaialbe since v1.7), dns-01 or http-01
+  ## (available since v1.5) challenge.
+  challengeType: tls-sni-01
+  ## Configure dnsProvider to perform domain verification using dns challenge
+  ## Applicable only if using the dns-01 challenge type
+  delayBeforeCheck: 0
+  resolvers: []
+    # - 1.1.1.1:53
+    # - 8.8.8.8:53
+  dnsProvider:
+    name: nil
+    existingSecretName: ""
+    auroradns:
+      AURORA_USER_ID: ""
+      AURORA_KEY: ""
+      AURORA_ENDPOINT: ""
+    azure:
+      AZURE_CLIENT_ID: ""
+      AZURE_CLIENT_SECRET: ""
+      AZURE_SUBSCRIPTION_ID: ""
+      AZURE_TENANT_ID: ""
+      AZURE_RESOURCE_GROUP: ""
+    cloudflare:
+      CLOUDFLARE_EMAIL: ""
+      CLOUDFLARE_API_KEY: ""
+    digitalocean:
+      DO_AUTH_TOKEN: ""
+    dnsimple:
+      DNSIMPLE_OAUTH_TOKEN: ""
+      DNSIMPLE_BASE_URL: ""
+    dnsmadeeasy:
+      DNSMADEEASY_API_KEY: ""
+      DNSMADEEASY_API_SECRET: ""
+      DNSMADEEASY_SANDBOX: ""
+    dnspod:
+      DNSPOD_API_KEY: ""
+    dreamhost:
+      DREAMHOST_API_KEY: ""
+    dyn:
+      DYN_CUSTOMER_NAME: ""
+      DYN_USER_NAME: ""
+      DYN_PASSWORD: ""
+    exoscale:
+      EXOSCALE_API_KEY: ""
+      EXOSCALE_API_SECRET: ""
+      EXOSCALE_ENDPOINT: ""
+    gandi:
+      GANDI_API_KEY: ""
+    godaddy:
+      GODADDY_API_KEY: ""
+      GODADDY_API_SECRET: ""
+    gcloud:
+      GCE_PROJECT: ""
+      GCE_SERVICE_ACCOUNT_FILE: ""
+    linode:
+      LINODE_API_KEY: ""
+    namecheap:
+      NAMECHEAP_API_USER: ""
+      NAMECHEAP_API_KEY: ""
+    ns1:
+      NS1_API_KEY: ""
+    otc:
+      OTC_DOMAIN_NAME: ""
+      OTC_USER_NAME: ""
+      OTC_PASSWORD: ""
+      OTC_PROJECT_NAME: ""
+      OTC_IDENTITY_ENDPOINT: ""
+    ovh:
+      OVH_ENDPOINT: ""
+      OVH_APPLICATION_KEY: ""
+      OVH_APPLICATION_SECRET: ""
+      OVH_CONSUMER_KEY: ""
+    pdns:
+      PDNS_API_URL: ""
+    rackspace:
+      RACKSPACE_USER: ""
+      RACKSPACE_API_KEY: ""
+    rfc2136:
+      RFC2136_NAMESERVER: ""
+      RFC2136_TSIG_ALGORITHM: ""
+      RFC2136_TSIG_KEY: ""
+      RFC2136_TSIG_SECRET: ""
+      RFC2136_TIMEOUT: ""
+    route53:
+      AWS_REGION: ""
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+    vultr:
+      VULTR_API_KEY: ""
+  ## Save ACME certs to a persistent volume.
+  ## WARNING: If you do not do this and you did not have configured
+  ## a kvprovider, you will re-request certs every time a pod (re-)starts
+  ## and you WILL be rate limited!
+  persistence:
+    enabled: true
+    annotations: {}
+    ## acme data Persistent Volume Storage Class
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    ##
+    # storageClass: "-"
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    ## A manually managed Persistent Volume Claim
+    ## Requires persistence.enabled: true
+    ## If defined, PVC must be created manually before volume will be bound
+    ##
+    # existingClaim:
+dashboard:
+  enabled: ${component.ingress.dashboard}
+  domain: ${component.ingress.ssoUrlPrefix}.${dns.domain}
+  # serviceType: ClusterIP
+  service: {}
+    # annotations:
+    #   key: value
+  ingress:
+    labels:
+      provider:  agilestacks.com
+      project:   ingress
+      component: ${component.ingress.name}-traefik-dashboard
+    annotations:
+      agilestacks.com/stack-component: Traefik
+      kubernetes.io/ingress.class: "${component.traefik.kubernetes.ingressClass}"
+  auth: ${component.ingress.dashboard.auth}
+    # basic:
+    #   username: password
+  statistics: {}
+    ## Number of recent errors to show in the ‘Health’ tab
+    # recentErrors:
+service:
+  # annotations:
+  #   key: value
+  # labels:
+  #   key: value
+  ## Further config for service of type NodePort
+  ## Default config with empty string "" will assign a dynamic
+  ## nodePort to http and https ports
+  nodePorts:
+    http: "${component.ingress.kubernetes.nodePort.http}"
+    https: "${component.ingress.kubernetes.nodePort.https}"
+  ## If static nodePort configuration is required it can be enabled as below
+  ## Configure ports in allowable range (eg. 30000 - 32767 on minikube)
+  # nodePorts:
+  #   http: 30080
+  #   https: 30443
+  labels:
+    provider:  agilestacks.com
+    project:   ingress
+    component: ${component.ingress.name}
+    kubernetes.io/name: Traefik-${component.ingress.name}
+    kubernetes.io/cluster-service: "true"
+  annotations:
+    # Changed from "http" to default "tcp", to mitigate ELB doesn't supporting websocket on L7 level
+    # https://kubernetes.io/docs/concepts/cluster-administration/cloud-providers/#aws
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+    api.service.kubernetes.io/path: ${component.ingress.urlPrefix}.${dns.domain}
+gzip:
+  enabled: true
+#traefikLogFormat: json
+accessLogs:
+  enabled: false
+  ## Path to the access logs file. If not provided, Traefik defaults it to stdout.
+  # filePath: ""
+  format: common  # choices are: common, json
+  ## for JSON logging, finer-grained control over what is logged. Fields can be
+  ## retained or dropped, and request headers can be retained, dropped or redacted
+  fields:
+    # choices are keep, drop
+    defaultMode: keep
+    names: {}
+      # ClientUsername: drop
+    headers:
+      # choices are keep, drop, redact
+      defaultMode: keep
+      names: {}
+        # Authorization: redact
+rbac:
+  enabled: true
+## Enable the /metrics endpoint, for now only supports prometheus
+## set to true to enable metric collection by prometheus
+metrics:
+  prometheus:
+    enabled: false
+    ## If true, prevents exposing port 8080 on the main Traefik service, reserving
+    ## it to the dashboard service only
+    restrictAccess: true
+    # buckets: [0.1,0.3,1.2,5]
+  datadog:
+    enabled: false
+    # address: localhost:8125
+    # pushinterval: 10s
+  statsd:
+    enabled: false
+    # address: localhost:8125
+    # pushinterval: 10s
+deployment:
+  # labels to add to the pod container metadata
+  # podLabels:
+  #   key: value
+  # podAnnotations:
+  #   key: value
+  hostPort:
+    httpEnabled: false
+    httpsEnabled: false
+    dashboardEnabled: false
+    # httpPort: 80
+    # httpsPort: 443
+    # dashboardPort: 8080
+sendAnonymousUsage: false
+tracing:
+  enabled: false
+  serviceName: traefik
+  # backend: choices are jaeger, zipkin, datadog
+  # jaeger:
+  #   localAgentHostPort: "127.0.0.1:6831"
+  #   samplingServerURL: http://localhost:5778/sampling
+  #   samplingType: const
+  #   samplingParam: 1.0
+  # zipkin:
+  #   httpEndpoint: http://localhost:9411/api/v1/spans
+  #   debug: false
+  #   sameSpan: false
+  #   id128bit: true
+  # datadog:
+  #   localAgentHostPort: "127.0.0.1:8126"
+  #   debug: false
+  #   globalTag: ""
+
+## Create HorizontalPodAutoscaler object.
+##
+# autoscaling:
+#   minReplicas: 1
+#   maxReplicas: 10
+#   metrics:
+#   - type: Resource
+#     resource:
+#       name: cpu
+#       targetAverageUtilization: 60
+#   - type: Resource
+#     resource:
+#       name: memory
+#       targetAverageUtilization: 60
+
+## Timeouts
+##
+# timeouts:
+#   ## responding are timeouts for incoming requests to the Traefik instance
+#   responding:
+#     readTimeout: 0s
+#     writeTimeout: 0s
+#     idleTimeout: 180s
+#   ## forwarding are timeouts for requests forwarded to the backend servers
+#   forwarding:
+#     dialTimeout: 30s
+#     responseHeaderTimeout: 0s
+
+# forwardAuth:
+#   entryPoints: ["http", "https"]
+#   address: https://authserver.com/auth
+#   trustForwardHeader: true

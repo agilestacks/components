@@ -1,0 +1,29 @@
+---
+version: 1
+kind: component
+meta:
+  name: intel-gpu
+  brief: Intel GPU device plugin installation for VMs and metal
+  source:
+    dir: ../../components/intel-gpu
+
+requires:
+  - kubernetes
+provides:
+  - intel-gpu
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.intel-gpu
+    parameters:
+    - name: namespace
+      value: kube-system
+      env: NAMESPACE
+    - name: image
+      value: intel/intel-gpu-plugin
+    - name: version
+      value: "0.15.0"
+templates:
+  files:
+    - "*.template"

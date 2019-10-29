@@ -3,9 +3,16 @@ version: 1
 kind: component
 meta:
   name: jupyterhub
-  brief: Multi-user server for Jupyter notebooks.
+  title: Jupyter Hub
+  brief: Jupyter Notebook Hub
+  description: >
+    JupyterHub brings the power of notebooks to groups of users. It gives users
+    access to computational environments and resources without burdening the users with
+    installation and maintenance tasks. Users - including students, researchers, and data
+    scientists - can get their work done in their own workspaces on shared resources which
+    can be managed efficiently by system administrators.
   source:
-    dir: ../../components/jupyterhub 
+    dir: ../../components/jupyterhub
 
 requires:
   - kubernetes
@@ -15,7 +22,7 @@ provides:
 
 parameters:
 - name: component.ingress.fqdn
-- name: component.ingress.protocol 
+- name: component.ingress.protocol
 - name: dns.domain
   env: DOMAIN_NAME
 - name: component.jupyterhub
@@ -34,12 +41,12 @@ parameters:
   - name: operator.image
     value: agilestacks/jupyter-operator
   - name: default.notebook.image
-    value: jupyterhub/k8s-singleuser-sample:0.7.0      
+    value: jupyterhub/k8s-singleuser-sample:0.7.0
 
 outputs:
 - name: component.jupyterhub.url
   brief: JupyterHub URL
-  value: ${component.ingress.protocol}://${component.jupyterhub.name}.${component.ingress.fqdn} 
+  value: ${component.ingress.protocol}://${component.jupyterhub.name}.${component.ingress.fqdn}
 
 templates:
   files:

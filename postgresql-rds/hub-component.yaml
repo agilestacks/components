@@ -3,7 +3,12 @@ version: 1
 kind: component
 meta:
   name: postgresql-rds
-  brief: PostgreSQL RDS instance with Terraform
+  title: Amazon RDS
+  brief: PostgreSQL database
+  description: >
+    "Amazon RDS is a managed relational database service with a choice of six popular database engines:"
+    Amazon Aurora, PostgreSQL, MySQL, MariaDB, Oracle, and Microsoft SQL Server.
+  category: AWS Native
   source:
     dir: ../../components/postgresql-rds
 

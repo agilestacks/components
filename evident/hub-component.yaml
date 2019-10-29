@@ -1,0 +1,38 @@
+---
+version: 1
+kind: component
+meta:
+  name: evident
+  title: Evident ESP
+  brief: Security compliance
+  description: >
+    The Evident Security Platform (ESP) continuously monitors your entire
+    AWS infrastructure providing automated threat detection, incident response,
+    and compliance with PCI, NIST-800, and HIPAA.
+  category: Security
+  disabled: true
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - evident
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.evident.api
+    brief: API endpoint
+    value: http://evident.${component.ingress.fqdn}

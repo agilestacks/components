@@ -3,9 +3,10 @@
 export KUBEFLOW_NS	    	?= kubeflow
 export TF_VAR_namespace    	?= istio-system
 export TF_VAR_component    	?= kubeflow
-export TF_VAR_domain_name  	?= oleg108.dev.superhub.io
+export TF_VAR_domain_name  	?= test.dev.superhub.io
 export TF_VAR_url_prefix	?= svc
 export KUBEFLOW_DIR	    	?= kubeflow-app
+export KUBEFLOW_COMMIT		?= 3e85b3c83de12fed7d675151d0d4f8474eb04790
 export TF_DATA_DIR          := .terraform
 export TF_VAR_kubeconfig_context ?= $(TF_VAR_domain_name)
 
@@ -38,7 +39,8 @@ init:
 
 fetch:
 	rm -rf $(KUBEFLOW_DIR)
-	- kfctl init $(KUBEFLOW_DIR) --config=$(shell pwd)/kfctl_aws_noistio.yaml -V
+	- kfctl init $(KUBEFLOW_DIR) --config=$(shell pwd)/kfctl_aws.yaml -V
+	cp -r asi/ $(KUBEFLOW_DIR)/.cache/manifests/manifests-$(KUBEFLOW_COMMIT)/asi/
 
 configure:
 	- $(kfctl) generate k8s -V

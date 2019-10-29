@@ -3,7 +3,13 @@ version: 1
 kind: component
 meta:
   name: efs
-  brief: EFS component
+  title: Amazon EFS
+  brief: Distributed file system
+  description: >
+    Amazon Elastic File System (Amazon EFS) provides simple, scalable
+    file storage for use with Amazon EC2 instances in the AWS Cloud.
+    Amazon EFS is easy to use and offers a simple interface that allows you
+    to create and configure file systems quickly and easily.
   source:
     dir: ../../components/efs
 

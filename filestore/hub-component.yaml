@@ -3,7 +3,13 @@ version: 1
 kind: component
 meta:
   name: filestore
-  brief: GCP Filestore component
+  title: Cloud Filestore
+  brief: NFS file server
+  description: >
+    Use Cloud Filestore to create fully managed NFS file servers on Google Cloud Platform (GCP)
+    for use with applications running on Compute Engine virtual machines (VMs) instances or
+    Google Kubernetes Engine clusters.
+  category: GCP Native
   source:
     dir: ../../components/filestore
 

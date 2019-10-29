@@ -9,7 +9,7 @@ metadata:
 spec:
   accessModes:
   - ReadWriteOnce
-  storageClassName: ebs-gp2-wowza
+  storageClassName: default
   resources:
     requests:
       storage: 20Gi

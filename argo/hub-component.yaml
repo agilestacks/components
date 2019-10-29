@@ -3,7 +3,12 @@ version: 1
 kind: component
 meta:
   name: argo
+  title: Argo
   brief: The workflow engine for Kubernetes
+  description: >
+    Argo is an open source container-native workflow engine for getting work done on Kubernetes.
+    Argo is implemented as a Kubernetes CRD (Custom Resource Definition).
+  category: AI and Machine Learning
   version: 2.2.0
   maturity: beta
   license: Apache 2.0

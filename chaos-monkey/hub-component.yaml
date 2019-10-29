@@ -1,0 +1,38 @@
+---
+version: 1
+kind: component
+meta:
+  name: chaos-monkey
+  title: Chaos Monkey
+  brief: Resiliency testing
+  description: >
+    Chaos Monkey randomly terminates virtual machine instances and containers
+    that run inside of your production environment. Exposing engineers to failures more frequently
+    incentivizes them to build resilient services.
+  category: DevOps Stack
+  disabled: true
+  source:
+      dir: ./
+
+requires:
+  - kubernetes
+  - ingress
+
+provides:
+  - chaos-monkey
+
+parameters:
+  - name: component.ingress.fqdn
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: dns.name
+    env: NAME
+
+templates:
+  files:
+    - "*.template"
+
+outputs:
+  - name: component.chaos-monkey.api
+    brief: API endpoint
+    value: http://chaos-monkey.${component.ingress.fqdn}

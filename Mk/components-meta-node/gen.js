@@ -16,7 +16,9 @@ function extract(components) {
     return keyBy(
         components.map(([name, {meta, requires = [], provides = []}]) => ({
             name,
-            ...pick(meta, ['brief', 'version', 'maturity', 'license']),
+            ...pick(meta, [
+                'brief', 'version', 'maturity', 'license', 'title', 'description', 'category', 'disabled'
+            ]),
             requires,
             provides
         })),
@@ -29,7 +31,7 @@ function read(components) {
 
 function scan(directory) {
     return fs.readdirSync(directory)
-        .map(name => [name, path.join(directory, name, 'hub-component.yaml')])
+        .map((name) => [name, path.join(directory, name, 'hub-component.yaml')])
         .filter(([, filename]) => fs.existsSync(filename));
 }
 

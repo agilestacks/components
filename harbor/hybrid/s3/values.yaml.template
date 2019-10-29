@@ -1,0 +1,26 @@
+persistence:
+  enabled: true
+  imageChartStorage:
+    # https://github.com/docker/distribution/issues/2313#issuecomment-371977545
+    disableredirect: true
+    # Specify the type of storage: "filesystem", "azure", "gcs", "s3", "swift", 
+    # "oss" and fill the information needed in the corresponding section. The type
+    # must be "filesystem" if you want to use persistent volumes for registry
+    # and chartmuseum
+    type: s3
+      #maxthreads: 100    
+    s3:
+      region: ${component.s3.region}
+      bucket: ${component.s3.bucket}
+      rootdirectory: /docker/${component.harbor.name}-${dns.domain}
+      #accesskey: awsaccesskey
+      #secretkey: awssecretkey
+      #regionendpoint: http://myobjects.local
+      #encrypt: false
+      #keyid: mykeyid
+      #secure: true
+      #v4auth: true
+      #chunksize: "5242880"
+      #storageclass: STANDARD
+
+

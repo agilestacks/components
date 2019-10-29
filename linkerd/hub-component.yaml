@@ -3,7 +3,12 @@ version: 1
 kind: component
 meta:
   name: linkerd
-  brief: Linkerd service mesh from Bayonet
+  title: Linkerd
+  brief: Service mesh
+  description: >
+    Linkerd is a trans service mesh, designed to make modern applications safe and sane by
+    transparently adding service discovery, load balancing, failure handling, instrumentation,
+    and routing to all inter-service communication.
   source:
       dir: ../../components/linkerd
 

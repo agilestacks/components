@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  version                  = "1.0.1"
+  version                  = "1.9.0"
   config_context_auth_info = "admin@${var.domain_name}"
   config_context_cluster   = "${var.domain_name}"
 }
