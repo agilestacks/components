@@ -155,6 +155,9 @@ parameters:
       empty: allow
     - name: kubernetes.nodePort.https
       empty: allow
+    # implemented only for ELB on AWS
+    - name: kubernetes.loadBalancer.timeout
+      valueL: 60
 
   - name: component.acm.certificateArn
     empty: allow
