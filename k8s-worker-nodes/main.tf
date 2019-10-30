@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 provider "ignition" {
-  version = "1.0.1"
+  version = "1.1.0"
 }
 
 provider "template" {
@@ -36,6 +36,7 @@ data "aws_s3_bucket_object" "bootstrap_script" {
 locals {
   name1 = "worker-${var.name}"
   name2 = "${substr(local.name1, 0, min(length(local.name1), 63))}"
+  name_prefix     = "${substr(replace(local.name1, ".", "-"), 0, min(32, length(local.name1)-1))}"
 
   default_tags = [
     {
@@ -68,6 +69,12 @@ locals {
   coreos_image         = "CoreOS-${var.container_linux_channel}-${local.instance_gpu == "true" ? format("%s-%s",var.container_linux_version_gpu,"*") : "*"}"
 
   dest_script_key      = "${dirname(local.bootstrap_script_key)}/pool/${var.name}/${basename(local.bootstrap_script_key)}"
+
+  ignition_content = "${data.ignition_config.main.rendered}"
+  default_systemunits = "${data.ignition_systemd_unit.var_lib_docker.id}"
+  gpu_systemunits     = "${local.default_systemunits},${data.ignition_systemd_unit.var_lib_docker.id}",
+  sys_units_string    = "${local.instance_gpu == "true" ? local.gpu_systemunits : local.default_systemunits}"
+  sys_units_list     = "${split(",",local.sys_units_string)}"
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
@@ -85,6 +92,7 @@ resource "aws_s3_bucket_object" "bootstrap_script" {
   acl          = "private"
 }
 
+# TODO: we must find way how to force Exists or Read invocation for ignition_systemd resource
 data "ignition_config" "main" {
   append {
     source = "s3://${aws_s3_bucket_object.bootstrap_script.bucket}/${aws_s3_bucket_object.bootstrap_script.key}"
@@ -94,11 +102,7 @@ data "ignition_config" "main" {
   // conditional operator cannot be used with list values
   arrays      = ["${local.nvme[local.nvme_ndevices > 1 ? "raid" : "empty"]}"]
   filesystems = ["${local.nvme[local.instance_ephemeral_nvme ? "docker" : "empty"]}"]
-
-  systemd = [
-    "${data.ignition_systemd_unit.nvidia.id}",
-    "${data.ignition_systemd_unit.var_lib_docker.id}",
-  ]
+  systemd     = ["${local.sys_units_list}"]
 }
 
 data "aws_ami" "coreos_ami" {
@@ -123,12 +127,13 @@ data "aws_ami" "coreos_ami" {
 }
 
 resource "aws_launch_configuration" "worker_conf" {
+  name_prefix          = "${local.name_prefix}"
   instance_type        = "${var.instance_type}"
   image_id             = "${coalesce(var.ec2_ami_override, data.aws_ami.coreos_ami.image_id)}"
   key_name             = "${var.keypair}"
   security_groups      = ["${var.sg_ids}"]
   iam_instance_profile = "${var.instance_profile}"
-  user_data            = "${data.ignition_config.main.rendered}"
+  user_data            = "${local.ignition_content}"
   spot_price           = "${var.spot_price}"
 
   lifecycle {

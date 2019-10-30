@@ -37,5 +37,13 @@ data "ignition_filesystem" "var_lib_docker" {
 data "ignition_systemd_unit" "var_lib_docker" {
   name    = "var-lib-docker.mount"
   enabled = "${local.instance_ephemeral_nvme}"
-  content = "${replace(file("var-lib-docker.mount"), "$device", local.final_nvme_device)}"
+  content = "${local_file.systemd2.content}"
+}
+
+resource "local_file" "systemd2" {
+  content  = "${replace(file("var-lib-docker.mount"), "$device", local.final_nvme_device)}"
+  filename = "${path.cwd}/.terraform/systemd2-${random_string.rnd.result}.json"
+  lifecycle {
+    create_before_destroy = true
+  }
 }
