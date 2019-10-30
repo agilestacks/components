@@ -157,7 +157,7 @@ parameters:
       empty: allow
     # implemented only for ELB on AWS
     - name: kubernetes.loadBalancer.timeout
-      valueL: 60
+      value: 60
 
   - name: component.acm.certificateArn
     empty: allow
