@@ -1,5 +1,3 @@
-
-
 %components-meta.json:
 	cd $(or $(COMPONENTS_META_NODE_DIR),$(dir $(filter %/components-meta,$(MAKEFILE_LIST)))components-meta-node) && \
 		npm install && \
