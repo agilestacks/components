@@ -3,23 +3,23 @@
 export TF_VAR_component          ?= gitlab-cn
 export TF_VAR_domain_name        ?= test.dev.superhub.io
 export TF_VAR_namespace          ?= gitlab
-export TF_VAR_kubeconfig_context  ?= $(TF_VAR_domain_name)
+export TF_VAR_kubeconfig_context ?= $(TF_VAR_domain_name)
 
-export TF_LOG      				 ?= info
-export TF_DATA_DIR 				 ?= .terraform/$(TF_VAR_domain_name)-$(TF_VAR_component)
-export TF_LOG_PATH 				 ?= $(TF_DATA_DIR)/terraform.log
-export HELM_HOME 				 ?= $(shell pwd)/.helm
+export TF_LOG      ?= info
+export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain_name)-$(TF_VAR_component)
+export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
+export HELM_HOME   ?= $(shell pwd)/.helm
 
-CHART     	   ?= gitlab/gitlab
-CHART_VERSION  ?= 1.7.5
-CLOUD_KIND     ?= aws
-HELM_REPO      ?= https://charts.gitlab.io/
-TLS_KIND       ?= letsencrypt
-HELM_VALUES    ?= --values values.yaml
+CHART         ?= gitlab/gitlab
+CHART_VERSION ?= 1.7.5
+CLOUD_KIND    ?= aws
+HELM_REPO     ?= https://charts.gitlab.io/
+TLS_KIND      ?= letsencrypt
+HELM_VALUES   ?= --values values.yaml
+
 STATE_BUCKET    ?= terraform.agilestacks.com
 STATE_REGION    ?= us-east-1
 STATE_CONTAINER ?= agilestacks
-
 
 
 kubectl ?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
@@ -49,8 +49,7 @@ else
 endif
 
 
-deploy: clean init fetch purge install plan apply confgiure_gitlab output
-#deploy: clean init fetch purge plan apply confgiure_gitlab output
+deploy: clean init fetch purge install plan apply configure
 
 $(TF_DATA_DIR):
 	@mkdir -p $@
@@ -76,7 +75,6 @@ purge:
 	  $(kubectl) -n $(TF_VAR_namespace) delete secret --all && \
 	  $(helm) delete --purge $(TF_VAR_component) || exit 0
 
-
 install:
 	-$(kubectl) create namespace $(TF_VAR_namespace)
 	-$(kubectl) create -f oidc-crd.yaml
@@ -96,7 +94,6 @@ endif
 	  $(HELM_VALUES) \
 	  --version $(CHART_VERSION)
 	  #$(MAKE) -C $(CLOUD_KIND) dns
-	
 
 undeploy: init destroy apply
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
@@ -120,7 +117,7 @@ destroy: plan
 clean:
 	rm -rf $(HELM_HOME) $(notdir $(CHART))
 
-confgiure_gitlab:
+configure:
 	scripts/create_bot_account.sh
 	scripts/create_minio_buckets.sh
 	@ echo "Generating gitlab token for: $(GITLAB_URL)"
