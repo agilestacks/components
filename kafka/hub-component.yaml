@@ -45,7 +45,7 @@ parameters:
     - name:  port
       value: 9092
     - name: replicas
-      value: 1
+      value: 3
     - name: topicName
       value: default
     - name: topicConfig
@@ -55,7 +55,7 @@ parameters:
     - name: topicPartitions
       value: 3
     - name: topicReplicationFactor
-      value: 3
+      value: ${component.kafka.replicas}
 
 outputs:
 - name: component.kafka.host
