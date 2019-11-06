@@ -174,3 +174,8 @@ variable "domain_name" {
   type        = "string"
   description = "Domain name of the cluster that for worker pool"
 }
+
+variable "ignition_systemd_ids" {
+		type = "list"
+		default = [""]
+	}

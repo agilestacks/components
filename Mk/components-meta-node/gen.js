@@ -26,7 +26,8 @@ function extract(components) {
 }
 
 function read(components) {
-    return components.map(([name, filename]) => [name, yaml.safeLoad(fs.readFileSync(filename))]);
+    const options = {schema: yaml.FAILSAFE_SCHEMA};
+    return components.map(([name, filename]) => [name, yaml.safeLoad(fs.readFileSync(filename), options)]);
 }
 
 function scan(directory) {

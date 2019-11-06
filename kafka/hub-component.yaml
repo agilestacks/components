@@ -1,0 +1,68 @@
+---
+version: 1
+kind: component
+meta:
+  name: kafka
+  title: kafka
+  brief: Relational database
+  description: >
+    Kafka® is used for building real-time data pipelines and streaming apps. It is horizontally scalable, fault-tolerant, wicked fast, and runs in production in thousands of companies.
+  category: App Stack
+  version: 5.0.1
+  maturity: beta
+  license: Apache
+  source:
+    dir: ../../components/kafka
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+provides:
+  - kafka
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.prometheus.enabled
+    value: false
+  - name: component.kafka
+    parameters:
+    - name: version
+      value: 5.0.1
+    - name:  name
+      value: kafka-${dns.name}-${hub.componentName}
+      env:   COMPONENT_NAME
+    - name:  namespace
+      value: kafka
+      env:   NAMESPACE
+    - name:  volumeSize
+      value: 8Gi
+    - name:  heapSize
+      value: 1G
+    - name:  storageClass
+      value: default
+    - name:  port
+      value: 9092
+    - name: replicas
+      value: 3
+    - name: topicName
+      value: default
+    - name: topicConfig
+      value: "cleanup.policy=compact,delete.retention.ms=604800000"
+    - name: topicDefaultConfig
+      value: "segment.bytes,segment.ms"
+    - name: topicPartitions
+      value: 3
+    - name: topicReplicationFactor
+      value: ${component.kafka.replicas}
+
+outputs:
+- name: component.kafka.host
+  value: ${component.kafka.name}-kafka.${component.kafka.namespace}.svc.cluster.local
+- name: component.kafka.port
+- name: component.kafka.namespace
+
+templates:
+  files:
+    - "*.template"

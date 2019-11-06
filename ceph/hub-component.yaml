@@ -75,6 +75,8 @@ parameters:
         env: CEPH_SC
 
 outputs:
+  - name: component.storage.class
+    value: ${component.ceph.blockdevice.pvc.storageclass}
   - name: component.ceph.nfs.pvc.storageclass
     value: ${component.ceph.nfs.pvc.storageclass}
   - name: component.ceph.blockdevice.pvc.storageclass

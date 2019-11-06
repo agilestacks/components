@@ -24,8 +24,8 @@ TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 deploy: init import plan
 	# workaround famous ignition provider bug
 	$(MAKE) apply || \
-	$(MAKE) apply
-	$(MAKE) kubernetes
+	$(MAKE) import plan apply
+	$(MAKE) kubernetes/nvidia-gpu-device-plugin.yml
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
@@ -48,8 +48,8 @@ apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
 # we should make it a part of stack-k8s-aws? then what about eks?
-kubernetes:
-	$(kubectl) apply  -n kube-system -f nvidia-gpu-device-plugin.yml
+kubernetes/%:
+	$(kubectl) apply  -n kube-system -f $@
 
 output:
 	@$(terraform) output -no-color
@@ -64,3 +64,5 @@ import:
 	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers $(worker)
 
 -include ../Mk/phonies
+
+.PHONY: kubernetes/nvidia-gpu-device-plugin.yml
