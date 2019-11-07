@@ -71,10 +71,24 @@ locals {
   dest_script_key      = "${dirname(local.bootstrap_script_key)}/pool/${var.name}/${basename(local.bootstrap_script_key)}"
 
   ignition_content = "${data.ignition_config.main.rendered}"
-  default_systemunits = "${data.ignition_systemd_unit.var_lib_docker.id}"
-  gpu_systemunits     = "${local.default_systemunits},${data.ignition_systemd_unit.var_lib_docker.id}",
-  sys_units_string    = "${local.instance_gpu == "true" ? local.gpu_systemunits : local.default_systemunits}"
-  sys_units_list     = "${split(",",local.sys_units_string)}"
+  filesystems = [
+    "${local.instance_ephemeral_nvme ? data.ignition_filesystem.var_lib_docker.id : ""}",
+    "${data.ignition_filesystem.varlibkubeletpods.id}",
+  ]
+
+  arrays = [
+    "${local.nvme_ndevices > 1 ? data.ignition_raid.nvme.id : ""}"
+  ]
+
+  sys_units = [
+    "${data.ignition_systemd_unit.var_lib_docker.id}",
+    "${data.ignition_systemd_unit.varlibkubeletpods.id}",
+    "${local.instance_gpu == "true" ? data.ignition_systemd_unit.nvidia.id : ""}",
+  ]
+
+  files = [
+    "${data.ignition_file.kubelet_config.id}"
+  ]
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
@@ -92,17 +106,17 @@ resource "aws_s3_bucket_object" "bootstrap_script" {
   acl          = "private"
 }
 
-# TODO: we must find way how to force Exists or Read invocation for ignition_systemd resource
 data "ignition_config" "main" {
   append {
     source = "s3://${aws_s3_bucket_object.bootstrap_script.bucket}/${aws_s3_bucket_object.bootstrap_script.key}"
     verification = "sha512-${sha512(aws_s3_bucket_object.bootstrap_script.content)}"
   }
 
-  // conditional operator cannot be used with list values
-  arrays      = ["${local.nvme[local.nvme_ndevices > 1 ? "raid" : "empty"]}"]
-  filesystems = ["${local.nvme[local.instance_ephemeral_nvme ? "docker" : "empty"]}"]
-  systemd     = ["${local.sys_units_list}"]
+  // hcl friendly working around conditional list values
+  arrays      = ["${compact(local.arrays)}"]
+  filesystems = ["${compact(local.filesystems)}"]
+  systemd     = ["${compact(local.sys_units)}"]
+  files       = ["${compact(local.files)}"]
 }
 
 data "aws_ami" "coreos_ami" {
@@ -146,6 +160,21 @@ resource "aws_launch_configuration" "worker_conf" {
     volume_size = "${var.root_volume_size}"
     iops        = "${var.root_volume_type == "io1" ? var.root_volume_iops : 0}"
   }
+
+  # /var/lib/kubelet/pods
+  ebs_block_device {
+    device_name = "${local.varlibkubeletpods_devicename}"
+    volume_type = "${var.ephemeral_storage_type}"
+    volume_size = "${var.ephemeral_storage_size}"
+    iops        = "${var.ephemeral_storage_type == "io1" ? var.ephemeral_storage_iops : 0}"
+    delete_on_termination = true
+  }
+
+  # TODO: consider instance store for /var/lib/kubelet/pods
+  # ephemeral_block_device {
+  #   device_name = "${local.varlibkubeletpods_devicename}"
+  #   virtual_name = "ephemeral0"
+  # }
 }
 
 resource "aws_autoscaling_group" "workers" {
@@ -177,7 +206,7 @@ resource "aws_autoscaling_attachment" "workers" {
 
 resource "local_file" "bootstrap_script" {
   content  = "${aws_s3_bucket_object.bootstrap_script.content}"
-  filename = "${path.cwd}/.terraform/${var.name}-${random_string.rnd.result}.json"
+  filename = "${path.cwd}/.terraform/${var.name}-${random_string.rnd.result}.service"
   lifecycle {
     create_before_destroy = true
   }

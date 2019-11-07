@@ -33,6 +33,9 @@ parameters:
   - name: cloud.ec2.master.ignitionProfileS3
     env: TF_VAR_bootstrap_script_key
     empty: allow
+  - name: kubernetes.serviceDnsIp
+    env: TF_VAR_service_dns_ip
+    value: 10.0.3.10
 
   - name: component.k8s-worker-nodes
     parameters:
@@ -71,6 +74,15 @@ parameters:
     - name: vmType
       env: TF_VAR_virtualization_type
       value: hvm
+    - name: ephemeralStorage.size
+      env: TF_VAR_ephemeral_storage_size
+      value: 200
+    - name: ephemeralStorage.type
+      env: TF_VAR_ephemeral_storage_type
+      value: gp2
+    - name: ephemeralStorage.iops
+      env: TF_VAR_ephemeral_storage_iops
+      value: 100
 
 outputs:
 - name: component.k8s-worker-nodes.bootrapScript

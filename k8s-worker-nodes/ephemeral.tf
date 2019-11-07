@@ -5,11 +5,6 @@ locals {
   maybe_index = "${index(local.complete_list, var.instance_type)}"
   nvme_ndevices = "${local.nvme_ndevices_by_type[local.maybe_index >= length(local.nvme_instance_types) ? 0 : local.maybe_index + 1]}"
   final_nvme_device = "${local.nvme_ndevices > 1 ? "/dev/md/nvme" : "/dev/nvme1n1"}"
-  nvme = {
-    raid = ["${data.ignition_raid.nvme.id}"]
-    docker = ["${data.ignition_filesystem.var_lib_docker.id}"]
-    empty = []
-  }
 }
 
 data "template_file" "ephemeral_nvme_devices" {
@@ -42,7 +37,7 @@ data "ignition_systemd_unit" "var_lib_docker" {
 
 resource "local_file" "systemd2" {
   content  = "${replace(file("var-lib-docker.mount"), "$device", local.final_nvme_device)}"
-  filename = "${path.cwd}/.terraform/systemd2-${random_string.rnd.result}.json"
+  filename = "${path.cwd}/.terraform/systemd2-${random_string.rnd.result}.service"
   lifecycle {
     create_before_destroy = true
   }
