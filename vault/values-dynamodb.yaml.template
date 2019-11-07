@@ -1,0 +1,8 @@
+vault:
+  storage:
+    dynamodb:
+      ha_enabled: "false"
+      region: ${cloud.region}
+      table: ${component.dynamodb.table}
+      read_capacity: 5
+      write_capacity: 5

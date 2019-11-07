@@ -1,0 +1,6 @@
+vault:
+  storage:
+    s3:
+      region: ${cloud.region}
+      bucket: ${component.bucket.name}
+      path: vault
