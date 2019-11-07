@@ -46,3 +46,7 @@ outputs:
   fromTfVar: url
 - name: component.gcs.consoleUrl
   value: https://console.cloud.google.com/storage/browser/${component.gcs.bucket}/?project=${cloud.gcpProjectId}
+- name: component.bucket.kind
+  value: gcs
+- name: component.bucket.name
+  value: ${component.gcs.bucket}
