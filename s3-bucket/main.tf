@@ -10,6 +10,7 @@ provider "aws" {
 locals {
   bucket = "${var.uglify == "true" ? replace(lower(var.name), ".", "-") : var.name}"
 }
+
 data "aws_region" "current" {}
 
 variable "versioning" {
@@ -21,7 +22,7 @@ variable "uglify" {
 }
 
 variable "endpoints" {
-  type    = "map"
+  type = "map"
   description = "S3 service endpoints by region"
   default = {
     us-east-1 = "s3.amazonaws.com"
@@ -50,13 +51,11 @@ variable "name" {
   description = "Name of the bucket"
 }
 
-
 variable "acl" {
   type = "string"
   description = "S3 bucket ACL"
   default = "private"
 }
-
 
 output "endpoint" {
   value = "https://${var.endpoints[ data.aws_region.current.name ]}"
