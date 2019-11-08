@@ -41,6 +41,7 @@ EOF
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes = ["filename"]
   }
 }
 
@@ -51,4 +52,8 @@ resource "local_file" "kubelet_dropin" {
 After=var-lib-kubelet-pods.mount
 Requires=var-lib-kubelet-pods.mount
 EOF
+
+  lifecycle {
+    ignore_changes = ["filename"]
+  }
 }
