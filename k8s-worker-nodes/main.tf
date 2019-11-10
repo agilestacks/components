@@ -72,22 +72,30 @@ locals {
 
   ignition_content = "${data.ignition_config.main.rendered}"
   filesystems = [
-    "${local.instance_ephemeral_nvme ? data.ignition_filesystem.var_lib_docker.id : ""}",
-    "${data.ignition_filesystem.varlibkubeletpods.id}",
+    "${local.instance_ephemeral_nvme
+      ? data.ignition_filesystem.var_lib_docker.id
+      : data.ignition_filesystem.ebs_mount.id}",
   ]
 
   arrays = [
-    "${local.nvme_ndevices > 1 ? data.ignition_raid.nvme.id : ""}"
+    "${local.instance_ephemeral_nvme ? data.ignition_raid.nvme.id : ""}"
   ]
 
   sys_units = [
-    "${data.ignition_systemd_unit.var_lib_docker.id}",
-    "${data.ignition_systemd_unit.varlibkubeletpods.id}",
+    "${local.instance_ephemeral_nvme
+      ? data.ignition_systemd_unit.var_lib_docker.id
+      : data.ignition_systemd_unit.ebs_mount.id}",
+    "${data.ignition_systemd_unit.kubelet_ebs.id}",
+    "${data.ignition_systemd_unit.docker_ebs.id}",
     "${local.instance_gpu == "true" ? data.ignition_systemd_unit.nvidia.id : ""}",
   ]
 
   files = [
     "${data.ignition_file.kubelet_config.id}"
+  ]
+  node_labels = [
+    "name=${local.name1}",
+    "${local.instance_gpu == "true" ? "gpu=true" : ""}",
   ]
 }
 
@@ -96,11 +104,10 @@ resource "aws_s3_bucket_object" "bootstrap_script" {
   bucket   = "${var.s3_bucket}"
   key      = "${local.dest_script_key}"
 
-  content = "${local.instance_gpu ?
-    replace(data.aws_s3_bucket_object.bootstrap_script.body,
+  content = "${replace(data.aws_s3_bucket_object.bootstrap_script.body,
       "--node-labels=node-role.kubernetes.io/node",
-      "--node-labels=node-role.kubernetes.io/node,gpu=true") :
-    data.aws_s3_bucket_object.bootstrap_script.body}"
+      "--node-labels=node-role.kubernetes.io/node,${join(",",compact(local.node_labels))}")
+  }"
 
   content_type = "text/json"
   acl          = "private"
@@ -117,6 +124,14 @@ data "ignition_config" "main" {
   filesystems = ["${compact(local.filesystems)}"]
   systemd     = ["${compact(local.sys_units)}"]
   files       = ["${compact(local.files)}"]
+  # directories = [
+  #   "${data.ignition_directory.pods.id}",
+  #   "${data.ignition_directory.docker.id}",
+  # ]
+  # links       = [
+  #   "${data.ignition_link.pods.id}",
+  #   "${data.ignition_link.docker.id}",
+  # ]
 }
 
 data "aws_ami" "coreos_ami" {
@@ -161,20 +176,13 @@ resource "aws_launch_configuration" "worker_conf" {
     iops        = "${var.root_volume_type == "io1" ? var.root_volume_iops : 0}"
   }
 
-  # /var/lib/kubelet/pods
   ebs_block_device {
-    device_name = "${local.varlibkubeletpods_devicename}"
+    device_name = "${local.device_name1}"
     volume_type = "${var.ephemeral_storage_type}"
     volume_size = "${var.ephemeral_storage_size}"
     iops        = "${var.ephemeral_storage_type == "io1" ? var.ephemeral_storage_iops : 0}"
     delete_on_termination = true
   }
-
-  # TODO: consider instance store for /var/lib/kubelet/pods
-  # ephemeral_block_device {
-  #   device_name = "${local.varlibkubeletpods_devicename}"
-  #   virtual_name = "ephemeral0"
-  # }
 }
 
 resource "aws_autoscaling_group" "workers" {

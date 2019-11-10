@@ -31,7 +31,7 @@ data "ignition_filesystem" "var_lib_docker" {
 
 data "ignition_systemd_unit" "var_lib_docker" {
   name    = "var-lib-docker.mount"
-  enabled = "${local.instance_ephemeral_nvme}"
+  enabled = true
   content = "${local_file.systemd2.content}"
 }
 

@@ -177,7 +177,7 @@ variable "domain_name" {
 
 variable "ephemeral_storage_size" {
   default = 200
-  description = "Size in gigabytes of ebs storage to mount to /var/lib/kubelet/pods"
+  description = "Size in gigabytes of ebs storage to mount to /var/lib"
 }
 
 variable "ephemeral_storage_iops" {
