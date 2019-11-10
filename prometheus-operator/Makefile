@@ -64,6 +64,7 @@ undeploy: init
 	-$(kubectl) delete crd/prometheuses.monitoring.coreos.com
 	-$(kubectl) delete crd/prometheusrules.monitoring.coreos.com
 	-$(kubectl) delete crd/servicemonitors.monitoring.coreos.com
+	-$(kubectl) delete crd/podmonitors.monitoring.coreos.com
 	$(MAKE) -C $(CLOUD_TYPE) $@
 
 clean:

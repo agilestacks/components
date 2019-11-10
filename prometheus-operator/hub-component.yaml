@@ -4,7 +4,7 @@ kind: component
 meta:
   name: prometheus-operator
   brief: Prometheus monitoring service
-  version: 2.5.0
+  version: 2.13.1
   maturity: ga
   license: Apache 2.0
   source:
@@ -32,8 +32,13 @@ parameters:
       value: stable/prometheus-operator
       env: HELM_CHART
     - name: chart.version
-      value: 5.12.3
+      value: 8.1.6
       env: CHART_VERSION
+    - name:  prometheus.version
+      brief: Prometheus version
+      value: v2.13.1
+    - name:  operator.version
+      value: v0.34.0
     - name:  name
       value: prometheus-operator
       env:   COMPONENT_NAME
@@ -41,11 +46,6 @@ parameters:
       brief: Kubernetes namespace to install into
       value: monitoring
       env:   NAMESPACE
-    - name:  prometheus.version
-      brief: Prometheus version
-      value: v2.9.1
-    - name:  operator.version
-      value: v0.30.1
     - name:  rbac.enabled
       value: true
     - name:  psp.enabled
