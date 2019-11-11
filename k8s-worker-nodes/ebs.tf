@@ -1,6 +1,6 @@
 locals {
   device_name1 = "/dev/xvdb"
-  mount_path   = "/data"
+  mount_path   = "/mnt/containers"
   mount_name   = "${join("-",compact(split("/", local.mount_path)))}.mount"
 }
 
@@ -62,7 +62,7 @@ Requires=${local.mount_name}
 [Service]
 ExecStartPre=/usr/bin/mkdir -p ${local.mount_path}/docker
 ExecStartPre=/usr/bin/mkdir -p /var/lib
-ExecStartPre=/usr/bin/ln -sfv ${local.mount_path}/docker /var/lib/docker
+ExecStartPre=/usr/bin/bash -c '/usr/bin/test -L /var/lib/kubelet || /usr/bin/ln -sfv ${local.mount_path}/docker /var/lib/docker'
 EOF
 
   lifecycle {
@@ -77,7 +77,7 @@ resource "local_file" "kubelet_dropin" {
 After=${local.mount_name}
 Requires=${local.mount_name}
 [Service]
-ExecStartPre=/usr/bin/bash -c '/usr/bin/test -L /var/lib/kubelet || /usr/bin/mv /var/lib/kubelet ${local.mount_path}/kubelet'
+ExecStartPre=/usr/bin/bash -c '/usr/bin/test -d ${local.mount_path}/kubelet || /usr/bin/mv /var/lib/kubelet ${local.mount_path}/kubelet'
 ExecStartPre=/usr/bin/bash -c '/usr/bin/test -L /var/lib/kubelet || /usr/bin/ln -sfv ${local.mount_path}/kubelet /var/lib/kubelet'
 EOF
 
