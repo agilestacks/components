@@ -24,6 +24,8 @@ parameters:
   - name: dns.domain
     env: TF_VAR_domain_name
 
+  - name: cloud.vpc.worker.subnet.id
+    env: SUBNET_ID
   - name: cloud.vpc.worker.subnet.ids
     env: SUBNET_IDS
   - name: cloud.vpc.worker.sg.id

@@ -9,7 +9,7 @@ export TF_VAR_name             ?= $(error undefined env var TF_VAR_name)
 export TF_VAR_s3_bucket        ?= $(error undefined env var TF_VAR_s3_bucket)
 export TF_VAR_s3_bucket_region ?= $(error undefined env var TF_VAR_s3_bucket_region)
 export TF_VAR_domain_name      ?= $(error undefined env var TF_VAR_domain_name)
-export TF_VAR_subnet_ids       := $(shell echo -n '$(SUBNET_IDS)' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
+export TF_VAR_subnet_ids       := $(shell echo -n '$(sort $(SUBNET_ID) $(SUBNET_IDS))' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
 export TF_VAR_sg_ids           := $(shell echo -n '$(SG_IDS)' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
 
 export TF_LOG      ?= info
