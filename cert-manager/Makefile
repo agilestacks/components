@@ -43,6 +43,8 @@ purge:
 install:
 	$(kubectl) apply -f namespace.yaml
 	$(kubectl) apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml
+	@echo Waiting for CRDs to settle...
+	sleep 20
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \
