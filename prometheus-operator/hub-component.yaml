@@ -123,12 +123,12 @@ parameters:
 
 templates:
   files:
-    - "thanos/*.template"
-    - "oidc-crd.yaml.template"
+    - thanos/*.template
+    - oidc-crd.yaml.template
   extra:
   - kind: mustache
     files:
-    - 'values.yaml.template'
+    - values.yaml.template
     - values-thanos.yaml.template
 
 

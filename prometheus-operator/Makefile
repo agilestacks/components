@@ -1,13 +1,13 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME   ?= prometheus-operator
-HELM_CHART   	 ?= prometheus-operator
-DOMAIN_NAME      ?= dev.kubernetes.delivery
-NAMESPACE 	     ?= monitoring
-CHART_VERSION    ?= 5.0.1
+COMPONENT_NAME ?= prometheus-operator
+HELM_CHART     ?= prometheus-operator
+DOMAIN_NAME    ?= dev.kubernetes.delivery
+NAMESPACE      ?= monitoring
+CHART_VERSION  ?= 5.0.1
 CLOUD_KIND     ?= aws
 
-export HELM_HOME           ?= $(shell pwd)/.helm
+export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
