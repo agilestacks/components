@@ -1,12 +1,12 @@
 terraform {
-  required_version = ">= 0.11.3"
+  required_version = ">= 0.11.10"
   backend "s3" {}
 }
 
 data "aws_region" "current" {}
 
 provider "aws" {
-  version = "1.60.0"
+  version = "2.35.0"
 }
 
 resource "aws_s3_bucket" "main" {

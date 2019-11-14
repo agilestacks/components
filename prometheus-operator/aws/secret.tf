@@ -3,6 +3,10 @@ provider "kubernetes" {
   config_context = "${var.domain}"
 }
 
+provider "template" {
+  version = "2.1.2"
+}
+
 data "template_file" "thanos_config" {
   template = "${file("${path.module}/resources/thanos-config.yaml")}"
 
