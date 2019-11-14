@@ -16,9 +16,8 @@ data "aws_subnet_ids" "selected" {
 }
 
 locals {
-  rds_name = "${replace(var.rds_name, "/[^[:alnum:]]+/", "-")}"
-
-  # rds_name = "${substr(local.rds_name_long, 0, min(length(local.rds_name_long), 63))}"
+  rds_name_long = "${replace(var.rds_name, "/[^[:alnum:]]+/", "-")}"
+  rds_name = "${substr(local.rds_name_long, 0, min(length(local.rds_name_long), 63))}"
   final_snapshot_identifier = "${replace(var.final_snapshot_identifier, "/[^[:alnum:]]+/", "-")}"
 }
 
