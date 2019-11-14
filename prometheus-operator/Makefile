@@ -5,7 +5,7 @@ HELM_CHART   	 ?= prometheus-operator
 DOMAIN_NAME      ?= dev.kubernetes.delivery
 NAMESPACE 	     ?= monitoring
 CHART_VERSION    ?= 5.0.1
-CLOUD_TYPE   	 ?= aws
+CLOUD_KIND     ?= aws
 
 export HELM_HOME           ?= $(shell pwd)/.helm
 

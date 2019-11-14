@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
-DOMAIN_NAME    ?= dev.superhub.io
-STATE_BUCKET   ?= terraform.agilestacks.io
+DOMAIN_NAME    ?= test.dev.superhub.io
+STATE_BUCKET   ?= terraform.agilestacks.com
 STATE_REGION   ?= us-east-1
 NAMESPACE      ?= monitoring
 BUCKET_NAME    ?= thanos
