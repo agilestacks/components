@@ -66,8 +66,11 @@ locals {
 
   default_key          = "${var.domain_name}/stack-k8s-aws/ignition/ignition_worker.json"
   bootstrap_script_key = "${coalesce(var.bootstrap_script_key, local.default_key)}"
-  coreos_image         = "CoreOS-${var.container_linux_channel}-${local.instance_gpu == "true" ? format("%s-%s",var.container_linux_version_gpu,"*") : "*"}"
 
+  default_coreos_gpu   = "1855.4.0"
+  coreos_image_gpu     = "CoreOS-${var.container_linux_channel}-${coalesce(var.container_linux_version, local.default_coreos_gpu)}-${var.virtualization_type}"
+  coreos_image_cpu     = "CoreOS-${var.container_linux_channel}-${coalesce(var.container_linux_version, "*")}-${var.virtualization_type}"
+  coreos_image         = "${local.instance_gpu == "true" ? local.coreos_image_gpu : local.coreos_image_cpu}"
   dest_script_key      = "${dirname(local.bootstrap_script_key)}/pool/${var.name}/${basename(local.bootstrap_script_key)}"
 
   ignition_content = "${data.ignition_config.main.rendered}"

@@ -9,16 +9,13 @@ Examples: `stable`, `beta`, `alpha`
 EOF
 }
 
-variable "container_linux_version_gpu" {
+variable "container_linux_version" {
   type = "string"
-
-  default = "1855.4.0"
-
+  default = ""
   description = <<EOF
-(optional) The Container Linux version to use for GPU enabled instances from the selected update channel.
-For regular instances the latest version from the selected update channel will be used.
-
-Examples: `1465.6.0`
+Specifies version constraint for CoreOS image. If empty then it will lead to:
+- GPU instance will default to 1465.6.0
+- Non cpu instance will default to latest
 EOF
 }
 

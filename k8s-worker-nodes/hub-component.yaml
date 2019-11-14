@@ -47,9 +47,9 @@ parameters:
     - name: spotPrice
       env: TF_VAR_spot_price
       empty: allow
-    - name: containerLinuxVersionGpu
-      env: TF_VAR_container_linux_version_gpu
-      value: 1855.4.0
+    - name: containerLinuxVersion
+      env: TF_VAR_container_linux_version
+      empty: allow
     - name: shortName
       value: ${hub.componentName}
     - name: name
