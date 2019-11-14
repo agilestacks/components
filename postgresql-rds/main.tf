@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "2.14.0"
+  version = "2.35.0"
 }
 
 data "aws_vpc" "selected" {
