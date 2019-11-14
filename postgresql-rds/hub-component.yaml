@@ -22,6 +22,7 @@ parameters:
   env: AWS_DEFAULT_REGION
 - name: cloud.vpc.id
   env: TF_VAR_vpc_id
+  empty: allow
 - name: component.postgresql
   parameters:
   - name: name

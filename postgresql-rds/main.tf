@@ -9,6 +9,7 @@ provider "aws" {
 
 data "aws_vpc" "selected" {
   id = "${var.vpc_id}"
+  default = "${var.vpc_id == "" ? "true" : ""}"
 }
 
 data "aws_subnet_ids" "selected" {

@@ -14,7 +14,9 @@ variable "storage_type" {
   default = "gp2"
 }
 
-variable "vpc_id" {}
+variable "vpc_id" {
+  default = ""
+}
 
 variable "rds_name" {}
 
