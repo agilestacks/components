@@ -1,9 +1,10 @@
 terraform {
-  required_version = ">= 0.11.3"
+  required_version = ">= 0.11.10"
 }
 
 provider "aws" {
-  version = "2.14.0"
+  version = "2.35.0"
+}
 }
 
 resource "aws_db_snapshot" "postgresql" {
