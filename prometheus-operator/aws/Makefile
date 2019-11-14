@@ -41,34 +41,29 @@ init: $(TF_DATA_DIR)
 deploy:
 	$(MAKE) init plan apply || \
 	$(MAKE) init plan apply output
-.PHONY: deploy
 
 undeploy:
 	$(MAKE) init
 	$(MAKE) plan TF_OPTS="-destroy -no-color"
 	$(MAKE) apply
-.PHONY: undeploy
 
 clean:
 	rm -rf $(TF_DATA_DIR)
 
 import:
 	- $(terraform) import $(TF_OPTS) module.user.aws_iam_user.main agilestacks-$(TF_VAR_component)
-.PHONY: import
 
 plan:
 	$(terraform) plan $(TF_OPTS) -refresh=true -module-depth=-1 -out=.terraform/terraform.tfplan
-.PHONY: plan
 
 refresh:
 	$(terraform) refresh $(TF_OPTS)
-.PHONY: refresh
 
 apply:
 	$(terraform) apply $(TF_OPTS) -auto-approve .terraform/terraform.tfplan
-.PHONY: apply
 
 output:
 	@ $(terraform) output $(TF_OPTS)
 	@ echo
-.PHONY: output
+
+-include ../../Mk/phonies
