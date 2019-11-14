@@ -26,8 +26,6 @@ terraform ?= terraform-v0.11
 $(TF_DATA_DIR):
 	mkdir -p "$@"
 
-install: deploy
-
 init: $(TF_DATA_DIR)
 	$(terraform) init $(TF_OPTS) \
         -get=true -force-copy \

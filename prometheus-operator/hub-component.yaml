@@ -105,6 +105,9 @@ parameters:
       value: SDndcn378ddfg4-57yDSDfjeuDVQEW
   - name: component.promoper.thanos
     parameters:
+    - name: enabled
+      value: false
+      env: THANOS_ENABLED
     - name: version
       brief: Thanos version
       value: v0.4.0
@@ -126,6 +129,7 @@ templates:
   - kind: mustache
     files:
     - 'values.yaml.template'
+    - values-thanos.yaml.template
 
 
 outputs:

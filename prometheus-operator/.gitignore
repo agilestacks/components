@@ -1,5 +1,6 @@
 charts/
 .helm/
 values.yaml
+values-thanos.yaml
 oidc-crd.yaml
 thanos/*.yaml
