@@ -11,7 +11,7 @@ meta:
     is observed to be true.
   category: Monitoring
   version: 2.5.0
-  maturity: ga
+  maturity: beta
   license: Apache 2.0
   source:
     dir: ../../components/prometheus

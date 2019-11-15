@@ -10,7 +10,7 @@ meta:
     searching and analyzing your data.
   category: Monitoring
   version: 7.2.1
-  maturity: ga
+  maturity: beta
   license: Apache 2.0
   source:
     dir: ../../components/efk
