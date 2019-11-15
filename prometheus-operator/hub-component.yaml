@@ -43,6 +43,10 @@ parameters:
     env: CLOUD_KIND
   - name: component.ingress.kubernetes.ingressClass
     empty: allow
+  - name: component.bucket.name
+    empty: allow
+  - name: component.bucket.endpoint
+    empty: allow
   - name: component.promoper
     parameters:
     - name: chart
@@ -124,6 +128,7 @@ parameters:
 templates:
   files:
     - thanos/*.template
+    - aws/*.template
     - oidc-crd.yaml.template
   extra:
   - kind: mustache

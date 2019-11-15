@@ -1,7 +1,7 @@
 type: S3
 config:
-  bucket: "${bucket_name}"
-  endpoint: "${s3_endpoint}"
+  bucket: "${component.bucket.name}"
+  endpoint: "${component.bucket.endpoint}"
   access_key: ""
   insecure: false
   signature_version2: false
