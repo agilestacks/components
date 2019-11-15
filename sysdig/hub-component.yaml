@@ -13,7 +13,7 @@ meta:
     With state of the art container visibility on top.
   category: Monitoring
   version: 0.90.3
-  maturity: ga
+  maturity: beta
   license:  commercial
   source:
       dir: ../../components/sysdig
