@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= sysdig
-DOMAIN_NAME    ?= dev.kubernetes.delivery
+DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= sysdig
 
 export HELM_HOME ?= $(shell pwd)/.helm

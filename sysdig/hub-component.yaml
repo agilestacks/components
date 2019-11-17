@@ -12,7 +12,7 @@ meta:
     Think of sysdig as strace + tcpdump + htop + iftop + lsof + transaction tracing + awesome sauce.
     With state of the art container visibility on top.
   category: Monitoring
-  version: 0.90.3
+  version: 0.93.0
   maturity: beta
   license:  commercial
   source:
@@ -33,13 +33,13 @@ parameters:
       env:   COMPONENT_NAME
     - name:  version
       brief: sysdig agent version
-      value: 0.90.3
+      value: 0.93.0
     - name:  namespace
       brief: Kubernetes namespace to install into
       value: sysdig
       env:   NAMESPACE
     - name: clusterName
-      value: ""
+      value: ${dns.domain}
     - name:  rbac.install
       value: true
     - name:  license
@@ -48,13 +48,13 @@ parameters:
       brief: Key-value agent tags following the format "key:val,key2:val2"
       empty: allow
     - name:  resources.limits.memory
-      value: "1024Mi"
+      value: 1536Mi
     - name:  resources.requests.memory
-      value: "512Mi"
+      value: 512Mi
     - name:  resources.limits.cpu
-      value: "500m"
+      value: 2000m
     - name:  resources.requests.cpu
-      value: "100m"
+      value: 600m
 
 templates:
   files:
