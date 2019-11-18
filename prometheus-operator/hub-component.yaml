@@ -141,9 +141,9 @@ outputs:
   - name: component.prometheus.url
     brief: Prometheus URL
     value: ${component.ingress.protocol}://${component.promoper.ingress.urlPrefix}.${component.ingress.ssoFqdn}
-  - name: component.prometheus.alertmanager_url
+  - name: component.prometheus.alertmanager.url
     brief: Alertmanager URL
     value: ${component.ingress.protocol}://${component.promoper.alertmanager.ingress.urlPrefix}.${component.ingress.ssoFqdn}
-  - name: component.prometheus.grafana_url
+  - name: component.prometheus.grafana.url
     brief: Grafana URL
     value: ${component.ingress.protocol}://${component.promoper.grafana.ingress.urlPrefix}.${component.ingress.ssoFqdn}
