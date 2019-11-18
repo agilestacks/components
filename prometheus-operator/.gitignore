@@ -4,3 +4,4 @@ values.yaml
 values-thanos.yaml
 oidc-crd.yaml
 thanos/*.yaml
+aws/thanos-config.yaml

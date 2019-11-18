@@ -2,7 +2,7 @@
 
 COMPONENT_NAME ?= prometheus-operator
 HELM_CHART     ?= prometheus-operator
-DOMAIN_NAME    ?= dev.kubernetes.delivery
+DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= monitoring
 CHART_VERSION  ?= 5.0.1
 CLOUD_KIND     ?= aws
@@ -19,8 +19,6 @@ THANOS_VALUES := --values values-thanos.yaml
 else
 deploy: clean init fetch purge install
 undeploy: init uninstall
-endif
-ifeq ($(THANOS_ENABLED),true)
 endif
 
 init:

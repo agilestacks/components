@@ -8,7 +8,7 @@ metadata:
     project: logs
     qualifier: cerebro
   annotations:
-    agilestacks.com/stack-comoponent: Cerebro
+    agilestacks.com/stack-component: Cerebro
 spec:
   ports:
   - port: 9000
