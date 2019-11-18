@@ -45,6 +45,8 @@ parameters:
       value: logs
     - name:  ingress.kibanaUrlPrefix
       value: kibana
+    - name:  ingress.cerebroUrlPrefix
+      value: cerebro
     - name: cerebro.version
       value: 0.8.4
     - name:  fluentd.version
@@ -75,3 +77,6 @@ outputs:
   - name: component.efk.url
     brief: Kibana Dashboard
     value: ${component.ingress.protocol}://${component.efk.ingress.kibanaUrlPrefix}.${component.ingress.ssoFqdn}
+  - name: component.efk.cerebro.url
+    brief: Cerebro ElasticSearch admin
+    value: ${component.ingress.protocol}://${component.efk.ingress.cerebroUrlPrefix}.${component.ingress.ssoFqdn}

@@ -30,14 +30,13 @@ metadata:
     qualifier: cerebro
 spec:
   rules:
-  - host: cerebro.${component.ingress.ssoFqdn}
+  - host: ${component.efk.ingress.cerebroUrlPrefix}.${component.ingress.ssoFqdn}
     http:
       paths:
       - path: /
         backend:
           serviceName: cerebro
           servicePort: 9000
-
 ---
 apiVersion: apps/v1
 kind: Deployment
