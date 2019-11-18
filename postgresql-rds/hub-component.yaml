@@ -9,6 +9,7 @@ meta:
     "Amazon RDS is a managed relational database service with a choice of six popular database engines:"
     Amazon Aurora, PostgreSQL, MySQL, MariaDB, Oracle, and Microsoft SQL Server.
   category: AWS Native
+  maturity: ga
   source:
     dir: ../../components/postgresql-rds
 

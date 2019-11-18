@@ -9,6 +9,7 @@ meta:
     Cloud SQL is a fully-managed database service that makes it easy to set up, maintain,
     manage, and administer your relational databases on Google Cloud Platform.
   category: GCP Native
+  maturity: beta
   source:
     dir: ../../components/cloudsql
 

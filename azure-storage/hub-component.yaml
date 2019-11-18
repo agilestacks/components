@@ -10,6 +10,7 @@ meta:
     secure, durable, scalable, and redundant. Azure Storage includes Azure Blobs (objects), Azure Data
     Lake Storage Gen2, Azure Files, Azure Queues, and Azure Tables.
   category: Azure Native
+  maturity: beta
   source:
     dir: ../../components/azure-storage
 

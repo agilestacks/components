@@ -9,6 +9,7 @@ meta:
     Azure Container Registry allows you to build, store, and manage images
     for all types of container deployments.
   category: Azure Native
+  maturity: beta
   source:
     dir: ../../components/azurecr
 

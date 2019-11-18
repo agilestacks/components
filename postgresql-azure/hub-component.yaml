@@ -10,6 +10,7 @@ meta:
     database engine. It's a fully managed database as a service offering that can handle mission-critical
     workloads with predictable performance, security, high availability, and dynamic scalability.
   category: Azure Native
+  maturity: beta
   source:
     dir: ../../components/postgresql-azure
 

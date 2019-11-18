@@ -10,6 +10,7 @@ meta:
     for use with applications running on Compute Engine virtual machines (VMs) instances or
     Google Kubernetes Engine clusters.
   category: GCP Native
+  maturity: beta
   source:
     dir: ../../components/filestore
 

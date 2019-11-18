@@ -11,6 +11,7 @@ meta:
     storing data for archival and disaster recovery, or distributing large data objects to
     users via direct download.
   category: GCP Native
+  maturity: beta
   source:
     dir: ../../components/gcs-bucket
 
