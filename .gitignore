@@ -41,15 +41,6 @@ asi-demo-nodejs.yaml
 cert-manager/charts/
 cloudformation/cloudformation.yaml
 deployment-manager/deployment.yaml
-efk/conf/elasticsearch.yml
-efk/es-cerebro.yaml
-efk/es-service.yaml
-efk/es-statefulset.yaml
-efk/es-storage-class.yaml
-efk/fluentd-es-ds.yaml
-efk/kibana-deployment.yaml
-efk/kibana-service.yaml
-efk/namespace.yaml
 etcd/charts
 etcd/secret-config
 etcd/values.yaml

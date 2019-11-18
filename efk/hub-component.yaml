@@ -58,7 +58,13 @@ parameters:
       # (number of master nodes / 2) + 1
     - name: elastic.quorum
       value: 1
-
+    - name: retain.days
+      value: 10
+    - name: curator.enabled
+      value: false
+      env: CURATOR_ENABLED
+    - name: curator.days
+      value: 10
 
 templates:
   files:
