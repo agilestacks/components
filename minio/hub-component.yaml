@@ -140,7 +140,7 @@ parameters:
     - name: image.name
       value: minio/minio
     - name: image.tag
-      value: RELEASE.2019-10-12T01-39-57Z 
+      value: RELEASE.2019-10-12T01-39-57Z
     - name: mc.image.name
       value: minio/mc
     - name: mc.image.tag
