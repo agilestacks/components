@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= efk
-DOMAIN_NAME    ?= dev.kubernetes.delivery
+DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= logs
 CLOUD_KIND     ?= aws
 
@@ -9,7 +9,6 @@ kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy:
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
 	-$(kubectl) delete configmap es-config
 	$(kubectl) create configmap es-config \
 		--from-file=conf/elasticsearch.yml \

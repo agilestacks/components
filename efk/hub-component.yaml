@@ -38,7 +38,7 @@ parameters:
       value: logs
       env:   NAMESPACE
     - name: storageClass
-      value: "${cloud.kind}-storage"
+      value: default
     - name: storageSize
       value: 10Gi
     - name:  ingress.urlPrefix
