@@ -135,6 +135,8 @@ templates:
   files:
     - thanos/*.template
     - aws/*.template
+    - azure/*.template
+    - gcp/*.template
     - oidc-crd.yaml.template
   extra:
   - kind: mustache
