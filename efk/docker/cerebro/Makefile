@@ -3,7 +3,7 @@
 DIRNAME := $(notdir $(abspath .))
 IMAGE ?= agilestacks/$(DIRNAME)
 CONTAINER ?= cerebro
-CEREBRO_VERSION ?= 0.8.4
+CEREBRO_VERSION ?= 0.8.5
 DOCKER_BUILD_OTPS := --no-cache  --force-rm "
 
 deploy: build push

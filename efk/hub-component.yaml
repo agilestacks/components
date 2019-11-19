@@ -48,13 +48,14 @@ parameters:
     - name:  ingress.cerebroUrlPrefix
       value: cerebro
     - name: cerebro.version
-      value: 0.8.4
+      value: 0.8.5
     - name:  fluentd.version
-      value: v1.5.2
+      value: v1.6.3
     - name:  kibana.version
-      value: 7.2.1
+      value: 7.4.2
     - name:  elastic.version
-      value: 7.2.1
+      value: 7.4.2
+    # only 1 works because `discovery.type: single-node` in Elastic config
     - name: elastic.masters
       value: 1
       # (number of master nodes / 2) + 1
