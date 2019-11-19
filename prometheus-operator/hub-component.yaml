@@ -47,6 +47,12 @@ parameters:
     empty: allow
   - name: component.bucket.endpoint
     empty: allow
+  - name: component.azure-storage.bucket
+    empty: allow
+  - name: component.azure-storage.container
+    empty: allow
+  - name: component.azure-storage.accessKey
+    empty: allow
   - name: component.promoper
     parameters:
     - name: chart

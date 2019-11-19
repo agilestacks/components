@@ -12,13 +12,13 @@ export HELM_HOME ?= $(shell pwd)/.helm
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-ifeq ($(THANOS_ENABLED),true)
+ifeq ($(THANOS_ENABLED),false)
+deploy: clean init fetch purge install
+undeploy: init uninstall
+else
 deploy: clean init fetch purge install thanos
 undeploy: init unthanos uninstall
 THANOS_VALUES := --values values-thanos.yaml
-else
-deploy: clean init fetch purge install
-undeploy: init uninstall
 endif
 
 init:
