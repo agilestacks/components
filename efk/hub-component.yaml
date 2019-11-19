@@ -51,11 +51,12 @@ parameters:
       value: 0.8.5
     - name:  fluentd.version
       value: v1.6.3
+      # value: v1.7-debian-elasticsearch7-1
     - name:  kibana.version
       value: 7.4.2
     - name:  elastic.version
       value: 7.4.2
-    # only 1 works because `discovery.type: single-node` in Elastic config
+      # only 1 works because `discovery.type: single-node` in Elastic config
     - name: elastic.masters
       value: 1
       # (number of master nodes / 2) + 1
