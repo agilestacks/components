@@ -21,6 +21,10 @@ undeploy: init unthanos uninstall
 THANOS_VALUES := --values values-thanos.yaml
 endif
 
+ifeq ($(CLOUD_KIND),azure)
+AZURE_PATCH := --values azure/values.yaml
+endif
+
 init:
 	@mkdir -p $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
@@ -34,6 +38,11 @@ fetch:
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	-$(kubectl) delete crd/alertmanagers.monitoring.coreos.com
+	-$(kubectl) delete crd/prometheuses.monitoring.coreos.com
+	-$(kubectl) delete crd/prometheusrules.monitoring.coreos.com
+	-$(kubectl) delete crd/servicemonitors.monitoring.coreos.com
+	-$(kubectl) delete crd/podmonitors.monitoring.coreos.com
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
@@ -47,10 +56,11 @@ install:
 			--wait \
 			--values values.yaml \
 			$(THANOS_VALUES) \
+			$(AZURE_PATCH) \
 			--version $(CHART_VERSION)
 
 thanos:
-	-$(kubectl) create secret generic thanos-objstore-config --from-file=$(CLOUD_KIND)/thanos-config.yaml
+	-$(kubectl) create secret generic thanos-objstore-config --namespace $(NAMESPACE) --from-file=$(CLOUD_KIND)/thanos-config.yaml
 	$(kubectl) apply -f thanos/thanos-compactor.yaml
 	$(kubectl) apply -f thanos/thanos-querier.yaml
 	$(kubectl) apply -f thanos/thanos-ruler.yaml
