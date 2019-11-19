@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: acm
-  title: ACM
+  title: AWS ACM
   brief: TLS certificates with AWS Certificate Manager
   description: AWS Certificate Manager component to produce valid SSL certificates
   category: Transport Layer Security
