@@ -60,7 +60,7 @@ install:
 			--version $(CHART_VERSION)
 
 thanos:
-	-$(kubectl) create secret generic thanos-objstore-config --namespace $(NAMESPACE) --from-file=$(CLOUD_KIND)/thanos-config.yaml
+	-$(kubectl) create secret generic thanos-objstore-config --from-file=$(CLOUD_KIND)/thanos-config.yaml
 	$(kubectl) apply -f thanos/thanos-compactor.yaml
 	$(kubectl) apply -f thanos/thanos-querier.yaml
 	$(kubectl) apply -f thanos/thanos-ruler.yaml

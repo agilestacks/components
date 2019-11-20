@@ -61,6 +61,11 @@ output "endpoint" {
   value = "https://${var.endpoints[ data.aws_region.current.name ]}"
 }
 
+output "fqdn" {
+  value = "${var.endpoints[ data.aws_region.current.name ]}"
+}
+
+
 output "bucket" {
   value = "${aws_s3_bucket.main.bucket}"
 }

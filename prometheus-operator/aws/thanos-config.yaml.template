@@ -1,7 +1,7 @@
 type: S3
 config:
   bucket: "${component.bucket.name}"
-  endpoint: "${component.bucket.endpoint}"
+  endpoint: "${component.bucket.fqdn}"
   access_key: ""
   insecure: false
   signature_version2: false

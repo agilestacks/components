@@ -58,5 +58,7 @@ outputs:
   fromTfVar: bucket
 - name: component.bucket.endpoint
   fromTfVar: endpoint
+- name: component.bucket.fqdn
+  fromTfVar: fqdn
 - name: component.bucket.region
   fromTfVar: region

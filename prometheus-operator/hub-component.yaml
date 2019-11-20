@@ -45,7 +45,7 @@ parameters:
     empty: allow
   - name: component.bucket.name
     empty: allow
-  - name: component.bucket.endpoint
+  - name: component.bucket.fqdn
     empty: allow
   - name: component.azure-storage.bucket
     empty: allow
