@@ -37,12 +37,12 @@ fetch:
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	-$(kubectl) delete crd/alertmanagers.monitoring.coreos.com
-	-$(kubectl) delete crd/prometheuses.monitoring.coreos.com
-	-$(kubectl) delete crd/prometheusrules.monitoring.coreos.com
-	-$(kubectl) delete crd/servicemonitors.monitoring.coreos.com
-	-$(kubectl) delete crd/podmonitors.monitoring.coreos.com
+		$(helm) delete $(COMPONENT_NAME) --purge && \
+		$(kubectl) delete crd/alertmanagers.monitoring.coreos.com && \
+		$(kubectl) delete crd/prometheuses.monitoring.coreos.com && \
+	    $(kubectl) delete crd/prometheusrules.monitoring.coreos.com && \
+	    $(kubectl) delete crd/servicemonitors.monitoring.coreos.com && \
+	    $(kubectl) delete crd/podmonitors.monitoring.coreos.com || exit 0
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
@@ -75,7 +75,7 @@ unthanos:
 	-$(kubectl) delete -f thanos/service-monitors.yaml
 	-$(kubectl) delete secret thanos-objstore-config
 
-.PHONY: thanos unthanos thanos-cloud thanos-uncloud
+.PHONY: thanos unthanos
 
 uninstall:
 	-$(kubectl) delete -f oidc-crd.yaml
