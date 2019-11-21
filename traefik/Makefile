@@ -43,7 +43,7 @@ ifneq (,$(filter cert-manager,$(HUB_PROVIDES)))
 # proceed as there is no `apps` DNS record created yet
 # TODO revisit this:
 # 1. see why cert-manager is blocking the ingress, that was not the case with 0.9
-# 2. enternal dns?
+# 2. External DNS may resolve this?
 #	DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
 	PROVIDES:=tls-ingress
 else
