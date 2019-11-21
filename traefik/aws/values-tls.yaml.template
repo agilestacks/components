@@ -3,3 +3,5 @@ acme:
     name: route53
     route53:
       AWS_REGION: "${cloud.region}"
+  persistence:
+    enabled: true
