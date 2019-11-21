@@ -38,7 +38,13 @@ else
 ifneq (,$(filter cert-manager,$(HUB_PROVIDES)))
 	PROTOCOL:=https
 	TLS_VALUES_FILE:=--values values-tls.yaml --values $(CLOUD_KIND)/values-tls.yaml
-	DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
+# Cannot enable ACME annotation on dashboard ingress
+# Helm will wait for ingress to become ready, but cert-manager's http01 solver cannot
+# proceed as there is no `apps` DNS record created yet
+# TODO revisit this:
+# 1. see why cert-manager is blocking the ingress, that was not the case with 0.9
+# 2. enternal dns?
+#	DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
 	PROVIDES:=tls-ingress
 else
 	PROTOCOL:=http
