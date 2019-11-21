@@ -1,4 +1,4 @@
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod
@@ -11,10 +11,10 @@ spec:
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
       name: letsencrypt-prod
+    solvers:
     # Enable the HTTP-01 challenge provider
-    http01: {}
-    dns01:
-      providers:
-      - name: route53
+    - http01:
+        ingress: {}
+    - dns01:
         route53:
           region: ${cloud.region}

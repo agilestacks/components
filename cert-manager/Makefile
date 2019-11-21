@@ -4,7 +4,8 @@ COMPONENT_NAME ?= cert-manager
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE 	   ?= cert-manager
 HELM_CHART     ?= jetstack/cert-manager
-CHART_VERSION  ?= v0.9.1
+CHART_VERSION  ?= v0.11.0
+TAG            ?= release-0.11
 KUBE_FLAVOR    ?=
 
 export HELM_HOME ?= $(shell pwd)/.helm
@@ -42,7 +43,7 @@ purge:
 
 install:
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml
+	$(kubectl) apply --validate=false -f https://raw.githubusercontent.com/jetstack/cert-manager/$(TAG)/deploy/manifests/00-crds.yaml
 	@echo Waiting for CRDs to settle...
 	sleep 20
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
