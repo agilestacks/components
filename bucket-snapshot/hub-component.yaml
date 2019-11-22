@@ -4,7 +4,7 @@ kind: component
 meta:
   name: bucket-snapshot
   title: Bucket Snapshot
-  brief: Snapshot content of S3 bucket in .tag.bz2 archive on another S3 bucket
+  brief: Snapshot content of S3 bucket in .tar.bz2 archive on another S3 bucket
   description: >
     Sync S3 bucket content locally, tar and bzip2 it, copy to another S3 bucket.
   category: AWS Native
