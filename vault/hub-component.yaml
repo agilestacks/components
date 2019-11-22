@@ -3,7 +3,16 @@ version: 1
 kind: component
 meta:
   name: vault
-  brief: Vault is A Tool for Managing Secrets
+  title: Vault
+  brief: Manage Secrets and Protect Sensitive Data
+  description: >
+    Secure, store and tightly control access to tokens, passwords, certificates, encryption keys
+    for protecting secrets and other sensitive data using a UI, CLI, or HTTP API.
+  version: 1.2.3
+  maturity: ga
+  license: MPL 2.0
+  category: Security
+  disabled: true
   source:
     dir: ../../components/vault
 
