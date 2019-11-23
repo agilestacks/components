@@ -5,3 +5,5 @@ values-thanos.yaml
 oidc-crd.yaml
 thanos/*.yaml
 aws/thanos-config.yaml
+azure/thanos-config.yaml
+gcp/thanos-config.yaml
