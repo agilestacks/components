@@ -76,7 +76,10 @@ fetch:
 namespace:
 	- $(kubectl) create namespace $(NAMESPACE)
 
-nats-notifications:
+wait:
+	sleep 10
+
+nats-notifications: wait
 	$(mc) --insecure event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
 
 purge:
@@ -115,5 +118,6 @@ output:
 	@ echo
 	@ echo Outputs:
 	@ echo secret = $(SECRET)
+	@ echo
 
 -include ../Mk/phonies
