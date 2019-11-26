@@ -9,16 +9,13 @@ Examples: `stable`, `beta`, `alpha`
 EOF
 }
 
-variable "container_linux_version_gpu" {
+variable "container_linux_version" {
   type = "string"
-
-  default = "1855.4.0"
-
+  default = ""
   description = <<EOF
-(optional) The Container Linux version to use for GPU enabled instances from the selected update channel.
-For regular instances the latest version from the selected update channel will be used.
-
-Examples: `1465.6.0`
+Specifies version constraint for CoreOS image. If empty then it will lead to:
+- GPU instance will default to 1465.6.0
+- Non cpu instance will default to latest
 EOF
 }
 
@@ -175,7 +172,22 @@ variable "domain_name" {
   description = "Domain name of the cluster that for worker pool"
 }
 
-variable "ignition_systemd_ids" {
-		type = "list"
-		default = [""]
-	}
+variable "ephemeral_storage_size" {
+  default = 200
+  description = "Size in gigabytes of ebs storage to mount to /var/lib"
+}
+
+variable "ephemeral_storage_iops" {
+  default = 100
+  description = "Number of input/ouptut operationos for Kubelet ephemeral storage volume"
+}
+
+variable "ephemeral_storage_type" {
+  default = "gp2"
+  description = "EBS type for Kubelet ephemeral storage volume"
+}
+
+variable "service_dns_ip" {
+  default = ""
+  description = "Optional. ip address of cluster dns"
+}

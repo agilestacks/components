@@ -11,6 +11,7 @@ meta:
     to create deployments that have a variety of Cloud Platform services, such as Google Cloud Storage,
     Google Compute Engine, and Google Cloud SQL, configured to work together.
   category: GCP Native
+  maturity: beta
   source:
     dir: ../../components/deployment-manager
 

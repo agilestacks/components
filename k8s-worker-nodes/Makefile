@@ -6,11 +6,11 @@ terraform   ?= terraform-v0.11
 jq := jq -cRM
 
 export TF_VAR_name             ?= $(error undefined env var TF_VAR_name)
-export TF_VAR_s3_bucket        ?= terraform.agilestacks.com
-export TF_VAR_s3_bucket_region ?= us-east-1
+export TF_VAR_s3_bucket        ?= $(error undefined env var TF_VAR_s3_bucket)
+export TF_VAR_s3_bucket_region ?= $(error undefined env var TF_VAR_s3_bucket_region)
 export TF_VAR_domain_name      ?= $(error undefined env var TF_VAR_domain_name)
-export TF_VAR_subnet_ids       := $(shell echo -n '$(SUBNET_IDS)' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
-export TF_VAR_sg_ids           := $(shell echo -n '$(SG_IDS)' | tr ',' ' ' | xargs | jq -cRM 'split(" ")')
+export TF_VAR_subnet_ids       := $(shell echo -n '$(sort $(SUBNET_ID) $(SUBNET_IDS))' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
+export TF_VAR_sg_ids           := $(shell echo -n '$(SG_IDS)' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
 
 export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_name)

@@ -9,7 +9,7 @@ meta:
     Minio is a high performance distributed object storage server, designed for large-scale private cloud
     infrastructure.
   category: Storage
-  version: RELEASE.2018-09-01
+  version: RELEASE.2019-10-12
   maturity: ga
   license: Apache 2.0
   source:
@@ -140,7 +140,7 @@ parameters:
     - name: image.name
       value: minio/minio
     - name: image.tag
-      value: RELEASE.2019-10-12T01-39-57Z 
+      value: RELEASE.2019-10-12T01-39-57Z
     - name: mc.image.name
       value: minio/mc
     - name: mc.image.tag

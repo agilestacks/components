@@ -8,6 +8,7 @@ aws := aws
 
 cloudformation-deploy:
 	$(aws) cloudformation deploy --stack-name $(NAME) \
+		--capabilities CAPABILITY_NAMED_IAM \
 		$(CLOUDFORMATION_DEPLOY_OPTS) \
 		--template-file cloudformation.yaml \
 		--parameter-overrides BucketDescription=$(NAME)
@@ -16,7 +17,7 @@ cloudformation-deploy:
 deploy: CLOUDFORMATION_DEPLOY_OPTS:=--no-fail-on-empty-changeset
 deploy: cloudformation-deploy
 	$(eval OUT := $(shell mktemp))
-	$(aws) cloudformation describe-stacks --stack-name $(NAME) | tee $(OUT)
+	$(aws) --output json cloudformation describe-stacks --stack-name $(NAME) | tee $(OUT)
 	@echo Outputs:
 	@jq -r '.Stacks[0].Outputs[] | .OutputKey + " = " + .OutputValue' $(OUT)
 	@echo

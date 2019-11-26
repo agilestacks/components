@@ -66,15 +66,40 @@ locals {
 
   default_key          = "${var.domain_name}/stack-k8s-aws/ignition/ignition_worker.json"
   bootstrap_script_key = "${coalesce(var.bootstrap_script_key, local.default_key)}"
-  coreos_image         = "CoreOS-${var.container_linux_channel}-${local.instance_gpu == "true" ? format("%s-%s",var.container_linux_version_gpu,"*") : "*"}"
 
+  default_coreos_gpu   = "1855.4.0"
+  coreos_image_gpu     = "CoreOS-${var.container_linux_channel}-${coalesce(var.container_linux_version, local.default_coreos_gpu)}-${var.virtualization_type}"
+  coreos_image_cpu     = "CoreOS-${var.container_linux_channel}-${coalesce(var.container_linux_version, "*")}-${var.virtualization_type}"
+  coreos_image         = "${local.instance_gpu == "true" ? local.coreos_image_gpu : local.coreos_image_cpu}"
   dest_script_key      = "${dirname(local.bootstrap_script_key)}/pool/${var.name}/${basename(local.bootstrap_script_key)}"
 
   ignition_content = "${data.ignition_config.main.rendered}"
-  default_systemunits = "${data.ignition_systemd_unit.var_lib_docker.id}"
-  gpu_systemunits     = "${local.default_systemunits},${data.ignition_systemd_unit.var_lib_docker.id}",
-  sys_units_string    = "${local.instance_gpu == "true" ? local.gpu_systemunits : local.default_systemunits}"
-  sys_units_list     = "${split(",",local.sys_units_string)}"
+  filesystems = [
+    "${local.instance_ephemeral_nvme
+      ? data.ignition_filesystem.var_lib_docker.id
+      : data.ignition_filesystem.ebs_mount.id}",
+  ]
+
+  arrays = [
+    "${local.instance_ephemeral_nvme ? data.ignition_raid.nvme.id : ""}"
+  ]
+
+  sys_units = [
+    "${local.instance_ephemeral_nvme
+      ? data.ignition_systemd_unit.var_lib_docker.id
+      : data.ignition_systemd_unit.ebs_mount.id}",
+    "${data.ignition_systemd_unit.kubelet_ebs.id}",
+    "${data.ignition_systemd_unit.docker_ebs.id}",
+    "${local.instance_gpu == "true" ? data.ignition_systemd_unit.nvidia.id : ""}",
+  ]
+
+  files = [
+    "${data.ignition_file.kubelet_config.id}"
+  ]
+  node_labels = [
+    "name=${local.name1}",
+    "${local.instance_gpu == "true" ? "gpu=true" : ""}",
+  ]
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
@@ -82,27 +107,34 @@ resource "aws_s3_bucket_object" "bootstrap_script" {
   bucket   = "${var.s3_bucket}"
   key      = "${local.dest_script_key}"
 
-  content = "${local.instance_gpu ?
-    replace(data.aws_s3_bucket_object.bootstrap_script.body,
+  content = "${replace(data.aws_s3_bucket_object.bootstrap_script.body,
       "--node-labels=node-role.kubernetes.io/node",
-      "--node-labels=node-role.kubernetes.io/node,gpu=true") :
-    data.aws_s3_bucket_object.bootstrap_script.body}"
+      "--node-labels=node-role.kubernetes.io/node,${join(",",compact(local.node_labels))}")
+  }"
 
   content_type = "text/json"
   acl          = "private"
 }
 
-# TODO: we must find way how to force Exists or Read invocation for ignition_systemd resource
 data "ignition_config" "main" {
   append {
     source = "s3://${aws_s3_bucket_object.bootstrap_script.bucket}/${aws_s3_bucket_object.bootstrap_script.key}"
     verification = "sha512-${sha512(aws_s3_bucket_object.bootstrap_script.content)}"
   }
 
-  // conditional operator cannot be used with list values
-  arrays      = ["${local.nvme[local.nvme_ndevices > 1 ? "raid" : "empty"]}"]
-  filesystems = ["${local.nvme[local.instance_ephemeral_nvme ? "docker" : "empty"]}"]
-  systemd     = ["${local.sys_units_list}"]
+  // hcl friendly working around conditional list values
+  arrays      = ["${compact(local.arrays)}"]
+  filesystems = ["${compact(local.filesystems)}"]
+  systemd     = ["${compact(local.sys_units)}"]
+  files       = ["${compact(local.files)}"]
+  # directories = [
+  #   "${data.ignition_directory.pods.id}",
+  #   "${data.ignition_directory.docker.id}",
+  # ]
+  # links       = [
+  #   "${data.ignition_link.pods.id}",
+  #   "${data.ignition_link.docker.id}",
+  # ]
 }
 
 data "aws_ami" "coreos_ami" {
@@ -146,6 +178,14 @@ resource "aws_launch_configuration" "worker_conf" {
     volume_size = "${var.root_volume_size}"
     iops        = "${var.root_volume_type == "io1" ? var.root_volume_iops : 0}"
   }
+
+  ebs_block_device {
+    device_name = "${local.device_name1}"
+    volume_type = "${var.ephemeral_storage_type}"
+    volume_size = "${var.ephemeral_storage_size}"
+    iops        = "${var.ephemeral_storage_type == "io1" ? var.ephemeral_storage_iops : 0}"
+    delete_on_termination = true
+  }
 }
 
 resource "aws_autoscaling_group" "workers" {
@@ -177,7 +217,7 @@ resource "aws_autoscaling_attachment" "workers" {
 
 resource "local_file" "bootstrap_script" {
   content  = "${aws_s3_bucket_object.bootstrap_script.content}"
-  filename = "${path.cwd}/.terraform/${var.name}-${random_string.rnd.result}.json"
+  filename = "${path.cwd}/.terraform/${var.name}-${random_string.rnd.result}.service"
   lifecycle {
     create_before_destroy = true
   }

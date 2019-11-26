@@ -1,0 +1,49 @@
+---
+version: 1
+kind: component
+meta:
+  name: bucket-snapshot
+  title: Bucket Snapshot
+  brief: Snapshot content of S3 bucket in .tar.bz2 archive on another S3 bucket
+  description: >
+    Sync S3 bucket content locally, tar and bzip2 it, copy to another S3 bucket.
+  category: AWS Native
+  maturity: alpha
+  disabled: true
+  source:
+    dir: .
+
+requires:
+- aws
+
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
+  - backup
+  - restore
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.bucket.kind
+  value: s3
+  env: BUCKET_KIND
+- name: component.bucket.name
+  env: BUCKET_NAME
+- name: component.bucket.region
+  env: BUCKET_REGION
+- name: component.bucket.snapshot
+  empty: allow
+  env: SNAPSHOT
+- name: component.bucket.snapshot
+  parameters:
+  - name:  prefix
+    empty: allow
+    env:   PREFIX
+  - name:  bucket
+    value: ${terraform.bucket.name}
+    env:   BACKUP_BUCKET
+  - name:  region
+    value: ${terraform.bucket.region}
+    env:   BACKUP_REGION

@@ -28,14 +28,14 @@ resources:
 
 
 rbac:
-    # true here enables creation of rbac resources
-    create: ${component.sysdig.rbac.install}
+  # true here enables creation of rbac resources
+  create: ${component.sysdig.rbac.install}
 
 serviceAccount:
-    # Create and use serviceAccount resources
-    create: true
-    # Use this value as serviceAccountName
-    name: sysdig-account
+  # Create and use serviceAccount resources
+  create: true
+  # Use this value as serviceAccountName
+  name: sysdig-account
 
 daemonset:
   # Perform rolling updates by default in the DaemonSet agent
@@ -44,6 +44,23 @@ daemonset:
     # You can also customize maxUnavailable, maxSurge or minReadySeconds if you
     # need it
     type: RollingUpdate
+  ## Extra environment variables that will be pass onto deployment pods
+  env: {}
+  ## Allow the DaemonSet to schedule using affinity rules
+  # Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  # affinity: {}
+
+# If is behind a proxy you can set the proxy server
+proxy:
+  httpProxy:
+  httpsProxy:
+  noProxy:
+
+# Set daemonset timezone
+timezone:
+
+# Set daemonset priorityClassName
+priorityClassName:
 
 ebpf:
   # Enable eBPF support for Sysdig Agent
@@ -54,29 +71,30 @@ ebpf:
     # Set to false if not running on Google COS
     mountEtcVolume: true
 
-
 sysdig:
-    # Required: You need your Sysdig Monitor access key before running agents.
-    accessKey: ${component.sysdig.license}
-    settings:
-     ### Agent tags
-      tags: ${component.sysdig.agentTags}
-     #### Sysdig Software related config ####
-     # Sysdig collector address
-     # collector: 192.168.1.1
-     # Collector TCP port
-     # collector_port: 6666
-     # Whether collector accepts ssl
-     # ssl: true
-     # collector certificate validation
-     # ssl_verify_certificate: true
-     #######################################
-      new_k8s: true
-      k8s_cluster_name: ${component.sysdig.clusterName}
+  # Required: You need your Sysdig Monitor access key before running agents.
+  accessKey: ${component.sysdig.license}
+
+  settings:
+    ### Agent tags
+    tags: ${component.sysdig.agentTags}
+    #### Sysdig Software related config ####
+    # Sysdig collector address
+    # collector: 192.168.1.1
+    # Collector TCP port
+    # collector_port: 6666
+    # Whether collector accepts ssl
+    # ssl: true
+    # collector certificate validation
+    # ssl_verify_certificate: true
+    #######################################
+    k8s_cluster_name: ${component.sysdig.clusterName}
+    log:
+      console_priority: warning
 
 secure:
-    # true here enables Sysdig Secure: container run-time security & forensics
-    enable: false
+  # true here enables Sysdig Secure: container run-time security & forensics
+  enabled: false
 
 customAppChecks: {}
   # Allow passing custom app checks for Sysdig Agent.

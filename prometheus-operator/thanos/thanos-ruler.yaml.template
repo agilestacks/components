@@ -68,7 +68,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: thanos-objstore-config
-                  key: thanos.yaml
+                  key: thanos-config.yaml
           ports:
             - name: http
               containerPort: 10902

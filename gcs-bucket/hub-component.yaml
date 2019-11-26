@@ -11,6 +11,7 @@ meta:
     storing data for archival and disaster recovery, or distributing large data objects to
     users via direct download.
   category: GCP Native
+  maturity: beta
   source:
     dir: ../../components/gcs-bucket
 
@@ -46,3 +47,7 @@ outputs:
   fromTfVar: url
 - name: component.gcs.consoleUrl
   value: https://console.cloud.google.com/storage/browser/${component.gcs.bucket}/?project=${cloud.gcpProjectId}
+- name: component.bucket.kind
+  value: gcs
+- name: component.bucket.name
+  value: ${component.gcs.bucket}

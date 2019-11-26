@@ -9,7 +9,7 @@ network.host: 0.0.0.0
 
 discovery.type: single-node
 discovery.seed_hosts: elasticsearch-discovery.${component.efk.namespace}.svc.cluster.local
-    
+
 
 path:
   logs: /data/log

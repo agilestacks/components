@@ -10,6 +10,7 @@ meta:
     that allows to create a collection of related AWS resources like
     VPC, Auto Scaling groups, Amazon CloudWatch, etc.
   category: AWS Native
+  maturity: ga
   source:
     dir: ../../components/cloudformation
 

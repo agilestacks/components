@@ -1,0 +1,5 @@
+vault:
+  storage:
+    gcs:
+      ha_enabled: "false"
+      bucket: ${component.bucket.name}

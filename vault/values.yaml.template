@@ -30,10 +30,6 @@ vault:
     tcp:
       address: '${component.vault.ipaddress}:${component.vault.port}'
       tls_disable: ${component.vault.tls.disabled}
-  storage:
-    etcd:
-      address: ${component.etcd.url}
-      etcd_api: ${component.vault.etcd.api}
 resources:
   limits:
 #    cpu: 100m

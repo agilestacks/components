@@ -11,6 +11,7 @@ meta:
     can use it to store and protect any amount of data for a range of use cases, such as websites, mobile applications,
     backup and restore, archive, enterprise applications, IoT devices, and big data analytics.
   category: AWS Native
+  maturity: beta
   source:
     dir: .
 
@@ -57,5 +58,7 @@ outputs:
   fromTfVar: bucket
 - name: component.bucket.endpoint
   fromTfVar: endpoint
+- name: component.bucket.fqdn
+  fromTfVar: fqdn
 - name: component.bucket.region
   fromTfVar: region

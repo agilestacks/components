@@ -50,18 +50,17 @@ clean:
 
 mongo_ready_container=$(kubectl) get pods -l app=mongodb -o jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}'
 wait:
-		$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
-		@echo "Waiting for MongoDB pod to become ready"
-
-		@while [ `date +%s` -le "$(timeout)" ]; do \
-				if test -n "`$(mongo_ready_container)`"; then \
-						echo done; \
-						exit 0; \
-				fi; \
-				echo 'still waiting'; \
-				sleep 8; \
-		done; \
-		echo "ERROR timeout $(TIMEOUT)sec"; \
-		exit 1
+	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
+	@echo "Waiting for MongoDB pod to become ready"
+	@while test `date +%s` -le "$(timeout)"; do \
+		if test -n "`$(mongo_ready_container)`"; then \
+			echo done; \
+			exit 0; \
+		fi; \
+		echo 'still waiting'; \
+		sleep 8; \
+	done; \
+	echo "ERROR timeout $(TIMEOUT)sec"; \
+	exit 1
 
 -include ../Mk/phonies

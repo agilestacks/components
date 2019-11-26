@@ -1,0 +1,31 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: curator
+  namespace: ${component.efk.namespace}
+  labels:
+    provider: agilestacks.com
+    project: logs
+    qualifier: curator
+  annotations:
+    agilestacks.com/stack-comoponent: Curator
+spec:
+  schedule: "1 1 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - image: bobrik/curator
+            name: curator
+            args: ["--config", "/etc/config/curator-config.yml", "/etc/config/curator-action.yml"]
+            volumeMounts:
+            - name: config
+              mountPath: /etc/config
+          volumes:
+          - name: config
+            configMap:
+              name: curator-config
+          restartPolicy: OnFailure

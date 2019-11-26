@@ -30,3 +30,4 @@ acme:
       AWS_REGION: "${cloud.region}"
   persistence:
     enabled: false
+    storageClass: default

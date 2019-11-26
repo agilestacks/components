@@ -32,7 +32,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: thanos-objstore-config
-                key: thanos.yaml
+                key: thanos-config.yaml
           resources:
             limits:
               cpu: "1"

@@ -1,15 +1,22 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= efk
-DOMAIN_NAME    ?= dev.kubernetes.delivery
+DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= logs
 CLOUD_KIND     ?= aws
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
-deploy:
+ifeq ($(CURATOR_ENABLED),true)
+deploy: install curator
+undeploy: uninstall uncurator
+else
+deploy: install retain
+undeploy: uninstall unretain
+endif
+
+install:
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply -f $(CLOUD_KIND)-storage-class.yaml
 	-$(kubectl) delete configmap es-config
 	$(kubectl) create configmap es-config \
 		--from-file=conf/elasticsearch.yml \
@@ -29,7 +36,7 @@ deploy:
 	$(kubectl) apply -f kibana-deployment.yaml
 	$(kubectl) apply -f kibana-service.yaml
 
-undeploy:
+uninstall:
 	-$(kubectl) delete configmap es-config
 	-$(kubectl) delete configmap cerebro-config
 	-$(kubectl) delete -f es-env-cm.yaml
@@ -43,5 +50,28 @@ undeploy:
 	-$(kubectl) delete -f kibana-service.yaml
 	-$(kubectl) delete -f es-cerebro.yaml
 	-$(kubectl) delete pvc -l k8s-app=elasticsearch-logging
+
+retain:
+	-$(kubectl) delete configmap retain-config
+	$(kubectl) create configmap retain-config \
+		--from-file=conf/retain.sh
+	$(kubectl) apply -f retain-cron.yaml
+
+unretain:
+	-$(kubectl) delete -f retain-cron.yaml
+	-$(kubectl) delete configmap retain-config
+
+curator:
+	-$(kubectl) delete configmap curator-config
+	$(kubectl) create configmap curator-config \
+		--from-file=conf/curator-config.yml \
+		--from-file=conf/curator-action.yml
+	$(kubectl) apply -f curator-cron.yaml
+
+uncurator:
+	-$(kubectl) delete -f curator-cron.yaml
+	-$(kubectl) delete configmap curator-config
+
+.PHONY: curator uncurator
 
 -include ../Mk/phonies

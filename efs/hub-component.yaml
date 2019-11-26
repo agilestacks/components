@@ -10,6 +10,7 @@ meta:
     file storage for use with Amazon EC2 instances in the AWS Cloud.
     Amazon EFS is easy to use and offers a simple interface that allows you
     to create and configure file systems quickly and easily.
+  maturity: beta
   source:
     dir: ../../components/efs
 

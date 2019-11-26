@@ -11,6 +11,7 @@ meta:
     and delete resources in your Azure subscription. You can use its access control,
     auditing, and tagging features to secure and organize your resources after deployment.
   category: Azure Native
+  maturity: beta
   source:
     dir: ../../components/arm-template
 

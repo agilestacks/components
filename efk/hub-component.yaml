@@ -10,7 +10,7 @@ meta:
     searching and analyzing your data.
   category: Monitoring
   version: 7.2.1
-  maturity: ga
+  maturity: beta
   license: Apache 2.0
   source:
     dir: ../../components/efk
@@ -38,27 +38,37 @@ parameters:
       value: logs
       env:   NAMESPACE
     - name: storageClass
-      value: "${cloud.kind}-storage"
+      value: default
     - name: storageSize
       value: 10Gi
     - name:  ingress.urlPrefix
       value: logs
     - name:  ingress.kibanaUrlPrefix
       value: kibana
+    - name:  ingress.cerebroUrlPrefix
+      value: cerebro
     - name: cerebro.version
-      value: 0.8.4
+      value: 0.8.5
     - name:  fluentd.version
-      value: v1.5.2
+      value: v1.6.3
+      # value: v1.7-debian-elasticsearch7-1
     - name:  kibana.version
-      value: 7.2.1
+      value: 7.4.2
     - name:  elastic.version
-      value: 7.2.1
+      value: 7.4.2
+      # only 1 works because `discovery.type: single-node` in Elastic config
     - name: elastic.masters
       value: 1
       # (number of master nodes / 2) + 1
     - name: elastic.quorum
       value: 1
-
+    - name: retain.days
+      value: 10
+    - name: curator.enabled
+      value: false
+      env: CURATOR_ENABLED
+    - name: curator.days
+      value: 10
 
 templates:
   files:
@@ -69,3 +79,6 @@ outputs:
   - name: component.efk.url
     brief: Kibana Dashboard
     value: ${component.ingress.protocol}://${component.efk.ingress.kibanaUrlPrefix}.${component.ingress.ssoFqdn}
+  - name: component.efk.cerebro.url
+    brief: Cerebro ElasticSearch admin
+    value: ${component.ingress.protocol}://${component.efk.ingress.cerebroUrlPrefix}.${component.ingress.ssoFqdn}

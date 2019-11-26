@@ -9,6 +9,7 @@ meta:
     Amazon DynamoDB is a fast and flexible NoSQL database service. Its flexible data model and reliable
     performance make it a great fit for mobile, web, gaming, ad-tech, IoT, and many other applications.
   category: AWS Native
+  disabled: true
   source:
       dir: ./
 

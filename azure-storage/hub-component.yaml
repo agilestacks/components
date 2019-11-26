@@ -10,6 +10,7 @@ meta:
     secure, durable, scalable, and redundant. Azure Storage includes Azure Blobs (objects), Azure Data
     Lake Storage Gen2, Azure Files, Azure Queues, and Azure Tables.
   category: Azure Native
+  maturity: beta
   source:
     dir: ../../components/azure-storage
 
@@ -58,6 +59,9 @@ outputs:
   fromTfVar: storage_account_region
 - name: component.azure-storage.endpoint
   fromTfVar: storage_primary_blob_endpoint
+- name: component.azure-storage.accessKey
+  kind: secret
+  fromTfVar: storage_primary_access_key
 # - name: component.azure-storage.url
 #   brief: URL to the Azure portal
 #   value:

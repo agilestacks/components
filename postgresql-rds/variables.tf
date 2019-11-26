@@ -3,7 +3,7 @@ variable "allocated_storage" {
 }
 
 variable "engine_version" {
-  default = "10.1"
+  default = "11.4"
 }
 
 variable "instance_type" {
@@ -14,7 +14,9 @@ variable "storage_type" {
   default = "gp2"
 }
 
-variable "vpc_id" {}
+variable "vpc_id" {
+  default = ""
+}
 
 variable "rds_name" {}
 

@@ -1,0 +1,42 @@
+---
+version: 1
+kind: component
+meta:
+  name: aws-spot-drainer
+  title: AWS Spot Drainer
+  brief: AWS spot instance termination handler
+  description: >
+    The AWS Node Termination Handler is an operational DaemonSet
+    built to run on any Kubernetes cluster using AWS EC2 Spot Instances
+  category: Kubernetes Tools
+  version: 1.0
+  maturity: beta
+  license: Apache 2.0
+  source:
+    dir: ../../components/aws-spot-drainer
+
+requires:
+  - kubernetes
+provides:
+  - aws-spot-drainer
+
+lifecycle:
+  verbs:
+    - deploy
+    - undeploy
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.aws-spot-drainer
+    parameters:
+    - name:  name
+      value: aws-spot-drainer
+      env:   COMPONENT_NAME
+    - name: namespace
+      value: ${component.aws-spot-drainer.name}
+      env: NAMESPACE
+
+templates:
+  files:
+    - "base/*.template"

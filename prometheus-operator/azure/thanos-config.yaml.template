@@ -1,0 +1,5 @@
+type: AZURE
+config:
+  storage_account: "${component.azure-storage.bucket}"
+  storage_account_key: "${component.azure-storage.accessKey}"
+  container: "${component.azure-storage.container}"

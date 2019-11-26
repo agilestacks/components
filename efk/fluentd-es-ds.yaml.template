@@ -70,6 +70,8 @@ spec:
       containers:
       - name: fluentd-es
         image: agilestacks/fluentd-elasticsearch:${component.efk.fluentd.version}
+        # image: fluent/fluentd-kubernetes-daemonset:${component.efk.fluentd.version}
+        imagePullPolicy: Always
         env:
         - name: FLUENTD_ARGS
           value: --no-supervisor -q

@@ -19,12 +19,19 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 vault   ?= vault
 
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
+TIMEOUT := 300
 
-deploy: clean init purge install sleep connect enable unseal mount force-disconnect output
+ifneq ($(ETCD_URL),)
+storage := etcd
+else ifneq ($(DYNAMODB_TABLE),)
+storage := dynamodb
+else ifneq ($(BUCKET_NAME),)
+storage := $(BUCKET_KIND)
+else
+$(error One of component.etcd.url, component.dynamodb.table, component.bucket.kind/.name must be provided for Vault storage)
+endif
 
-sleep:
-	@echo Waiting 30sec for Vault pod
-	@sleep 30
+deploy: clean init purge install wait connect enable unseal mount force-disconnect output
 
 init:
 	@mkdir -p .vault $(HELM_HOME)
@@ -41,12 +48,13 @@ install:
 			--namespace $(NAMESPACE) \
 			--replace \
 			--wait \
-			--values values.yaml
+			--values values.yaml \
+			--values values-$(storage).yaml
 
 # If Vault is not initialized then we're in first time deploy - initialize and create fresh unseal file.
 #
-# Otherwise, it might be a restore from backup - etcd is restored, Vault database is initialized but we
-# have no unseal file. Render unseal file from ${component.vault.unseal.file}.
+# Otherwise, it might be a restore from backup - etcd or s3 bucket is restored, Vault database is initialized
+# but we have no unseal file. Render unseal file from ${component.vault.unseal.file}.
 #
 # If the file is too small - the size of a valid unseal file is usually 445 bytes, then this is not a
 # restore but redeploy. Check there is already valid unseal file. If not, then render it from outputs.
@@ -155,5 +163,20 @@ output:
 	@cat $(UNSEAL_FILE) | jq -Mr '.keys | to_entries | map("unseal_key_" + (.key+1|tostring) + "=" + .value) | .[]'
 	@echo
 	@echo Vault has been installed and initialized successfully.
+
+vault_ready_container:=$(kubectl) get pods -l app=$(COMPONENT_NAME) -o jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}'
+wait:
+	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
+	@echo "Waiting for Vault pod to become ready"
+	@while test `date +%s` -le "$(timeout)"; do \
+		if test -n "`$(vault_ready_container)`"; then \
+			echo done; \
+			exit 0; \
+		fi; \
+		echo 'still waiting'; \
+		sleep 8; \
+	done; \
+	echo "ERROR timeout $(TIMEOUT)sec"; \
+	exit 1
 
 -include ../Mk/phonies

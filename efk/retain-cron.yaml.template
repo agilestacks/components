@@ -1,0 +1,32 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: retain
+  namespace: ${component.efk.namespace}
+  labels:
+    provider: agilestacks.com
+    project: logs
+    qualifier: retain
+spec:
+  schedule: "0 1 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - image: agilestacks/toolbox
+            name: retain
+            command: ['/bin/bash', '/etc/config/retain.sh']
+            env:
+            - name: AGE
+              value: "${component.efk.retain.days}"
+            volumeMounts:
+            - name: config
+              mountPath: /etc/config
+          volumes:
+          - name: config
+            configMap:
+              name: retain-config
+          restartPolicy: OnFailure

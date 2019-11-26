@@ -1,0 +1,12 @@
+/conf/curator-action.yml
+/conf/elasticsearch.yml
+/curator-cron.yaml
+/es-cerebro.yaml
+/es-service.yaml
+/es-statefulset.yaml
+/es-storage-class.yaml
+/fluentd-es-ds.yaml
+/kibana-deployment.yaml
+/kibana-service.yaml
+/namespace.yaml
+/retain-cron.yaml

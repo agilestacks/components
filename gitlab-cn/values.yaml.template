@@ -32,8 +32,8 @@ global:
   ingress:
     configureCertmanager: false
     annotations:
-      kubernetes.io/tls-acme: true
-      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+      kubernetes.io/tls-acme: "true"
+      acme.cert-manager.io/http01-edit-in-place: "true"
     enabled: true
     tls:
       enabled: true
@@ -438,7 +438,7 @@ shared-secrets:
 ## Installation & configuration of gitlab/gitlab-runner
 ## See requirements.yaml for current version
 gitlab-runner:
-  install: true
+  install: false # Disabled due to DNS - https://github.com/agilestacks/components/issues/317
   rbac:
     create: true
   runners:
@@ -469,6 +469,10 @@ gitlab:
     persistence:
       storageClass: pv-${cloud.kind}
       size: 10Gi
+  gitlab:
+    unicorn:
+      helmTests:
+        enabled: false
 
 ## doc/charts/gitlab/migrations
 #   migrations:

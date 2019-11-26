@@ -1,14 +1,15 @@
 terraform {
   required_version = ">= 0.11.10"
-  backend          "s3"             {}
+  backend "s3" {}
 }
 
 provider "aws" {
-  version = "2.14.0"
+  version = "2.35.0"
 }
 
 data "aws_vpc" "selected" {
   id = "${var.vpc_id}"
+  default = "${var.vpc_id == "" ? "true" : ""}"
 }
 
 data "aws_subnet_ids" "selected" {
@@ -16,9 +17,8 @@ data "aws_subnet_ids" "selected" {
 }
 
 locals {
-  rds_name = "${replace(var.rds_name, "/[^[:alnum:]]+/", "-")}"
-
-  # rds_name = "${substr(local.rds_name_long, 0, min(length(local.rds_name_long), 63))}"
+  rds_name_long = "${replace(var.rds_name, "/[^[:alnum:]]+/", "-")}"
+  rds_name = "${substr(local.rds_name_long, 0, min(length(local.rds_name_long), 63))}"
   final_snapshot_identifier = "${replace(var.final_snapshot_identifier, "/[^[:alnum:]]+/", "-")}"
 }
 
@@ -83,9 +83,8 @@ resource "aws_db_instance" "postgresql" {
   port                       = "${var.database_port}"
   vpc_security_group_ids     = ["${aws_security_group.default.id}"]
   db_subnet_group_name       = "${aws_db_subnet_group.all.name}"
-
-  #parameter_group_name       = "${var.parameter_group}"
-  storage_encrypted = "${var.storage_encrypted}"
+ #parameter_group_name       = "${var.parameter_group}"
+  storage_encrypted          = "${var.storage_encrypted}"
 
   snapshot_identifier = "${var.snapshot_identifier}"
 
@@ -180,4 +179,3 @@ resource "aws_db_instance" "postgresql" {
 
 #   alarm_actions = ["${var.alarm_actions}"]
 # }
-

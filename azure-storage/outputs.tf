@@ -18,6 +18,10 @@ output "storage_primary_blob_endpoint" {
   value = "${azurerm_storage_account.main.primary_blob_endpoint}"
 }
 
+output "storage_primary_access_key" {
+  value = "${azurerm_storage_account.main.primary_access_key}"
+}
+
 # output "storage_secondary_location" {
 #   value = "${azurerm_storage_account.main.secondary_location}"
 # }

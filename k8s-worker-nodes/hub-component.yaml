@@ -24,6 +24,8 @@ parameters:
   - name: dns.domain
     env: TF_VAR_domain_name
 
+  - name: cloud.vpc.worker.subnet.id
+    env: SUBNET_ID
   - name: cloud.vpc.worker.subnet.ids
     env: SUBNET_IDS
   - name: cloud.vpc.worker.sg.id
@@ -33,6 +35,9 @@ parameters:
   - name: cloud.ec2.master.ignitionProfileS3
     env: TF_VAR_bootstrap_script_key
     empty: allow
+  - name: kubernetes.serviceDnsIp
+    env: TF_VAR_service_dns_ip
+    value: 10.0.3.10
 
   - name: component.k8s-worker-nodes
     parameters:
@@ -42,9 +47,9 @@ parameters:
     - name: spotPrice
       env: TF_VAR_spot_price
       empty: allow
-    - name: containerLinuxVersionGpu
-      env: TF_VAR_container_linux_version_gpu
-      value: 1855.4.0
+    - name: containerLinuxVersion
+      env: TF_VAR_container_linux_version
+      empty: allow
     - name: shortName
       value: ${hub.componentName}
     - name: name
@@ -71,6 +76,15 @@ parameters:
     - name: vmType
       env: TF_VAR_virtualization_type
       value: hvm
+    - name: ephemeralStorage.size
+      env: TF_VAR_ephemeral_storage_size
+      value: 200
+    - name: ephemeralStorage.type
+      env: TF_VAR_ephemeral_storage_type
+      value: gp2
+    - name: ephemeralStorage.iops
+      env: TF_VAR_ephemeral_storage_iops
+      value: 100
 
 outputs:
 - name: component.k8s-worker-nodes.bootrapScript

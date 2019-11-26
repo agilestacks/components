@@ -1,0 +1,13 @@
+type: S3
+config:
+  bucket: "${component.bucket.name}"
+  endpoint: "${component.bucket.fqdn}"
+  access_key: ""
+  insecure: false
+  signature_version2: false
+  encrypt_sse: false
+  secret_key: ""
+  put_user_metadata: {}
+  http_config:
+    idle_conn_timeout: 0s
+    insecure_skip_verify: false
