@@ -14,6 +14,10 @@ spec:
         image: amazon/aws-node-termination-handler:v1.0.0
         imagePullPolicy: Always
         env:
+        - name: ignoreDaemonSetsConfigKey
+          value: "true"
+        - name: delete-local-data
+          value: "true"
         - name: NODE_NAME
           valueFrom:
             fieldRef:
