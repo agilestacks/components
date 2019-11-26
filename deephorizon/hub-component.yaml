@@ -3,6 +3,7 @@ version: 1
 kind: component
 meta:
   name: deephorizon
+  title: Deep Horizon
   brief: An dns synchronization operator that can manage multiple zones
   source:
       dir: .
