@@ -93,8 +93,6 @@ postgresql/charts
 postgresql/values.yaml
 postgresql/volume-claim.yaml
 postgresql/volume-hostpath.yaml
-prometheus/values-kube-prometheus.yaml
-prometheus/values-operator.yaml
 redis/charts
 redis/values-ha.yaml
 redis/values.yaml

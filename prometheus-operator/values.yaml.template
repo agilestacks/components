@@ -55,8 +55,8 @@ additionalPrometheusRules: []
 ##
 global:
   rbac:
-    create: {{component.promoper.rbac.enabled}}
-    pspEnabled: {{component.promoper.psp.enabled}}
+    create: {{component.prometheus.rbac.enabled}}
+    pspEnabled: {{component.prometheus.psp.enabled}}
 
   ## Reference to one or more secrets to be used when pulling images
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -133,7 +133,7 @@ alertmanager:
   #           {{ end }}
 
   ingress:
-    enabled: {{component.promoper.alertmanager.ingress.enabled}}
+    enabled: {{component.prometheus.alertmanager.ingress.enabled}}
 
     annotations: {}
 
@@ -142,7 +142,7 @@ alertmanager:
     ## Hosts must be provided if Ingress is enabled.
     ##
     hosts:
-        - {{component.promoper.alertmanager.ingress.urlPrefix}}.{{component.ingress.ssoFqdn}}
+        - {{component.prometheus.alertmanager.ingress.urlPrefix}}.{{component.ingress.ssoFqdn}}
 
     ## Paths to use for ingress rules - one path should match the alertmanagerSpec.routePrefix
     ##
@@ -216,7 +216,7 @@ alertmanager:
     ##
     image:
       repository: quay.io/prometheus/alertmanager
-      tag: {{component.promoper.alertmanager.version}}
+      tag: {{component.prometheus.alertmanager.version}}
 
     ## If true then the user will be responsible to provide a secret with alertmanager configuration
     ## So when true the config part will be ignored (including templateFiles) and the one in the secret will be used
@@ -355,11 +355,11 @@ grafana:
   ##
   defaultDashboardsEnabled: true
 
-  adminPassword: {{component.promoper.grafana.adminPassword}}
+  adminPassword: {{component.prometheus.grafana.adminPassword}}
 
   image:
     repository: grafana/grafana
-    tag: {{component.promoper.grafana.version}}
+    tag: {{component.prometheus.grafana.version}}
     pullPolicy: IfNotPresent
 
   ## Grafana's primary configuration
@@ -381,7 +381,7 @@ grafana:
     users:
       auto_assign_org_role: Admin
     server:
-      root_url: {{component.ingress.protocol}}://{{component.promoper.grafana.ingress.urlPrefix}}.{{component.ingress.ssoFqdn}}
+      root_url: {{component.ingress.protocol}}://{{component.prometheus.grafana.ingress.urlPrefix}}.{{component.ingress.ssoFqdn}}
     analytics:
       check_for_updates: true
     log:
@@ -398,8 +398,8 @@ grafana:
       name: AgileStacks
       enabled: true
       scopes: openid profile email
-      client_id: {{component.promoper.grafana.oidcId}}
-      client_secret: {{component.promoper.grafana.oidcSecret}}
+      client_id: {{component.prometheus.grafana.oidcId}}
+      client_secret: {{component.prometheus.grafana.oidcSecret}}
       auth_url: {{component.dex.issuer}}/auth
       token_url: {{component.dex.issuer}}/token
       api_url: {{component.dex.issuer}}/userinfo
@@ -407,7 +407,7 @@ grafana:
   ingress:
     ## If true, Grafana Ingress will be created
     ##
-    enabled: {{component.promoper.grafana.ingress.enabled}}
+    enabled: {{component.prometheus.grafana.ingress.enabled}}
 
     ## Annotations for Grafana Ingress
     ##
@@ -425,7 +425,7 @@ grafana:
     # hosts:
     #   - grafana.domain.com
     hosts:
-        - {{component.promoper.grafana.ingress.urlPrefix}}.{{component.ingress.ssoFqdn}}
+        - {{component.prometheus.grafana.ingress.urlPrefix}}.{{component.ingress.ssoFqdn}}
 
     ## Path for grafana ingress
     path: /
@@ -836,9 +836,9 @@ kubeStateMetrics:
 ##
 kube-state-metrics:
   rbac:
-    create: {{component.promoper.rbac.enabled}}
+    create: {{component.prometheus.rbac.enabled}}
   podSecurityPolicy:
-    enabled: {{component.promoper.psp.enabled}}
+    enabled: {{component.prometheus.psp.enabled}}
 
 ## Deploy node exporter as a daemonset to all nodes
 ##
@@ -1039,7 +1039,7 @@ prometheusOperator:
   ##
   image:
     repository: quay.io/coreos/prometheus-operator
-    tag: {{component.promoper.operator.version}}
+    tag: {{component.prometheus.operator.version}}
     pullPolicy: IfNotPresent
 
   ## Configmap-reload image to use for reloading configmaps
@@ -1052,7 +1052,7 @@ prometheusOperator:
   ##
   prometheusConfigReloaderImage:
     repository: quay.io/coreos/prometheus-config-reloader
-    tag: {{component.promoper.operator.version}}
+    tag: {{component.prometheus.operator.version}}
 
   ## Set the prometheus config reloader side-car CPU limit. If unset, uses the prometheus-operator project default
   ##
@@ -1124,7 +1124,7 @@ prometheus:
     maxUnavailable: ""
 
   ingress:
-    enabled: {{component.promoper.ingress.enabled}}
+    enabled: {{component.prometheus.ingress.enabled}}
     annotations: {}
     labels: {}
 
@@ -1134,7 +1134,7 @@ prometheus:
     # hosts:
     #   - prometheus.domain.com
     hosts:
-        - {{component.promoper.ingress.urlPrefix}}.{{component.ingress.ssoFqdn}}
+        - {{component.prometheus.ingress.urlPrefix}}.{{component.ingress.ssoFqdn}}
 
     ## Paths to use for ingress rules - one path should match the prometheusSpec.routePrefix
     ##
@@ -1199,7 +1199,7 @@ prometheus:
     ##
     image:
       repository: quay.io/prometheus/prometheus
-      tag: {{component.promoper.prometheus.version}}
+      tag: {{component.prometheus.prometheus.version}}
 
     ## Tolerations for use with node taints
     ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
@@ -1320,7 +1320,7 @@ prometheus:
 
     ## How long to retain metrics
     ##
-    retention: {{component.promoper.prometheus.retention}}
+    retention: {{component.prometheus.prometheus.retention}}
 
     ## If true, the Operator won't process any Prometheus configuration changes
     ##
@@ -1328,7 +1328,7 @@ prometheus:
 
     ## Number of Prometheus replicas desired
     ##
-    replicas: {{component.promoper.prometheus.replicas}}
+    replicas: {{component.prometheus.prometheus.replicas}}
 
     ## Log level for Prometheus be configured in
     ##

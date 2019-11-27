@@ -20,7 +20,7 @@ metadata:
   labels:
     app: thanos-sidecar
   name: thanos-sidecar
-  namespace: ${component.promoper.namespace}
+  namespace: ${component.prometheus.namespace}
 spec:
   ports:
   - name: metrics
@@ -54,15 +54,15 @@ spec:
     spec:
       containers:
       - name: thanos
-        image: improbable/thanos:${component.promoper.thanos.version}
+        image: improbable/thanos:${component.prometheus.thanos.version}
         args:
         - query
         - --log.level=debug
         - --query.replica-label=replica
         - --cluster.disable
         # Discover local store APIs using DNS SRV.
-        - --store=dnssrv+_grpc._tcp.thanos-store-gateway.${component.promoper.namespace}.svc
-        - --store=dnssrv+_grpc._tcp.thanos-sidecar.${component.promoper.namespace}.svc
+        - --store=dnssrv+_grpc._tcp.thanos-store-gateway.${component.prometheus.namespace}.svc
+        - --store=dnssrv+_grpc._tcp.thanos-sidecar.${component.prometheus.namespace}.svc
         env:
         - name: OBJSTORE_CONFIG
           valueFrom:
@@ -99,7 +99,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: thanos-querier
-  namespace: ${component.promoper.namespace}
+  namespace: ${component.prometheus.namespace}
   annotations:
     kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
   labels:
@@ -107,7 +107,7 @@ metadata:
     project:   kubernetes
 spec:
   rules:
-  - host: ${component.promoper.thanos.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+  - host: ${component.prometheus.thanos.ingress.urlPrefix}.${component.ingress.ssoFqdn}
     http:
       paths:
       - path: /

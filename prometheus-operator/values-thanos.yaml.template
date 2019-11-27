@@ -2,7 +2,7 @@ prometheusOperator:
   prometheusSpec:
     thanos:
       baseImage: improbable/thanos
-      version: {{component.promoper.thanos.version}}
+      version: {{component.prometheus.thanos.version}}
       objectStorageConfig:
         key: thanos-config.yaml
         name: thanos-objstore-config

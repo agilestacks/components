@@ -53,7 +53,7 @@ parameters:
     empty: allow
   - name: component.azure-storage.accessKey
     empty: allow
-  - name: component.promoper
+  - name: component.prometheus
     parameters:
     - name: chart
       value: stable/prometheus-operator
@@ -87,7 +87,7 @@ parameters:
       value: 1
     - name: prometheus.retention
       value: 12h
-  - name: component.promoper.alertmanager
+  - name: component.prometheus.alertmanager
     parameters:
     - name:  version
       brief: Alertmanager version
@@ -98,7 +98,7 @@ parameters:
       value: alertmanager
     - name:  ingress.path
       value: /
-  - name: component.promoper.grafana
+  - name: component.prometheus.grafana
     parameters:
     - name:  version
       brief: Grafana version
@@ -113,7 +113,7 @@ parameters:
       value: grafana-client
     - name: oidcSecret
       value: SDndcn378ddfg4-57yDSDfjeuDVQEW
-  - name: component.promoper.thanos
+  - name: component.prometheus.thanos
     parameters:
     - name: enabled
       value: false
@@ -121,15 +121,8 @@ parameters:
     - name: version
       brief: Thanos version
       value: v0.4.0
-    - name: bucket.name
-      value: thanos-storage.${dns.domain}
-      env: BUCKET_NAME
-    - name: iam_user
-      value: thanos
-      env: IAM_USER
     - name: ingress.urlPrefix
       value: thanos
-
 
 templates:
   files:
@@ -144,14 +137,13 @@ templates:
     - values.yaml.template
     - values-thanos.yaml.template
 
-
 outputs:
   - name: component.prometheus.url
     brief: Prometheus URL
-    value: ${component.ingress.protocol}://${component.promoper.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.prometheus.ingress.urlPrefix}.${component.ingress.ssoFqdn}
   - name: component.prometheus.alertmanager.url
     brief: Alertmanager URL
-    value: ${component.ingress.protocol}://${component.promoper.alertmanager.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.ssoFqdn}
   - name: component.prometheus.grafana.url
     brief: Grafana URL
-    value: ${component.ingress.protocol}://${component.promoper.grafana.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.ssoFqdn}
