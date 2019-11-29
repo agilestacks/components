@@ -3,6 +3,7 @@ version: 1
 kind: component
 meta:
   name: nfs-client-provisioner
+  title: NFS
   brief: Storage manager which mounts remote NFS shares into containers
   source:
     dir: ../../components/nfs-client-provisioner
