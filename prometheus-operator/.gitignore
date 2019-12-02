@@ -1,5 +1,6 @@
-charts/
+.terraform/
 .helm/
+charts/
 values.yaml
 values-thanos.yaml
 oidc-crd.yaml

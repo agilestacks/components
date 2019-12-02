@@ -1,0 +1,4 @@
+/.venv
+/.terraform
+/python.log
+generated.tf

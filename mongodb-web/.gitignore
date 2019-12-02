@@ -1,2 +1,2 @@
-*.yaml
-!hub-component.yaml
+/*.yaml
+!/hub-component.yaml

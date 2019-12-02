@@ -1,0 +1,16 @@
+/.go
+/charts
+/events/.go
+/events/argo-events-cluster-roles.yaml
+/events/artifact.yaml
+/events/calendar.yaml
+/events/gateway-controller-configmap.yaml
+/events/gateway-controller-deployment.yaml
+/events/gateway-crd.yaml
+/events/resource.yaml
+/events/sensor-controller-configmap.yaml
+/events/sensor-controller-deployment.yaml
+/events/stream.yaml
+/events/webhook.yaml
+/install.yaml
+/minio/configmap.yaml

@@ -1,2 +1,3 @@
+/.terraform
 /*.yaml
 !/hub-component.yaml

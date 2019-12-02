@@ -1,0 +1,11 @@
+/config.yaml
+/deployment.yaml
+/ingress.yaml
+/job-nfs-mkdirs.yaml
+/namespace.yaml
+/rbac.yaml
+/secrets.yaml
+/service.yaml
+/volume-claims.yaml
+/volume-hostpath.yaml
+/volume-nfs.yaml

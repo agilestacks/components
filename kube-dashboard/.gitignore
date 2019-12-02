@@ -1,2 +1,2 @@
-rbac-admin.yaml
-rbac-read-only.yaml
+/*.yaml
+!/hub-component.yaml
