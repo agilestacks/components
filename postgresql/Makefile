@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= postgresql
-DOMAIN_NAME    ?= dev.kubernetes.delivery
+DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= postgresql
 
 export HELM_HOME ?= $(shell pwd)/.helm
@@ -19,7 +19,7 @@ fetch:
 	$(helm) fetch \
 		--destination charts \
 		--untar stable/postgresql \
-		--version 0.8.3
+		--version 7.7.2
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \

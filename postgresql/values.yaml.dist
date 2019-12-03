@@ -15,7 +15,7 @@ global:
 image:
   registry: docker.io
   repository: bitnami/postgresql
-  tag: '${component.postgresql.version}'
+  tag: 11.6.0-debian-9-r0
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -106,12 +106,12 @@ replication:
 
 ## PostgreSQL user (has superuser privileges if username is `postgres`)
 ## ref: https://github.com/bitnami/bitnami-docker-postgresql/blob/master/README.md#setting-the-root-password-on-first-run
-postgresqlUsername: '${component.postgresql.user}'
+postgresqlUsername: postgres
 
 ## PostgreSQL password
 ## ref: https://github.com/bitnami/bitnami-docker-postgresql/blob/master/README.md#setting-the-root-password-on-first-run
 ##
-postgresqlPassword: '${component.postgresql.password}'
+# postgresqlPassword:
 
 ## PostgreSQL password using existing secret
 ## existingSecret: secret
@@ -122,7 +122,7 @@ postgresqlPassword: '${component.postgresql.password}'
 ## Create a database
 ## ref: https://github.com/bitnami/bitnami-docker-postgresql/blob/master/README.md#creating-a-database-on-first-run
 ##
-postgresqlDatabase: '${component.postgresql.database}'
+# postgresqlDatabase:
 
 ## PostgreSQL data dir
 ## ref: https://github.com/bitnami/bitnami-docker-postgresql/blob/master/README.md
@@ -279,8 +279,7 @@ persistence:
   # storageClass: "-"
   accessModes:
     - ReadWriteOnce
-  size: ${component.postgresql.volumeSize}
-  storageClass: ${component.postgresql.storageClass}
+  size: 8Gi
   annotations: {}
 
 ## updateStrategy for PostgreSQL StatefulSet and its slaves StatefulSets
@@ -298,10 +297,7 @@ master:
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-and-tolerations-beta-feature
   nodeSelector: {}
   affinity: {}
-  tolerations:
-    - key: node-role.kubernetes.io/master
-      effect: NoSchedule
-      operator: Exists
+  tolerations: []
   labels: {}
   annotations: {}
   podLabels: {}
@@ -395,7 +391,7 @@ readinessProbe:
 ## Configure metrics exporter
 ##
 metrics:
-  enabled: true
+  enabled: false
   # resources: {}
   service:
     type: ClusterIP
