@@ -1,0 +1,4 @@
+/.terraform
+/*.yaml
+!/crds.yaml
+!/hub-component.yaml

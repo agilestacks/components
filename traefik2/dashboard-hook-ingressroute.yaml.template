@@ -1,0 +1,16 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ${component.ingress.name}-dashboard
+  labels:
+    app: traefik2
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+    kind: Rule
+    services:
+    - name: api@internal
+      kind: TraefikService
