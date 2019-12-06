@@ -37,6 +37,10 @@ else
 $(error cloud.kind / CLOUD_KIND must be one of: aws)
 endif
 
+ifneq (,$(filter cert-manager,$(HUB_PROVIDES)))
+PROVIDES:=tls-ingress
+endif
+
 deploy: clean init install plan apply output
 undeploy: init destroy apply uninstall
 
@@ -75,7 +79,7 @@ apply:
 output:
 	@echo
 	@echo Outputs:
-	@echo provides = ingress-tls
+	@echo provides = $(PROVIDES)
 	@echo
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
