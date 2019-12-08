@@ -169,7 +169,7 @@ outputs:
   brief: FQDN of ingress protected by SSO
   value: ${component.ingress.ssoUrlPrefix}.${dns.domain}
 - name: component.ingress.protocol
-  value: http
+  fromTfVar: ingress_protocol
 - name: component.ingress.urlPrefix
 - name: component.ingress.ssoUrlPrefix
 - name: component.ingress.kubernetes.ingressClass

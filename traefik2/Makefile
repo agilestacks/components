@@ -38,7 +38,10 @@ $(error cloud.kind / CLOUD_KIND must be one of: aws)
 endif
 
 ifneq (,$(filter cert-manager,$(HUB_PROVIDES)))
-PROVIDES:=tls-ingress
+	PROTOCOL:=https
+	PROVIDES:=tls-ingress
+else
+	PROTOCOL:=http
 endif
 
 deploy: clean init install plan apply output
@@ -79,6 +82,7 @@ apply:
 output:
 	@echo
 	@echo Outputs:
+	@echo ingress_protocol = $(PROTOCOL)
 	@echo provides = $(PROVIDES)
 	@echo
 
