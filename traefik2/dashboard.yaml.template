@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${component.ingress.name}-admins
+data:
+  users: ${component.ingress.dashboard.auth/base64}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: TLSOption
+metadata:
+  name: tls12
+spec:
+  minVersion: VersionTLS12
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: ${component.ingress.name}-admins
+spec:
+  basicAuth:
+    secret: ${component.ingress.name}-admins
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ${component.ingress.name}-dashboard
+  labels:
+    app: traefik2
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`${component.ingress.urlPrefix}.${dns.domain}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+    kind: Rule
+    services:
+    - name: api@internal
+      kind: TraefikService
+    middlewares:
+    - name: ${component.ingress.name}-admins
+  tls:
+    certResolver: prod
+    options:
+      name: tls12

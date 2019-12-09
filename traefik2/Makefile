@@ -64,10 +64,10 @@ install:
 	$(kubectl) apply -f acme-pvc.yaml
 	$(kubectl) apply -f deployment.yaml
 	$(kubectl) apply -f service.yaml
-	$(kubectl) apply -f dashboard-hook-ingressroute.yaml
+	$(kubectl) apply -f dashboard.yaml
 
 uninstall:
-	-$(kubectl) delete -f dashboard-hook-ingressroute.yaml
+	-$(kubectl) delete -f dashboard.yaml
 	-$(kubectl) delete -f service.yaml
 	-$(kubectl) delete -f deployment.yaml
 	-$(kubectl) delete -f acme-pvc.yaml

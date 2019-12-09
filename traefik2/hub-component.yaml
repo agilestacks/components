@@ -27,7 +27,7 @@ lifecycle:
   readyConditions:
   - pauseSeconds: 30
     dns: ${component.ingress.ssoFqdn}
-    url: ${component.ingress.protocol}://${component.ingress.ssoFqdn}
+    url: ${component.ingress.protocol}://${component.ingress.fqdn}
 
 parameters:
 - name: terraform.bucket.name
@@ -75,10 +75,12 @@ parameters:
   - name: namespace
     value: ingress
     env: NAMESPACE
-  - name: dashboard
+  - name: dashboard.enabled
     value: true
   - name: dashboard.auth
-    value: '{}'
+    # admin/zero
+    value: |
+      admin:$apr1$dREqKUpa$weF9XEBDITI2a/Oh6.SDB/
   # implemented only for ELB on AWS
   - name: kubernetes.loadBalancer.timeout
     value: 60
@@ -117,7 +119,7 @@ outputs:
 - name: component.ingress.kubernetes.ingressClass
   value: ${component.traefik.kubernetes.ingressClass}
 - name: component.ingress.dashboard.url
-  value: ${component.ingress.protocol}://${component.ingress.ssoFqdn}/dashboard/
+  value: https://${component.ingress.fqdn}/dashboard/
 - name: component.ingress.loadBalancer
   fromTfVar: load_balancer
 - name: component.ingress.loadBalancerDnsRecordType
