@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= aws-spot-termination-handler
-DOMAIN_NAME    ?= dev.kubernetes.delivery
+DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= aws-spot-termination-handler
 
 
@@ -11,7 +11,7 @@ deploy: install
 
 install:
 	- $(kubectl) create ns $(NAMESPACE)
-	- $(kubectl) apply -k base/
+	$(kubectl) apply -k base/
 
 undeploy: init
 	- $(kubectl) delete -k base/
