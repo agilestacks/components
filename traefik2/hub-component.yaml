@@ -74,7 +74,7 @@ parameters:
     value: traefik2
   - name: namespace
     value: ingress
-    env: TF_VAR_namespace
+    env: NAMESPACE
   - name: dashboard
     value: true
   - name: dashboard.auth

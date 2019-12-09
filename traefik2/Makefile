@@ -2,7 +2,7 @@
 
 COMPONENT_NAME     ?= traefik2
 DOMAIN_NAME        ?= test.dev.superhub.io
-NAMESPACE          ?= ingress2
+NAMESPACE          ?= ingress
 KUBECONFIG_CONTEXT ?= $(DOMAIN_NAME)
 
 CLOUD_KIND ?= aws
