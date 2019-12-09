@@ -60,6 +60,8 @@ install:
 	$(kubectl) apply -f namespace.yaml
 	$(kubectl) apply -f crds.yaml
 	$(kubectl) apply -f rbac.yaml
+	$(kubectl) apply -f configmap.yaml
+	$(kubectl) apply -f acme-pvc.yaml
 	$(kubectl) apply -f deployment.yaml
 	$(kubectl) apply -f service.yaml
 	$(kubectl) apply -f dashboard-hook-ingressroute.yaml
@@ -68,6 +70,8 @@ uninstall:
 	-$(kubectl) delete -f dashboard-hook-ingressroute.yaml
 	-$(kubectl) delete -f service.yaml
 	-$(kubectl) delete -f deployment.yaml
+	-$(kubectl) delete -f acme-pvc.yaml
+	-$(kubectl) delete -f configmap.yaml
 	-$(kubectl) delete -f rbac.yaml
 	-$(kubectl) delete -f crds.yaml
 	-$(kubectl) get crd -o name | grep -F traefik.containo.us | xargs $(kubectl) delete

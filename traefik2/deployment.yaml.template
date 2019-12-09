@@ -55,17 +55,37 @@ spec:
           containerPort: 8443
           protocol: TCP
         args:
-          - "--entryPoints.traefik.address=:9000"
-          - "--entryPoints.web.address=:8000"
-          - "--entryPoints.websecure.address=:8443"
-          - "--api.dashboard=true"
-          - "--ping=true"
-          - "--log.level=INFO"
-          - "--providers.kubernetescrd"
-          - "--providers.kubernetesingress"
-          - "--providers.kubernetesingress.namespaces=${component.traefik.kubernetes.namespaces}"
-          - "--providers.kubernetesingress.labelSelector=${component.traefik.kubernetes.labelSelector}"
-          - "--providers.kubernetesingress.ingressClass=${component.traefik.kubernetes.ingressClass}"
+        - "--entryPoints.traefik.address=:9000"
+        - "--entryPoints.web.address=:8000"
+        - "--entryPoints.websecure.address=:8443"
+        - "--api.dashboard=${component.ingress.dashboard.enabled}"
+        - "--ping=true"
+        - "--log.level=INFO"
+        - "--certificatesresolvers.prod.acme.tlschallenge"
+        - "--certificatesresolvers.prod.acme.email=${component.cert-manager.issuerEmail}"
+        - "--certificatesresolvers.prod.acme.storage=/acme/prod.json"
+        - "--certificatesresolvers.staging.acme.tlschallenge"
+        - "--certificatesresolvers.staging.acme.email=${component.cert-manager.issuerEmail}"
+        - "--certificatesresolvers.staging.acme.storage=/acme/staging.json"
+        - "--certificatesresolvers.staging.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+        - "--providers.file.directory=/config"
+        - "--providers.kubernetescrd"
+        - "--providers.kubernetesingress"
+        - "--providers.kubernetesingress.namespaces=${component.traefik.kubernetes.namespaces}"
+        - "--providers.kubernetesingress.labelSelector=${component.traefik.kubernetes.labelSelector}"
+        - "--providers.kubernetesingress.ingressClass=${component.traefik.kubernetes.ingressClass}"
+        volumeMounts:
+        - mountPath: /config
+          name: config
+        - mountPath: /acme
+          name: acme
+      volumes:
+      - name: config
+        configMap:
+          name: ${component.ingress.name}
+      - name: acme
+        persistentVolumeClaim:
+          claimName: ${component.ingress.name}-acme
 
 # ---
 # apiVersion: apps/v1

@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${component.ingress.name}
+data:
+  dashboard.yaml: |
+    # dashboard.yaml
+    # http:
+    #   routers:
+    #     traefik-api:
+    #       rule: 'Host(`${component.ingress.urlPrefix}.${dns.domain}`)'
+    #       service: api@internal
+    #       middlewares:
+    #       - admin-auth
+    #   middlewares:
+    #     admin-auth:
+    #       basicAuth:
+    #         users: ${component.ingress.dashboard.auth}
