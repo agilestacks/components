@@ -30,11 +30,11 @@ parameters:
     env: DOMAIN_NAME
   - name: component.aws-spot-drainer
     parameters:
-    - name:  name
+    - name: name
       value: aws-spot-drainer
-      env:   COMPONENT_NAME
+      env: COMPONENT_NAME
     - name: namespace
-      value: ${component.aws-spot-drainer.name}
+      value: kube-system
       env: NAMESPACE
 
 templates:
