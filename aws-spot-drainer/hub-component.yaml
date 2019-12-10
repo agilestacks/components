@@ -12,6 +12,7 @@ meta:
   version: 1.0
   maturity: beta
   license: Apache 2.0
+  icon: https://press.aboutamazon.com/system/files-encrypted/nasdaq_kms/inline-images/AWS.jpg
   source:
     dir: ../../components/aws-spot-drainer
 
