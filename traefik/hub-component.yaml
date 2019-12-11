@@ -9,7 +9,7 @@ meta:
     Træfik (pronounced like traffic) is a modern HTTP reverse proxy and load balancer made to deploy
     microservices with ease.
   category: Edge proxy
-  version: 1.7.19
+  version: 1.7.20
   maturity: ga
   license: MIT
   source:
@@ -175,7 +175,7 @@ parameters:
       value: 1.68.5
       env: CHART_VERSION
     - name: app.version
-      value: 1.7.19
+      value: 1.7.20
     - name: kubernetes.nodeSelector
       value: '{}'
     - name: kubernetes.tolerations
