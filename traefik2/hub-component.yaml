@@ -7,7 +7,7 @@ meta:
   brief: Ingress controller
   description: >
     Træfik (pronounced traffic) is a modern HTTP reverse proxy and load balancer that makes deploying microservices easy.
-  category: Edge proxy
+  category: Edge Proxy
   version: 2.1.0
   maturity: alpha
   license: MIT
