@@ -17,11 +17,8 @@ function write(filename, value) {
 }
 
 function checkIcon(name, property) {
-    if (!property.startsWith('http') && !property.startsWith('data:image/')) {
-        throw new Error(`Invalid meta.icon of ${name} component. Must be either proper URL or Data URI`);
-    }
-    if (property.startsWith('http://')) {
-        log.warn(`WARNING: Location of ${name} component icon is not TLS protected`);
+    if (!property.startsWith('https://') && !property.startsWith('data:image/')) {
+        throw new Error(`Invalid meta.icon of ${name} component. Must be either proper https URL or Data URI`);
     }
     return property.replace(/(\r\n|\n|\r)/gm, '');
 }
