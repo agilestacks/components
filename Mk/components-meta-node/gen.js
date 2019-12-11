@@ -50,7 +50,8 @@ function iconPath(basePath) {
     if (iconPth) {
         const {size} = fs.statSync(iconPth);
         if (size > 1024) {
-            log.warn(`WARNING: Size of ${iconPth} file is greater than 1 KB. Possible performance degradation!`);
+            // eslint-disable-next-line max-len
+            log.warn(`\x1B[97;45mWARNING\x1B[0m: ${iconPth} size is ${Math.round(size / 1024)}KB. Possible performance degradation!`);
         }
     }
     return iconPth;
