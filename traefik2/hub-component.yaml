@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: traefik2
-  title: Traefik 2
+  title: Traefik v2
   brief: Ingress controller
   description: >
     Træfik (pronounced traffic) is a modern HTTP reverse proxy and load balancer that makes deploying microservices easy.
@@ -11,6 +11,7 @@ meta:
   version: 2.1.0
   maturity: alpha
   license: MIT
+  icon: https://www.jpaul.me/wp-content/uploads/2018/12/traefik-300.png
   source:
     dir: ../../components/traefik2
 
