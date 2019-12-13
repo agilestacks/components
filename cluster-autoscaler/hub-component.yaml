@@ -38,7 +38,7 @@ parameters:
       value: kube-system
       env:   NAMESPACE
     - name:  version
-      value: v1.14.6
+      value: v1.14.7
     - name: asgTag
       value: k8s.io/cluster-autoscaler/enabled
 
