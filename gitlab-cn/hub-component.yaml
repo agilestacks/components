@@ -8,7 +8,7 @@ meta:
   description: >
     GitLab includes Git repository management, issue tracking, code review, an IDE, activity streams, wikis, and more.
   category: DevOps Stack
-  version: 12.4.0
+  version: 12.4.5
   maturity: ga
   license: MIT
   source:
@@ -67,7 +67,7 @@ parameters:
       value: https://charts.gitlab.io
       env: HELM_REPO
     - name: chart.version
-      value: 2.4.1
+      value: 2.4.10
       env: CHART_VERSION
     - name:  name
       value: gitlab-cn
@@ -80,7 +80,7 @@ parameters:
       env:   TF_VAR_namespace
     - name:  software.version
       brief: Gitlab Version
-      value: 12.4.0
+      value: 12.4.5
     - name:  rbac.enabled
       value: true
     - name:  psp.enabled
