@@ -44,7 +44,7 @@ else
 	PROTOCOL:=http
 endif
 
-deploy: clean init crds install plan apply output
+deploy: clean init crds install elb plan apply dashboard output
 undeploy: init destroy apply uninstall
 
 $(TF_DATA_DIR):
@@ -59,7 +59,7 @@ init: $(TF_DATA_DIR)
 crds:
 	$(kubectl) apply -f crds.yaml
 	@echo "Waiting for CRDs to install"; \
-	for i in $$(seq 1 60); do \
+	for i in $$(seq 1 30); do \
 		if test $$($(kubectl) get crds | grep -F traefik.containo.us | wc -l) -ge 5; then \
 			echo "done"; \
 			exit 0; \
@@ -78,6 +78,24 @@ install:
 	$(kubectl) apply -f acme-pvc.yaml
 	$(kubectl) apply -f deployment.yaml
 	$(kubectl) apply -f service.yaml
+
+elb:
+	@echo "Waiting for ELB to assign"; \
+	for i in $$(seq 1 30); do \
+		sleep 10; \
+		if $(kubectl) get svc \
+				$(COMPONENT_NAME) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}' | \
+				grep -F elb.amazonaws.com; then \
+			echo "done"; \
+			exit 0; \
+		fi; \
+		echo "still waiting"; \
+	done; \
+	echo "timeout"; \
+	exit 1;
+.PHONY: elb
+
+dashboard:
 	$(kubectl) apply -f dashboard.yaml
 
 uninstall:
