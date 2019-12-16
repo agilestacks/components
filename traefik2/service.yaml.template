@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${component.ingress.name}
+  labels:
+    app: traefik2
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "${component.ingress.kubernetes.loadBalancer.timeout}"
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: traefik2
+  ports:
+  - port: 80
+    name: web
+    targetPort: web
+  - port: 443
+    name: websecure
+    targetPort: websecure

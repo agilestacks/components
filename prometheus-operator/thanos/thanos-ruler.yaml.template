@@ -45,7 +45,7 @@ spec:
     spec:
       containers:
         - name: thanos
-          image: improbable/thanos:${component.promoper.thanos.version}
+          image: improbable/thanos:${component.prometheus.thanos.version}
           args:
             - rule
             - --log.level=debug
@@ -53,8 +53,8 @@ spec:
             - --eval-interval=15s
             - --cluster.disable
             - --rule-file=/etc/thanos-ruler/*.rules.yaml
-            - --alertmanagers.url=http://prometheus-operator-alertmanager.${component.promoper.namespace}.svc:9093
-            - --query=dnssrv+_http._tcp.thanos-querier.${component.promoper.namespace}.svc
+            - --alertmanagers.url=http://prometheus-operator-alertmanager.${component.prometheus.namespace}.svc:9093
+            - --query=dnssrv+_http._tcp.thanos-querier.${component.prometheus.namespace}.svc
             - --objstore.config=$(OBJSTORE_CONFIG)
             # We don't want to override underlying metric's cluster label.
             - --label=ruler_cluster="${dns.domain}"

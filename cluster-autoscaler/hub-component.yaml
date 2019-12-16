@@ -10,7 +10,7 @@ meta:
     "when one of the following conditions is true: there are pods that failed to run in the cluster"
     due to insufficient resources, there are nodes in the cluster that have been underutilized for
     an extended period of time and their pods can be placed on other existing nodes.
-  version: 1.14.6
+  version: 1.14.7
   maturity: ga
   source:
     dir: ../../components/cluster-autoscaler
@@ -38,7 +38,7 @@ parameters:
       value: kube-system
       env:   NAMESPACE
     - name:  version
-      value: v1.14.6
+      value: v1.14.7
     - name: asgTag
       value: k8s.io/cluster-autoscaler/enabled
 

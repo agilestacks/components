@@ -1,0 +1,5 @@
+/.helm
+/charts
+/natsboard/*.yaml
+/*.yaml
+!/hub-component.yaml

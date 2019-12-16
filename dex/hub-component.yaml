@@ -13,7 +13,7 @@ meta:
     or established identity providers like GitHub, Google, and Active Directory.
     Clients write their authentication logic once to talk to dex,
     then dex handles the protocols for a given backend.
-  category: Edge proxy
+  category: Edge Proxy
   version: 2.18.0
   maturity: ga
   license: Apache 2.0
@@ -87,7 +87,7 @@ parameters:
   - name: component.dex.authproxy.image
     value: agilestacks/oauth2_proxy:v2.3
   - name: component.dex.authOperator.image
-    value: agilestacks/auth-operator:0.1.0
+    value: agilestacks/auth-operator:0.1.1
   - name: component.dex.authproxy.emailDomain
     value: "'*'"
   - name: component.dex.authproxy.cookieExpire

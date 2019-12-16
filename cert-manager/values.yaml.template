@@ -97,7 +97,7 @@ nodeSelector: {}
 ingressShim:
   defaultIssuerName: "${component.cert-manager.defaultIssuerName}"
   defaultIssuerKind: "${component.cert-manager.defaultIssuerKind}"
-  # defaultIssuerGroup: ""
+  defaultIssuerGroup: "cert-manager.io"
 
 prometheus:
   enabled: false

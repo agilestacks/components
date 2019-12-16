@@ -3,7 +3,7 @@
 COMPONENT_NAME ?= kafka
 DOMAIN_NAME    ?= dev.kubernetes.delivery
 NAMESPACE      ?= kafka
-CHART_VERSION  ?= 0.20.1
+CHART_VERSION  ?= 0.20.6
 REPO           ?= kafka
 TIMEOUT        ?= 600
 export HELM_HOME ?= $(shell pwd)/.helm
@@ -39,13 +39,13 @@ wait:
 	@ while [ `date +%s` -le "$(timeout)" ]; do \
 		status=`$(kubectl) -n $(NAMESPACE) get job -o jsonpath='{.items[0].status.succeeded}'`; \
 		if [ "$$status" == "1" ]; then \
-			echo " done"; \
+			echo "done"; \
 			exit 0; \
 		elif [ "$$status" == "0" ]; then \
-			echo " deployment failed"; \
+			echo "deployment failed"; \
 			exit 1; \
 		fi; \
-	printf "."; \
+	echo "still waiting"; \
 	sleep 8; \
 	done; \
 	echo " ERROR timeout $(TIMEOUT)sec"; \

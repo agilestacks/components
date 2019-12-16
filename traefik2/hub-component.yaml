@@ -1,0 +1,131 @@
+---
+version: 1
+kind: component
+meta:
+  name: traefik2
+  title: Traefik v2
+  brief: Ingress controller
+  description: >
+    Træfik (pronounced traffic) is a modern HTTP reverse proxy and load balancer that makes deploying microservices easy.
+  category: Edge Proxy
+  version: 2.1.0
+  maturity: alpha
+  license: MIT
+  icon: https://www.jpaul.me/wp-content/uploads/2018/12/traefik-300.png
+  source:
+    dir: ../../components/traefik2
+
+requires:
+- aws
+- kubernetes
+provides:
+- ingress
+
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
+  readyConditions:
+  - pauseSeconds: 30
+    dns: ${component.ingress.ssoFqdn}
+    url: ${component.ingress.protocol}://${component.ingress.fqdn}
+
+parameters:
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.region
+  env: STATE_REGION
+- name: terraform.bucket.container
+  empty: allow
+  env: STATE_CONTAINER
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
+- name: cloud.kind
+  env: CLOUD_KIND
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: dns.name
+  env: NAME
+
+- name: cloud.azureResourceGroupName
+  value: superhub-${cloud.region}
+  env: TF_VAR_azure_resource_group_name
+- name: cloud.gcpProjectId
+  empty: allow
+  env: TF_VAR_gcp_project_id
+- name: cloud.azureClientId
+  empty: allow
+- name: cloud.azureTenantId
+  empty: allow
+- name: cloud.azureClientSecret
+  empty: allow
+- name: cloud.azureSubscriptionId
+  empty: allow
+
+- name: component.ingress
+  parameters:
+  - name: urlPrefix
+    value: app2
+    env: TF_VAR_url_prefix
+  - name: ssoUrlPrefix
+    value: apps2
+    env: TF_VAR_sso_url_prefix
+  - name: name
+    env: COMPONENT_NAME
+    value: traefik2
+  - name: namespace
+    value: ingress
+    env: NAMESPACE
+  - name: dashboard.enabled
+    value: true
+  - name: dashboard.auth
+    # admin/zero
+    value: |
+      admin:$apr1$dREqKUpa$weF9XEBDITI2a/Oh6.SDB/
+  # implemented only for ELB on AWS
+  - name: kubernetes.loadBalancer.timeout
+    value: 60
+
+- name: component.cert-manager.issuerEmail
+  value: admin@superhub.io
+
+- name: component.traefik
+  parameters:
+  - name: app.version
+    value: 2.1.0-rc3
+  - name: kubernetes.nodeSelector
+    value: '{}'
+  - name: kubernetes.tolerations
+    value: '[]'
+  - name: kubernetes.namespaces
+    empty: allow
+  - name: kubernetes.labelSelector
+    empty: allow
+  - name: kubernetes.ingressClass
+    empty: allow
+  - name: kubernetes.kubeconfigContext
+    value: ${dns.domain}
+    env: KUBECONFIG_CONTEXT
+
+outputs:
+- name: component.ingress.fqdn
+  value: ${component.ingress.urlPrefix}.${dns.domain}
+- name: component.ingress.ssoFqdn
+  brief: FQDN of ingress protected by SSO
+  value: ${component.ingress.ssoUrlPrefix}.${dns.domain}
+- name: component.ingress.protocol
+  fromTfVar: ingress_protocol
+- name: component.ingress.urlPrefix
+- name: component.ingress.ssoUrlPrefix
+- name: component.ingress.kubernetes.ingressClass
+  value: ${component.traefik.kubernetes.ingressClass}
+- name: component.ingress.dashboard.url
+  value: https://${component.ingress.fqdn}/dashboard/
+- name: component.ingress.loadBalancer
+  fromTfVar: load_balancer
+- name: component.ingress.loadBalancerDnsRecordType
+  fromTfVar: load_balancer_dns_record_type
+
+templates:
+  files:
+  - '*.yaml.template'

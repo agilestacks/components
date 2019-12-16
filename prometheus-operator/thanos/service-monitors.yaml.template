@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: thanos-sidecar
-  namespace: ${component.promoper.namespace}
+  namespace: ${component.prometheus.namespace}
   labels:
     release: prometheus-operator
 spec:

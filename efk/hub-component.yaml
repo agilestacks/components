@@ -9,7 +9,7 @@ meta:
     Elasticsearch, along with Fluentd and Kibana, provides a powerful platform for indexing,
     searching and analyzing your data.
   category: Monitoring
-  version: 7.2.1
+  version: 7.4.2
   maturity: beta
   license: Apache 2.0
   source:

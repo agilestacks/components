@@ -8,8 +8,7 @@ resource "google_container_node_pool" "pool" {
   location = "${var.location}"
   cluster  = "${data.google_container_cluster.primary.name}"
 
-  initial_node_count = "${var.min_node_count}"
-  version            = "${data.google_container_cluster.primary.node_version}"
+  version = "${data.google_container_cluster.primary.node_version}"
 
   autoscaling {
     min_node_count = "${var.min_node_count}"

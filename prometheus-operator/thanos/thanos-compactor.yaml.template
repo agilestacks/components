@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: thanos
-          image: improbable/thanos:${component.promoper.thanos.version}
+          image: improbable/thanos:${component.prometheus.thanos.version}
           args:
             - compact
             - --log.level=debug

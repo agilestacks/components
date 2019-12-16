@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := deploy
 
-DOMAIN_NAME  ?= dev.kubernetes.delivery
+DOMAIN_NAME  ?= dev.test.superhub.io
 NAMESPACE    ?= kube-system
 HUB_PROVIDES ?=
 

@@ -1,0 +1,13 @@
+/aws/acm/nginx-service.yaml
+/aws/aws-storage-class.yaml
+/aws/ingress-notary.yaml
+/aws/local/values-harbor.yaml
+/aws/minio/values-harbor.yaml
+/aws/s3/values-harbor.yaml
+/aws/storage-class.yaml
+/aws/values-harbor.yam
+/aws/values-nginx.yam
+/hybrid/local/values-harbor.yaml
+/hybrid/minio/values-harbor.yaml
+/hybrid/values-harbor.yam
+/hybrid/values-nginx.yam

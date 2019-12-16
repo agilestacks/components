@@ -1,0 +1,5 @@
+/.terraform
+/.helm
+/charts
+/*.yaml
+!/hub-component.yaml

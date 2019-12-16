@@ -3,6 +3,7 @@ version: 1
 kind: component
 meta:
   name: external-dns
+  title: External DNS
   brief: DNS Operator to update route53 for ingresses or Services with the appropriate annotations
   source:
       dir: ../../components/external-dns

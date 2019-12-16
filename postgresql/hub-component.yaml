@@ -10,7 +10,7 @@ meta:
     It has more than 15 years of active development and a proven architecture that has earned it a strong
     reputation for reliability, data integrity, and correctness.
   category: App Stack
-  version: 9.6.11
+  version: 11.6.0
   maturity: ga
   license: BSD/MIT
   source:
@@ -29,7 +29,7 @@ parameters:
   - name: component.postgresql
     parameters:
     - name: version
-      value: 9.6.11
+      value: 11.6.0-debian-9-r0
     - name:  name
       value: postgresql-${dns.name}-${hub.componentName}
       env:   COMPONENT_NAME
@@ -48,7 +48,7 @@ parameters:
 
 outputs:
 - name: component.postgresql.host
-  value: ${component.postgresql.name}-postgresql.${component.postgresql.namespace}.svc.cluster.local
+  value: ${component.postgresql.name}.${component.postgresql.namespace}.svc.cluster.local
 - name: component.postgresql.port
 - name: component.postgresql.user
 - name: component.postgresql.namespace

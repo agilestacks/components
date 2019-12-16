@@ -1,1 +1,2 @@
-bucket.tf
+/.terraform
+/bucket.tf

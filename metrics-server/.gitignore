@@ -1,6 +1,6 @@
-auth-delegator.yaml
-auth-reader.yaml
-metrics-apiservice.yaml
-metrics-server-deployment.yaml
-metrics-server-service.yaml
-resource-reader.yaml
+/auth-delegator.yaml
+/auth-reader.yaml
+/metrics-apiservice.yaml
+/metrics-server-deployment.yaml
+/metrics-server-service.yaml
+/resource-reader.yaml

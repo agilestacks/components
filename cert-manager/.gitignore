@@ -1,1 +1,5 @@
-*-issuer*.yaml
+/.helm
+/charts
+/*-issuer*.yaml
+/namespace.yaml
+/values.yaml

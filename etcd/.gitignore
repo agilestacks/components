@@ -1,0 +1,5 @@
+/.helm
+/charts
+/secret-config
+/*.yaml
+!/hub-component.yaml
