@@ -44,7 +44,7 @@ else
 	PROTOCOL:=http
 endif
 
-deploy: clean init install plan apply output
+deploy: clean init crds install plan apply output
 undeploy: init destroy apply uninstall
 
 $(TF_DATA_DIR):
@@ -56,9 +56,23 @@ init: $(TF_DATA_DIR)
 		$(STATE_BACKEND_CONFIG) \
 		./$(CLOUD_KIND)
 
+crds:
+	$(kubectl) apply -f crds.yaml
+	@echo "Waiting for CRDs to install"; \
+	for i in $$(seq 1 60); do \
+		if test $$($(kubectl) get crds | grep -F traefik.containo.us | wc -l) -ge 5; then \
+			echo "done"; \
+			exit 0; \
+		fi; \
+		echo "still waiting"; \
+		sleep 10; \
+	done; \
+	echo "timeout"; \
+	exit 1;
+.PHONY: crds
+
 install:
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply -f crds.yaml
 	$(kubectl) apply -f rbac.yaml
 	$(kubectl) apply -f configmap.yaml
 	$(kubectl) apply -f acme-pvc.yaml
