@@ -87,10 +87,7 @@ parameters:
       value: 100
 
 outputs:
-- name: component.k8s-worker-nodes.bootrapScript
-  type: secret
-  fromTfVar: bootstrap_script
-- name: component.k8s-worker-nodes.bootrapScriptS3
+- name: component.k8s-worker-nodes.bootstrapScriptS3
   fromTfVar: bootstrap_script_s3
 - name: component.k8s-worker-nodes.vmType
   value: "${component.k8s-worker-nodes.vmType}"
