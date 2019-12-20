@@ -62,8 +62,8 @@ resource "aws_autoscaling_group" "nodes" {
   }
 }
 
-resource "aws_autoscaling_attachment" "workers" {
+resource "aws_autoscaling_attachment" "nodes" {
   count                  = "${length(var.load_balancers)}"
-  autoscaling_group_name = "${aws_autoscaling_group.workers.name}"
+  autoscaling_group_name = "${aws_autoscaling_group.nodes.name}"
   elb                    = "${var.load_balancers[count.index]}"
 }
