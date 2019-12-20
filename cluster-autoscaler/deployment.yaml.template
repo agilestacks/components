@@ -38,7 +38,7 @@ spec:
             - --cloud-provider=${cloud.kind}
             - --skip-nodes-with-local-storage=false
             - --expander=least-waste
-            - --node-group-auto-discovery=asg:tag=${component.cluster-autoscaler.asgTag},kubernetes.io/cluster/${dns.name}-${dns.baseDomain}
+            - --node-group-auto-discovery=asg:tag=${component.cluster-autoscaler.asgTag}
           env:
             - name: AWS_REGION
               value: ${cloud.region}

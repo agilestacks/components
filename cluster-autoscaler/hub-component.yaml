@@ -39,8 +39,10 @@ parameters:
       env:   NAMESPACE
     - name:  version
       value: v1.14.7
+    - name: asgTagCluster
+      value: ${dns.name}-${dns.baseDomain} # stack-k8s-aws naming convention
     - name: asgTag
-      value: k8s.io/cluster-autoscaler/enabled
+      value: k8s.io/cluster-autoscaler/enabled,kubernetes.io/cluster/${component.cluster-autoscaler.asgTagCluster}
 
 templates:
   files:
