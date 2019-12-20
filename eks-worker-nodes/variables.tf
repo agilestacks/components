@@ -69,14 +69,25 @@ Example:
 EOF
 }
 
+variable "short_name" {
+  type = "string"
+
+  description = <<EOF
+Short name of the pool
+
+Example:
+ * `gpu1`
+EOF
+}
+
 variable "name" {
   type = "string"
 
   description = <<EOF
-Name of the pool
+Full name of the pool
 
 Example:
- * `gpu1`
+ * `gpu1-eks-1.dev.superhub.io`
 EOF
 }
 
@@ -102,6 +113,12 @@ EOF
 
 variable "instance_profile" {
   type = "string"
+  description = "Worker instance profile"
+}
+
+variable "role" {
+  type        = "string"
+  description = "Worker IAM role"
 }
 
 variable "cluster_name" {

@@ -15,9 +15,10 @@ terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-export TF_VAR_subnet_ids := $(shell echo -n '$(SUBNET_IDS)' | tr ',' ' ' | xargs | jq -cRM 'split(" ")')
-export TF_VAR_sg_ids     := $(shell echo -n '$(SG_IDS)' | tr ',' ' ' | xargs | jq -cRM 'split(" ")')
+export TF_VAR_subnet_ids := $(shell echo -n '$(SUBNET_IDS)' | jq -cR 'split(",")')
+export TF_VAR_sg_ids     := $(shell echo -n '$(SG_IDS)' | jq -cR 'split(",")')
 
+WORKER_IMPL := $(if $(TF_VAR_worker_spot_price),autoscaling,nodegroup)
 
 deploy: init plan apply
 
@@ -25,6 +26,7 @@ $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
 init: $(TF_DATA_DIR)
+	@cp -v eks-worker-$(WORKER_IMPL).tf.ignore eks-worker.tf
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
