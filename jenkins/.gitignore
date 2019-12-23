@@ -1,11 +1,14 @@
 /config.yaml
+/config-storage-*.yaml
 /deployment.yaml
 /ingress.yaml
 /job-nfs-mkdirs.yaml
 /namespace.yaml
 /rbac.yaml
+/rbac-operator.yaml
 /secrets.yaml
 /service.yaml
 /volume-claims.yaml
+/volume-claims-*.yaml
 /volume-hostpath.yaml
 /volume-nfs.yaml
