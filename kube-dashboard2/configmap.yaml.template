@@ -1,0 +1,7 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: ${component.kubernetes-dashboard.name}
+  name: kubernetes-dashboard-settings
+  namespace: ${component.kubernetes-dashboard.namespace}

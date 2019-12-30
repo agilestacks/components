@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${component.kubernetes-dashboard.name}
+  namespace: ${component.kubernetes-dashboard.namespace}
+  annotations:
+    kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
+  labels:
+    provider: agilestacks.com
+    project: kubernetes
+spec:
+  rules:
+  - host: ${component.kubernetes-dashboard.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    http:
+      paths:
+      - path: ${component.kubernetes-dashboard.ingress.path}
+        backend:
+          serviceName: ${component.kubernetes-dashboard.name}
+          servicePort: 80
