@@ -10,6 +10,7 @@ sources:
 - crd
 
 provider: aws
+policy: sync
 domainFilters:
   - "${dns.domain}"
 crd:
