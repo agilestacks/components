@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dash-example
+  labels:
+    provider:  agilestacks.com
+    project:   kubernetes
+spec:
+  rules:
+  - host: dash-example.${dns.domain}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kubernetes-dashboard
+          servicePort: 80
