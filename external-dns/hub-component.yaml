@@ -32,7 +32,7 @@ parameters:
 - name: component.external-dns
   parameters:
   - name: namespace
-    value: default
+    value: kube-system
     env: NAMESPACE
   - name: name
     value: external-dns
