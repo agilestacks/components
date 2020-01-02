@@ -1,14 +1,9 @@
 .DEFAULT_GOAL := deploy
 
-export TF_VAR_component          ?= external-dns
-export TF_VAR_domain_name        ?=
-export NAMESPACE                 ?= kube-system
-
-export SERVICE_PROVIDER          += rfc2136
-ACM_CERTIFICATE_ARN ?=
+CLOUD_KIND ?= rfc2136
 
 deploy:
-	make -C $(SERVICE_PROVIDER) $@
+	make -C $(CLOUD_KIND) $@
 
 undeploy:
-	make -C $(SERVICE_PROVIDER) $@
+	make -C $(CLOUD_KIND) $@

@@ -1,2 +1,4 @@
 aws/*.yaml
-*.yaml
+examples/*.yaml
+metal/*.yaml
+.helm
