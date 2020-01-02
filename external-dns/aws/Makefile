@@ -39,7 +39,7 @@ $(CHART_DIR):
 		--untardir $(dir $@)
 
 patch-chart: $(CHART_DIR)
-	$(rsync) $(HACK_DIR)/ $<
+	$(rsync) --exclude-from='$(HACK_DIR)/.cpignore' $(HACK_DIR)/ $<
 
 purge: $(CHART_DIR)
 	# $(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
