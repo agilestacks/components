@@ -1,0 +1,55 @@
+---
+version: 1
+kind: component
+meta:
+  name: aws-drainer
+  title: AWS Drainer
+  brief: AWS instance termination handler
+  description: >
+    The AWS Node Termination Handler is an operational DaemonSet
+    built to run on any Kubernetes cluster using AWS EC2 Spot & ASG Instances
+  category: Kubernetes Tools
+  version: 1.0
+  maturity: beta
+  license: Apache 2.0
+  icon: https://press.aboutamazon.com/system/files-encrypted/nasdaq_kms/inline-images/AWS.jpg
+  source:
+    dir: ../../components/aws-drainer
+
+requires:
+  - kubernetes
+provides:
+  - aws-drainer
+
+lifecycle:
+  verbs:
+    - deploy
+    - undeploy
+
+parameters:
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+  - name: terraform.bucket.container
+    empty: allow
+    env: STATE_CONTAINER
+  - name: dns.domain
+    env: TF_VAR_domain_name
+  - name: cloud.kind
+    env: CLOUD_KIND
+  - name: dns.domain
+    env: TF_VAR_cluster_name
+  - name: component.aws-drainer
+    parameters:
+    - name: name
+      value: aws-drainer
+      env: TF_VAR_component
+    - name: namespace
+      value: aws-drainer
+      env: TF_VAR_namespace
+
+templates:
+  files:
+    - "base/*.template"
+    - "*.template"
