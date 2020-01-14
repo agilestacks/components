@@ -11,7 +11,6 @@ meta:
 requires:
   - kubernetes
   - helm
-  - tiller
 
 provides:
   - external-dns
@@ -22,10 +21,14 @@ lifecycle:
   - undeploy
 
 parameters:
-- name: dns.name
-  env: DOMAIN
+- name: cloud.kind
+  env:  CLOUD_KIND
+- name: cloud.region
+# - name: component.tls.kind
 - name: dns.domain
-  env: TF_VAR_domain_name
+  env: DOMAIN_NAME
+- name: dns.name
+  env: CLUTER_NAME
 - name: component.external-dns
   parameters:
   - name: namespace
@@ -34,12 +37,15 @@ parameters:
   - name: name
     value: external-dns
     env: COMPONENT_NAME
-  - name: aws
+  - name: cloud
     empty: allow
     parameters:
     - name: region
-    - name: accessKeyId
-    - name: secretAccessKey
+  - name: chart.version
+    # conflicting change https://github.com/helm/charts/commit/396c9d43847e28c62c67c89241d2ce62f5db8d6f
+    value: "2.13.1"
+    env: CHART_VERSION
+
   - name: rfc2136
     empty: allow
     parameters:
@@ -51,14 +57,13 @@ parameters:
     - name: tsig-secret-alg
       value: hmac-sha256
 # alias for CEL expression
-- name: externaldns.awsAccessKeyId
-  value: ${component.external-dns.aws.accessKeyId}
-- name: component.external-dns.provider
-  value: '#{size(externaldns.awsAccesKeyId) > 1 ? "aws" : "rfc2136"}'
-  env: SERVICE_PROVIDER
+# - name: externaldns.awsAccessKeyId
+#   value: ${component.external-dns.aws.accessKeyId}
+# - name: component.external-dns.provider
+#   value: '#{size(externaldns.awsAccesKeyId) > 1 ? "aws" : "rfc2136"}'
+#   env: SERVICE_PROVIDER
 
 templates:
   files:
-    - "manifests.yaml.template"
+    - "examples/*.template"
     - "aws/*.template"
-    - "metal/*.template"

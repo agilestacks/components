@@ -1,0 +1,174 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ${component.kubernetes-dashboard.name}-view-all
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - endpoints
+  - nodes
+  - persistentvolumeclaims
+  - persistentvolumes
+  - pods
+  - replicationcontrollers
+  - replicationcontrollers/scale
+  - serviceaccounts
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - bindings
+  - events
+  - limitranges
+  - namespaces/status
+  - pods/log
+  - pods/status
+  - replicationcontrollers/status
+  - resourcequotas
+  - resourcequotas/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  - deployments
+  - deployments/scale
+  - replicasets
+  - replicasets/scale
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - autoscaling
+  resources:
+  - horizontalpodautoscalers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - extensions
+  resources:
+  - daemonsets
+  - deployments
+  - deployments/scale
+  - ingresses
+  - replicasets
+  - replicasets/scale
+  - replicationcontrollers/scale
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - policy
+  resources:
+  - poddisruptionbudgets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - storage.k8s.io
+  resources:
+  - storageclasses
+  verbs:
+  - get
+  - list
+  - watch
+  # Allow Metrics Scraper to get metrics from the Metrics server
+- apiGroups:
+  - metrics.k8s.io
+  resources:
+  - pods
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ${component.kubernetes-dashboard.name}-view-all
+  labels:
+    k8s-app: ${component.kubernetes-dashboard.name}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ${component.kubernetes-dashboard.name}-view-all
+subjects:
+- kind: ServiceAccount
+  name: ${component.kubernetes-dashboard.name}
+  namespace: ${component.kubernetes-dashboard.namespace}
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ${component.kubernetes-dashboard.name}-minimal
+  namespace: ${component.kubernetes-dashboard.namespace}
+rules:
+  # Allow Dashboard to get, update and delete Dashboard exclusive secrets.
+- apiGroups: [""]
+  resources: ["secrets"]
+  resourceNames: ["kubernetes-dashboard-key-holder", "kubernetes-dashboard-certs", "kubernetes-dashboard-csrf"]
+  verbs: ["get", "update", "delete"]
+  # Allow Dashboard to get and update 'kubernetes-dashboard-settings' config map.
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["kubernetes-dashboard-settings"]
+  verbs: ["get", "update"]
+  # Allow Dashboard to get metrics.
+- apiGroups: [""]
+  resources: ["services"]
+  resourceNames: ["heapster", "dashboard-metrics-scraper"]
+  verbs: ["proxy"]
+- apiGroups: [""]
+  resources: ["services/proxy"]
+  resourceNames: ["heapster", "http:heapster:", "https:heapster:", "dashboard-metrics-scraper", "http:dashboard-metrics-scraper"]
+  verbs: ["get"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ${component.kubernetes-dashboard.name}-minimal
+  namespace: ${component.kubernetes-dashboard.namespace}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ${component.kubernetes-dashboard.name}-minimal
+subjects:
+- kind: ServiceAccount
+  name: ${component.kubernetes-dashboard.name}
+  namespace: ${component.kubernetes-dashboard.namespace}

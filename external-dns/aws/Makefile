@@ -1,66 +1,62 @@
 .DEFAULT_GOAL := deploy
 
-export TF_VAR_component          ?= external-dns
-export TF_VAR_domain_name        ?=
-export NAMESPACE                 ?= kube-system
+COMPONENT_NAME   ?= external-dns
+DOMAIN_NAME      ?= $(error DOMAIN_NAME not defined)
+NAMESPACE        ?= kube-system
+helm             := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+aws              := aws --output=text
+rsync            := rsync -arvp
+kubectl          := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
-CLOUD_KIND          ?= hybrid
-ACM_CERTIFICATE_ARN ?=
+export HELM_HOME := $(abspath ..)/.helm
+export PATH      := $(abspath ..)/bin:$(PATH)
+HACK_DIR         := $(abspath ..)/hack
 
-STATE_BUCKET    ?= terraform.agilestacks.com
-STATE_REGION    ?= us-east-1
-STATE_CONTAINER ?= agilestacks
+CHART_NAME       ?= stable/external-dns
+CHART_DIR        := $(HELM_HOME)/cache/$(notdir $(CHART_NAME))
+ROLE_ARN         := $(shell aws-role-by-tag \
+							--filter "$(CLUTER_NAME)" \
+							--tag superhub.io/role/kind=worker \
+							--tag superhub.io/stack/$(DOMAIN_NAME))
 
-export AWS_DEFAULT_REGION ?= us-east-1
-
-export TF_LOG      ?= info
-export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain_name)-$(TF_VAR_component)
-export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
-
-terraform   ?= terraform-v0.11
-TF_CLI_ARGS ?= -no-color -input=false
-TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
-KUBECONFIG := kubectl --context="$(TF_VAR_domain_name)" --namespace="$(NAMESPACE)"
-
-deploy: init purge plan apply install
-
-ifneq (,$(filter $(CLOUD_KIND), aws hybrid))
-STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
-        		-backend-config="region=$(STATE_REGION)" \
-				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate" \
-				-backend-config="profile=$(AWS_PROFILE)"
-else
-	$(error cloud.kind / CLOUD_KIND must be either aws or hybrid)
+ifeq ($(ROLE_ARN),)
+$(error cannot find role tags: superhub.io/stack/$(DOMAIN_NAME) and superhub.io/role/kind=worker)
 endif
 
+deploy:   init install
+undeploy: init purge
 
-$(TF_DATA_DIR):
-	@mkdir -p $@
+$(HELM_HOME):
+	@ mkdir -p "$@"
 
-init: $(TF_DATA_DIR)
-	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
-        -backend=true -reconfigure \
-        $(STATE_BACKEND_CONFIG)
+init: $(HELM_HOME)
+	@ $(helm) init --client-only --upgrade
 
-purge:
-	-$(KUBECONFIG) delete -f deployment.yaml
+$(CHART_DIR):
+	$(helm) fetch $(CHART_NAME) \
+		--version $(CHART_VERSION) \
+		--untar \
+		--untardir $(dir $@)
 
-install:
-	$(eval HOSTED_ZONE_ID = $(shell TF_DATA_DIR=$(TF_DATA_DIR) $(terraform) output hosted_zone_id))
-	sed -i'' "s/%%HOSTED_ZONE_ID%%/$(HOSTED_ZONE_ID)/g" deployment.yaml
-	$(KUBECONFIG) apply -f ../manifests.yaml
-	$(KUBECONFIG) apply -f deployment.yaml
+patch-chart: $(CHART_DIR)
+	$(rsync) --exclude-from='$(HACK_DIR)/.cpignore' $(HACK_DIR)/ $<
 
-plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+purge: $(CHART_DIR)
+	# $(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 
-refresh:
-	$(terraform) refresh $(TF_CLI_ARGS)
+	$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
-apply:
-	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
-	@echo
+install: patch-chart
+	# $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 
-undeploy: purge
+	- $(helm) install $(CHART_DIR) \
+			--name $(COMPONENT_NAME) \
+			--namespace $(NAMESPACE) \
+			--wait \
+			--values $(abspath .)/values.yaml \
+			--set aws.assumeRoleArn=$(ROLE_ARN)
 
--include ../Mk/phonies
+clean:
+	rm -rf $(CHART_DIR)
+
+.PHONY := patch-chart

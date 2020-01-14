@@ -32,6 +32,8 @@ parameters:
     env: SG_IDS
   - name: cloud.iam.worker.instanceProfile
     env: TF_VAR_instance_profile
+  - name: cloud.role.worker
+    env: TF_VAR_role
 
   - name: component.k8s-worker-nodes
     parameters:
@@ -43,9 +45,10 @@ parameters:
       empty: allow
     - name: shortName
       value: ${hub.componentName}
+      env: TF_VAR_short_name
     - name: name
-      env: TF_VAR_name
       value: ${component.k8s-worker-nodes.shortName}-${dns.domain}
+      env: TF_VAR_name
     - name: autoscale.enabled
       value: false
       env: TF_VAR_autoscale_enabled

@@ -16,6 +16,9 @@ lifecycle:
   readyConditions:
     - dns: ${kubernetes.api.endpoint}
       url: https://${kubernetes.api.endpoint}/api/v1
+  options:
+    random:
+      bytes: 1536
 
 parameters:
   - name: dns.domain
@@ -60,6 +63,9 @@ outputs:
   - name: kubernetes.api.endpoint
   - name: kubernetes.api.caCert
     kind: secret/certificate
+  - name: kubernetes.api.token
+    fromTfVar: token/base64
+    kind: secret/token
   - name: kubernetes.eks.cluster
 
 templates:

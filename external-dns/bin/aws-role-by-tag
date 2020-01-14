@@ -1,0 +1,47 @@
+#!/bin/bash
+export AWS_DEFAULT_OUTPUT=json
+usage()
+{
+    echo "Print arn of the role that matches one or multiple tags"
+    echo "usage: $0 [-a] [-f role-filter ] [-t key | -t key=value]... [-h]"
+    exit 0
+}
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -f | --filter )     shift
+                            filter=$1
+                            ;;
+        -t | --tag )        shift
+                            tags="$tags $(echo $1 | awk -F '=' '{print $1"="$2}')"
+                            ;;
+        -a | --all )        all=1
+                            ;;
+        -h | --help )       usage
+                            exit
+                            ;;
+        * )                 usage
+                            exit 1
+    esac
+    shift
+done
+desired=`echo $tags | wc -w | xargs`
+if test $desired == 0; then
+  usage
+  exit -1
+fi
+
+tags=`echo "$tags" | xargs | tr ' ' '|'`
+test -z "$filter" \
+  && jq_filter='jq -r ".Roles[].RoleName"' \
+  || jq_filter='jq -r ".Roles[].RoleName|select(match(\"$filter\"))"'
+
+retval=1
+for name in $(eval "aws iam list-roles | $jq_filter | xargs"); do
+  role_tags=`aws iam list-role-tags --role-name $name | jq -r '.Tags[]|.Key+"="+.Value' | xargs`
+  matched=`echo $role_tags | grep -Eo "$tags" | wc -w | xargs`
+  test "$matched" == "$desired" || continue
+  aws iam get-role --role-name "$name" | jq -r '.Role.Arn'
+  test -z "$all" && exit 0 || retval=0
+done
+exit $retval

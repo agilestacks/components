@@ -1,0 +1,3 @@
+/base/kustomization.yaml
+/kube-drainer.yaml
+/.terraform

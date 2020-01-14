@@ -1,0 +1,28 @@
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: ${component.kubernetes-dashboard.name}
+  name: ${component.kubernetes-dashboard.name}
+  namespace: ${component.kubernetes-dashboard.namespace}
+spec:
+  ports:
+  - port: 80
+    targetPort: 9090
+  selector:
+    k8s-app: ${component.kubernetes-dashboard.name}
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: dashboard-metrics-scraper
+  name: dashboard-metrics-scraper
+  namespace: ${component.kubernetes-dashboard.namespace}
+spec:
+  ports:
+  - port: 8000
+    targetPort: 8000
+  selector:
+    k8s-app: dashboard-metrics-scraper

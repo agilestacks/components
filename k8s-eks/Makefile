@@ -8,6 +8,8 @@ BASE_DOMAIN    := $(shell echo $(DOMAIN_NAME) | cut -d. -f2-)
 STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1
 
+SERVICE_ACCOUNT ?= asi
+
 export AWS_DEFAULT_REGION ?= us-east-2
 
 export TF_LOG      ?= info
@@ -23,7 +25,7 @@ terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-deploy: init plan apply storage output
+deploy: init plan apply createsa storage token output
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
@@ -55,9 +57,24 @@ vars: vpc
 	$(eval VPC_ID := $(shell grep -E '^vpc =' $(DOMAIN_NAME).log | awk '{print $$3}'))
 .PHONY: vars
 
+createsa:
+	$(kubectl) -n default get serviceaccount $(SERVICE_ACCOUNT) || \
+		($(kubectl) -n default create serviceaccount $(SERVICE_ACCOUNT) && sleep 17)
+	$(kubectl) get clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding || \
+		($(kubectl) create clusterrolebinding $(SERVICE_ACCOUNT)-cluster-admin-binding \
+			--clusterrole=cluster-admin --serviceaccount=default:$(SERVICE_ACCOUNT) && sleep 7)
+.PHONY: createsa
+
 storage:
 	$(kubectl) apply -f storage-class.yaml
 .PHONY: storage
+
+token:
+	$(eval SECRET:=$(shell $(kubectl) -n default get serviceaccount $(SERVICE_ACCOUNT) -o json | \
+		jq -r '.secrets[] | select(.name | contains("token")).name'))
+	$(eval TOKEN:=$(shell $(kubectl) -n default get secret $(SECRET) -o json | \
+		jq -r '.data.token'))
+.PHONY: token
 
 output: vpc
 	@cat $(DOMAIN_NAME).log
@@ -65,6 +82,7 @@ output: vpc
 	@echo Outputs:
 	@echo dns_name = $(NAME)
 	@echo dns_base_domain = $(BASE_DOMAIN)
+	@echo token = $(TOKEN) | $(HUB) util otp
 	@echo
 
 undeploy: init destroy apply

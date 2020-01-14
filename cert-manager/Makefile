@@ -4,8 +4,8 @@ COMPONENT_NAME ?= cert-manager
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE 	   ?= cert-manager
 HELM_CHART     ?= jetstack/cert-manager
-CHART_VERSION  ?= v0.11.1
-TAG            ?= release-0.11
+CHART_VERSION  ?= v0.12.0
+TAG            ?= release-0.12
 KUBE_FLAVOR    ?=
 
 export HELM_HOME ?= $(shell pwd)/.helm
@@ -15,7 +15,7 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 ADDITIONAL_VALUES :=
 
-deploy: clean init fetch purge install
+deploy: clean init fetch purge crds install
 ifeq ($(KUBE_FLAVOR),openshift)
 deploy: openshift
 ADDITIONAL_VALUES := --values values-openshift.yaml
@@ -41,11 +41,23 @@ purge:
 		$(helm) delete --purge $(COMPONENT_NAME) && \
 		$(kubectl) get crd -o name | grep -F certmanager.k8s.io | xargs $(kubectl) delete || exit 0
 
+crds:
+	$(kubectl) apply --validate=false -f https://raw.githubusercontent.com/jetstack/cert-manager/$(TAG)/deploy/manifests/00-crds.yaml
+	@echo "Waiting for CRDs to install"; \
+	for i in $$(seq 1 30); do \
+		if test $$($(kubectl) get crds | grep -F cert-manager.io | wc -l) -ge 6; then \
+			echo "done"; \
+			exit 0; \
+		fi; \
+		echo "still waiting"; \
+		sleep 10; \
+	done; \
+	echo "timeout"; \
+	exit 1;
+.PHONY: crds
+
 install:
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply --validate=false -f https://raw.githubusercontent.com/jetstack/cert-manager/$(TAG)/deploy/manifests/00-crds.yaml
-	@echo Waiting for CRDs to settle...
-	sleep 20
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \

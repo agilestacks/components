@@ -130,12 +130,7 @@ templates:
     - aws/*.template
     - azure/*.template
     - gcp/*.template
-    - oidc-crd.yaml.template
-  extra:
-  - kind: mustache
-    files:
-    - values.yaml.template
-    - values-thanos.yaml.template
+    - '*.yaml.template'
 
 outputs:
   - name: component.prometheus.url

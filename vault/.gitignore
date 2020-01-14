@@ -1,4 +1,5 @@
 /.helm
 /.vault
 /values*.yaml
+/restore/unseal-*.json
 nohup.out

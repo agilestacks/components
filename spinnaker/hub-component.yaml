@@ -9,7 +9,7 @@ meta:
     An open source, multi-cloud continuous delivery platform
     for releasing software changes with high velocity and confidence.
   category: DevOps Stack
-  version: 1.10
+  version: '1.10'
   maturity: alpha
   license: Apache 2.0
   source:

@@ -78,14 +78,23 @@ install:
 	$(kubectl) apply -f kubernetes/namespace.yaml
 	$(kubectl) apply -f kubernetes/grpc-client-secret.yaml
 	$(kubectl) apply -f kubernetes/grpc-server-secret.yaml
+
+	$(kubectl) apply -f kubernetes/crd/oidc.yaml
+	$(kubectl) apply -f kubernetes/crd/authcodes.yaml
+	$(kubectl) apply -f kubernetes/crd/authrequests.yaml
+	$(kubectl) apply -f kubernetes/crd/connectors.yaml
+	$(kubectl) apply -f kubernetes/crd/oauth2clients.yaml
+	$(kubectl) apply -f kubernetes/crd/offlinesessionses.yaml
+	$(kubectl) apply -f kubernetes/crd/passwords.yaml
+	$(kubectl) apply -f kubernetes/crd/refreshtokens.yaml
+	$(kubectl) apply -f kubernetes/crd/signingkeies.yaml
+
 	$(kubectl) apply -f kubernetes/dex-rbac.yaml
 	$(kubectl) get configmap dex || $(kubectl) apply -f kubernetes/configmap.yaml
 	$(kubectl) apply -f kubernetes/deployment.yaml
 	$(kubectl) apply -f kubernetes/service.yaml
 	$(kubectl) apply -f kubernetes/service-api.yaml
 	$(kubectl) apply -f kubernetes/$(INGRESS).yaml
-
-	$(kubectl) apply -f kubernetes/auth_v1alpha1_oidc.yaml
 	$(kubectl) apply -f kubernetes/auth-operator.yaml
 
 undeploy: init destroy apply uninstall
