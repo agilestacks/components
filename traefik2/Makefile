@@ -82,7 +82,6 @@ install:
 elb:
 	@echo "Waiting for ELB to assign"; \
 	for i in $$(seq 1 30); do \
-		sleep 10; \
 		if $(kubectl) get svc \
 				$(COMPONENT_NAME) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}' | \
 				grep -F elb.amazonaws.com; then \
@@ -90,6 +89,7 @@ elb:
 			exit 0; \
 		fi; \
 		echo "still waiting"; \
+		sleep 10; \
 	done; \
 	echo "timeout"; \
 	exit 1;
