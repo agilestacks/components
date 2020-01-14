@@ -71,6 +71,7 @@ spec:
         - "--providers.file.directory=/config"
         - "--providers.kubernetescrd"
         - "--providers.kubernetesingress"
+        - "--providers.kubernetesingress.ingressendpoint.publishedservice=${component.ingress.namespace}/${component.ingress.name}"
         - "--providers.kubernetesingress.namespaces=${component.traefik.kubernetes.namespaces}"
         - "--providers.kubernetesingress.labelSelector=${component.traefik.kubernetes.labelSelector}"
         - "--providers.kubernetesingress.ingressClass=${component.traefik.kubernetes.ingressClass}"
