@@ -98,6 +98,11 @@ meta:
   source:
     dir: ../../components/olm
 
+requires:
+  - kubernetes
+provides:
+  - olm
+
 parameters:
 - name: dns.domain
   env:  DOMAIN_NAME
