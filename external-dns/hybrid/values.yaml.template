@@ -1,0 +1,6 @@
+aws:
+  region: "${cloud.region}"
+  zoneType: "public"
+  zoneTags: [
+    "superhub.io/stack/${dns.domain}"
+  ]

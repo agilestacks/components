@@ -62,7 +62,13 @@ parameters:
   - name: chart.version
     value: "2.13.1"
     env: CHART_VERSION
-
+  - name: aws
+    empty: allow
+    parameters:
+    - name: accessKey
+      env: DNS_AWS_ACCESS_KEY
+    - name: secretKey
+      env: DNS_AWS_SECRET_KEY
   - name: rfc2136
     empty: allow
     parameters:
