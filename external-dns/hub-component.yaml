@@ -2,9 +2,16 @@
 version: 1
 kind: component
 meta:
+  category: Networking
   name: external-dns
-  title: External DNS
-  brief: DNS Operator to update route53 for ingresses or Services with the appropriate annotations
+  title: ExternalDNS
+  description: >
+    Kubernetes addon that configures DNS servers
+    with information about exposed Kubernetes
+    services to make them discoverable
+  license: Apache 2.0
+  maturity: beta
+  version: 0.5.18
   source:
       dir: ../../components/external-dns
 
@@ -29,6 +36,14 @@ parameters:
   env: DOMAIN_NAME
 - name: dns.name
   env: CLUTER_NAME
+- name: component.istio
+  empty: allow
+  parameters:
+  - name: namespace
+    value: istio-system
+  - name: ingressGateway
+    # default works well if we have only one instance of an istio
+    value: ingressgateway
 - name: component.external-dns
   parameters:
   - name: namespace
@@ -41,8 +56,10 @@ parameters:
     empty: allow
     parameters:
     - name: region
+  - name: chart. name
+    value: "stable/external-dns"
+    env: CHART_NAME
   - name: chart.version
-    # conflicting change https://github.com/helm/charts/commit/396c9d43847e28c62c67c89241d2ce62f5db8d6f
     value: "2.13.1"
     env: CHART_VERSION
 
@@ -67,3 +84,4 @@ templates:
   files:
     - "examples/*.template"
     - "aws/*.template"
+    - "./*.template"

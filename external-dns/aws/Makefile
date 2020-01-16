@@ -1,26 +1,24 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME   ?= external-dns
 DOMAIN_NAME      ?= $(error DOMAIN_NAME not defined)
 NAMESPACE        ?= kube-system
 helm             := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 aws              := aws --output=text
 rsync            := rsync -arvp
 kubectl          := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+aws-role-by-tag  := $(abspath ..)/bin/aws-role-by-tag
 
 export HELM_HOME := $(abspath ..)/.helm
-export PATH      := $(abspath ..)/bin:$(PATH)
-HACK_DIR         := $(abspath ..)/hack
+OVERRIDES_DIR    := $(abspath ..)/overrides
 
-CHART_NAME       ?= stable/external-dns
-CHART_DIR        := $(HELM_HOME)/cache/$(notdir $(CHART_NAME))
-ROLE_ARN         := $(shell aws-role-by-tag \
+CHART_DIR        := $(HELM_HOME)/charts/$(notdir $(CHART_NAME))
+ROLE_ARN         := $(shell $(aws-role-by-tag) \
 							--filter "$(CLUTER_NAME)" \
 							--tag superhub.io/role/kind=worker \
 							--tag superhub.io/stack/$(DOMAIN_NAME))
 
 ifeq ($(ROLE_ARN),)
-$(error cannot find role tags: superhub.io/stack/$(DOMAIN_NAME) and superhub.io/role/kind=worker)
+$(error Cannot find role by tags: superhub.io/stack/$(DOMAIN_NAME) and superhub.io/role/kind=worker)
 endif
 
 deploy:   init install
@@ -39,7 +37,7 @@ $(CHART_DIR):
 		--untardir $(dir $@)
 
 patch-chart: $(CHART_DIR)
-	$(rsync) --exclude-from='$(HACK_DIR)/.cpignore' $(HACK_DIR)/ $<
+	$(rsync) --exclude-from='$(OVERRIDES_DIR)/.cpignore' $(OVERRIDES_DIR)/ $<
 
 purge: $(CHART_DIR)
 	# $(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
@@ -47,12 +45,12 @@ purge: $(CHART_DIR)
 	$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 install: patch-chart
-	# $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
-
-	- $(helm) install $(CHART_DIR) \
+	$(helm) ls -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
+		$(helm) install $(CHART_DIR) \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--wait \
+			--values $(abspath ..)/values.yaml \
 			--values $(abspath .)/values.yaml \
 			--set aws.assumeRoleArn=$(ROLE_ARN)
 

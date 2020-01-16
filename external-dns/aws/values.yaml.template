@@ -1,33 +1,6 @@
-image:
-  registry: docker.io
-  repository: bitnami/external-dns
-  tag: 0.5.17-debian-9-r50
-  pullPolicy: Always
-
-sources:
-# - service
-- ingress
-- crd
-
-provider: aws
-policy: sync
-domainFilters:
-  - "${dns.domain}"
-crd:
-  create: true
-  apiversion: externaldns.k8s.io/v1alpha1
-  kind: DNSEndpoint
-
 aws:
   region: "${cloud.region}"
   zoneType: "public"
   zoneTags: [
     "superhub.io/stack/${dns.domain}"
   ]
-
-extraEnv: []
-## - name: VARNAME2
-##   valueFrom:
-##     secretKeyRef:
-##       name: existing-secret
-##       key: varname2-key
