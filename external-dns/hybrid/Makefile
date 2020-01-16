@@ -6,15 +6,14 @@ helm             := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kub
 aws              := aws --output=text
 rsync            := rsync -arvp
 kubectl          := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-DNS_AWS_ACCESS_KEY   ?= $(error AWS_ACCESS_KEY is not set)
-DNS_AWS_SECRET_KEY   ?= $(error AWS_SECRET_KEY is not set)
+
+# This is the one true helm chart (to support aws credentials)
+CHART_VERSION    := 2.13.2
 
 export HELM_HOME := $(abspath ..)/.helm
 OVERRIDES_DIR    := $(abspath ..)/overrides
 
 CHART_DIR        := $(HELM_HOME)/charts/$(notdir $(CHART_NAME))
-
-AWS_CREDS=--set aws.credentials.accessKey=$(DNS_AWS_ACCESS_KEY) --set aws.credentials.secretKey=$(DNS_AWS_SECRET_KEY)
 
 deploy:   init install
 undeploy: init purge
@@ -31,15 +30,12 @@ $(CHART_DIR):
 		--untar \
 		--untardir $(dir $@)
 
-patch-chart: $(CHART_DIR)
-	$(rsync) --exclude-from='$(OVERRIDES_DIR)/.cpignore' $(OVERRIDES_DIR)/ $<
-
 purge: $(CHART_DIR)
 	# $(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 
 	$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
-install: patch-chart
+install: $(CHART_DIR)
 	$(helm) ls -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART_DIR) \
 			--name $(COMPONENT_NAME) \

@@ -66,9 +66,7 @@ parameters:
     empty: allow
     parameters:
     - name: accessKey
-      env: DNS_AWS_ACCESS_KEY
     - name: secretKey
-      env: DNS_AWS_SECRET_KEY
   - name: rfc2136
     empty: allow
     parameters:
