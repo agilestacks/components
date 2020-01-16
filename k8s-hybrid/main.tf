@@ -24,6 +24,11 @@ variable "api_host" {
   type        = "string"
 }
 
+variable "asi_extra_tags" {
+  type        = "map"
+  description = "(optional) Extra tags to be applied to created resources."
+}
+
 # DNS
 
 locals {
@@ -37,6 +42,11 @@ data "aws_route53_zone" "base" {
 resource "aws_route53_zone" "main" {
   name          = "${var.name}.${data.aws_route53_zone.base.name}"
   force_destroy = true
+  tags = "${merge(map(
+      "kubernetes.io/cluster/${var.cluster_name}-${var.base_domain}", "owned",
+      "superhub.io/stack/${var.cluster_name}.${var.base_domain}", "owned",
+      "Kind", "public",
+    ), var.asi_extra_tags)}"
 }
 
 resource "aws_route53_record" "parent" {
