@@ -88,4 +88,5 @@ templates:
   files:
     - "examples/*.template"
     - "aws/*.template"
+    - "hybrid/*.template"
     - "./*.template"
