@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${component.okd-console.name}
+  namespace: ${component.okd-console.namespace}
+  annotations:
+    kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
+  labels:
+    provider: agilestacks.com
+    project: kubernetes
+spec:
+  rules:
+  - host: ${component.okd-console.name}.${component.ingress.ssoFqdn}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ${component.okd-console.name}
+          servicePort: 80
