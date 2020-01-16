@@ -9,7 +9,7 @@ meta:
     Operator Lifecycle Manager is a component of the Operator Framework,
     an open source toolkit to manage Kubernetes native applications, called Operators,
     in an effective, automated, and scalable way.
-  category: DevOps Stack
+  category: Kubernetes Tools
   version: '0.13.0'
   icon: |
     data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAA
