@@ -1,0 +1,6 @@
+kiali:
+  tag: v1.4
+
+global:
+  hub: gcr.io/istio-release
+  tag: release-1.3-latest-daily
