@@ -14,6 +14,7 @@ spec:
       labels:
         app: ${component.okd-console.name}
     spec:
+      serviceAccountName: ${component.okd-console.name}
       containers:
       - name: origin-console
         image: quay.io/openshift/origin-console:${component.okd-console.version}

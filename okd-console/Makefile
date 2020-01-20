@@ -14,6 +14,8 @@ kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy:
 	-$(kubectl) create ns $(NAMESPACE)
+	$(kubectl) apply -f templates/serviceaccount.yaml
+	$(kubectl) apply -f templates/clusterrolebinding.yaml
 	$(kubectl) apply -f templates/deployment.yaml
 	$(kubectl) apply -f templates/service.yaml
 	$(kubectl) apply -f templates/$(INGRESS).yaml
@@ -24,3 +26,4 @@ undeploy:
 	-$(kubectl) delete -f templates/deployment.yaml
 
 -include ../Mk/phonies
+
