@@ -5,6 +5,12 @@ RELEASE_NAME   := $(shell echo $(COMPONENT_NAME) | cut -c1-53)
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= postgresql
 
+ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
+	INGRESS_TLS:=true
+else
+	INGRESS_TLS:=false
+endif
+
 export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
@@ -26,7 +32,8 @@ install:
 			--name $(RELEASE_NAME) \
 			--namespace $(NAMESPACE) \
 			--replace \
-			--values values.yaml
+			--values values.yaml \
+			--set ingress.tls.enabled=$(INGRESS_TLS)
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(RELEASE_NAME)$$' && \

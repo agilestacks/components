@@ -11,6 +11,9 @@ metadata:
   annotations:
     agilestacks.com/stack-component: pgweb
     kubernetes.io/ingress.class: {{ .Values.ingress.class | quote }}
+    {{- if .Values.ingress.tls.enabled}}
+    kubernetes.io/tls-acme: "true"
+    {{- end}}
 spec:
   rules:
   - host: {{ .Values.ingress.fqdn | quote }}
@@ -20,4 +23,10 @@ spec:
         backend:
           serviceName: {{ template "fullname" . }}
           servicePort: {{default "80" .Values.service.port }}
+  {{- if .Values.ingress.tls.enabled}}
+  tls:
+    - hosts:
+      - "{{ .Chart.Name }}-{{ .Values.ingress.fqdn }}"
+      secretName: "{{ .Chart.Name }}-tls"
+  {{- end}}
 {{- end }}
