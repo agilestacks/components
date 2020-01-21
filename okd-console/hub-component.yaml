@@ -3,8 +3,8 @@ version: 1
 kind: component
 meta:
   name: okd-console
-  title: OpenShift (OKD) Console
-  brief: Web console to manage Kubernetes cluster
+  title: OKD Console
+  brief: Web console from OpenShift to manage Kubernetes cluster
   description: >
     The console is a more friendly kubectl in the form of a single page webapp.
     It also integrates with other services like monitoring, chargeback, and OLM.
