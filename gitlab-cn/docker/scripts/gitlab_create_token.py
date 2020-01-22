@@ -3,9 +3,10 @@
 
 # Import Modules
 import os
-import sys
 import requests
 import argparse
+import time
+import functools
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
@@ -20,6 +21,27 @@ sign_in_route = urljoin(endpoint, "/users/sign_in")
 pat_route = urljoin(endpoint, "/profile/personal_access_tokens")
 
 
+def retry(retry_count=5, delay=5, allowed_exceptions=()):
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            exception = None
+            for i in range(retry_count):
+                try:
+                    return f(*args, **kwargs)
+                except Exception as x:
+                    exception = x
+                    print('retrying in: {}s, attempt: {}'.format(delay, i))
+                    time.sleep(delay)
+            error = "Failed to get data from: {}".format(endpoint)
+            print(error)
+            raise Exception(exception)
+
+        return wrapper
+
+    return decorator
+
+
 # Methods
 def find_csrf_token(text):
     soup = BeautifulSoup(text, "lxml")
@@ -29,6 +51,7 @@ def find_csrf_token(text):
     return data
 
 
+@retry(retry_count=5, delay=5)
 def obtain_csrf_token():
     r = requests.get(root_route)
     token = find_csrf_token(r.text)
@@ -65,13 +88,13 @@ def obtain_personal_access_token(name, expires_at, csrf, cookies):
 def main():
     # print(endpoint)
     csrf1, cookies1 = obtain_csrf_token()
-    #print("root", csrf1, cookies1)
+    # print("root", csrf1, cookies1)
     csrf2, cookies2 = sign_in(csrf1, cookies1)
-    #print("sign_in", csrf2, cookies2)
+    # print("sign_in", csrf2, cookies2)
 
-    name = sys.argv[1]
-    expires_at = sys.argv[2]
-    token = obtain_personal_access_token(name, expires_at, csrf2, cookies2)    
+    name = "{}-token".format(login)
+    expires_at = "0"
+    token = obtain_personal_access_token(name, expires_at, csrf2, cookies2)
     result = """
 Outputs:
 serviceaccount_token = {}
