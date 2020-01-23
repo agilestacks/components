@@ -56,12 +56,9 @@ parameters:
     empty: allow
     parameters:
     - name: region
-  - name: chart. name
+  - name: chart.name
     value: "stable/external-dns"
     env: CHART_NAME
-  - name: chart.version
-    value: "2.13.1"
-    env: CHART_VERSION
   - name: aws
     empty: allow
     parameters:

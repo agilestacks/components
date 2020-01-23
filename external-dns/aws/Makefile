@@ -10,6 +10,7 @@ aws-role-by-tag  := $(abspath ..)/bin/aws-role-by-tag
 
 export HELM_HOME := $(abspath ..)/.helm
 OVERRIDES_DIR    := $(abspath ..)/overrides
+CHART_VERSION    := 2.15.1
 
 CHART_DIR        := $(HELM_HOME)/charts/$(notdir $(CHART_NAME))
 ROLE_ARN         := $(shell $(aws-role-by-tag) \
