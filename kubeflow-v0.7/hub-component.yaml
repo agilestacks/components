@@ -1,0 +1,53 @@
+---
+version: 1
+kind: component
+meta:
+  name: kubeflow
+  title: Kubeflow
+  brief: Machine learning
+  description: >
+    Cloud Native platform for machine learning based on Google’s internal machine learning pipelines.
+  category: AI and Machine Learning
+  version: 0.7.1
+  maturity: ga
+  licence: Apache 2.0
+  source:
+    dir: ../../components/kubeflow-v0.7
+
+requires:
+  - kubernetes
+  # - ingress
+  # - istio
+
+provides:
+  - kubeflow
+  - istio
+
+parameters:
+  - name: dns.domain
+    env: HUB_DOMAIN_NAME
+  # - name: component.dex.issuer
+  #   env: HUB_DEX_ISSUER
+  - name: component.kubeflow
+    parameters:
+      # To deploy multiple kubeflow on the same cluster
+      # will require to separate it by the namespace
+      # we will use a component..name for namespace
+      - name: name
+        value: kubeflow
+        env: HUB_COMPONENT_NAMESPACE
+      - name: istio.namespace
+        value: istio-system
+        env: HUB_ISTIO_NAMESPACE
+      - name: version
+        value: v0.7.1
+        env: HUB_COMPONENT_VERSION
+
+outputs: []
+    # - name: component.kubeflow.url
+    # brief: Kubeflow Central Dashboard
+    # value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/
+
+templates:
+  files:
+    - "*.template"

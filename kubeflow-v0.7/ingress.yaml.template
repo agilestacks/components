@@ -1,0 +1,57 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: kubeflow
+  name: kubeflow
+spec:
+  rules:
+  - host: kubeflow.app.${dns.domain}
+    http:
+      paths:
+      - backend:
+          serviceName: centraldashboard
+          servicePort: 80
+        path: /
+  - host: kubeflow.app.${dns.domain}
+    http:
+      paths:
+      - backend:
+          serviceName: ml-pipeline-ui
+          servicePort: 80
+        path: /pipeline/
+  - host: kubeflow.app.${dns.domain}
+    http:
+      paths:
+      - backend:
+          serviceName: jupyter-web-app-service
+          servicePort: 80
+        path: /jupyter/
+  - host: kubeflow.app.${dns.domain}
+    http:
+      paths:
+      - backend:
+          serviceName: katib-ui
+          servicePort: 80
+        path: /katib/
+  - host: kubeflow.app.${dns.domain}
+    http:
+      paths:
+      - backend:
+          serviceName: metadata-ui
+          servicePort: 80
+        path: /metadata/
+  - host: kubeflow.app.${dns.domain}
+    http:
+      paths:
+      - backend:
+          serviceName: ml-pipeline-tensorboard-ui
+          servicePort: 80
+        path: /tensorboard/
+  - host: kubeflow.app.${dns.domain}
+    http:
+      paths:
+      - backend:
+          serviceName: argo-ui
+          servicePort: 80
+        path: /argo/
