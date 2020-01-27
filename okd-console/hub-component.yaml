@@ -9,8 +9,8 @@ meta:
     The console is a more friendly kubectl in the form of a single page webapp.
     It also integrates with other services like monitoring, chargeback, and OLM.
   category: Kubernetes Tools
-  version: '4.5.0'
-  maturity: ga
+  version: latest
+  maturity: beta
   license: Apache 2.0
   source:
     dir: ../../components/okd-console
@@ -35,7 +35,7 @@ parameters:
     value: kube-system
     env:   NAMESPACE
   - name: version
-    value: 4.5.0
+    value: latest
 
 templates:
   files:
