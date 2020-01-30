@@ -1,0 +1,57 @@
+---
+version: 1
+kind: component
+meta:
+  name: sagemaker
+  title: sagemaker
+  brief: SageMaker Pipeline
+  description: >
+    Amazon SageMaker is a complete machine learning workflow service for developing, training, and deploying models.  SageMaker Pipeline template provides automation for the build and deployment of machine learning models on SageMaker. This template provides a full implementation of ML pipeline and includes Jupyter notebooks showing how to create, launch, stop, and track the progress of workflows using python and Amazon Alexa.
+  category: App Stack
+  version: 1.0.0
+  maturity: beta
+  license: Apache
+  source:
+    dir: ../../components/sagemaker
+
+requires:
+  - aws
+provides:
+  - sagemaker
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+
+  - name: component.sagemaker
+    parameters:
+    - name: version
+      value: 1.0.0
+    - name:  name
+      value: sagemaker-build
+      env:   COMPONENT_NAME
+    - name: ConfigFramework
+      value: BYOD
+      env:   CONFIG_FRAMEWORK
+    - name: NoteBookInstanceType
+      value: ml.t2.medium
+      env:   NOTEBOOK_INSTANCE_TYPE
+    - name: ExternalGithubRepo
+      value: USE_CODECOMMIT_REPO
+      env:   EXTERNAL_GITHUB_REPO
+
+templates:
+  kind: mustache
+  files:
+    - "*.template"
+outputs:
+  - name: component.sagemaker.NoteBookInstance.url
+    brief: AWS Console url of your sagemaker notebook instance
+    fromTfVar: NoteBookInstance
+  - name: component.sagemaker.NoteBookUrl.url
+    brief: URL of your Jupyter notebook
+    fromTfVar: NoteBookUrl
