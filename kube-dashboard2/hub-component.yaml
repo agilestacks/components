@@ -45,9 +45,9 @@ parameters:
     env:   NAMESPACE
   - name:  version
     brief: Kubernetes Dashboard version
-    value: v2.0.0-beta8
+    value: v2.0.0-rc3
   - name:  ingress.urlPrefix
-    value: kubernetes2
+    value: kubernetes
   - name:  ingress.path
     value: /
   - name:  rbac.kind
