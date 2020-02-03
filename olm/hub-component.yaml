@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: olm
-  title: Operator Lifecycle Manager
+  title: OLM
   brief: Component that manages Kubernetes native applications
   description: >
     Operator Lifecycle Manager is a component of the Operator Framework,
