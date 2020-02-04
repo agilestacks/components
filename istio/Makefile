@@ -7,41 +7,65 @@ ISTIO_VERSION  ?= 1.2.2
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
+CHARTS_DIR := $(abspath $(HELM_HOME))/charts
+
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-deploy: clean init repo namespace purge install create-gateway usage
+HELM_VALUES_ARGS += -f $(abspath values.yaml)
+HELM_VALUES_ARGS += -f $(abspath values-$(ISTIO_VERSION).yaml)
+
+deploy: clean install usage
+
+$(CHARTS_DIR)/%: init repo
+	$(helm) fetch istio/$* \
+		--version "$(ISTIO_VERSION)" \
+		--untar \
+		--untardir $(dir $@)
+
+# More info auto-injection: https://github.com/istio/istio/issues/6476#issuecomment-399219937
+apply-template-% delete-template-%: $(CHARTS_DIR)/istio
+	- $(helm) template $< \
+		--namespace "$(NAMESPACE)" \
+		-x "$(shell find $< -name '$*')" \
+		$(HELM_VALUES_ARGS) \
+	| $(kubectl) $(firstword $(subst -, ,$@)) -f -
+
+install: namespace install-istio-init wait-crds install-istio apply-template-mutatingwebhook.yaml
+
+install-istio-init: $(CHARTS_DIR)/istio-init
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-init$$' || \
+		$(helm) install $< \
+			--name "$(COMPONENT_NAME)-init" \
+			--namespace $(NAMESPACE) \
+			--replace --wait $(HELM_VALUES_ARGS)
+
+install-istio: $(CHARTS_DIR)/istio
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
+		$(helm) install $< \
+			 --debug --dep-up \
+			--name "$(COMPONENT_NAME)" \
+			--namespace "$(NAMESPACE)" \
+			--replace --wait $(HELM_VALUES_ARGS)
 
 namespace:
-	$(kubectl) apply -f namespace.yaml
+	$(kubectl) get namespace $(NAMESPACE) || \
+		$(kubectl) create namespace $(NAMESPACE)
 
 init:
-	@mkdir -p $(HELM_HOME)
-	$(helm) init --client-only --upgrade --wait
+	@ test -f "$(HELM_HOME)/repository/repositories.yaml" || \
+		$(helm) init --client-only --upgrade --wait
 
 repo:
 	$(helm) repo add istio https://storage.googleapis.com/istio-release/releases/$(ISTIO_VERSION)/charts/
-.PHONY: repo
 
-purge:
-	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-init$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME)-init && \
-		$(kubectl) get crd -o name | grep -F istio.io | xargs $(kubectl) delete || exit 0
+purge-%:
+	$(helm) list -a -q --namespace $(NAMESPACE) | grep -E '^$*$$' && \
+		$(helm) delete --purge "$*" || exit 0
 
-install: install-init wait-crds install-app
+purge: delete-template-mutatingwebhook.yaml purge-$(COMPONENT_NAME) purge-$(COMPONENT_NAME)-init
 
-install-init:
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-init$$' || \
-		$(helm) install istio/istio-init \
-			--name $(COMPONENT_NAME)-init \
-			--namespace $(NAMESPACE) \
-			--version $(ISTIO_VERSION) \
-			--replace \
-			--wait \
-			--values values.yaml.$(ISTIO_VERSION)
-.PHONY: install-init
+undeploy: purge clean
 
 wait-crds:
 	@echo "Waiting for CRDs to install"; \
@@ -55,38 +79,19 @@ wait-crds:
 	done; \
 	echo "timeout"; \
 	exit 1;
-.PHONY: wait-crds
-
-install-app:
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
-		$(helm) install istio/istio \
-			--name $(COMPONENT_NAME) \
-			--namespace $(NAMESPACE) \
-			--version $(ISTIO_VERSION) \
-			--replace \
-			--wait \
-			--values values.yaml.$(ISTIO_VERSION)
-.PHONY: install-app
 
 usage:
-	@echo https://istio.io/docs/setup/kubernetes/sidecar-injection/
-
-undeploy: drop-gateway
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-init$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME)-init || exit 0
-	-$(kubectl) get crd -o name | grep -F istio.io | xargs $(kubectl) delete
+	@ echo For using istio sidecars refer to: https://istio.io/docs/setup/kubernetes/sidecar-injection/
 
 clean:
-	@rm -rf $(HELM_HOME)
+	@rm -rf $(HELM_HOME) $(CHARTS_DIR)
 
-create-gateway:
-	$(kubectl) apply -f default-gateway.yaml
-	$(MAKE) -C $(CLOUD_KIND)/gateway-dns deploy
-
-drop-gateway:
-	$(MAKE) -C $(CLOUD_KIND)/gateway-dns undeploy
-	$(kubectl) delete -f default-gateway.yaml
+# create-gateway:
+# 	$(kubectl) apply -f default-gateway.yaml
+# 	$(MAKE) -C $(CLOUD_KIND)/gateway-dns deploy
+# drop-gateway:
+# 	$(MAKE) -C $(CLOUD_KIND)/gateway-dns undeploy
+# 	- $(kubectl) delete -f default-gateway.yaml
 
 -include ../Mk/phonies
+.PHONY: install install-istio-init wait-crds install-istio repo

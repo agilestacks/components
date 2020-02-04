@@ -1,0 +1,9 @@
+aws:
+  region: "${cloud.region}"
+  zoneType: "public"
+  zoneTags: [
+    "superhub.io/stack/${dns.domain}"
+  ]
+  credentials:
+    accessKey: ${component.external-dns.aws.accessKey}
+    secretKey: ${component.external-dns.aws.secretKey}

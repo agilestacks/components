@@ -41,7 +41,7 @@ outputs:
   brief: Docker image
   fromTfVar: image
 - name: component.ecr.url
-  brief: Docker image
+  brief: Console URL
   fromTfVar: console_url
 
 - name: component.docker.registry.kind

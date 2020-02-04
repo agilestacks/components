@@ -2,3 +2,4 @@ aws/*.yaml
 examples/*.yaml
 metal/*.yaml
 .helm
+values.yaml

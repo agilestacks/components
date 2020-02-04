@@ -1,0 +1,38 @@
+---
+version: 1
+kind: component
+meta:
+  name: olm
+  title: OLM
+  brief: Component that manages Kubernetes native applications
+  description: >
+    Operator Lifecycle Manager is a component of the Operator Framework,
+    an open source toolkit to manage Kubernetes native applications, called Operators,
+    in an effective, automated, and scalable way.
+  category: Kubernetes Tools
+  version: '0.13.0'
+  maturity: ga
+  license: Apache 2.0
+  source:
+    dir: ../../components/olm
+
+requires:
+  - kubernetes
+provides:
+  - olm
+
+parameters:
+- name: dns.domain
+  env:  DOMAIN_NAME
+- name: component.olm
+  parameters:
+  - name: namespace
+    value: olm
+  - name: operators.namespace
+    value: operators
+  - name: version
+    value: 0.13.0
+
+templates:
+  files:
+  - "templates/*.yaml.template"

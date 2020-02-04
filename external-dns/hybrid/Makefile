@@ -6,21 +6,14 @@ helm             := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kub
 aws              := aws --output=text
 rsync            := rsync -arvp
 kubectl          := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-aws-role-by-tag  := $(abspath ..)/bin/aws-role-by-tag
+
+# This is the one true helm chart (to support aws credentials)
+CHART_VERSION    := 2.13.2
 
 export HELM_HOME := $(abspath ..)/.helm
 OVERRIDES_DIR    := $(abspath ..)/overrides
-CHART_VERSION    := 2.15.1
 
 CHART_DIR        := $(HELM_HOME)/charts/$(notdir $(CHART_NAME))
-ROLE_ARN         := $(shell $(aws-role-by-tag) \
-							--filter "$(CLUTER_NAME)" \
-							--tag superhub.io/role/kind=worker \
-							--tag superhub.io/stack/$(DOMAIN_NAME))
-
-ifeq ($(ROLE_ARN),)
-$(error Cannot find role by tags: superhub.io/stack/$(DOMAIN_NAME) and superhub.io/role/kind=worker)
-endif
 
 deploy:   init install
 undeploy: init purge
@@ -37,15 +30,12 @@ $(CHART_DIR):
 		--untar \
 		--untardir $(dir $@)
 
-patch-chart: $(CHART_DIR)
-	$(rsync) --exclude-from='$(OVERRIDES_DIR)/.cpignore' $(OVERRIDES_DIR)/ $<
-
 purge: $(CHART_DIR)
 	# $(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 
 	$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
-install: patch-chart
+install: $(CHART_DIR)
 	$(helm) ls -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART_DIR) \
 			--name $(COMPONENT_NAME) \
@@ -53,7 +43,7 @@ install: patch-chart
 			--wait \
 			--values $(abspath ..)/values.yaml \
 			--values $(abspath .)/values.yaml \
-			--set aws.assumeRoleArn=$(ROLE_ARN)
+			$(AWS_CREDS)
 
 clean:
 	rm -rf $(CHART_DIR)

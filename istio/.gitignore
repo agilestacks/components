@@ -1,5 +1,7 @@
-istio-*
-default-gateway.yaml
-values.yaml.*
-!values.yaml.*.dist
-!values.yaml.*.template
+!values-*.yaml
+/.helm
+/values.yaml
+/default-gateway.yaml
+/values-1.2.2.yaml
+.terraform
+

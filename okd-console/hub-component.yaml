@@ -1,0 +1,47 @@
+---
+version: 1
+kind: component
+meta:
+  name: okd-console
+  title: OKD Console
+  brief: Web console from OpenShift to manage Kubernetes cluster
+  description: >
+    The console is a more friendly kubectl in the form of a single page webapp.
+    It also integrates with other services like monitoring, chargeback, and OLM.
+  category: Kubernetes Tools
+  version: latest
+  maturity: beta
+  license: Apache 2.0
+  source:
+    dir: ../../components/okd-console
+
+requires:
+  - kubernetes
+provides:
+  - okd-console
+
+parameters:
+- name: dns.domain
+  env:  DOMAIN_NAME
+- name: component.ingress.protocol
+- name: component.ingress.ssoFqdn
+- name: component.ingress.kubernetes.ingressClass
+  empty: allow
+- name: component.okd-console
+  parameters:
+  - name: name
+    value: okd-console
+  - name: namespace
+    value: kube-system
+    env:   NAMESPACE
+  - name: version
+    value: latest
+
+templates:
+  files:
+  - "templates/*.yaml.template"
+
+outputs:
+- name: component.okd-console.url
+  brief: OKD Console URL
+  value: ${component.ingress.protocol}://${component.okd-console.name}.${component.ingress.ssoFqdn}

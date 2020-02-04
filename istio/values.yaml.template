@@ -1,16 +1,3 @@
-# Top level istio values file has the following sections.
-#
-# global: This file is the authoritative and exhaustive source for the global section.
-#
-# chart sections: Every subdirectory inside the charts/ directory has a top level
-#       configuration key in this file. This file overrides the values specified
-#       by the charts/CHARTNAME/values.yaml.
-#       Check the chart level values file for exhaustive list of configuration options.
-
-#
-# Gateways Configuration, refer to the charts/gateways/values.yaml
-# for detailed configuration
-#
 gateways:
   enabled: true
 
@@ -19,7 +6,7 @@ gateways:
 # charts/sidecarInjectorWebhook/values.yaml for detailed configuration
 #
 sidecarInjectorWebhook:
-  enabled: true
+  enabled: ${component.istio.sidecarInjectorWebhook.enabled}
 
 #
 # galley configuration, refer to charts/galley/values.yaml
@@ -80,7 +67,7 @@ tracing:
 # addon kiali configuration
 #
 kiali:
-  tag: ${component.istio.kiali.version.image}
+  tag: v1.4
   contextPath: /
   enabled: ${component.istio.kiali.enabled}
   ingress:
@@ -119,10 +106,10 @@ global:
   # Default hub for Istio images.
   # Releases are published to docker hub under 'istio' project.
   # Daily builds from prow are on gcr.io, and nightly builds from circle on docker.io/istionightly
-  hub: ${component.istio.version.repository}
+  hub: docker.io/istio
 
   # Default tag for Istio images.
-  tag: ${component.istio.version.image}
+  tag: 1.4.3
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components
@@ -139,7 +126,7 @@ global:
     # using 'istio:ingressgateway' that will be installed by setting
     # 'gateways.enabled' and 'gateways.istio-ingressgateway.enabled'
     # flags to true.
-    gatewayName: ingressgateway
+    gatewayName: ${component.istio.ingressGateway}
     # enableHttps will add port 443 on the ingress.
     # It REQUIRES that the certificates are installed  in the
     # expected secrets - enabling this option without certificates

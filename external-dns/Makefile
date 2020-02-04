@@ -2,8 +2,11 @@
 
 CLOUD_KIND ?= rfc2136
 
-deploy:
-	make -C $(CLOUD_KIND) $@
+$(CLOUD_KIND):
+	$(warning WARNING: Cloud unsupported provider: $@... skipping)
 
-undeploy:
-	make -C $(CLOUD_KIND) $@
+deploy: $(CLOUD_KIND)
+	test ! -d "$<" || make -C "$<" $@
+
+undeploy: $(CLOUD_KIND)
+	test ! -d "$<" || make -C "$<" $@

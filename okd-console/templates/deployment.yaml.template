@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${component.okd-console.name}
+  namespace: ${component.okd-console.namespace}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${component.okd-console.name}
+  template:
+    metadata:
+      labels:
+        app: ${component.okd-console.name}
+    spec:
+      serviceAccountName: ${component.okd-console.name}
+      containers:
+      - name: origin-console
+        image: quay.io/openshift/origin-console:${component.okd-console.version}
+        env:
+        - name: BRIDGE_USER_AUTH
+          value: 'disabled'
+        - name: BRIDGE_K8S_MODE
+          value: 'in-cluster'
+        - name: BRIDGE_K8S_AUTH
+          value: 'service-account'
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 9000
