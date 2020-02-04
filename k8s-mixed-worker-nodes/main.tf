@@ -9,7 +9,7 @@ provider "aws" {
 
 provider "aws" {
   alias  = "bucket"
-  region = "${var.s3_bucket_region}"
+  region = var.s3_bucket_region
 }
 
 provider "ignition" {
@@ -27,12 +27,13 @@ resource "random_string" "rnd" {
 }
 
 data "aws_s3_bucket_object" "bootstrap_script" {
-  provider = "aws.bucket"
-  bucket   = "${var.s3_bucket}"
-  key      = "${local.bootstrap_script_key}"
+  provider = aws.bucket
+  bucket   = var.s3_bucket
+  key      = local.bootstrap_script_key
 }
 
 locals {
+  # Terraform 0.12 can't iterate over list in resource block
   mixed_asg_instances = "${zipmap(range(length(var.instance_list)), var.instance_list)}"
 
   name1 = "worker-${var.name}"
@@ -129,14 +130,14 @@ locals {
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
-  provider = "aws.bucket"
-  bucket   = "${var.s3_bucket}"
-  key      = "${local.dest_script_key}"
+  provider = aws.bucket
+  bucket   = var.s3_bucket
+  key      = local.dest_script_key
 
-  content = "${replace(data.aws_s3_bucket_object.bootstrap_script.body,
+  content = replace(data.aws_s3_bucket_object.bootstrap_script.body,
       "--node-labels=node-role.kubernetes.io/node",
       "--node-labels=node-role.kubernetes.io/node,${join(",",compact(local.node_labels))}")
-  }"
+
 
   content_type = "text/json"
   acl          = "private"
@@ -184,62 +185,25 @@ data "aws_ami" "coreos_ami" {
   }
 }
 
-output "instance_list" {
-  value = "${zipmap(range(length(var.instance_list)), var.instance_list)}"
-}
-
-output "ignition_config_data" {
-  value = "${data.ignition_config.main.rendered}"
-}
-
-output "instance_ephemeral_nvme_my" {
-  value = "${local.instance_ephemeral_nvme}"
-}
-
-output "ignition_systemd_unit_var_lib_docker" {
-  value = "${data.ignition_systemd_unit.var_lib_docker}"
-}  
-
-output "ignition_systemd_unit_ebs_mount" {
-  value = "${data.ignition_systemd_unit.ebs_mount}"
-}
-
-output "nvme_ndevices_list" {
-  value = "${local.nvme_ndevices}"
-}
-output "instance_ephemeral_nvme" {
-  value = "${local.instance_ephemeral_nvme}"
-}
-output "complete_list" {
-  value = "${local.complete_list}"
-}
-output "maybe_index" {
-  value = "${local.maybe_index}"
-}
-
-output "count_size" {
-  value = "${local.nvme_ndevices > 1 ? 1 : 0}"
-}
-
 resource "aws_launch_template" "worker_mixed_conf" {
-  name_prefix = "${local.name_prefix}"
+  name_prefix = local.name_prefix
 
   network_interfaces {
     delete_on_termination       = "true"
-    security_groups             = "${var.sg_ids}"
+    security_groups             = var.sg_ids
     associate_public_ip_address = true
   }
 
   iam_instance_profile {
-    name = "${var.instance_profile}" #!
+    name = var.instance_profile
   } 
 
-  image_id      = "${coalesce(var.ec2_ami_override, data.aws_ami.coreos_ami.image_id)}" #!
-  instance_type = "${var.instance_list[0]}" #! TODO
-  key_name      = "${var.keypair}"
+  image_id      = coalesce(var.ec2_ami_override, data.aws_ami.coreos_ami.image_id)
+  instance_type = var.instance_list[0]
+  key_name      = var.keypair
 
   
-  user_data = "${base64encode(data.ignition_config.main.rendered)}"
+  user_data = base64encode(data.ignition_config.main.rendered)
 
   #user_data     = "${data.ignition_config.s3.rendered}"
 
@@ -247,22 +211,22 @@ resource "aws_launch_template" "worker_mixed_conf" {
     enabled = "false"
   }
   block_device_mappings {
-    device_name = "${local.device_root}"
+    device_name = local.device_root
 
     ebs {
-      volume_size           = "${var.root_volume_size}"
-      volume_type           = "${var.root_volume_type}"
-      iops                  = "${var.root_volume_type == "io1" ? var.root_volume_iops : 0}"
+      volume_size           = var.root_volume_size
+      volume_type           = var.root_volume_type
+      iops                  = var.root_volume_type == "io1" ? var.root_volume_iops : 0
       encrypted             = "true"
       delete_on_termination = true
     }
   }
   block_device_mappings {
-    device_name = "${local.device_name1}"
+    device_name = local.device_name1
     ebs {
-      volume_size           = "${var.ephemeral_storage_size}"
-      volume_type           = "${var.ephemeral_storage_type}"
-      iops                  = "${var.ephemeral_storage_type == "io1" ? var.ephemeral_storage_iops : 0}"
+      volume_size           = var.ephemeral_storage_size
+      volume_type           = var.ephemeral_storage_type
+      iops                  = var.ephemeral_storage_type == "io1" ? var.ephemeral_storage_iops : 0
       encrypted             = "true"
       delete_on_termination = true
     }
@@ -274,59 +238,58 @@ resource "aws_launch_template" "worker_mixed_conf" {
     # Ignore changes in the AMI which force recreation of the resource. This
     # avoids accidental deletion of nodes whenever a new CoreOS Release comes
     # out.
-    ignore_changes = ["image_id"]
+    ignore_changes = [image_id]
   }
 
   tag_specifications {
     resource_type = "instance"
 
-    tags = "${local.common_tags}"
+    tags = local.common_tags
   }
   tag_specifications {
     resource_type = "volume"
-    tags = "${local.common_tags}"
+    tags = local.common_tags
   }
 
-  tags = "${local.common_tags}"
+  tags = local.common_tags
 
 }
 
 resource "aws_autoscaling_group" "workers" {
-  name = "${local.name2}"
+  name = local.name2
 
   # if autoscale not enabled then pool_max_size is 1 (default)
-  max_size             = "${max(var.pool_max_count, var.pool_count)}"
-  min_size             = "${var.pool_count}"
-  desired_capacity     = "${var.pool_count}"
-  vpc_zone_identifier  = "${var.subnet_ids}"
+  max_size             = max(var.pool_max_count, var.pool_count)
+  min_size             = var.pool_count
+  desired_capacity     = var.pool_count
+  vpc_zone_identifier   = var.subnet_ids
   termination_policies = ["ClosestToNextInstanceHour", "default"]
 
   # Because of https://github.com/hashifcorp/terraform/issues/12453 conditional operator cannot be used with list values
   # TODO: change this when will use terraform >=0.12
-  tags = "${local.tags[var.autoscale_enabled == "true" ? "autoscaling_tags" : "default_tags"]}"
+  tags = local.tags[var.autoscale_enabled == "true" ? "autoscaling_tags" : "default_tags"]
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = ["tags"]
+    ignore_changes        = [tags]
   }
 
   mixed_instances_policy {
     instances_distribution { 
-      on_demand_base_capacity = "${var.on_demand_instance_count}"
-      spot_allocation_strategy  = "${var.allocation_strategy}"
+      on_demand_base_capacity = var.on_demand_instance_count
+      spot_allocation_strategy  = var.allocation_strategy
       on_demand_percentage_above_base_capacity = 0
-      spot_instance_pools = 2 
     }
 
     launch_template {
       launch_template_specification {
-        launch_template_id = "${aws_launch_template.worker_mixed_conf.id}"
+        launch_template_id = aws_launch_template.worker_mixed_conf.id
       }
 
       dynamic "override" {
-        for_each = "${local.mixed_asg_instances}"
+        for_each = local.mixed_asg_instances
         content {
-          instance_type = "${override.value}"
+          instance_type = override.value
         }
       }
   
@@ -336,13 +299,13 @@ resource "aws_autoscaling_group" "workers" {
 }
 
 resource "aws_autoscaling_attachment" "workers" {
-  count                  = "${length(var.load_balancers)}"
-  autoscaling_group_name = "${aws_autoscaling_group.workers.name}"
-  elb                    = "${var.load_balancers[count.index]}"
+  count                  = length(var.load_balancers)
+  autoscaling_group_name = aws_autoscaling_group.workers.name
+  elb                    = var.load_balancers[count.index]
 }
 
 resource "local_file" "bootstrap_script" {
-  content  = "${aws_s3_bucket_object.bootstrap_script.content}"
+  content  = aws_s3_bucket_object.bootstrap_script.content
   filename = "${path.cwd}/.terraform/${var.name}-${random_string.rnd.result}.service"
   lifecycle {
     create_before_destroy = true

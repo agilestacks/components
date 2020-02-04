@@ -50,7 +50,7 @@ EOF
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes = ["filename"]
+    ignore_changes = [filename]
   }
 }
 
@@ -67,7 +67,7 @@ ExecStartPre=/usr/bin/bash -c '/usr/bin/test -L /var/lib/kubelet || /usr/bin/ln 
 EOF
 
   lifecycle {
-    ignore_changes = ["filename"]
+    ignore_changes = [filename]
   }
 }
 
@@ -83,6 +83,6 @@ ExecStartPre=/usr/bin/bash -c '/usr/bin/test -L /var/lib/kubelet || /usr/bin/ln 
 EOF
 
   lifecycle {
-    ignore_changes = ["filename"]
+    ignore_changes = [filename]
   }
 }

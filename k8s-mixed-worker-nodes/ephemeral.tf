@@ -38,9 +38,9 @@ data "ignition_systemd_unit" "var_lib_docker" {
 }
 
 resource "local_file" "systemd2" {
-  content  = "${replace(file("var-lib-docker.mount"), "$device", local.final_nvme_device)}"
+  content  = replace(file("var-lib-docker.mount"), "$device", local.final_nvme_device)
   filename = "${path.cwd}/.terraform/systemd2-${random_string.rnd.result}.service"
   lifecycle {
     create_before_destroy = true
   }
-}
+} 
