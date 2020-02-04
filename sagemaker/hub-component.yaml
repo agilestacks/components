@@ -3,12 +3,12 @@ version: 1
 kind: component
 meta:
   name: sagemaker
-  title: sagemaker
+  title: SageMaker
   brief: SageMaker Pipeline
   description: >
     Amazon SageMaker is a complete machine learning workflow service for developing, training, and deploying models.  SageMaker Pipeline template provides automation for the build and deployment of machine learning models on SageMaker. This template provides a full implementation of ML pipeline and includes Jupyter notebooks showing how to create, launch, stop, and track the progress of workflows using python and Amazon Alexa.
   category: AI and Machine Learning
-  version: 1.0
+  version: '1.0'
   maturity: ga
   license: Apache 2.0
   source:
