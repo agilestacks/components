@@ -1,0 +1,12 @@
+.venv/*
+*.zip
+.zipignore
+Makefile
+requirements.txt
+.gitignore*
+.git/*
+payloads/*
+test_*
+lambda.zip
+policy.json
+.DS_Store

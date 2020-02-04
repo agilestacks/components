@@ -15,36 +15,59 @@ provider "kubernetes" {
 
 data "aws_region" "current" {}
 
-data "aws_autoscaling_groups" "worker_asg" {
-  
-  filter {
-    name   = "key"
-    values = ["k8s.io/node-pool/kind"]
-  }
-  filter {
-    name = "value"
-    values = ["!'worker'$"]
-  }
 
-  filter {
-    name   = "key"
-    values = ["k8s.io/node-pool/${var.cluster_name}"]
+locals {
+  r53_sync_dir = "${path.cwd}/lambda/asg-hook-sync"
+}
+
+data "local_file" "r53_sync_zip" {
+  filename   = "${local.r53_sync_dir}/lambda.zip"
+}
+
+module "lambda_asg_sync" {
+  source = "github.com/agilestacks/terraform-modules//lambda"
+  name     = "asg-hook-sync-${replace(var.cluster_name, ".", "-")}"
+  handler  = "main.handler"
+  zip_file = "${data.local_file.r53_sync_zip.filename}"
+  policy   = "${file("${local.r53_sync_dir}/policy.json")}"
+  tags     = {
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned",
+      "superhub.io/stack/${var.cluster_name}"     = "owned",
   }
-  filter {
-    name = "value"
-    values = ["owned"]
+  env_vars  = {
+    "CLUSTER_NAME" = "${var.cluster_name}"
   }
 }
 
-output "asg" {
-  value = "${data.aws_autoscaling_groups.worker_asg.names}"
+resource "aws_cloudwatch_event_rule" "asg_monitor" {
+  name        = "capture-asg-changes-${replace(var.cluster_name, ".", "-")}"
+  description = "Capture changes in ASG"
+  event_pattern = <<PATTERN
+{
+  "source": [
+    "aws.autoscaling"
+  ],
+  "detail-type": [
+    "EC2 Instance Launch Successful",
+    "EC2 Instance Terminate Successful",
+    "EC2 Instance Launch Unsuccessful",
+    "EC2 Instance Terminate Unsuccessful",
+    "EC2 Instance-launch Lifecycle Action",
+    "EC2 Instance-terminate Lifecycle Action"
+  ]
+}
+PATTERN
 }
 
+resource "aws_cloudwatch_event_target" "asg-target" {
+  rule      = "${aws_cloudwatch_event_rule.asg_monitor.name}"
+  arn       = "${module.lambda_asg_sync.arn}"
+}
 
-resource "aws_autoscaling_lifecycle_hook" "drain_hook" {
-  name                   = "drain_hook"
-  autoscaling_group_name = "${data.aws_autoscaling_groups.worker_asg.names[0]}"
-  default_result         = "CONTINUE"
-  heartbeat_timeout      = 180
-  lifecycle_transition   = "autoscaling:EC2_INSTANCE_TERMINATING"
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_lambda" {
+    statement_id = "AllowExecutionFromCloudWatch"
+    action = "lambda:InvokeFunction"
+    function_name = "${module.lambda_asg_sync.name}"
+    principal = "events.amazonaws.com"
+    source_arn = "${aws_cloudwatch_event_rule.asg_monitor.arn}"
 }

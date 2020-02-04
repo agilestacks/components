@@ -1,0 +1,19 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Action": [
+      "autoscaling:CompleteLifecycleAction",
+      "autoscaling:SuspendProcesses",
+      "autoscaling:DescribeAutoScalingGroups",
+      "autoscaling:DescribeLaunchConfigurations",
+      "autoscaling:DescribeLifecycleHooks",
+      "autoscaling:PutLifecycleHook",
+      "autoscaling:UpdateAutoScalingGroup",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ],
+    "Resource": "*",
+    "Effect": "Allow"
+  }]
+}
