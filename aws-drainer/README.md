@@ -9,5 +9,4 @@ A Kubernetes DaemonSet to gracefully handle EC2 Spot Instance interruptions and 
 
 ## Architecture
 
-diagram
 ![diagram](aws-drainer.png)

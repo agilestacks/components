@@ -71,3 +71,13 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_lambda" {
     principal = "events.amazonaws.com"
     source_arn = "${aws_cloudwatch_event_rule.asg_monitor.arn}"
 }
+
+data "aws_lambda_invocation" "first_run" {
+  function_name = "${module.lambda_asg_sync.name}"
+  input = <<JSON
+{
+  "detail-type": "Dummy-event for initial run",
+  "detail": { "AutoScalingGroupName": "DumyAutoScalingGroup" }
+}
+JSON
+}
