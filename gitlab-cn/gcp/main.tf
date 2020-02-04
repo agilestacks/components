@@ -5,7 +5,7 @@ terraform {
 }
 
 provider "google" {
-  version = "2.17.0"
+  version = "2.20.1"
   project = "${var.gcp_project_id}"
 }
 
