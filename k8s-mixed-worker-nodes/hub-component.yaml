@@ -42,8 +42,8 @@ parameters:
   - name: component.k8s-mixed-worker-nodes
     parameters:
     - name: instance.list
-      env: TF_VAR_instance_list
-      value: '["c4.large", "c3.large","t3a.medium", "t3.medium", "t2.medium"]'
+      env: instance_list
+      value: r4.large,t2.medium
     - name: allocation.strategy
       env: TF_VAR_allocation_strategy
       value: lowest-price
