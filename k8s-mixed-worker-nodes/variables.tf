@@ -1,5 +1,5 @@
 variable "container_linux_channel" {
-  type    = "string"
+  type    = string
   default = "stable"
 
   description = <<EOF
@@ -10,7 +10,7 @@ EOF
 }
 
 variable "container_linux_version" {
-  type = "string"
+  type = string
   default = ""
   description = <<EOF
 Specifies version constraint for CoreOS image. If empty then it will lead to:
@@ -20,74 +20,74 @@ EOF
 }
 
 variable "keypair" {
-  type        = "string"
+  type        = string
   default     = "agilestacks"
   description = "Name of an SSH key located within the AWS region. Example: coreos-user."
 }
 
 variable "instance_type" {
-  type        = "string"
+  type        = string
   default     = ""
   description = "Instance size for the worker node(s). Example: `t2.small`."
 }
 
 variable "instance_list" {
-  type        = "list"
+  type        = list
   default     = []
   description = "Instnace list"
 }
 
 
 variable "allocation_strategy" {
-  type        = "string"
+  type        = string
   default     = "lowest-price"
   description = "Mixed ASG allocation strategy"
 }
 
 variable "on_demand_instance_count" {
-  type        = "string"
+  type        = string
   default     = "0"
   description = "On-demand instance count in mixed ASG"
 }
 
 variable "ec2_ami_override" {
-  type        = "string"
+  type        = string
   default     = ""
   description = "(optional) AMI override for all nodes. Example: `ami-foobar123`."
 }
 
 variable "autoscale_enabled" {
-  type        = "string"
+  type        = string
   default     = "false"
   description = "Enable autoscaling by adding special auto scale group tags"
 }
 
 variable "pool_max_count" {
-  type        = "string"
+  type        = string
   default     = "1"
   description = "The maximum size of the auto scale group."
 }
 
 variable "pool_count" {
-  type        = "string"
+  type        = string
   default     = "1"
   description = "The minimum size of the auto scale group."
 }
 
 variable "root_volume_type" {
-  type        = "string"
+  type        = string
   default     = "gp2"
   description = "The type of volume for the root block device of worker nodes."
 }
 
 variable "root_volume_size" {
-  type        = "string"
+  type        = string
   default     = "30"
   description = "The size of the volume in gigabytes for the root block device of worker nodes."
 }
 
 variable "root_volume_iops" {
-  type    = "string"
+  type    = string
   default = "100"
 
   description = <<EOF
@@ -97,7 +97,7 @@ EOF
 }
 
 variable "load_balancers" {
-  type    = "list"
+  type    = list
   default = []
 
   description = <<EOF
@@ -111,7 +111,7 @@ EOF
 
 
 variable "name" {
-  type = "string"
+  type = string
 
   description = <<EOF
 Name of the pool
@@ -122,7 +122,7 @@ EOF
 }
 
 variable "s3_bucket" {
-  type = "string"
+  type = string
 
   description = <<EOF
 S3 bucket name to download igniniton config of
@@ -131,13 +131,13 @@ EOF
 }
 
 variable "s3_bucket_region" {
-  type    = "string"
+  type    = string
   default = "us-east-1"
   description = "Region of s3 bucket (default: us-east-1)"
 }
 
 variable "bootstrap_script_key" {
-  type    = "string"
+  type    = string
   default = ""
   description = <<EOF
 Path in s3 bucket to ignition key
@@ -148,20 +148,20 @@ EOF
 }
 
 variable "sg_ids" {
-  type = "list"
+  type = list
   default = []
   description = "Security group ids"
 }
 
 variable "subnet_ids" {
-  type    = "list"
+  type    = list
   default = []
 
   description = "Subnets where additional worker nodes will be joined."
 }
 
 variable "instance_profile" {
-  type = "string"
+  type = string
 
   description = <<EOF
 An IAM instance profile to use for worker nodes.
@@ -170,18 +170,18 @@ EOF
 }
 
 variable "cluster_tag" {
-  type        = "string"
+  type        = string
   description = "Tag to enable worker nodes to join the Kube cluster"
 }
 
 variable "virtualization_type" {
-  type        = "string"
+  type        = string
   default     = "hvm"
   description = "Worker pool ec2 instance vrtualization type (default: hvm)"
 }
 
 variable "domain_name" {
-  type        = "string"
+  type        = string
   description = "Domain name of the cluster that for worker pool"
 }
 

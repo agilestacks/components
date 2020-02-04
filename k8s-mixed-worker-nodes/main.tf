@@ -72,6 +72,13 @@ locals {
       propagate_at_launch = true
     },
   ]
+  additional_tags = [
+      {
+        key                 = "k8s.io/cluster-autoscaler/enabled"
+        value               = "true"
+        propagate_at_launch = true
+      },
+  ]
   common_tags = "${map(
         "Name", "${local.name2}",
         "kubernetes.io/cluster/${var.cluster_tag}", "owned",
@@ -80,15 +87,7 @@ locals {
   
   tags = {
     default_tags = "${local.default_tags}"
-
-    autoscaling_tags = [
-      "${local.default_tags}",
-      {
-        key                 = "k8s.io/cluster-autoscaler/enabled"
-        value               = "true"
-        propagate_at_launch = true
-      },
-    ]
+    autoscaling_tags = concat(local.default_tags, local.additional_tags)
   }
 
   default_key          = "${var.domain_name}/stack-k8s-aws/ignition/ignition_worker.json"
@@ -127,6 +126,14 @@ locals {
     "name=${local.name1}",
     "${local.instance_gpu == "true" ? "gpu=true" : ""}",
   ]
+}
+
+output "mylocal_tags" {
+  value = local.tags["autoscaling_tags"]
+}
+
+output "local_check" {
+  value = var.autoscale_enabled == "true" ? "autoscaling_tags" : "default_tags"
 }
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
