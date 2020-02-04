@@ -55,6 +55,21 @@ locals {
       value               = "owned"
       propagate_at_launch = true
     },
+    {
+      key                 = "k8s.io/node-pool/kind"
+      value               = "worker"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "k8s.io/node-pool/${var.domain_name}"
+      value               = "owned"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "k8s.io/node-pool/name"
+      value               = "${var.name}"
+      propagate_at_launch = true
+    },
   ]
   common_tags = "${map(
         "Name", "${local.name2}",
