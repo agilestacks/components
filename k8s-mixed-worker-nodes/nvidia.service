@@ -1,0 +1,17 @@
+[Unit]
+Description=NVIDIA driver
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=20m
+EnvironmentFile=/etc/os-release
+ExecStartPre=-/usr/bin/docker rm nvidia-driver
+ExecStartPre=/usr/bin/docker run --rm --privileged --volume /:/rootfs/ agilestacks/coreos-nvidia:${VERSION}
+ExecStart=/usr/bin/docker run --rm --name nvidia-driver --volume /nvidia:/nvidia agilestacks/coreos-nvidia:${VERSION} \
+  sh -c 'cp -rpd /opt/nvidia / && exec sleep infinity'
+ExecStop=/usr/bin/docker stop nvidia-driver
+ExecStop=-/sbin/rmmod nvidia_uvm nvidia
+
+[Install]
+WantedBy=multi-user.target
