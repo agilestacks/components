@@ -194,8 +194,10 @@ parameters:
       env: HELM_TIMEOUT
     - name: hybrid.aws.accessKey
       value: ''
+      empty: allow
     - name: hybrid.aws.secretKey
       value: ''
+      empty: allow
     - name: hybrid.acmeEnabled
       value: '#{component.traefik.hybrid.aws.accessKey != "" && component.traefik.hybrid.aws.secretKey != ""}'
 
