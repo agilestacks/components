@@ -9,6 +9,7 @@ spec:
   template:
     spec:
       serviceAccountName: node-termination-handler
+      priorityClassName: system-node-critical
       containers:
       - name: node-termination-handler
         image: amazon/aws-node-termination-handler:v1.0.0
