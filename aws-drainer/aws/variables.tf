@@ -16,7 +16,3 @@ variable "component" {
   type = "string"
   default = "aws-spot-termination-handler"
 }
-
-variable "cluster_name" {
-  type = "string"
-}

@@ -56,19 +56,19 @@ def put_asg_hook(asg_name, hook_name, timeout, asg_client=asg_client):
 
 
 def handler(event, context):
-    cluster_name = os.environ['CLUSTER_NAME']
+    domain_name = os.environ['DOMAIN_NAME']
 
-    if not valid(cluster_name):
-        raise Exception('This lambda requires env variable `CLUSTER_NAME`, instead it got: {}'.format(cluster_name))
+    if not valid(domain_name):
+        raise Exception('This lambda requires env variable `DOMAIN_NAME`, instead it got: {}'.format(domain_name))
 
     #log.info("Incoming event: %s", json.dumps(event, indent=2))
     log.info("Incoming event: {}".format(event["detail-type"]))
 
     asg_name = event['detail']['AutoScalingGroupName']
     log.info("ASG name: '{}'".format(asg_name))
-    log.info("Cluster name: '{}'".format(cluster_name))
+    log.info("Cluster name: '{}'".format(domain_name))
 
-    asg_list = find_asg_by_tag(cluster_name)
+    asg_list = find_asg_by_tag(domain_name)
     if len(asg_list) == 0:
         log.info("ASG doesn't contain cluster name: {} - skipping".format(str(len(asg_list))))
         return

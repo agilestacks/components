@@ -26,21 +26,21 @@ data "local_file" "r53_sync_zip" {
 
 module "lambda_asg_sync" {
   source = "github.com/agilestacks/terraform-modules//lambda"
-  name     = "asg-hook-sync-${replace(var.cluster_name, ".", "-")}"
+  name     = "asg-hook-sync-${replace(var.domain_name, ".", "-")}"
   handler  = "main.handler"
   zip_file = "${data.local_file.r53_sync_zip.filename}"
   policy   = "${file("${local.r53_sync_dir}/policy.json")}"
   tags     = {
-      "kubernetes.io/cluster/${var.cluster_name}" = "owned",
-      "superhub.io/stack/${var.cluster_name}"     = "owned",
+      "kubernetes.io/cluster/${var.domain_name}" = "owned",
+      "superhub.io/stack/${var.domain_name}"     = "owned",
   }
   env_vars  = {
-    "CLUSTER_NAME" = "${var.cluster_name}"
+    "DOMAIN_NAME" = "${var.domain_name}"
   }
 }
 
 resource "aws_cloudwatch_event_rule" "asg_monitor" {
-  name        = "capture-asg-changes-${replace(var.cluster_name, ".", "-")}"
+  name        = "capture-asg-changes-${replace(var.domain_name, ".", "-")}"
   description = "Capture changes in ASG"
   event_pattern = <<PATTERN
 {
