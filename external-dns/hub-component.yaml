@@ -69,10 +69,11 @@ parameters:
     parameters:
     - name: host
     - name: port
+      value: 53
     - name: zone
-    - name: tsig-secret
-    - name: tsig-secret-keyname
-    - name: tsig-secret-alg
+    - name: tsig.secret
+    - name: tsig.keyname
+    - name: tsig.secret-alg
       value: hmac-sha256
 # alias for CEL expression
 # - name: externaldns.awsAccessKeyId
@@ -86,4 +87,5 @@ templates:
     - "examples/*.template"
     - "aws/*.template"
     - "hybrid/*.template"
+    - "metal/*.template"
     - "./*.template"
