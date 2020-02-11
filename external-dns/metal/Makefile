@@ -42,8 +42,7 @@ install: $(CHART_DIR)
 			--namespace $(NAMESPACE) \
 			--wait \
 			--values $(abspath ..)/values.yaml \
-			--values $(abspath .)/values.yaml \
-			$(AWS_CREDS)
+			--values $(abspath .)/values.yaml
 
 clean:
 	rm -rf $(CHART_DIR)
