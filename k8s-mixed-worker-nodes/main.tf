@@ -128,14 +128,6 @@ locals {
   ]
 }
 
-output "mylocal_tags" {
-  value = local.tags["autoscaling_tags"]
-}
-
-output "local_check" {
-  value = var.autoscale_enabled == "true" ? "autoscaling_tags" : "default_tags"
-}
-
 resource "aws_s3_bucket_object" "bootstrap_script" {
   provider = aws.bucket
   bucket   = var.s3_bucket
