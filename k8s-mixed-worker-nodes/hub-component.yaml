@@ -38,38 +38,46 @@ parameters:
   - name: kubernetes.serviceDnsIp
     env: TF_VAR_service_dns_ip
     value: 10.0.3.10
+  
+  - name: component.worker-pool
+    parameters:
+    - name: shortName
+      env: SHORT_NAME
+    - name: name
+      env: TF_VAR_name
+      value: ${component.worker-pool.shortName}-${dns.domain}
+    - name: labels
+      empty: allow
+    - name: instance.size
+      env: instance_list
+    - name: count
+      value: 1
+      env: TF_VAR_pool_count
+    - name: maxCount
+      value: ${component.worker-pool.count}
+      env: TF_VAR_pool_max_count
+    - name: volume.size
+      env: TF_VAR_root_volume_size
+      value: 50
+    - name: autoscaling.enabled
+      value: ${component.k8s-mixed-worker-nodes.autoscale.enabled}
+      env: TF_VAR_autoscale_enabled
+
 
   - name: component.k8s-mixed-worker-nodes
     parameters:
-    - name: instance.list
-      env: instance_list
-      value: r4.large,t2.medium
     - name: allocation.strategy
       env: TF_VAR_allocation_strategy
       value: lowest-price
     - name: onDemandInstance.count
       env: TF_VAR_on_demand_instance_count
       value: 0
-    - name: autoscale.enabled 
-      value: false
-      env: TF_VAR_autoscale_enabled
-    - name: count
-      value: 1
-      env: TF_VAR_pool_count
-    - name: maxCount
-      value: ${component.k8s-mixed-worker-nodes.count}
-      env: TF_VAR_pool_max_count
-    - name: volume.size
-      env: TF_VAR_root_volume_size
-      value: 30
+
     - name: containerLinuxVersion
       env: TF_VAR_container_linux_version
       empty: allow
     - name: shortName
       value: ${hub.componentName}
-    - name: name
-      env: TF_VAR_name
-      value: ${component.k8s-mixed-worker-nodes.shortName}-${dns.domain}
     - name: volume.type
       env: TF_VAR_root_volume_type
       value: gp2

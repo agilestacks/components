@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := deploy
+Makefile.DEFAULT_GOAL := deploy
 
 export AWS_DEFAULT_REGION      ?= us-east-2
 
@@ -20,6 +20,11 @@ kubectl     ?= kubectl --context="$(TF_VAR_domain_name)"
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
+VALID_NAME   = $(shell [[ $(TF_VAR_name) =~ ^$(SHORT_NAME) ]] && echo matched)
+
+ifneq ($(VALID_NAME),matched)
+$(error shortName must be a prefix to varible -  name $(VALID_NAME))
+endif
 
 
 deploy: init import plan
@@ -30,6 +35,8 @@ deploy: init import plan
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
+
+
 
 init: $(TF_DATA_DIR)
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
