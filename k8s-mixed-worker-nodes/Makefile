@@ -1,4 +1,4 @@
-Makefile.DEFAULT_GOAL := deploy
+.DEFAULT_GOAL := deploy
 
 export AWS_DEFAULT_REGION      ?= us-east-2
 
