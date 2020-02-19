@@ -58,15 +58,15 @@ parameters:
     - name: volume.size
       env: TF_VAR_root_volume_size
       value: 30
-
-  - name: component.k8s-worker-nodes
-    parameters:
-    - name: spotPrice
-      env: TF_VAR_spot_price
-      empty: allow
     - name: volume.type
       env: TF_VAR_root_volume_type
       value: gp2
     - name: volume.iops
       env: TF_VAR_root_volume_iops
       value: 100
+
+  - name: component.worker-pool.aws
+    parameters:
+    - name: spotPrice
+      env: TF_VAR_spot_price
+      empty: allow
