@@ -16,7 +16,7 @@ variable "spot_price" {
   description = "Spot request price. Empty for on-demand"
 }
 
-variable "autoscale_enabled" {
+variable "autoscaling_enabled" {
   type        = "string"
   default     = "false"
   description = "Enable autoscaling by adding special auto scale group tags"
