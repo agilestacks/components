@@ -60,13 +60,18 @@ parameters:
       env: TF_VAR_root_volume_size
       value: 50
     - name: autoscaling.enabled
-      value: ${component.k8s-mixed-worker-nodes.autoscale.enabled}
+      value: false
       env: TF_VAR_autoscale_enabled
+    - name: volume.type
+      env: TF_VAR_root_volume_type
+      value: gp2
+    - name: volume.iops
+      env: TF_VAR_root_volume_iops
+      value: 100
 
-
-  - name: component.k8s-mixed-worker-nodes
+  - name: component.worker-pool.mixed
     parameters:
-    - name: allocation.strategy
+    - name: allocationStrategy
       env: TF_VAR_allocation_strategy
       value: lowest-price
     - name: onDemandInstance.count
@@ -78,12 +83,7 @@ parameters:
       empty: allow
     - name: shortName
       value: ${hub.componentName}
-    - name: volume.type
-      env: TF_VAR_root_volume_type
-      value: gp2
-    - name: volume.iops
-      env: TF_VAR_root_volume_iops
-      value: 100
+
     - name: vmType
       env: TF_VAR_virtualization_type
       value: hvm
