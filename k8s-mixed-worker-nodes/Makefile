@@ -20,7 +20,7 @@ kubectl     ?= kubectl --context="$(TF_VAR_domain_name)"
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-VALID_NAME   = $(shell [[ $(TF_VAR_name) =~ ^$(SHORT_NAME) ]] && echo matched)
+VALID_NAME   = $(shell echo $(TF_VAR_name) | grep -Eq ^$(SHORT_NAME) && echo matched)
 
 ifneq ($(VALID_NAME),matched)
 $(error shortName must be a prefix to varible -  name $(VALID_NAME))
