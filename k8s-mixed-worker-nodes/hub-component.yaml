@@ -101,4 +101,4 @@ outputs:
 - name: component.k8s-mixed-worker-nodes.bootstrapScriptS3
   fromTfVar: bootstrap_script_s3
 - name: component.k8s-mixed-worker-nodes.vmType
-  value: "${component.worker-pool.mixed}"
+  value: "${component.worker-pool.mixed.vmType}"
