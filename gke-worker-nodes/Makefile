@@ -22,8 +22,8 @@ $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
 discover:
-	$(eval LOCATION:=$(shell $(gcloud) container clusters describe $(TF_VAR_cluster_name) --zone $(REGION) --format json | jq -r ".location"))
-	$(eval LOCATION?=$(shell $(gcloud) container clusters describe $(TF_VAR_cluster_name) --zone $(ZONE) --format json | jq -r ".location"))
+	$(eval REGION=$(shell $(gcloud) container clusters describe $(TF_VAR_cluster_name) --region $(REGION) --format json | jq -r ".location"))
+	$(eval ZONE=$(shell $(gcloud) container clusters describe $(TF_VAR_cluster_name) --zone $(ZONE) --format json | jq -r ".location"))
 .PHONY: discover
 
 init: $(TF_DATA_DIR)
@@ -33,7 +33,7 @@ init: $(TF_DATA_DIR)
 
 plan: discover
 	$(terraform) plan $(TF_CLI_ARGS) \
-		-refresh=true -module-depth=-1 -var="location=$(LOCATION)" -out=$(TFPLAN)
+		-refresh=true -module-depth=-1 -var="location=$(REGION)$(ZONE)" -out=$(TFPLAN)
 
 refresh:
 	$(terraform) refresh $(TF_CLI_ARGS)
