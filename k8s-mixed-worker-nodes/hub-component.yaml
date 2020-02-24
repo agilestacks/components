@@ -32,7 +32,7 @@ parameters:
     env: SG_IDS
   - name: cloud.iam.worker.instanceProfile
     env: TF_VAR_instance_profile
-  - name: cloud.ec2.master.ignitionProfileS3
+  - name: cloud.ec2.worker.ignitionProfileS3
     env: TF_VAR_bootstrap_script_key
     empty: allow
   - name: kubernetes.serviceDnsIp
