@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME   ?= vault
-DOMAIN_NAME      ?= dev.kubernetes.delivery
+DOMAIN_NAME      ?= test.dev.superhub.io
 NAMESPACE    	 ?= vault
 INGRESS_ENABLED  ?= false
 SECRET_SHARES    ?= 5

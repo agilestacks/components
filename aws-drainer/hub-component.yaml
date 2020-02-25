@@ -38,8 +38,6 @@ parameters:
     env: TF_VAR_domain_name
   - name: cloud.kind
     env: CLOUD_KIND
-  - name: dns.domain
-    env: TF_VAR_cluster_name
   - name: component.aws-drainer
     parameters:
     - name: name

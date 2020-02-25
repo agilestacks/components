@@ -1,0 +1,8 @@
+provider: rfc2136
+rfc2136:
+  host: ${component.external-dns.rfc2136.host}
+  port: ${component.external-dns.rfc2136.port}
+  zone: ${component.external-dns.rfc2136.zone}
+  tsigSecret: ${component.external-dns.rfc2136.tsig.secret}
+  tsigKeyname: ${component.external-dns.rfc2136.tsig.keyname}
+  tsigSecretAlg: ${component.external-dns.rfc2136.tsig.secret-alg}

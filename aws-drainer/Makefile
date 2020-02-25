@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := deploy
 
+R53_SYNC_ZIP_FILE				 := lambda/asg-hook-sync/lambda.zip
 export TF_VAR_component          ?= aws-drainer
 export TF_VAR_domain_name        ?= test.dev.superhub.io
 export TF_VAR_namespace          ?= aws-drainer
@@ -35,7 +36,7 @@ init: $(TF_DATA_DIR)
 $(TF_DATA_DIR):
 	@mkdir -p $@
 
-deploy: init plan apply install
+deploy: aws_lambda init plan apply install
 
 install:
 	- $(kubectl) create ns $(TF_VAR_namespace)
@@ -45,6 +46,9 @@ install:
 undeploy: init destroy apply
 	- $(kubectl) delete -k base/
 	- $(kubectl) delete -f kube-drainer.yaml
+
+aws_lambda:
+	$(MAKE) -C "lambda/asg-hook-sync"
 
 plan:
 	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN) ./$(CLOUD_KIND)

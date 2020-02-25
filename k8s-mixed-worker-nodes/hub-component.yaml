@@ -1,0 +1,96 @@
+---
+version: 1
+kind: component
+meta:
+  name: k8s-mixed-worker-nodes
+  brief: Kubernetes worker nodes pool
+  source:
+    dir: ../../components/k8s-mixed-worker-nodes
+
+requires:
+  - kubernetes
+provides:
+  - k8s-mixed-worker-nodes
+
+parameters:
+  - name: cloud.region
+    env: AWS_DEFAULT_REGION
+  - name: cloud.sshKey
+    env: TF_VAR_keypair
+  - name: terraform.bucket.name
+    env: TF_VAR_s3_bucket
+  - name: terraform.bucket.region
+    env: TF_VAR_s3_bucket_region
+  - name: dns.domain
+    env: TF_VAR_domain_name
+
+  - name: cloud.vpc.worker.subnet.id
+    env: SUBNET_ID
+  - name: cloud.vpc.worker.subnet.ids
+    env: SUBNET_IDS
+  - name: cloud.vpc.worker.sg.id
+    env: SG_IDS
+  - name: cloud.iam.worker.instanceProfile
+    env: TF_VAR_instance_profile
+  - name: cloud.ec2.worker.ignitionProfileS3
+    env: TF_VAR_bootstrap_script_key
+    empty: allow
+  - name: kubernetes.serviceDnsIp
+    env: TF_VAR_service_dns_ip
+    value: 10.0.3.10
+
+  - name: component.k8s-mixed-worker-nodes
+    parameters:
+    - name: instance.list
+      env: instance_list
+      value: r4.large,t2.medium
+    - name: allocation.strategy
+      env: TF_VAR_allocation_strategy
+      value: lowest-price
+    - name: onDemandInstance.count
+      env: TF_VAR_on_demand_instance_count
+      value: 0
+    - name: autoscale.enabled 
+      value: false
+      env: TF_VAR_autoscale_enabled
+    - name: count
+      value: 1
+      env: TF_VAR_pool_count
+    - name: maxCount
+      value: ${component.k8s-mixed-worker-nodes.count}
+      env: TF_VAR_pool_max_count
+    - name: volume.size
+      env: TF_VAR_root_volume_size
+      value: 30
+    - name: containerLinuxVersion
+      env: TF_VAR_container_linux_version
+      empty: allow
+    - name: shortName
+      value: ${hub.componentName}
+    - name: name
+      env: TF_VAR_name
+      value: ${component.k8s-mixed-worker-nodes.shortName}-${dns.domain}
+    - name: volume.type
+      env: TF_VAR_root_volume_type
+      value: gp2
+    - name: volume.iops
+      env: TF_VAR_root_volume_iops
+      value: 100
+    - name: vmType
+      env: TF_VAR_virtualization_type
+      value: hvm
+    - name: ephemeralStorage.size
+      env: TF_VAR_ephemeral_storage_size
+      value: 200
+    - name: ephemeralStorage.type
+      env: TF_VAR_ephemeral_storage_type
+      value: gp2
+    - name: ephemeralStorage.iops
+      env: TF_VAR_ephemeral_storage_iops
+      value: 100
+
+outputs:
+- name: component.k8s-mixed-worker-nodes.bootstrapScriptS3
+  fromTfVar: bootstrap_script_s3
+- name: component.k8s-mixed-worker-nodes.vmType
+  value: "${component.k8s-mixed-worker-nodes.vmType}"

@@ -98,6 +98,7 @@ spec:
         iam.amazonaws.com/role: kubedrainer
     spec:
       serviceAccountName: kubedrainer
+      priorityClassName: system-node-critical
       containers:
         - name: kubedrainer
           image: quay.io/virtuslab/kubedrainer:v0.0.6
