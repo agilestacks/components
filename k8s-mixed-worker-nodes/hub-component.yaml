@@ -77,13 +77,9 @@ parameters:
     - name: onDemandInstance.count
       env: TF_VAR_on_demand_instance_count
       value: 0
-
     - name: containerLinuxVersion
       env: TF_VAR_container_linux_version
       empty: allow
-    - name: shortName
-      value: ${hub.componentName}
-
     - name: vmType
       env: TF_VAR_virtualization_type
       value: hvm

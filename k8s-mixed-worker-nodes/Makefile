@@ -36,8 +36,6 @@ deploy: init import plan
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
-
-
 init: $(TF_DATA_DIR)
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
