@@ -23,7 +23,7 @@ TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 VALID_NAME   = $(shell echo $(TF_VAR_name) | grep -Eq ^$(SHORT_NAME) && echo matched)
 
 ifneq ($(VALID_NAME),matched)
-$(error shortName must be a prefix to varible -  name $(VALID_NAME))
+$(error "shortName" parameter must be a prefix to "name" parameter $(TF_VAR_name))
 endif
 
 
