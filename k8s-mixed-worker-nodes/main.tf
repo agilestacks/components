@@ -266,7 +266,7 @@ resource "aws_autoscaling_group" "workers" {
 
   # Because of https://github.com/hashifcorp/terraform/issues/12453 conditional operator cannot be used with list values
   # TODO: change this when will use terraform >=0.12
-  tags = local.tags[var.autoscale_enabled == "true" ? "autoscaling_tags" : "default_tags"]
+  tags = local.tags[var.autoscaling_enabled == "true" ? "autoscaling_tags" : "default_tags"]
 
   lifecycle {
     create_before_destroy = true

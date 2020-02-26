@@ -61,7 +61,7 @@ parameters:
       value: 50
     - name: autoscaling.enabled
       value: false
-      env: TF_VAR_autoscale_enabled
+      env: TF_VAR_autoscaling_enabled
     - name: volume.type
       env: TF_VAR_root_volume_type
       value: gp2
