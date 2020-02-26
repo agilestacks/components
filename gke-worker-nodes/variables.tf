@@ -6,6 +6,7 @@ variable "max_node_count" {}
 variable "preemptible" {}
 variable "node_machine_type" {}
 variable "project" {}
+variable "volume_size" {}
 
 variable "asi_oauth_scopes" {
   type = "list"
