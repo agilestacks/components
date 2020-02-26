@@ -1,0 +1,49 @@
+---
+version: 1
+kind: component
+meta:
+  name: etcd-metal
+  title: etcd-metal
+  brief: DNS Server
+  description: >
+    etcd-metal is a simple etcd deployment intended for bare-metal, specifically KubeFlex Prime clusters
+  category: App Stack
+  version: 0.10.3
+  maturity: ga
+  license: BSD/MIT
+  source:
+    dir: ../../components/etcd-metal
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+  - etcd
+provides:
+  - etcd-metal
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.etcd-metal
+    parameters:
+    - name: version
+      value: 0.10.3
+    - name:  name
+      value: etcd-metal
+      env:   COMPONENT_NAME
+    - name:  namespace
+      value: dns
+      env:   NAMESPACE
+    - name: count
+      value: 1
+    - name: port
+      value: 2379
+
+outputs:
+- name: component.etcd-metal.internal.url
+  value: http://etcd-metal.${component.etcd-metal.namespace}.svc.cluster.local:${component.etcd-metal.port}
+
+templates:
+  files:
+    - "*.template"

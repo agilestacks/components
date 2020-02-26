@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bootproxy
+  namespace: {{component.bootproxy.namespace}}
+  labels:
+    app: bootproxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bootproxy
+  template:
+    metadata:
+      labels:
+        app: bootproxy
+    spec:
+      containers:
+      - name: bootproxy
+        image: {{component.bootproxy.image}}
+        imagePullPolicy: Always
+        env:
+        - name: API_SERVER
+          value: {{component.bootproxy.api_server}}
+        - name: API_PATH_PREFIX
+          value: {{component.bootproxy.path_prefix}}
+        - name: BOOTPROXY_ID
+          value: {{component.bootproxy.id}}
+        - name: PROXY_PORT
+          value: {{component.bootproxy.proxy_port}}
+        - name: PROXY_ADDRESS
+          value: {{component.bootproxy.local_address}}
+        - name: DATA_DIR
+          value: {{component.bootproxy.data_dir}}
+        - name: PUBLIC_IP
+          value: {{component.bootproxy.public_ip}}
+        ports:
+        - containerPort: {{component.bootproxy.dhcp_port}}
+          protocol: UDP
+        volumeMounts:
+        - name: bootproxy-data
+          mountPath: {{component.bootproxy.data_dir}}
+      volumes:
+      - name: bootproxy-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bootproxy
+  namespace: {{component.bootproxy.namespace}}
+  labels:
+    app: bootproxy
+spec:
+  ports:
+  - port: {{component.bootproxy.dhcp_port}}
+    targetPort: {{component.bootproxy.dhcp_port}}
+    protocol: UDP
+  selector:
+    app: bootproxy

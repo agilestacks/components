@@ -1,0 +1,49 @@
+---
+version: 1
+kind: component
+meta:
+  name: coredns
+  title: coredns
+  brief: DNS Server
+  description: >
+    CoreDNS is a Kubernetes centric DNS server
+  category: App Stack
+  version: 1.9.3
+  maturity: ga
+  license: BSD/MIT
+  source:
+    dir: ../../components/coredns
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+  - etcd
+provides:
+  - coredns
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.coredns
+    parameters:
+    - name: version
+      value: 1.9.3
+    - name:  name
+      value: coredns
+      env:   COMPONENT_NAME
+    - name:  namespace
+      value: dns
+      env:   NAMESPACE
+    - name: zone
+    - name: etcdHost
+      value: ${component.etcd-metal.internal.url}
+    - name: port
+      value: 53
+
+outputs:
+- name: component.coredns.port
+
+templates:
+  files:
+    - "*.template"
