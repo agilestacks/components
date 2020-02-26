@@ -38,7 +38,7 @@ parameters:
   - name: kubernetes.serviceDnsIp
     env: TF_VAR_service_dns_ip
     value: 10.0.3.10
-  
+
   - name: component.worker-pool
     parameters:
     - name: shortName
@@ -49,7 +49,7 @@ parameters:
     - name: labels
       empty: allow
     - name: instance.size
-      env: instance_list
+      env: INSTANCE_SIZE
     - name: count
       value: 1
       env: TF_VAR_pool_count

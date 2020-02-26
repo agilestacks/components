@@ -31,10 +31,10 @@ variable "instance_type" {
   description = "Instance size for the worker node(s). Example: `t2.small`."
 }
 
-variable "instance_list" {
+variable "instance_size" {
   type        = list
   default     = []
-  description = "Instnace list"
+  description = "Instnace size list"
 }
 
 

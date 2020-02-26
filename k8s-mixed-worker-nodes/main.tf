@@ -34,7 +34,7 @@ data "aws_s3_bucket_object" "bootstrap_script" {
 
 locals {
   # Terraform 0.12 can't iterate over list in resource block
-  mixed_asg_instances = "${zipmap(range(length(var.instance_list)), var.instance_list)}"
+  mixed_asg_instances = "${zipmap(range(length(var.instance_size)), var.instance_size)}"
 
   name1 = "worker-${var.name}"
   name2 = "${substr(local.name1, 0, min(length(local.name1), 63))}"
@@ -84,7 +84,7 @@ locals {
         "kubernetes.io/cluster/${var.cluster_tag}", "owned",
         "superhub.io/stack/${var.domain_name}", "owned"
     )}"
-  
+
   tags = {
     default_tags = "${local.default_tags}"
     autoscaling_tags = concat(local.default_tags, local.additional_tags)
@@ -195,13 +195,13 @@ resource "aws_launch_template" "worker_mixed_conf" {
 
   iam_instance_profile {
     name = var.instance_profile
-  } 
+  }
 
   image_id      = coalesce(var.ec2_ami_override, data.aws_ami.coreos_ami.image_id)
-  instance_type = var.instance_list[0]
+  instance_type = var.instance_size[0]
   key_name      = var.keypair
 
-  
+
   user_data = base64encode(data.ignition_config.main.rendered)
 
   #user_data     = "${data.ignition_config.s3.rendered}"
@@ -230,7 +230,7 @@ resource "aws_launch_template" "worker_mixed_conf" {
       delete_on_termination = true
     }
   }
-  
+
   lifecycle {
     create_before_destroy = true
 
@@ -274,7 +274,7 @@ resource "aws_autoscaling_group" "workers" {
   }
 
   mixed_instances_policy {
-    instances_distribution { 
+    instances_distribution {
       on_demand_base_capacity = var.on_demand_instance_count
       spot_allocation_strategy  = var.allocation_strategy
       on_demand_percentage_above_base_capacity = 0
@@ -291,10 +291,10 @@ resource "aws_autoscaling_group" "workers" {
           instance_type = override.value
         }
       }
-  
+
     }
   }
-  
+
 }
 
 resource "aws_autoscaling_attachment" "workers" {
