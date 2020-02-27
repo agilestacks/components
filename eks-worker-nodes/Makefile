@@ -20,7 +20,7 @@ export TF_VAR_sg_ids     := $(shell echo -n '$(SG_IDS)' | jq -cR 'split(",")')
 
 WORKER_IMPL := $(if $(TF_VAR_spot_price),autoscaling,nodegroup)
 
-deploy: init plan apply
+deploy: init import plan apply
 
 $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
@@ -43,10 +43,15 @@ refresh:
 apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 
+import: name2=$(shell echo $(TF_VAR_name) | tr . - | cut -c 1-63)
+import:
+	-$(terraform) import $(TF_CLI_ARGS) aws_autoscaling_group.nodes eks-node-$(name2)
+	-$(terraform) import $(TF_CLI_ARGS) aws_eks_node_group.nodes $(TF_VAR_short_name)
+
 output:
 	@$(terraform) output -no-color
 
-undeploy: init destroy apply
+undeploy: init import destroy apply
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
