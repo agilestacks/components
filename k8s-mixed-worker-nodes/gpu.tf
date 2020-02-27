@@ -1,5 +1,5 @@
 locals {
-  instance_gpu = contains(local.gpu_instance_types, var.instance_list[0])
+  instance_gpu = contains(local.gpu_instance_types, var.instance_size[0])
 }
 
 data "ignition_systemd_unit" "nvidia" {

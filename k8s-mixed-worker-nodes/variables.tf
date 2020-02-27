@@ -31,10 +31,10 @@ variable "instance_type" {
   description = "Instance size for the worker node(s). Example: `t2.small`."
 }
 
-variable "instance_list" {
+variable "instance_size" {
   type        = list
   default     = []
-  description = "Instnace list"
+  description = "Instnace size list"
 }
 
 
@@ -56,7 +56,7 @@ variable "ec2_ami_override" {
   description = "(optional) AMI override for all nodes. Example: `ami-foobar123`."
 }
 
-variable "autoscale_enabled" {
+variable "autoscaling_enabled" {
   type        = string
   default     = "false"
   description = "Enable autoscaling by adding special auto scale group tags"
