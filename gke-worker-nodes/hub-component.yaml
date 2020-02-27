@@ -45,7 +45,7 @@ parameters:
       value: ${component.worker-pool.count}
       env: TF_VAR_max_node_count
     - name: volume.size
-      value: 30
+      value: 50
       env: TF_VAR_volume_size
 
   - name: component.worker-pool.gcp
