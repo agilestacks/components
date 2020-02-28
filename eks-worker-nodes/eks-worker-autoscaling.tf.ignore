@@ -50,7 +50,7 @@ resource "aws_autoscaling_group" "nodes" {
   # if autoscaling not enabled then pool_max_size is 1 (default)
   desired_capacity     = "${var.pool_count}"
   min_size             = "${var.pool_count}"
-  max_size             = "${max(var.pool_max_count, var.pool_count)}"
+  max_size             = "${max(var.autoscaling_enabled == "true" ? var.pool_max_count : var.pool_count, var.pool_count)}"
 
   # Because of https://github.com/hashicorp/terraform/issues/12453 conditional operator cannot be used with list values
   # TODO: change this when will use terraform >=0.12

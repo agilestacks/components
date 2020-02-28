@@ -3,6 +3,25 @@ data "aws_iam_role" "node" {
   name = "${var.role}"
 }
 
+locals {
+  relevant_tags = ["${local.tags[var.autoscaling_enabled == "true" ? "autoscaling_tags" : "default_tags"]}"]
+}
+
+data "null_data_source" "strip_tags" {
+  count = "${length(local.relevant_tags)}"
+  inputs = {
+    key = "${lookup(local.relevant_tags[count.index], "key")}",
+    value = "${lookup(local.relevant_tags[count.index], "value")}"
+  }
+}
+
+locals {
+  map_tags =  "${zipmap(
+    data.null_data_source.strip_tags.*.outputs.key,
+    data.null_data_source.strip_tags.*.outputs.value
+  )}"
+}
+
 resource "aws_eks_node_group" "nodes" {
   cluster_name    = "${var.cluster_name}"
   node_group_name = "${var.short_name}"
@@ -12,7 +31,7 @@ resource "aws_eks_node_group" "nodes" {
   scaling_config {
     desired_size = "${var.pool_count}"
     min_size     = "${var.pool_count}"
-    max_size     = "${max(var.pool_max_count, var.pool_count)}"
+    max_size     = "${max(var.autoscaling_enabled == "true" ? var.pool_max_count : var.pool_count, var.pool_count)}"
   }
 
   ami_type       = "AL2_x86_64${local.instance_gpu ? "_GPU" : ""}"
@@ -23,7 +42,10 @@ resource "aws_eks_node_group" "nodes" {
     ec2_ssh_key = "${var.keypair}"
   }
 
-  tags {
-    Name = "eks-nodegroup-${var.short_name}-${var.cluster_name}"
-  }
+  tags = "${
+    merge(
+      local.map_tags,
+      map("Name", "eks-nodegroup-${var.short_name}-${var.cluster_name}")
+    )
+  }"
 }
