@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "2.43.0"
+  version = "2.49.0"
 }
 
 locals {
@@ -21,6 +21,13 @@ locals {
     "g3.4xlarge",
     "g3.8xlarge",
     "g3.16xlarge",
+    "g4dn.xlarge",
+    "g4dn.2xlarge",
+    "g4dn.4xlarge",
+    "g4dn.8xlarge",
+    "g4dn.16xlarge",
+    "g4dn.12xlarge",
+    "g4dn.metal",
   ]
 
   name1 = "${replace("${var.name}", ".", "-")}"

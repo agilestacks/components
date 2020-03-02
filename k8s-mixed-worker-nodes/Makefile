@@ -11,7 +11,7 @@ export TF_VAR_s3_bucket_region ?= $(error undefined env var TF_VAR_s3_bucket_reg
 export TF_VAR_domain_name      ?= $(error undefined env var TF_VAR_domain_name)
 export TF_VAR_subnet_ids       := $(shell echo -n '$(sort $(SUBNET_ID) $(SUBNET_IDS))' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
 export TF_VAR_sg_ids           := $(shell echo -n '$(SG_IDS)' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
-export TF_VAR_instance_list    := $(shell echo -n '$(instance_list)' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
+export TF_VAR_instance_size    := $(shell echo -n '$(INSTANCE_SIZE)' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
 export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_name)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
@@ -20,6 +20,11 @@ kubectl     ?= kubectl --context="$(TF_VAR_domain_name)"
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
+VALID_NAME   = $(shell echo $(TF_VAR_name) | grep -Eq ^$(SHORT_NAME) && echo matched)
+
+ifneq ($(VALID_NAME),matched)
+$(error "shortName" parameter must be a prefix to "name" parameter $(TF_VAR_name))
+endif
 
 
 deploy: init import plan

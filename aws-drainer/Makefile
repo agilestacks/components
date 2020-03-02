@@ -43,7 +43,7 @@ install:
 	- $(kubectl) apply -k base/
 	- $(kubectl) apply -f kube-drainer.yaml
 
-undeploy: init destroy apply
+undeploy: init aws_lambda destroy apply
 	- $(kubectl) delete -k base/
 	- $(kubectl) delete -f kube-drainer.yaml
 

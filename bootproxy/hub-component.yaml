@@ -1,0 +1,45 @@
+---
+version: 1
+kind: component
+meta:
+  name: bootproxy
+  brief: A MutatingWebhook style admission controller that synchronizes spec:tls:host with spec:rules:host
+  source:
+    dir: ../../components/bootproxy
+
+requires:
+- kubernetes
+
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
+  - kubernetes
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.bootproxy
+  parameters:
+  - name: namespace
+    value: kube-system
+    env: NAMESPACE
+  - name: dhcp_port
+    value: 67
+  - name: proxy_port
+    value: 7655
+  - name: local_address
+    value: 0.0.0.0
+  - name: public_ip
+  - name: data_dir
+    value: /var/lib/bootproxy
+  - name: path_prefix
+    value: "metal/api/v1"
+  - name: image
+    value: agilestacks/bootproxy:stable
+
+templates:
+  extra:
+  - kind: mustache
+    files:
+    - 'deploy/*.template'

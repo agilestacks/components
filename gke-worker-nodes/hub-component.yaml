@@ -28,22 +28,28 @@ parameters:
   - name: cloud.gcpProjectId
     env: TF_VAR_project
 
-  - name: component.k8s-worker-nodes
+  - name: component.worker-pool
     parameters:
     - name: shortName
       value: ${hub.componentName}
-    - name: size
+    - name: instance.size
       env: TF_VAR_node_machine_type
       value: n1-standard-4
-    - name: poolName
+    - name: name
       env: TF_VAR_pool_name
-      value: ${component.k8s-worker-nodes.shortName}-${kubernetes.gke.cluster}
+      value: ${component.worker-pool.shortName}-${kubernetes.gke.cluster}
     - name: count
       value: 1
       env: TF_VAR_min_node_count
     - name: maxCount
-      value: ${component.k8s-worker-nodes.count}
+      value: ${component.worker-pool.count}
       env: TF_VAR_max_node_count
-    - name: preemptible
+    - name: volume.size
+      value: 50
+      env: TF_VAR_volume_size
+
+  - name: component.worker-pool.gcp
+    parameters:
+    - name: preemptible.enabled
       value: true
       env: TF_VAR_preemptible

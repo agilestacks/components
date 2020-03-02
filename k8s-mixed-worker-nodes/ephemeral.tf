@@ -1,8 +1,8 @@
 # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_BlockDeviceMapping.html
 locals {
-  instance_ephemeral_nvme = "${contains(local.nvme_instance_types, var.instance_list[0])}"
-  complete_list = "${concat(local.nvme_instance_types, list(var.instance_list[0]))}"
-  maybe_index = "${index(local.complete_list, var.instance_list[0])}"
+  instance_ephemeral_nvme = "${contains(local.nvme_instance_types, var.instance_size[0])}"
+  complete_list = "${concat(local.nvme_instance_types, list(var.instance_size[0]))}"
+  maybe_index = "${index(local.complete_list, var.instance_size[0])}"
   nvme_ndevices = "${local.nvme_ndevices_by_type[local.maybe_index >= length(local.nvme_instance_types) ? 0 : local.maybe_index + 1]}"
   final_nvme_device = "${local.nvme_ndevices > 1 ? "/dev/md/nvme" : "/dev/xvdb"}"
 }
@@ -43,4 +43,4 @@ resource "local_file" "systemd2" {
   lifecycle {
     create_before_destroy = true
   }
-} 
+}

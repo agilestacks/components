@@ -35,35 +35,35 @@ parameters:
   - name: cloud.role.worker
     env: TF_VAR_role
 
-  - name: component.k8s-worker-nodes
+  - name: component.worker-pool
     parameters:
-    - name: size
-      env: TF_VAR_instance_type
-      value: r4.large
-    - name: spotPrice
-      env: TF_VAR_spot_price
-      empty: allow
     - name: shortName
       value: ${hub.componentName}
       env: TF_VAR_short_name
     - name: name
-      value: ${component.k8s-worker-nodes.shortName}-${dns.domain}
+      value: ${component.worker-pool.shortName}-${dns.domain}
       env: TF_VAR_name
-    - name: autoscale.enabled
+    - name: instance.size
+      env: TF_VAR_instance_type
+      value: r4.large
+    - name: autoscaling.enabled
       value: false
-      env: TF_VAR_autoscale_enabled
+      env: TF_VAR_autoscaling_enabled
     - name: count
       value: 1
       env: TF_VAR_pool_count
     - name: maxCount
-      value: ${component.k8s-worker-nodes.count}
+      value: ${component.worker-pool.count}
       env: TF_VAR_pool_max_count
     - name: volume.size
       env: TF_VAR_root_volume_size
-      value: 30
+      value: 50
     - name: volume.type
       env: TF_VAR_root_volume_type
       value: gp2
     - name: volume.iops
       env: TF_VAR_root_volume_iops
       value: 100
+    - name: aws.spotPrice
+      env: TF_VAR_spot_price
+      empty: allow
