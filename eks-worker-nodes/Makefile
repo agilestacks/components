@@ -14,8 +14,8 @@ terraform   ?= terraform-v0.12
 TF_CLI_ARGS ?= -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-export TF_VAR_subnet_ids := $(shell echo -n '$(SUBNET_IDS)' | jq -cR 'split(",")')
-export TF_VAR_sg_ids     := $(shell echo -n '$(SG_IDS)' | jq -cR 'split(",")')
+export TF_VAR_subnet_ids := $(shell echo '$(SUBNET_IDS)' | jq -cR 'split(",")')
+export TF_VAR_sg_ids     := $(shell echo '$(SG_IDS)' | jq -cR 'split(",")')
 
 WORKER_IMPL := $(if $(TF_VAR_spot_price),autoscaling,nodegroup)
 
