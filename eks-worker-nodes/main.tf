@@ -30,10 +30,10 @@ locals {
     "g4dn.metal",
   ]
 
-  name1 = "${replace("${var.name}", ".", "-")}"
-  name2 = "${substr(local.name1, 0, min(length(local.name1), 63))}"
+  name1 = replace(var.name, ".", "-")
+  name2 = substr(local.name1, 0, min(length(local.name1), 63))
 
-  instance_gpu = "${contains(local.gpu_instance_types, var.instance_type)}"
+  instance_gpu = contains(local.gpu_instance_types, var.instance_type)
 
   default_tags = [
     {
@@ -57,7 +57,7 @@ locals {
   ]
 
   tags = {
-    default_tags     = "${local.default_tags}"
-    autoscaling_tags = "${concat(local.default_tags, local.autoscaling_tags)}"
+    default_tags     = local.default_tags
+    autoscaling_tags = concat(local.default_tags, local.autoscaling_tags)
   }
 }

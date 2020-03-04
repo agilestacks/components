@@ -7,12 +7,11 @@ export AWS_DEFAULT_REGION ?= us-east-2
 
 export DOMAIN_NAME ?= test.dev.superhub.io
 
-export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_name)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
-terraform   ?= terraform-v0.11
-TF_CLI_ARGS ?= -no-color -input=false
+terraform   ?= terraform-v0.12
+TF_CLI_ARGS ?= -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
 export TF_VAR_subnet_ids := $(shell echo -n '$(SUBNET_IDS)' | jq -cR 'split(",")')

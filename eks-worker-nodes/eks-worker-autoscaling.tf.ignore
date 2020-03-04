@@ -16,54 +16,55 @@ locals {
 #!/bin/sh
 exec /etc/eks/bootstrap.sh ${var.cluster_name}
 USERDATA
+
 }
 
 resource "aws_launch_configuration" "node" {
   associate_public_ip_address = true
-  iam_instance_profile        = "${var.instance_profile}"
-  image_id                    = "${data.aws_ami.eks_worker.id}"
-  instance_type               = "${var.instance_type}"
-  key_name                    = "${var.keypair}"
+  iam_instance_profile        = var.instance_profile
+  image_id                    = data.aws_ami.eks_worker.id
+  instance_type               = var.instance_type
+  key_name                    = var.keypair
   name_prefix                 = "eks-node-${local.name2}"
-  security_groups             = ["${var.sg_ids}"]
-  spot_price                  = "${var.spot_price}"
-  user_data_base64            = "${base64encode(local.userdata)}"
+  security_groups             = var.sg_ids
+  spot_price                  = var.spot_price
+  user_data_base64            = base64encode(local.userdata)
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = ["image_id"]
+    ignore_changes        = [image_id]
   }
 
   root_block_device {
-    volume_type = "${var.root_volume_type}"
-    volume_size = "${var.root_volume_size}"
-    iops        = "${var.root_volume_type == "io1" ? var.root_volume_iops : 0}"
+    volume_type = var.root_volume_type
+    volume_size = var.root_volume_size
+    iops        = var.root_volume_type == "io1" ? var.root_volume_iops : 0
   }
 }
 
 resource "aws_autoscaling_group" "nodes" {
   name = "eks-node-${local.name2}"
 
-  vpc_zone_identifier  = "${var.subnet_ids}"
-  launch_configuration = "${aws_launch_configuration.node.id}"
+  vpc_zone_identifier  = var.subnet_ids
+  launch_configuration = aws_launch_configuration.node.id
   termination_policies = ["ClosestToNextInstanceHour", "Default"]
-  # if autoscaling not enabled then pool_max_size is 1 (default)
-  desired_capacity     = "${var.pool_count}"
-  min_size             = "${var.pool_count}"
-  max_size             = "${max(var.pool_max_count, var.pool_count)}"
 
-  # Because of https://github.com/hashicorp/terraform/issues/12453 conditional operator cannot be used with list values
-  # TODO: change this when will use terraform >=0.12
-  tags = ["${local.tags[var.autoscaling_enabled == "true" ? "autoscaling_tags" : "default_tags"]}"]
+  # if autoscaling not enabled then pool_max_count is defaulted to pool_count until set explicitly to a larger value
+  desired_capacity = var.pool_count
+  min_size         = var.pool_count
+  max_size         = max(var.pool_max_count, var.pool_count)
+
+  # TODO conditional operator cannot be used with list values prior 0.12
+  tags = local.tags[var.autoscaling_enabled == "true" ? "autoscaling_tags" : "default_tags"]
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = ["tags"]
+    ignore_changes        = [tags]
   }
 }
 
 resource "aws_autoscaling_attachment" "nodes" {
-  count                  = "${length(var.load_balancers)}"
-  autoscaling_group_name = "${aws_autoscaling_group.nodes.name}"
-  elb                    = "${var.load_balancers[count.index]}"
+  count                  = length(var.load_balancers)
+  autoscaling_group_name = aws_autoscaling_group.nodes.name
+  elb                    = var.load_balancers[count.index]
 }
