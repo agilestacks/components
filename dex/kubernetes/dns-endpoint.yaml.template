@@ -1,0 +1,11 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: dex-lb
+spec:
+  endpoints:
+  - dnsName: ${component.ingress.loadBalancer}
+    recordTTL: 180
+    recordType: ${component.ingress.loadBalancerDnsRecordType}
+    targets:
+    - ${component.dex.urlPrefix}
