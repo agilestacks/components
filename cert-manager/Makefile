@@ -15,7 +15,7 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 ADDITIONAL_VALUES :=
 
-deploy: clean init fetch purge crds install
+deploy: clean init fetch purge crds keys install
 ifeq ($(KUBE_FLAVOR),openshift)
 deploy: openshift
 ADDITIONAL_VALUES := --values values-openshift.yaml
@@ -24,6 +24,11 @@ deploy: issuer
 ifeq ($(CA_ISSUER_ENABLED),true)
 deploy: ca-issuer
 endif
+
+ifdef SOLVER_AWS_SECRET_KEY
+deploy: keys
+endif
+
 
 init:
 	@mkdir -p $(HELM_HOME) charts
@@ -42,6 +47,7 @@ purge:
 		$(kubectl) get crd -o name | grep -F certmanager.k8s.io | xargs $(kubectl) delete || exit 0
 
 crds:
+	$(kubectl) apply -f namespace.yaml
 	$(kubectl) apply --validate=false -f https://raw.githubusercontent.com/jetstack/cert-manager/$(TAG)/deploy/manifests/00-crds.yaml
 	@echo "Waiting for CRDs to install"; \
 	for i in $$(seq 1 30); do \
@@ -56,8 +62,11 @@ crds:
 	exit 1;
 .PHONY: crds
 
+keys:
+	$(kubectl) -n $(NAMESPACE) delete secret solver-aws-secret-key || true
+	$(kubectl) -n $(NAMESPACE) create secret generic solver-aws-secret-key --from-literal=secret-access-key="$(SOLVER_AWS_SECRET_KEY)" --from-literal=access-key-id=$(SOLVER_AWS_ACCESS_KEY)
+
 install:
-	$(kubectl) apply -f namespace.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \

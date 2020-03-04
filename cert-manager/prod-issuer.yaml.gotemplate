@@ -12,9 +12,17 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
-    # Enable the HTTP-01 challenge provider
+    {{- if eq (index .component "cert-manager" "solver") "http" -}}
     - http01:
         ingress: {}
+    {{else}}
     - dns01:
         route53:
-          region: ${cloud.region}
+          region: {{.cloud.region}}
+    {{- if (index .component "cert-manager" "dnsSolverAwsCreds" "enabled") }}
+          accessKeyID: {{index .component "cert-manager" "dnsSolverAwsCreds" "accessKey"}}
+          secretAccessKeySecretRef:
+            name: solver-aws-secret-key
+            key: secret-access-key
+    {{- end -}}
+    {{- end}}

@@ -1,5 +1,5 @@
 apiVersion: cert-manager.io/v1alpha2
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: letsencrypt-staging
 spec:
@@ -12,9 +12,17 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-staging
     solvers:
-    # Enable the HTTP-01 challenge provider
+    {{- if eq (index .component "cert-manager" "solver") "http" -}}
     - http01:
         ingress: {}
+    {{else}}
     - dns01:
         route53:
-          region: ${cloud.region}
+          region: {{.cloud.region}}
+    {{- if (index .component "cert-manager" "dnsSolverAwsCreds" "enabled") }}
+          accessKeyID: {{index .component "cert-manager" "dnsSolverAwsCreds" "accessKey"}}
+          secretAccessKeySecretRef:
+            name: solver-aws-secret-key
+            key: secret-access-key
+    {{- end -}}
+    {{- end}}
