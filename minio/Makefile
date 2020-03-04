@@ -74,7 +74,8 @@ fetch:
 		--version $(CHART_VERSION)
 
 namespace:
-	- $(kubectl) create namespace $(NAMESPACE)
+	$(kubectl) get $@ $(NAMESPACE) > /dev/null || \
+		$(kubectl) create $@ $(NAMESPACE)
 
 wait:
 	sleep 10
@@ -96,11 +97,11 @@ install: namespace
 			--wait
 
 configure:
-	@ $(mc) --insecure config host add $(ALIAS) \
+	- @ $(mc) --insecure config host add $(ALIAS) \
 		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
 		$(ACCESS_KEY) $(SECRET_KEY) \
 		S3v4
-	@ $(mc) --insecure config host list
+	- @ $(mc) --insecure config host list
 
 unconfigure:
 	- $(mc) config host rm $(ALIAS)
