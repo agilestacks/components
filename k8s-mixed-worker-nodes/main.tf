@@ -40,6 +40,26 @@ locals {
   name2 = "${substr(local.name1, 0, min(length(local.name1), 63))}"
   name_prefix     = "${substr(replace(local.name1, ".", "-"), 0, min(32, length(local.name1)-1))}"
 
+  ami_id          = "${coalesce(var.ec2_ami_override, data.aws_ami.main.image_id)}"
+  
+
+  recent          = "${var.linux_version == "*"}"
+  
+  linux_version   = "${local.instance_gpu == true ? var.linux_gpu_version : var.linux_version }"
+  
+  
+  ami_owners = "${map(
+                "coreos", "595879546273",
+                "flatcar", "075585003325",
+              )}"
+  ami_names = "${map(
+                "coreos", "CoreOS-${var.linux_channel}-${local.linux_version}-*",
+                "flatcar", "Flatcar-${var.linux_channel}-${local.linux_version}-*",
+              )}"
+  
+  ami_owner = "${local.ami_owners[var.linux_distro]}"
+  ami_name  = "${local.ami_names[var.linux_distro]}"
+  
   default_tags = [
     {
       key                 = "Name"
@@ -92,11 +112,6 @@ locals {
 
   default_key          = "${var.domain_name}/stack-k8s-aws/ignition/ignition_worker.json"
   bootstrap_script_key = "${coalesce(var.bootstrap_script_key, local.default_key)}"
-
-  default_coreos_gpu   = "1855.4.0"
-  coreos_image_gpu     = "CoreOS-${var.container_linux_channel}-${coalesce(var.container_linux_version, local.default_coreos_gpu)}-${var.virtualization_type}"
-  coreos_image_cpu     = "CoreOS-${var.container_linux_channel}-${coalesce(var.container_linux_version, "*")}-${var.virtualization_type}"
-  coreos_image         = "${local.instance_gpu == "true" ? local.coreos_image_gpu : local.coreos_image_cpu}"
   dest_script_key      = "${dirname(local.bootstrap_script_key)}/pool/${var.name}/${basename(local.bootstrap_script_key)}"
 
   ignition_content = "${data.ignition_config.main.rendered}"
@@ -116,7 +131,7 @@ locals {
       : data.ignition_systemd_unit.ebs_mount.id}",
     "${data.ignition_systemd_unit.kubelet_ebs.id}",
     "${data.ignition_systemd_unit.docker_ebs.id}",
-    "${local.instance_gpu == "true" ? data.ignition_systemd_unit.nvidia.id : ""}",
+    "${local.instance_gpu == true ? data.ignition_systemd_unit.nvidia.id : ""}",
   ]
 
   files = [
@@ -124,9 +139,10 @@ locals {
   ]
   node_labels = [
     "name=${local.name1}",
-    "${local.instance_gpu == "true" ? "gpu=true" : ""}",
+    "${local.instance_gpu == true ? "gpu=true" : ""}",
   ]
 }
+
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
   provider = aws.bucket
@@ -163,14 +179,13 @@ data "ignition_config" "main" {
   # ]
 }
 
-data "aws_ami" "coreos_ami" {
-  most_recent = true
-
-  owners = ["595879546273"]
+data "aws_ami" "main" {
+  owners      = ["${local.ami_owner}"]
+  most_recent = "${local.recent}"
 
   filter {
     name   = "name"
-    values = ["${local.coreos_image}"]
+    values = ["${local.ami_name}"]
   }
 
   filter {
@@ -180,7 +195,7 @@ data "aws_ami" "coreos_ami" {
 
   filter {
     name   = "virtualization-type"
-    values = ["${var.virtualization_type}"]
+    values = ["hvm"]
   }
 }
 
@@ -197,14 +212,12 @@ resource "aws_launch_template" "worker_mixed_conf" {
     name = var.instance_profile
   }
 
-  image_id      = coalesce(var.ec2_ami_override, data.aws_ami.coreos_ami.image_id)
+  image_id      = local.ami_id
   instance_type = var.instance_size[0]
   key_name      = var.keypair
 
 
   user_data = base64encode(data.ignition_config.main.rendered)
-
-  #user_data     = "${data.ignition_config.s3.rendered}"
 
   monitoring {
     enabled = "false"

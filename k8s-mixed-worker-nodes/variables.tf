@@ -1,17 +1,25 @@
-variable "container_linux_channel" {
-  type    = string
+
+
+variable "linux_channel" {
+  type = "string"
   default = "stable"
-
-  description = <<EOF
-(optional) The Container Linux update channel.
-
-Examples: `stable`, `beta`, `alpha`
-EOF
 }
 
-variable "container_linux_version" {
-  type = string
-  default = ""
+variable "linux_distro" {
+  type    = "string"
+  default = "flatcar"
+}
+
+variable "linux_gpu_version" {
+  type = "string"
+  default = "1855.4.0"
+  description = "Image version that used"
+}
+
+
+variable "linux_version" {
+  type = "string"
+  default = "*"
   description = <<EOF
 Specifies version constraint for CoreOS image. If empty then it will lead to:
 - GPU instance will default to 1465.6.0
