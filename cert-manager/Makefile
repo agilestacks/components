@@ -15,7 +15,7 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 ADDITIONAL_VALUES :=
 
-deploy: clean init fetch purge crds keys install
+deploy: clean init fetch purge crds install
 ifeq ($(KUBE_FLAVOR),openshift)
 deploy: openshift
 ADDITIONAL_VALUES := --values values-openshift.yaml
