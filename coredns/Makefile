@@ -26,7 +26,7 @@ purge:
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 install:
-	$(kubectl) apply -f namespace.yaml
+	- $(kubectl) create ns $(NAMESPACE)
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/coredns \
 			--name $(COMPONENT_NAME) \

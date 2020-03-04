@@ -36,13 +36,15 @@ parameters:
       value: dns
       env:   NAMESPACE
     - name: zone
+      value: kubeflex.local
     - name: etcdHost
-      value: ${component.etcd-metal.internal.url}
+      value: ${component.etcd.url}
     - name: port
       value: 53
 
 outputs:
 - name: component.coredns.port
+- name: component.coredns.zone
 
 templates:
   files:
