@@ -25,7 +25,7 @@ ifeq ($(CA_ISSUER_ENABLED),true)
 deploy: ca-issuer
 endif
 
-ifdef DNS_SOLVER_AWS
+ifeq ($(DNS_SOLVER_AWS),true)
 deploy: keys
 endif
 
