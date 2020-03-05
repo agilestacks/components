@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 DOMAIN_NAME      ?= $(error DOMAIN_NAME not defined)
+DNS_PROVIDER     ?= $(error DNS_PROVIDER not defined)
 NAMESPACE        ?= kube-system
 helm             := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 aws              := aws --output=text
@@ -42,7 +43,7 @@ install: $(CHART_DIR)
 			--namespace $(NAMESPACE) \
 			--wait \
 			--values $(abspath ..)/values.yaml \
-			--values $(abspath .)/values.yaml
+			--values $(abspath .)/$(DNS_PROVIDER).values.yaml
 
 clean:
 	rm -rf $(CHART_DIR)

@@ -1,0 +1,10 @@
+provider: ${component.external-dns.provider}
+coredns:
+  etcdEndpoints: ${component.external-dns.coredns.etcdEndpoints}
+  etcdTLS:
+    enabled: ${component.external-dns.coredns.etcd-tls.enabled}
+    secretName: ${component.external-dns.coredns.etcd-tls.secretName}
+    mountPath: ${component.external-dns.coredns.etcd-tls.mountPath}
+    caFilename: ${component.external-dns.coredns.etcd-tls.caFilename}
+    certFilename: ${component.external-dns.coredns.etcd-tls.certFilename}
+    keyFilename: ${component.external-dns.coredns.etcd-tls.keyFilename}

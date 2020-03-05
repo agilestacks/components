@@ -59,11 +59,24 @@ parameters:
   - name: chart.name
     value: "stable/external-dns"
     env: CHART_NAME
-  - name: aws
+  - name: provider
+    value: aws
+    env: DNS_PROVIDER
+  - name: coredns
     empty: allow
     parameters:
-    - name: accessKey
-    - name: secretKey
+      # the http/s endpoint(s) of the etcd server to receive the updates
+    - name: etcdEndpoints
+    - name: etcd-tls
+      empty: allow
+      parameters:
+      - name: enabled
+        value: false
+      - name: secretName
+      - name: mountPath
+      - name: caFilename
+      - name: certFilename
+      - name: keyFilename
   - name: rfc2136
     empty: allow
     parameters:
@@ -86,6 +99,5 @@ templates:
   files:
     - "examples/*.template"
     - "aws/*.template"
-    - "hybrid/*.template"
     - "metal/*.template"
     - "./*.template"
