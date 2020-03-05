@@ -25,11 +25,6 @@ ifeq ($(CA_ISSUER_ENABLED),true)
 deploy: ca-issuer
 endif
 
-ifeq ($(DNS_SOLVER_AWS),true)
-deploy: keys
-endif
-
-
 init:
 	@mkdir -p $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
@@ -47,7 +42,6 @@ purge:
 		$(kubectl) get crd -o name | grep -F certmanager.k8s.io | xargs $(kubectl) delete || exit 0
 
 crds:
-	$(kubectl) apply -f namespace.yaml
 	$(kubectl) apply --validate=false -f https://raw.githubusercontent.com/jetstack/cert-manager/$(TAG)/deploy/manifests/00-crds.yaml
 	@echo "Waiting for CRDs to install"; \
 	for i in $$(seq 1 30); do \
@@ -62,11 +56,8 @@ crds:
 	exit 1;
 .PHONY: crds
 
-keys:
-	-$(kubectl) -n $(NAMESPACE) delete -f metal/solver-aws-secret.yaml
-	$(kubectl) -n $(NAMESPACE) apply -f metal/solver-aws-secret.yaml
-
 install:
+	$(kubectl) apply -f namespace.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \

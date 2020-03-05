@@ -45,14 +45,6 @@ parameters:
   - name: defaultIssuerKind
     value: ClusterIssuer
    #value: Issuer
-  - name: solver
-    # valid values are http or dns
-    value: http
-  - name: dnsSolverAwsCreds
-    parameters:
-    - name: enabled
-      env: DNS_SOLVER_AWS
-      value: false
   - name: caIssuer
     empty: allow
     parameters:
@@ -72,9 +64,5 @@ outputs:
   value: letsencrypt
 
 templates:
-  extra:
-  - kind: go
-    files:
-      - "*.gotemplate"
   files:
   - "*.template"

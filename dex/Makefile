@@ -34,33 +34,25 @@ endif
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
-deploy: clean install
+deploy: clean init plan apply install
 
-ifneq (,$(filter $(CLOUD_KIND),aws))
+ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate" \
 				-backend-config="profile=$(AWS_PROFILE)"
-deploy: init plan apply
-undeploy: init destroy apply
 else ifeq ($(CLOUD_KIND),gcp)
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="prefix=$(DOMAIN_NAME)/$(COMPONENT_NAME)" \
 				-backend-config="credentials=$(GOOGLE_APPLICATION_CREDENTIALS)"
-deploy: init plan apply
-undeploy: init destroy apply
 else ifeq ($(CLOUD_KIND),azure)
 STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$(STATE_BUCKET)" \
 				-backend-config="container_name=$(STATE_CONTAINER)" \
 				-backend-config="resource_group_name=$(TF_VAR_azure_resource_group_name)" \
 				-backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate"
-deploy: init plan apply
-undeploy: init destroy apply
-else ifeq ($(CLOUD_KIND),metal)
-deploy: dnsendpoint
 else
-$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, metal)
+$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, hybrid)
 endif
 
 $(TF_DATA_DIR):
@@ -105,13 +97,7 @@ install:
 	$(kubectl) apply -f kubernetes/$(INGRESS).yaml
 	$(kubectl) apply -f kubernetes/auth-operator.yaml
 
-dnsendpoint:
-	ifeq ($(shell $(kubectl) get crd dnsendpoints.externaldns.k8s.io 2>/dev/null || echo no),no)
-		  $(error DNSEndpoint is not available. Please install the external-dns component before this component)
-	endif
-	$(kubectl) apply -f kubernetes/dns-endpoint.yaml
-
-undeploy: uninstall
+undeploy: init destroy apply uninstall
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
