@@ -62,11 +62,6 @@ parameters:
   - name: provider
     value: aws
     env: DNS_PROVIDER
-  - name: aws
-    empty: allow
-    parameters:
-    - name: accessKey
-    - name: secretKey
   - name: coredns
     empty: allow
     parameters:

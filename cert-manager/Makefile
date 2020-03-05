@@ -25,7 +25,7 @@ ifeq ($(CA_ISSUER_ENABLED),true)
 deploy: ca-issuer
 endif
 
-ifdef SOLVER_AWS_SECRET_KEY
+ifdef DNS_SOLVER_AWS
 deploy: keys
 endif
 
@@ -63,8 +63,8 @@ crds:
 .PHONY: crds
 
 keys:
-	$(kubectl) -n $(NAMESPACE) delete secret solver-aws-secret-key || true
-	$(kubectl) -n $(NAMESPACE) create secret generic solver-aws-secret-key --from-literal=secret-access-key="$(SOLVER_AWS_SECRET_KEY)" --from-literal=access-key-id=$(SOLVER_AWS_ACCESS_KEY)
+	-$(kubectl) -n $(NAMESPACE) delete -f metal/solver-aws-secret.yaml
+	$(kubectl) -n $(NAMESPACE) apply -f metal/solver-aws-secret.yaml
 
 install:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \

@@ -2,8 +2,8 @@ aws:
   ## AWS credentials
   ##
   credentials:
-    secretKey: "${component.external-dns.aws.secretKey}"
-    accessKey: "${component.external-dns.aws.accessKey}"
+    secretKey: "${cloud.aws.secretKey}"
+    accessKey: "${cloud.aws.accessKey}"
     mountPath: "/.aws"
     ## Use an existing secret with key "credentials" defined.
     ## This ignores aws.credentials.secretKey, and aws.credentials.accessKey

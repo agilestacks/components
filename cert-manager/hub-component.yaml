@@ -51,11 +51,8 @@ parameters:
   - name: dnsSolverAwsCreds
     parameters:
     - name: enabled
+      env: DNS_SOLVER_AWS
       value: false
-    - name: accessKey
-      env: SOLVER_AWS_ACCESS_KEY
-    - name: secretKey
-      env: SOLVER_AWS_SECRET_KEY
   - name: caIssuer
     empty: allow
     parameters:

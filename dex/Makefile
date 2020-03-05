@@ -106,6 +106,9 @@ install:
 	$(kubectl) apply -f kubernetes/auth-operator.yaml
 
 dnsendpoint:
+	ifeq ($(shell $(kubectl) get crd dnsendpoints.externaldns.k8s.io 2>/dev/null || echo no),no)
+		  $(error DNSEndpoint is not available. Please install the external-dns component before this component)
+	endif
 	$(kubectl) apply -f kubernetes/dns-endpoint.yaml
 
 undeploy: uninstall

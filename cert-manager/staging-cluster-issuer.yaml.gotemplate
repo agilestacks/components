@@ -20,9 +20,9 @@ spec:
         route53:
           region: {{.cloud.region}}
     {{- if (index .component "cert-manager" "dnsSolverAwsCreds" "enabled") }}
-          accessKeyID: {{index .component "cert-manager" "dnsSolverAwsCreds" "accessKey"}}
+          accessKeyID: {{ .cloud.aws.accessKey }}
           secretAccessKeySecretRef:
             name: solver-aws-secret-key
-            key: secret-access-key
+            key: secretAccessKey
     {{- end -}}
     {{- end}}
