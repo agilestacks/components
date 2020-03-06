@@ -6,7 +6,7 @@ variable "keypair" {
 
 variable "instance_type" {
   type        = string
-  default     = "r4.large"
+  default     = "r5.large"
   description = "Instance size for the worker node(s). Example: `t2.small`."
 }
 
@@ -42,7 +42,7 @@ variable "root_volume_type" {
 
 variable "root_volume_size" {
   type        = string
-  default     = "30"
+  default     = "50"
   description = "The size of the volume in gigabytes for the root block device of worker nodes."
 }
 
