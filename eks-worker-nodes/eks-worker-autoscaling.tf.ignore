@@ -19,48 +19,126 @@ USERDATA
 
 }
 
-resource "aws_launch_configuration" "node" {
-  associate_public_ip_address = true
-  iam_instance_profile        = var.instance_profile
-  image_id                    = data.aws_ami.eks_worker.id
-  instance_type               = var.instance_type
-  key_name                    = var.keypair
-  name_prefix                 = "eks-node-${local.name2}"
-  security_groups             = var.sg_ids
-  spot_price                  = var.spot_price
-  user_data_base64            = base64encode(local.userdata)
+locals {
+  worker_instance_types                 = split(",", var.instance_type)
+  worker_instance_type                  = split(":", local.worker_instance_types[0])[0]
+  worker_instance_types_with_weights    = {
+    for i in local.worker_instance_types:
+      split(":", i)[0] => length(split(":", i)) > 1 ? split(":", i)[1] : "1"
+  }
+  worker_launch_template_trigger        = length(local.worker_instance_types) > 1 ? [] : [1]
+  worker_mixed_instances_policy_trigger = length(local.worker_instance_types) > 1 ? [1] : []
+}
+
+resource "aws_launch_template" "node" {
+  name_prefix = "eks-node-${local.name2}"
+
+  image_id      = data.aws_ami.eks_worker.id
+  instance_type = local.worker_instance_type
+  key_name      = var.keypair
+  user_data     = base64encode(local.userdata)
+
+  # vpc_security_group_ids = var.sg_ids
 
   lifecycle {
-    create_before_destroy = true
-    ignore_changes        = [image_id]
+    ignore_changes = [image_id]
   }
 
-  root_block_device {
-    volume_type = var.root_volume_type
-    volume_size = var.root_volume_size
-    iops        = var.root_volume_type == "io1" ? var.root_volume_iops : 0
+  block_device_mappings {
+    # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size = var.root_volume_size
+      volume_type = var.root_volume_type
+      iops        = var.root_volume_type == "io1" ? var.root_volume_iops : 0
+
+      delete_on_termination = true
+      encrypted             = true
+    }
   }
+  iam_instance_profile {
+    name = var.instance_profile
+  }
+  dynamic "instance_market_options" {
+    for_each = local.worker_launch_template_trigger
+    content {
+      market_type = "spot"
+      spot_options {
+        max_price = var.spot_price
+      }
+    }
+  }
+  monitoring {
+    enabled = false
+  }
+  network_interfaces {
+    associate_public_ip_address = true
+    delete_on_termination       = true
+    security_groups             = var.sg_ids
+  }
+  # tag_specifications {
+  #   resource_type = "instance"
+  #   tags = {
+  #     Name = "test"
+  #   }
+  # }
+  # tag_specifications {
+  #   resource_type = "volume"
+  # }
 }
 
 resource "aws_autoscaling_group" "nodes" {
   name = "eks-node-${local.name2}"
 
-  vpc_zone_identifier  = var.subnet_ids
-  launch_configuration = aws_launch_configuration.node.id
-  termination_policies = ["ClosestToNextInstanceHour", "Default"]
+  vpc_zone_identifier = var.subnet_ids
+  desired_capacity    = var.pool_count
+  min_size            = 1
+  max_size            = max(var.pool_max_count, var.pool_count)
 
-  # if autoscaling not enabled then pool_max_count is defaulted to pool_count until set explicitly to a larger value
-  desired_capacity = var.pool_count
-  min_size         = var.pool_count
-  max_size         = max(var.pool_max_count, var.pool_count)
+  # either launch template or mixed instance policy is activated
+  dynamic "launch_template" {
+    for_each = local.worker_launch_template_trigger
+    content {
+      id      = aws_launch_template.node.id
+      version = "$Latest"
+    }
+  }
 
-  # TODO conditional operator cannot be used with list values prior 0.12
+  dynamic "mixed_instances_policy" {
+    for_each = local.worker_mixed_instances_policy_trigger
+    content {
+      instances_distribution {
+        on_demand_base_capacity                  = var.on_demand_base_capacity
+        on_demand_percentage_above_base_capacity = var.on_demand_percentage_above_base_capacity
+        spot_allocation_strategy                 = var.spot_allocation_strategy
+        spot_instance_pools                      = var.spot_instance_pools
+        spot_max_price                           = var.spot_price
+      }
+
+      launch_template {
+        launch_template_specification {
+          launch_template_id = aws_launch_template.node.id
+          version            = "$Latest"
+        }
+
+        dynamic "override" {
+          for_each = local.worker_instance_types_with_weights
+          content {
+            instance_type     = override.key
+            weighted_capacity = override.value
+          }
+        }
+      }
+    }
+  }
+
+  # TODO update to Terraform 0.12
   tags = local.tags[var.autoscaling_enabled == "true" ? "autoscaling_tags" : "default_tags"]
 
-  lifecycle {
-    create_before_destroy = true
-    ignore_changes        = [tags]
-  }
+  # lifecycle {
+  #   create_before_destroy = true
+  #   ignore_changes        = [tags]
+  # }
 }
 
 resource "aws_autoscaling_attachment" "nodes" {

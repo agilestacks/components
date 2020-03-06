@@ -131,3 +131,25 @@ variable "cluster_name" {
   type        = string
   description = "EKS cluster name"
 }
+
+# AWS defaults below
+# https://www.terraform.io/docs/providers/aws/r/autoscaling_group.html#mixed_instances_policy-instances_distribution
+variable "on_demand_base_capacity" {
+  type    = string
+  default = "0"
+}
+
+variable "on_demand_percentage_above_base_capacity" {
+  type    = string
+  default = "100"
+}
+
+variable "spot_allocation_strategy" {
+  type    = string
+  default = "lowest-price"
+}
+
+variable "spot_instance_pools" {
+  type    = string
+  default = "2"
+}
