@@ -66,6 +66,7 @@ parameters:
       value: IfNotPresent
     - name:  replicaCount
       value: 1
+      env: REPLICAS
     - name:  resources.requests.memory
       value: "128Mi"
     - name:  resources.limits.memory

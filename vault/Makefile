@@ -118,7 +118,6 @@ login: $(UNSEAL_FILE)
 
 connect: disconnect
 	@echo Searching for Vault pod
-	$(kubectl) get pods
 	$(eval VAULT_POD=$(shell $(kubectl) get pods -l app=vault,release=$(COMPONENT_NAME) --output=jsonpath={.items..metadata.name}))
 	@if test -z "$(VAULT_POD)"; then \
 		echo Cannot find Vault pod; \
@@ -164,16 +163,18 @@ output:
 	@echo
 	@echo Vault has been installed and initialized successfully.
 
+REPLICAS ?= 1
 vault_ready_container:=$(kubectl) get pods -l app=$(COMPONENT_NAME) -o jsonpath='{.items..containerStatuses[?(@.ready==true)].containerID}'
 wait:
 	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
 	@echo "Waiting for Vault pod to become ready"
 	@while test `date +%s` -le "$(timeout)"; do \
-		if test -n "`$(vault_ready_container)`"; then \
+		ready_containers=`$(vault_ready_container) | wc -w | xargs`; \
+		if test "$$ready_containers" -ge "$(REPLICAS)"; then \
 			echo done; \
 			exit 0; \
 		fi; \
-		echo 'still waiting'; \
+		echo "still waiting (ready: $$ready_containers of $(REPLICAS))..."; \
 		sleep 8; \
 	done; \
 	echo "ERROR timeout $(TIMEOUT)sec"; \
