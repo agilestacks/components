@@ -31,11 +31,14 @@ parameters:
 - name: cloud.kind
   env:  CLOUD_KIND
 - name: cloud.region
+  empty: allow
 # - name: component.tls.kind
 - name: dns.domain
   env: DOMAIN_NAME
 - name: dns.name
-  env: CLUTER_NAME
+  env: CLUSTER_NAME
+- name: component.etcd.url
+  empty: allow
 - name: component.istio
   empty: allow
   parameters:
@@ -56,6 +59,9 @@ parameters:
     empty: allow
     parameters:
     - name: region
+  - name: provider
+    value: coredns
+    env: PROVIDER
   - name: chart.name
     value: "stable/external-dns"
     env: CHART_NAME
@@ -75,6 +81,7 @@ parameters:
     - name: tsig.keyname
     - name: tsig.secret-alg
       value: hmac-sha256
+
 # alias for CEL expression
 # - name: externaldns.awsAccessKeyId
 #   value: ${component.external-dns.aws.accessKeyId}
