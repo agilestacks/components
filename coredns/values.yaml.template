@@ -58,7 +58,7 @@ priorityClassName: ""
 # https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/#coredns-configmap-options
 servers:
 - zones:
-  - zone: .
+  - zone: ${component.coredns.zone}
   port: ${component.coredns.port}
   plugins:
   - name: errors
@@ -70,21 +70,22 @@ servers:
   - name: ready
   # Query Etcd for data
   - name: etcd
-    parameters: ${component.coredns.zone}
     configBlock: |-
-      stubzones
       path /skydns
       endpoint ${component.coredns.etcdHost}
-    # Serves a /metrics endpoint on :9153, required for serviceMonitor
-  - name: prometheus
-    parameters: 0.0.0.0:9153
-  - name: forward
-    parameters: . /etc/resolv.conf
   - name: cache
     parameters: 30
-  - name: loop
-  - name: reload
   - name: loadbalance
+- zones:
+  - zone: .
+  port: ${component.coredns.port}
+  plugins:
+  - name: errors
+  - name: forward
+    parameters: . 1.1.1.1:53
+    configBlock: |-
+      except ${component.coredns.zone}
+
 
 # Complete example with all the options:
 # - zones:                 # the `zones` block can be left out entirely, defaults to "."

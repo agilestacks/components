@@ -41,7 +41,7 @@ parameters:
       value: dns
       env:   NAMESPACE
     - name: zone
-      value: kubeflex.local
+      value: ${dns.domain}
     - name: etcdHost
       value: ${component.etcd.url}
     - name: serviceType
