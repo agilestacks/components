@@ -4,10 +4,10 @@
 
 image:
   repository: coredns/coredns
-  tag: "1.6.7"
+  tag: "${component.coredns.version}"
   pullPolicy: IfNotPresent
 
-replicaCount: 1
+replicaCount: ${component.coredns.replicas}
 
 resources:
   limits:
@@ -17,7 +17,7 @@ resources:
     cpu: 100m
     memory: 128Mi
 
-serviceType: "ClusterIP"
+serviceType: "${component.coredns.serviceType}"
 
 prometheus:
   monitor:

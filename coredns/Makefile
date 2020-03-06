@@ -3,6 +3,7 @@
 COMPONENT_NAME ?= coredns
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= coredns
+CHART_VERSION  ?= 1.10.0
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
@@ -19,7 +20,7 @@ fetch:
 	$(helm) fetch \
 		--destination charts \
 		--untar stable/coredns \
-		--version 1.9.3
+		--version $(CHART_VERSION)
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \

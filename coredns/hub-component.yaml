@@ -8,7 +8,7 @@ meta:
   description: >
     CoreDNS is a Kubernetes centric DNS server
   category: App Stack
-  version: 1.9.3
+  version: 1.6.7
   maturity: ga
   license: BSD/MIT
   source:
@@ -27,11 +27,16 @@ parameters:
     env: DOMAIN_NAME
   - name: component.coredns
     parameters:
-    - name: version
-      value: 1.9.3
     - name:  name
       value: coredns
-      env:   COMPONENT_NAME
+      env:   COMPONENT_NAME      
+    - name: version
+      value: 1.6.7
+    - name: chart.version
+      value: 1.10.0
+      env: CHART_VERSION
+    - name: replicas
+      value: 1
     - name:  namespace
       value: dns
       env:   NAMESPACE
@@ -39,6 +44,8 @@ parameters:
       value: kubeflex.local
     - name: etcdHost
       value: ${component.etcd.url}
+    - name: serviceType
+      value: ClusterIP
     - name: port
       value: 53
 
