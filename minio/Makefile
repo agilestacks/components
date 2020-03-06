@@ -17,9 +17,9 @@ SECRET         := $(COMPONENT_NAME)
 ACCESS_KEY_REF ?= accesskey
 SECRET_KEY_REF ?= secretkey
 
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-jq      ?= jq -Ms
+kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+jq      := jq -Ms
 
 CHART_VERSION    ?= 1.6.4
 

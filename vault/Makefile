@@ -14,9 +14,9 @@ export VAULT_SKIP_VERIFY ?= true
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-vault   ?= vault
+kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+vault   := vault
 
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
 TIMEOUT := 300
