@@ -28,25 +28,28 @@ lifecycle:
   - undeploy
 
 parameters:
-- name: cloud.kind
-  env:  CLOUD_KIND
-- name: cloud.region
-  empty: allow
+- name: cloud
+  parameters:
+  - name: kind
+    env:  CLOUD_KIND
+  - name: region
 # - name: component.tls.kind
 - name: dns.domain
   env: DOMAIN_NAME
 - name: dns.name
   env: CLUSTER_NAME
-- name: component.etcd.url
-  empty: allow
 - name: component.istio
   empty: allow
   parameters:
   - name: namespace
     value: istio-system
   - name: ingressGateway
+    empty: allow
+    env: ISTIO_GATEWAY
     # default works well if we have only one instance of an istio
-    value: ingressgateway
+    # value: ingressgateway
+- name: component.etcd.url
+  empty: allow
 - name: component.external-dns
   parameters:
   - name: namespace
@@ -55,21 +58,17 @@ parameters:
   - name: name
     value: external-dns
     env: COMPONENT_NAME
-  - name: cloud
-    empty: allow
-    parameters:
-    - name: region
   - name: provider
-    value: coredns
+    value: aws
     env: PROVIDER
+  - name: cloud.region
+    empty: allow
   - name: chart.name
     value: "stable/external-dns"
     env: CHART_NAME
-  - name: aws
-    empty: allow
-    parameters:
-    - name: accessKey
-    - name: secretKey
+  - name: chart.version
+    value: 2.15.1
+    env: CHART_VERSION
   - name: rfc2136
     empty: allow
     parameters:
@@ -82,17 +81,10 @@ parameters:
     - name: tsig.secret-alg
       value: hmac-sha256
 
-# alias for CEL expression
-# - name: externaldns.awsAccessKeyId
-#   value: ${component.external-dns.aws.accessKeyId}
-# - name: component.external-dns.provider
-#   value: '#{size(externaldns.awsAccesKeyId) > 1 ? "aws" : "rfc2136"}'
-#   env: SERVICE_PROVIDER
-
 templates:
   files:
     - "examples/*.template"
     - "aws/*.template"
-    - "hybrid/*.template"
-    - "metal/*.template"
-    - "./*.template"
+    - "coredns/*.template"
+    - "rfc2136/*.template"
+    - "*.template"

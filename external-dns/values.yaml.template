@@ -8,7 +8,7 @@ sources:
 # - service
 - ingress
 - crd
-- istio-gateway
+# - istio-gateway
 
 policy: sync
 domainFilters:
