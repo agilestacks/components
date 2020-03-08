@@ -9,6 +9,7 @@ helm             := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kub
 aws              := aws --output=text
 rsync            := rsync -arvp
 kubectl          := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+COMPONENT_NAME   ?= $(error COMPONENT_NAME cannot be empty)
 
 $(HELM_HOME):
 	@ mkdir -p "$@"
@@ -17,11 +18,12 @@ init: $(HELM_HOME) $(CHART_DIR)
 	@ $(helm) init --client-only --upgrade
 
 HELM_OPTS += --values $(abspath values.yaml)
-ifneq ($(ISTIO_GATEWAY),)
+ifneq (,$(filter istio,$(HUB_PROVIDES)))
 HELM_OPTS += --set 'sources=$(shell $(yq) read -j values.yaml | $(jq) '.sources + ["istio-gateway"] | unique')'
+HELM_OPTS += --set 'istioIngressGateways=["$(ISTIO_NAMESPACE)/$(ISTIO_GATEWAY)"]'
 endif
 
-$(CHART_DIR): $(PROVIDER)
+$(CHART_DIR):
 	rm -rf $@
 	$(helm) fetch $(CHART_NAME) \
 		--version $(shell cat $</chart-version.txt 2>/dev/null || echo $(CHART_VERSION)) \
@@ -32,13 +34,11 @@ purge:
 	- $(helm) delete --purge $(COMPONENT_NAME)
 
 $(PROVIDER):
-	$(error Provider: $@ is not yet supported)
+	$(helm) ls -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
+		make -C "$@" install
 
-install: $(PROVIDER)
-	make -C "$<" $@
-
-deploy:   init install
+deploy:   init $(PROVIDER)
 undeploy: init purge
 
-.PHONY: deploy purge undeploy install init $(CHART_DIR)
-.EXPORT_ALL_VARIABLES: install 
+.PHONY: deploy purge undeploy $(PROVIDER) init $(CHART_DIR)
+.EXPORT_ALL_VARIABLES: $(PROVIDER) 

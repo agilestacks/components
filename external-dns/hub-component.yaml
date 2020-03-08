@@ -43,6 +43,7 @@ parameters:
   parameters:
   - name: namespace
     value: istio-system
+    env: ISTIO_NAMESPACE
   - name: ingressGateway
     empty: allow
     env: ISTIO_GATEWAY

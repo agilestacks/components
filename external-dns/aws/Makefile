@@ -10,13 +10,14 @@ ifeq ($(ROLE_ARN),)
 $(error Cannot find role by tags: superhub.io/stack/$(DOMAIN_NAME) and superhub.io/role/kind=worker)
 endif
 
-install: HELM_OPTS += --values $(abspath .)/values.yaml
-install: HELM_OPTS += --set 'aws.assumeRoleArn=$(ROLE_ARN)'
-install:
-	$(helm) ls -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
-		$(helm) install $(CHART_DIR) \
-			--name $(COMPONENT_NAME) \
-			--namespace $(NAMESPACE) \
-			--wait $(HELM_OPTS)
+HELM_OPTS += --values $(abspath values.yaml)
+HELM_OPTS += --set 'aws.assumeRoleArn=$(ROLE_ARN)'
 
+install:
+	$(helm) install $(CHART_DIR) \
+		--name $(COMPONENT_NAME) \
+		--namespace $(NAMESPACE) \
+		--wait $(HELM_OPTS)
+
+.DEFAULT_GOAL: install
 .PHONY: install
