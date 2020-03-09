@@ -1,0 +1,41 @@
+---
+version: 1
+kind: component
+meta:
+  name: service-account
+  brief: Kubernetes Service Account & Role
+  source:
+    dir: ../../components/service-account
+
+requires:
+  - kubernetes
+
+parameters:
+- name: dns.domain
+  env:  DOMAIN_NAME
+- name: component.serviceAccount
+  parameters:
+  - name: name
+    env: SA
+    value: my-service-account
+  - name: namespace
+    env: NAMESPACE
+    value: automation-tasks
+  - name: role
+    env: ROLE
+    value: |
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: Role
+      metadata:
+        name: ${component.serviceAccount.name}-role
+      rules:
+      - apiGroups: [""]
+        resources: ["pods", "pods/status", "pods/log"]
+        verbs: ["get", "list", "watch"]
+      - apiGroups: ["batch"]
+        resources: ["jobs", "jobs/status"]
+        verbs: ["get", "list", "watch", "create"]
+
+outputs:
+  - name: component.serviceAccount.token
+    fromTfVar: sa_token
