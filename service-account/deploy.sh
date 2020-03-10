@@ -1,4 +1,5 @@
 #!/bin/sh
+HUB=${HUB:-hub}
 echo "$ROLE" > role.yaml
 kubectl --context="$DOMAIN_NAME" -n "$NAMESPACE" create serviceaccount "$SA"
 kubectl --context="$DOMAIN_NAME" -n "$NAMESPACE" apply -f role.yaml
@@ -10,5 +11,5 @@ TOKEN=$(kubectl --context="$DOMAIN_NAME" -n "$NAMESPACE" \
 echo
 echo Outputs:
 echo
-echo sa_token = "$TOKEN"
+echo sa_token = "$TOKEN" | $HUB util otp
 echo
