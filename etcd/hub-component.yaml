@@ -31,8 +31,13 @@ lifecycle:
 parameters:
   - name: cloud.region
     env:  AWS_DEFAULT_REGION
+    empty: allow
   - name: dns.domain
     env:  DOMAIN_NAME
+  - name: terraform.bucket.name
+    empty: allow
+  - name: terraform.bucket.region
+    empty: allow
   - name: component.etcd
     parameters:
     - name:  namespace
@@ -63,13 +68,16 @@ parameters:
     - name:  backup.bucket
       value: ${terraform.bucket.name}
       env:   BACKUP_BUCKET
+      empty: allow
     - name:  backup.region
       value: ${terraform.bucket.region}
       env:   BACKUP_REGION
+      empty: allow
     - name:  backup.enabled
       brief: Enable backups
       value: false
       env:   BACKUP_ENABLED
+      empty: allow
     - name:  restore.enabled
       brief: Enable restore
       value: false

@@ -45,7 +45,7 @@ parameters:
       env: TF_VAR_name
     - name: instance.size
       env: TF_VAR_instance_type
-      value: r4.large
+      value: r5.large
     - name: autoscaling.enabled
       value: false
       env: TF_VAR_autoscaling_enabled

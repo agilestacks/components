@@ -7,6 +7,9 @@ meta:
   source:
     dir: ../../components/namespace
 
+requires:
+  - kubernetes
+
 parameters:
 - name: dns.domain
   env:  DOMAIN_NAME

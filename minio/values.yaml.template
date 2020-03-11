@@ -120,7 +120,7 @@ gcsgateway:
   projectId: ""
 
 ingress:
-  enabled: true
+  enabled: ${component.minio.ingress.enabled}
   annotations: {}
   path: /
   hosts:

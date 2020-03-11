@@ -42,7 +42,7 @@ install: $(CHART_DIR)
 			--namespace $(NAMESPACE) \
 			--wait \
 			--values $(abspath ..)/values.yaml \
-			--values $(abspath .)/values.yaml
+			--values $(abspath .)/values-$(PROVIDER).yaml
 
 clean:
 	rm -rf $(CHART_DIR)

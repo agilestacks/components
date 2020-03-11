@@ -17,9 +17,9 @@ SECRET         := $(COMPONENT_NAME)
 ACCESS_KEY_REF ?= accesskey
 SECRET_KEY_REF ?= secretkey
 
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-jq      ?= jq -Ms
+kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+jq      := jq -Ms
 
 CHART_VERSION    ?= 1.6.4
 
@@ -74,7 +74,8 @@ fetch:
 		--version $(CHART_VERSION)
 
 namespace:
-	- $(kubectl) create namespace $(NAMESPACE)
+	$(kubectl) get $@ $(NAMESPACE) > /dev/null || \
+		$(kubectl) create $@ $(NAMESPACE)
 
 wait:
 	sleep 10
@@ -96,11 +97,11 @@ install: namespace
 			--wait
 
 configure:
-	@ $(mc) --insecure config host add $(ALIAS) \
+	- @ $(mc) --insecure config host add $(ALIAS) \
 		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
 		$(ACCESS_KEY) $(SECRET_KEY) \
 		S3v4
-	@ $(mc) --insecure config host list
+	- @ $(mc) --insecure config host list
 
 unconfigure:
 	- $(mc) config host rm $(ALIAS)

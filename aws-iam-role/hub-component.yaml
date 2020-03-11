@@ -1,0 +1,122 @@
+---
+version: 1
+kind: component
+meta:
+  name: aws-iam-role
+  brief: AWS IAM role
+  source:
+    dir: ../../components/aws-iam-role
+
+requires:
+  - aws
+provides:
+  - aws-iam-role
+
+parameters:
+  - name: cloud.region
+    env: AWS_DEFAULT_REGION
+  - name: terraform.bucket.name
+    env: STATE_BUCKET
+  - name: terraform.bucket.region
+    env: STATE_REGION
+  - name: dns.name
+    env: NAME
+  - name: dns.baseDomain
+    env: BASE_DOMAIN
+
+  - name: component.awsIamRole
+    parameters:
+      - name: name
+        env: TF_VAR_name
+        value: my-role
+      - name: tags
+        env: TF_VAR_tags
+        value: >
+          {
+            "kubernetes.io/cluster/${dns.name}-${dns.baseDomain}"="owned",
+            "superhub.io/stack/${dns.name}.${dns.baseDomain}"="owned",
+            "superhub.io/role/kind"="master"
+          }
+      - name: policy
+        env: TF_VAR_policy
+        value: >
+          "{
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "ec2:*",
+                  "elasticloadbalancing:*",
+                  "route53:*",
+                  "s3:*",
+                  "sts:*",
+                  "dynamodb:*"
+                ],
+                "Resource": ["*"]
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "ecr:CompleteLayerUpload",
+                  "ecr:UploadLayerPart",
+                  "ecr:InitiateLayerUpload",
+                  "ecr:GetAuthorizationToken",
+                  "ecr:BatchCheckLayerAvailability",
+                  "ecr:GetDownloadUrlForLayer",
+                  "ecr:GetRepositoryPolicy",
+                  "ecr:DescribeRepositories",
+                  "ecr:ListImages",
+                  "ecr:BatchGetImage",
+                  "ecs:CreateCluster",
+                  "ecs:DeregisterContainerInstance",
+                  "ecs:DiscoverPollEndpoint",
+                  "ecs:Poll",
+                  "ecs:RegisterContainerInstance",
+                  "ecs:StartTelemetrySession",
+                  "ecs:Submit*",
+                  "sts:AssumeRole",
+                  "tag:GetResources",
+                  "tag:TagResources"
+                ],
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action" : [
+                  "autoscaling:DescribeAutoScalingGroups",
+                  "autoscaling:DescribeAutoScalingInstances",
+                  "autoscaling:DescribeTags",
+                  "autoscaling:DescribeLaunchConfigurations",
+                  "autoscaling:SetDesiredCapacity",
+                  "autoscaling:TerminateInstanceInAutoScalingGroup"
+                ],
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "waf-regional:GetWebACLForResource",
+                  "waf-regional:GetWebACL",
+                  "waf-regional:AssociateWebACL",
+                  "waf-regional:DisassociateWebACL"
+                ],
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action" : [
+                  "iam:CreateServiceLinkedRole"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }"
+
+outputs:
+  - name: component.awsIamRole.name
+    value: ${component.awsIamRole.name}
+  - name: component.awsIamRole.nameArn
+    fromTfVar: role_arn
+
+

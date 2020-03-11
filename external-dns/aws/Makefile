@@ -14,7 +14,7 @@ CHART_VERSION    := 2.15.1
 
 CHART_DIR        := $(HELM_HOME)/charts/$(notdir $(CHART_NAME))
 ROLE_ARN         := $(shell $(aws-role-by-tag) \
-							--filter "$(CLUTER_NAME)" \
+							--filter "$(CLUSTER_NAME)" \
 							--tag superhub.io/role/kind=worker \
 							--tag superhub.io/stack/$(DOMAIN_NAME))
 

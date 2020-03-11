@@ -122,9 +122,12 @@ parameters:
       env: DEFAULT_BUCKET
     - name: default.bucket.policy
       value: public
+    - name: ingress.enabled
+      value: true
     - name: ingress.baseDomain
       value: ${component.ingress.fqdn}
       env: INGRESS_DOMAIN
+      empty: allow
     - name: webhook
       parameters:
       - name: enabled

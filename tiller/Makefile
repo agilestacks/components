@@ -3,8 +3,8 @@
 DOMAIN_NAME ?= dev.kubernetes.delivery
 NAMESPACE   ?= kube-system
 
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="$(NAMESPACE)"
+kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="$(NAMESPACE)"
 
 deploy: wait_rbac init wait
 
