@@ -56,7 +56,7 @@ STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$(STATE_BUCKET)" \
 deploy: init plan apply
 undeploy: init destroy apply
 else ifeq ($(CLOUD_KIND),metal)
-deploy: 
+deploy:
 	$(kubectl) apply -f $(CLOUD_KIND)
 undeploy:
 	$(kubectl) delete -f $(CLOUD_KIND)
@@ -105,9 +105,6 @@ install:
 	$(kubectl) apply -f kubernetes/service-api.yaml
 	$(kubectl) apply -f kubernetes/$(INGRESS).yaml
 	$(kubectl) apply -f kubernetes/auth-operator.yaml
-
-dnsendpoint:
-	$(kubectl) apply -f kubernetes/dns-endpoint.yaml
 
 undeploy: uninstall
 

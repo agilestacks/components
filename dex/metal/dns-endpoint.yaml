@@ -1,0 +1,11 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: dex
+spec:
+  endpoints:
+  - dnsName: auth.rick03.dev.superhub.io
+    recordTTL: 180
+    recordType: CNAME
+    targets:
+    - a9d5639a2656d11eaa72d0a515c1bcae-1469665431.eu-central-1.elb.amazonaws.com
