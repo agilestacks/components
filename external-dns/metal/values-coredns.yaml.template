@@ -1,3 +1,0 @@
-provider: coredns
-coredns:
-  etcdEndpoints: ${component.etcd.url}
