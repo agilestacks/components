@@ -141,7 +141,7 @@ variable "on_demand_base_capacity" {
 
 variable "on_demand_percentage_above_base_capacity" {
   type    = string
-  default = "100"
+  default = "0" # the default is 100, yet we want spot instances thus 0
 }
 
 variable "spot_allocation_strategy" {
