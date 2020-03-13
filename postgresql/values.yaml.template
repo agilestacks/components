@@ -298,10 +298,7 @@ master:
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-and-tolerations-beta-feature
   nodeSelector: {}
   affinity: {}
-  tolerations:
-    - key: node-role.kubernetes.io/master
-      effect: NoSchedule
-      operator: Exists
+  tolerations: {}
   labels: {}
   annotations: {}
   podLabels: {}
