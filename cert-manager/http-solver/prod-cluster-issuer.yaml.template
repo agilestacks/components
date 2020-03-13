@@ -15,6 +15,3 @@ spec:
     # Enable the HTTP-01 challenge provider
     - http01:
         ingress: {}
-    - dns01:
-        route53:
-          region: ${cloud.region}

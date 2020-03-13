@@ -7,7 +7,8 @@ HELM_CHART     ?= jetstack/cert-manager
 CHART_VERSION  ?= v0.12.0
 TAG            ?= release-0.12
 KUBE_FLAVOR    ?=
-
+WAIT_TIMEOUT   ?= 180
+LETSENCRYPT_SOLVER ?= http
 export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
@@ -15,12 +16,11 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 ADDITIONAL_VALUES :=
 
-deploy: clean init fetch purge crds install
+deploy: clean init fetch purge crds install issuer
 ifeq ($(KUBE_FLAVOR),openshift)
 deploy: openshift
 ADDITIONAL_VALUES := --values values-openshift.yaml
 endif
-deploy: issuer
 ifeq ($(CA_ISSUER_ENABLED),true)
 deploy: ca-issuer
 endif
@@ -74,13 +74,24 @@ openshift:
 	$(kubectl) apply -f cert-manager-openshift-rbac-patch.yaml
 .PHONY: openshift
 
-issuer:
-	for i in $$(seq 1 24); do \
-		if $(kubectl) apply -f prod-cluster-issuer.yaml; then exit 0; fi; \
-		sleep 5; \
+GREP_CMD := $(kubectl) get crds | grep clusterissuers.cert-manager.io
+wait-crds:
+	$(eval timeout        := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
+	@ echo "Waiting for $(COMPONENT_NAME) to create clusterissuers CRDs"
+	$(eval current_time   := date +%s)
+	while [ `$(current_time)` -le "$(timeout)" ]; do \
+		if $(GREP_CMD); then \
+			echo "Ready!"; \
+			exit 0; \
+		fi;  \
+		echo "Still waiting..."; \
+		sleep 6; \
 	done; \
-	exit 1
-	$(kubectl) apply -f staging-cluster-issuer.yaml
+	echo "ERROR timeout $(WAIT_TIMEOUT) seconds"; \
+	exit 1;
+
+issuer: wait-crds
+	$(kubectl) apply -f $(LETSENCRYPT_SOLVER)-solver/
 .PHONY: issuer
 
 ca-issuer:

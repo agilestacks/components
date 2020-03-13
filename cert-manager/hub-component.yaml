@@ -23,6 +23,10 @@ provides:
 parameters:
 - name: cloud.region # for DNS01 ACME solver
   value: us-east-1
+- name: cloud.aws.secretKey
+  empty: allow
+- name: cloud.aws.accessKey
+  empty: allow
 - name: dns.domain
   env: DOMAIN_NAME
 - name: kubernetes.flavor
@@ -52,6 +56,9 @@ parameters:
       value: ca-issuer
     - name: key
     - name: cert
+  - name: solver
+    value: http
+    env: LETSENCRYPT_SOLVER
 # alias for CEL expression
 - name: certmanager.caIssuer.key
   value: ${component.cert-manager.caIssuer.key}

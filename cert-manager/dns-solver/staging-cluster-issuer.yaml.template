@@ -13,8 +13,10 @@ spec:
       name: letsencrypt-staging
     solvers:
     # Enable the HTTP-01 challenge provider
-    - http01:
-        ingress: {}
     - dns01:
         route53:
           region: ${cloud.region}
+          accessKeyID: ${cloud.aws.accessKey}
+          secretAccessKeySecretRef:
+            name: solver-aws-secret-key
+            key: secret-access-key
