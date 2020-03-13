@@ -128,8 +128,8 @@ templates:
   files:
   - "aws/*.template"
   - "aws/*/*.template"
-  - "hybrid/*.template"
-  - "hybrid/*/*.template"
+  - "metal/*.template"
+  - "metal/*/*.template"
   - "gcp/*.template"
   - "gcp/*/*.template"
   - "azure/*.template"

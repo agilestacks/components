@@ -7,7 +7,8 @@
 /aws/storage-class.yaml
 /aws/values-harbor.yam
 /aws/values-nginx.yam
-/hybrid/local/values-harbor.yaml
-/hybrid/minio/values-harbor.yaml
-/hybrid/values-harbor.yam
-/hybrid/values-nginx.yam
+/metal/local/values-harbor.yaml
+/metal/minio/values-harbor.yaml
+/metal/values-harbor.yam
+/metal/values-nginx.yam
+**/values.yaml
