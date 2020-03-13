@@ -73,3 +73,5 @@ outputs:
 templates:
   files:
   - "*.template"
+  - "dns-solver/*.template"
+  - "http-solver/*.template"
