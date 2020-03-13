@@ -1,9 +1,7 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= dex
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= kube-system
-HUB_PROVIDES   ?=
 
 STATE_BUCKET    ?= terraform.agilestacks.com
 STATE_REGION    ?= us-east-1
@@ -32,27 +30,38 @@ else
 	INGRESS:=ingress
 endif
 
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
-deploy: clean init plan apply install
+deploy: clean install
 
-ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
+ifneq (,$(filter $(CLOUD_KIND),aws))
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate" \
 				-backend-config="profile=$(AWS_PROFILE)"
+deploy: init plan apply
+undeploy: init destroy apply
 else ifeq ($(CLOUD_KIND),gcp)
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="prefix=$(DOMAIN_NAME)/$(COMPONENT_NAME)" \
 				-backend-config="credentials=$(GOOGLE_APPLICATION_CREDENTIALS)"
+deploy: init plan apply
+undeploy: init destroy apply
 else ifeq ($(CLOUD_KIND),azure)
 STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$(STATE_BUCKET)" \
 				-backend-config="container_name=$(STATE_CONTAINER)" \
 				-backend-config="resource_group_name=$(TF_VAR_azure_resource_group_name)" \
 				-backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate"
+deploy: init plan apply
+undeploy: init destroy apply
+else ifeq ($(CLOUD_KIND),metal)
+deploy: 
+	$(kubectl) apply -f $(CLOUD_KIND)
+undeploy:
+	$(kubectl) delete -f $(CLOUD_KIND)
 else
-$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, hybrid)
+$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, metal)
 endif
 
 $(TF_DATA_DIR):
@@ -97,7 +106,10 @@ install:
 	$(kubectl) apply -f kubernetes/$(INGRESS).yaml
 	$(kubectl) apply -f kubernetes/auth-operator.yaml
 
-undeploy: init destroy apply uninstall
+dnsendpoint:
+	$(kubectl) apply -f kubernetes/dns-endpoint.yaml
+
+undeploy: uninstall
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
@@ -118,3 +130,4 @@ clean:
 	rm -rf $(TF_DATA_DIR)
 
 -include ../Mk/phonies
+.IGNORE: undeploy
