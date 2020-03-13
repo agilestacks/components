@@ -4,7 +4,7 @@ kind: component
 meta:
   category: Networking
   name: external-dns
-  title: ExternalDNS
+  title: External DNS
   description: >
     Kubernetes addon that configures DNS servers
     with information about exposed Kubernetes
