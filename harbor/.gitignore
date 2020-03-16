@@ -11,4 +11,6 @@
 /metal/minio/values-harbor.yaml
 /metal/values-harbor.yam
 /metal/values-nginx.yam
+/metal/storage-class.yaml
 **/values.yaml
+**/.helm

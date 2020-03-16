@@ -8,7 +8,6 @@ CHART_VERSION  ?= v0.12.0
 TAG            ?= release-0.12
 KUBE_FLAVOR    ?=
 WAIT_TIMEOUT   ?= 180
-LETSENCRYPT_SOLVER ?= http
 export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
@@ -91,12 +90,11 @@ wait-crds:
 	exit 1;
 
 issuer: wait-crds
-	$(kubectl) apply -f $(LETSENCRYPT_SOLVER)-solver/
+	$(kubectl) apply -f solvers
 .PHONY: issuer
 
 ca-issuer:
-	$(kubectl) apply -f ca-issuer-keys.yaml
-	$(kubectl) apply -f ca-cluster-issuer.yaml
+	$(kubectl) apply -f internal-ca
 .PHONY: ca-issuer
 
 undeploy: init
