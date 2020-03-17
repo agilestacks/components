@@ -23,6 +23,8 @@ export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+
 
 ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
 	INGRESS:=ingress-tls
@@ -30,39 +32,34 @@ else
 	INGRESS:=ingress
 endif
 
-kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-
 deploy: clean install
 
-ifneq (,$(filter $(CLOUD_KIND),aws))
+# If external-dns is present, then we rely on our ingress to create the 'auth' subdomain.
+# Otherewise we use terraform
+ifeq (,$(filter external-dns,$(HUB_PROVIDES)))
+deploy: init plan apply
+undeploy: init destroy apply
+endif
+
+ifeq ($(CLOUD_KIND),aws)
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate" \
 				-backend-config="profile=$(AWS_PROFILE)"
-deploy: init plan apply
-undeploy: init destroy apply
 else ifeq ($(CLOUD_KIND),gcp)
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="prefix=$(DOMAIN_NAME)/$(COMPONENT_NAME)" \
 				-backend-config="credentials=$(GOOGLE_APPLICATION_CREDENTIALS)"
-deploy: init plan apply
-undeploy: init destroy apply
 else ifeq ($(CLOUD_KIND),azure)
 STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$(STATE_BUCKET)" \
 				-backend-config="container_name=$(STATE_CONTAINER)" \
 				-backend-config="resource_group_name=$(TF_VAR_azure_resource_group_name)" \
 				-backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate"
-deploy: init plan apply
-undeploy: init destroy apply
-else ifeq ($(CLOUD_KIND),metal)
-deploy:
-	$(kubectl) apply -f $(CLOUD_KIND)
-undeploy:
-	$(kubectl) delete -f $(CLOUD_KIND)
-else
+else ifneq ($(CLOUD_KIND),metal)
 $(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, metal)
 endif
+
 
 $(TF_DATA_DIR):
 	@mkdir -p $@
