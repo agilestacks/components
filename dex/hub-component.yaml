@@ -57,6 +57,9 @@ parameters:
     value: '#{matches(component.ingress.loadBalancer, r"^[\d.]+$") ? "A" : "CNAME"}'
     env: TF_VAR_load_balancer_dns_record_type
 
+  - name: component.dex.name
+    value: dex
+    env: COMPONENT_NAME
   - name: component.dex.urlPrefix
     value: auth
     env: TF_VAR_url_prefix
@@ -99,4 +102,5 @@ outputs:
 
 templates:
   files:
-    - "kubernetes/*.yaml.template"
+    - "kubernetes/*.template"
+    - "metal/*.template"

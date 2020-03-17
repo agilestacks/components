@@ -1,7 +1,7 @@
 apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-staging
+  name: letsencrypt-staging-default
 spec:
   acme:
     # The ACME server URL
@@ -10,7 +10,7 @@ spec:
     email: ${component.cert-manager.issuerEmail}
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
-      name: letsencrypt-staging
+      name: letsencrypt-staging-default
     solvers:
     # Enable the HTTP-01 challenge provider
     - http01:

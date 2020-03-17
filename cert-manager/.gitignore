@@ -1,5 +1,7 @@
 /.helm
 /charts
-/*-issuer*.yaml
+**/*-issuer*.yaml
 /namespace.yaml
 /values.yaml
+**/solver-aws-secret-key.yaml
+

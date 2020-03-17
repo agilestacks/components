@@ -23,6 +23,12 @@ provides:
 parameters:
 - name: cloud.region # for DNS01 ACME solver
   value: us-east-1
+- name: cloud.kind
+  env: CLOUD_KIND
+- name: cloud.aws.secretKey
+  value: place-holder
+- name: cloud.aws.accessKey
+  value: place-holder
 - name: dns.domain
   env: DOMAIN_NAME
 - name: kubernetes.flavor
@@ -39,9 +45,7 @@ parameters:
   - name: issuerEmail
     value: admin@superhub.io
   - name: defaultIssuerName
-    value: letsencrypt-prod
-   #value: letsencrypt-staging
-   #value: ca-issuer
+    value: letsencrypt-prod-default
   - name: defaultIssuerKind
     value: ClusterIssuer
    #value: Issuer
@@ -66,3 +70,5 @@ outputs:
 templates:
   files:
   - "*.template"
+  - "solvers/*.template"
+  - "internal-ca/*.template"
