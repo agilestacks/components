@@ -17,34 +17,34 @@ meta:
     dir: ../../components/postgresql
 
 requires:
-  - kubernetes
-  - helm
-  - tiller
+- kubernetes
+- helm
+- tiller
 provides:
-  - postgresql
+- postgresql
 
 parameters:
-  - name: dns.domain
-    env: DOMAIN_NAME
-  - name: component.postgresql
-    parameters:
-    - name: version
-      value: 11.6.0-debian-9-r0
-    - name:  name
-      value: postgresql-${dns.name}-${hub.componentName}
-      env:   COMPONENT_NAME
-    - name:  namespace
-      value: postgresql
-      env:   NAMESPACE
-    - name:  user
-    - name:  password
-    - name:  database
-    - name:  volumeSize
-      value: 8Gi
-    - name:  storageClass
-      value: default
-    - name:  port
-      value: 5432
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.postgresql
+  parameters:
+  - name: version
+    value: 11.6.0-debian-9-r0
+  - name:  name
+    value: postgresql-${dns.name}-${hub.componentName}
+    env:   COMPONENT_NAME
+  - name:  namespace
+    value: postgresql
+    env:   NAMESPACE
+  - name:  user
+  - name:  password
+  - name:  database
+  - name:  volumeSize
+    value: 8Gi
+  - name:  storageClass
+    value: default
+  - name:  port
+    value: 5432
 
 outputs:
 - name: component.postgresql.host
