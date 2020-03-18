@@ -45,6 +45,8 @@ parameters:
     value: default
   - name:  port
     value: 5432
+  - name: kubernetes.tolerations
+    value: '[]'
 
 outputs:
 - name: component.postgresql.host
