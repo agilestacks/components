@@ -67,3 +67,17 @@ parameters:
     - name: aws.spotPrice
       env: TF_VAR_spot_price
       empty: allow
+    - name: mixed
+      parameters:
+      - name: onDemandBaseCapacity
+        value: 0
+        env: TF_VAR_on_demand_base_capacity
+      - name: onDemandPercentageAboveBaseCapacity
+        value: 0
+        env: TF_VAR_on_demand_percentage_above_base_capacity
+      - name: spotAllocationStrategy
+        value: lowest-price
+        env: TF_VAR_spot_allocation_strategy
+      - name: spotInstancePools
+        value: 2
+        env: TF_VAR_spot_instance_pools
