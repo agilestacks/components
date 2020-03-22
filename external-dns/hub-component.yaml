@@ -68,7 +68,7 @@ parameters:
     value: "stable/external-dns"
     env: CHART_NAME
   - name: chart.version
-    value: 2.20.3
+    value: 2.15.1
     env: CHART_VERSION
   - name: rfc2136
     empty: allow
