@@ -23,7 +23,9 @@ endif
 ifeq ($(CA_ISSUER_ENABLED),true)
 deploy: ca-issuer
 endif
-
+ifeq ($(AWS_DNS_CREDENTIALS_ENABLED),true)
+deploy: aws-dns-key
+endif
 init:
 	@mkdir -p $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
@@ -90,12 +92,19 @@ wait-crds:
 	exit 1;
 
 issuer: wait-crds
-	$(kubectl) apply -f solvers
+	$(kubectl) apply -f solvers/prod-cluster-default-issuer.yaml
+	$(kubectl) apply -f solvers/staging-cluster-default-issuer.yaml
 .PHONY: issuer
 
 ca-issuer:
 	$(kubectl) apply -f internal-ca
 .PHONY: ca-issuer
+
+aws-dns-key: issuer
+	$(kubectl) apply -f solvers/solver-aws-secret-key.yaml
+	$(kubectl) apply -f solvers/prod-cluster-dns-issuer.yaml
+	$(kubectl) apply -f solvers/staging-cluster-dns-issuer.yaml
+.PHONY: aws-dns-key
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \

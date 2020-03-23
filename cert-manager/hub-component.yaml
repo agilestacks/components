@@ -26,9 +26,9 @@ parameters:
 - name: cloud.kind
   env: CLOUD_KIND
 - name: cloud.aws.secretKey
-  value: place-holder
+  empty: allow
 - name: cloud.aws.accessKey
-  value: place-holder
+  empty: allow
 - name: dns.domain
   env: DOMAIN_NAME
 - name: kubernetes.flavor
@@ -62,6 +62,11 @@ parameters:
 - name: component.cert-manager.caIssuer.enabled
   value: '#{size(certmanager.caIssuer.key) > 1}'
   env: CA_ISSUER_ENABLED
+- name: certmanager.awsDnsCredentials.accessKey
+  value: ${cloud.aws.accessKey}
+- name: component.cert-manager.awsDnsCredentials.enabled
+  value: '#{size(certmanager.awsDnsCredentials.accessKey) > 1}'
+  env: AWS_DNS_CREDENTIALS_ENABLED
 
 outputs:
 - name: component.tls.kind
