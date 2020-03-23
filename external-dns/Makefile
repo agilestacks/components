@@ -10,12 +10,13 @@ aws              := aws --output=text
 rsync            := rsync -arvp
 kubectl          := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 COMPONENT_NAME   ?= $(error COMPONENT_NAME cannot be empty)
-
+CHART_VERSION    ?= 2.20.6
 $(HELM_HOME):
 	@ mkdir -p "$@"
 
 init: $(HELM_HOME)
 	@ $(helm) init --client-only --upgrade
+	@ $(helm) repo add bitnami https://charts.bitnami.com/bitnami
 
 HELM_OPTS += --values $(abspath values.yaml)
 ifneq (,$(filter istio,$(HUB_PROVIDES)))
@@ -26,7 +27,7 @@ endif
 $(CHART_DIR):
 	rm -rf $@
 	$(helm) fetch $(CHART_NAME) \
-		--version $(shell cat $</chart-version.txt 2>/dev/null || echo $(CHART_VERSION)) \
+		--version $(CHART_VERSION) \
 		--untar --untardir $(dir $@)
 	$(rsync) --exclude-from='overrides/.cpignore' overrides/ $@
 

@@ -65,10 +65,11 @@ parameters:
   - name: cloud.region
     empty: allow
   - name: chart.name
-    value: "stable/external-dns"
+    value: "bitnami/external-dns"
     env: CHART_NAME
   - name: chart.version
-    value: 2.15.1
+    value: 2.20.6
+#    value: 2.15.1
     env: CHART_VERSION
   - name: rfc2136
     empty: allow
