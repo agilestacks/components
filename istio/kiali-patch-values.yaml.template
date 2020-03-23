@@ -1,0 +1,2 @@
+kiali:
+  prometheusAddr: http://${component.prometheus.name}-prometheus.${component.prometheus.namespace}.svc.cluster.local:9090

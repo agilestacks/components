@@ -44,6 +44,14 @@ parameters:
     env: STATE_REGION
   - name: terraform.bucket.name
     env: STATE_BUCKET
+  - name: component.prometheus
+    parameters:
+      - name: namespace
+        env: PROMETHEUS_NAMESPACE
+        empty: allow
+      - name: name
+        env: PROMETHEUS_NAME
+        empty: allow
   - name: component.istio
     parameters:
       - name: namespace
@@ -55,7 +63,7 @@ parameters:
       - name: tracing.enabled
         value: false
       - name: prometheus.enabled
-        value: true
+        value: false
       - name: grafana.enabled
         value: false
       - name: certmanager.enabled
@@ -95,4 +103,5 @@ outputs:
 
 templates:
   files:
+    - "prometheus-config/*.template"
     - "*.template"
