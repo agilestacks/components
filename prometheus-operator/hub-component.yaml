@@ -142,3 +142,5 @@ outputs:
   - name: component.prometheus.grafana.url
     brief: Grafana URL
     value: ${component.ingress.protocol}://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+  - name: component.prometheus.namespace
+  - name: component.prometheus.name
