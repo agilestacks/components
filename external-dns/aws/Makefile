@@ -4,10 +4,16 @@ aws-role-by-tag  := $(abspath ..)/bin/aws-role-by-tag
 ROLE_ARN         := $(shell $(aws-role-by-tag) \
 							--filter "$(CLUSTER_NAME)" \
 							--tag superhub.io/role/kind=worker \
+							--tag superhub.io/stack/$(DOMAIN_NAME) \
+							|| $(aws-role-by-tag) \
+							--tag superhub.io/role/kind=worker \
 							--tag superhub.io/stack/$(DOMAIN_NAME))
 
 ifeq ($(ROLE_ARN),)
-$(error Cannot find role by tags: superhub.io/stack/$(DOMAIN_NAME) and superhub.io/role/kind=worker)
+$(error Cannot find role by running: $(aws-role-by-tag) \
+	--filter "$(CLUSTER_NAME)" \
+	--tag superhub.io/role/kind=worker \
+	--tag superhub.io/stack/$(DOMAIN_NAME))
 endif
 
 HELM_OPTS += --values $(abspath values.yaml)
