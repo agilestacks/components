@@ -14,6 +14,8 @@ provides:
   - nfs
 
 parameters:
+- name: kubernetes.storage.defaultClass
+  env: DEFAULT_STORAGE_CLASS
 - name: component.nfs-client-provisioner
   parameters:
   - name: storageClass.name
@@ -27,6 +29,7 @@ parameters:
   - name: nfs.path
     env: NFS_MOUNT_PATH
   - name: nfs.mountOptions
-    empty: allow
+    value: "nfsvers=4.2,proto=tcp,port=2049"
+    env: NFS_MOUNT_OPTIONS
   - name: metrics.port
     value: 9091
