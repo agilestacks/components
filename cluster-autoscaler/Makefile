@@ -12,12 +12,13 @@ AUTOSCALER_1.18_VERSION := v1.18.0
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
+deploy: kube_version:=$(shell $(kubectl) version -o json | jq -r '.serverVersion | .major + "." + .minor')
 deploy:
 	$(kubectl) apply -f rbac.yaml
 	$(kubectl) apply -f service-account.yaml
 	$(kubectl) apply -f pod-disruption-budget.yaml
 	cat deployment.yaml | \
-		sed -E -e 's/(image: .*cluster-autoscaler:).*/\1$(AUTOSCALER_$(shell $(kubectl) version -o json | jq -r '.serverVersion | .major + "." + .minor')_VERSION)/' | \
+		sed -E -e 's/(image: .*cluster-autoscaler:).*/\1$(AUTOSCALER_$(kube_version)_VERSION)/' | \
 		$(kubectl) apply -f -
 
 undeploy:
