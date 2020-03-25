@@ -19,18 +19,15 @@ TLS_VALUES_FILE:=--values values-tls.yaml
 DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
 PROVIDES:=tls-ingress
 
-export HELM_HOME := $(shell pwd)/.helm
+export HELM_HOME          ?= $(shell pwd)/.helm
 
-jq      := jq -cMr
-helm    := helm --kube-context="$(KUBECONFIG_CONTEXT)" --tiller-namespace="kube-system"
-kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm        ?= helm --kube-context="$(KUBECONFIG_CONTEXT)" --tiller-namespace="kube-system"
 
 VALUES_FILE:=values.yaml
 
 
-deploy: clean init fetch patch install wait dns output
+deploy: clean init fetch install output
 undeploy: uninstall
-	- $(kubectl) delete dnsendpoints.externaldns.k8s.io $(COMPONENT)
 
 init:
 	@mkdir -p $(HELM_HOME) charts
@@ -41,13 +38,6 @@ fetch:
 		--destination charts \
 		--untar $(CHART) \
 		--version $(CHART_VERSION)
-
-# https://github.com/helm/charts/commit/0488c623ee045c90ac3d34a6e7803b3da83a2f62#diff-7085afc89c71e92e4515de4fe9ca0260
-# https://github.com/agilestacks/auth-operator/commit/a47a74dd75bf8133cf514f430581db2ca3a1fe00#diff-310eef67e361cf942a183144b1451b0bR166
-patch:
-	-@sed -i~ -e 's/servicePort: dashboard-http/servicePort: 80/' \
-	charts/traefik/templates/dashboard-ingress.yaml && \
-	rm -f charts/traefik/templates/dashboard-ingress.yaml~
 
 clean:
 	rm -rf $(HELM_HOME) charts
@@ -76,36 +66,8 @@ upgrade:
 		$(DASHBOARD_VALUES_FILE) \
 		--version $(CHART_VERSION)
 
-WAIT_TIMEOUT := 1800
-GET_IP_CMD := $(kubectl) get svc $(COMPONENT) -o json | jq -r .status.loadBalancer.ingress[0].ip
-wait:
-	$(eval timeout        := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
-	@ echo "Waiting for external ip to appear in svc/$(COMPONENT)"
-	$(eval EXTERNAL_IP = $(shell $(GET_IP_CMD)))
-	$(eval current_time   := date +%s)
-	while [ `$(current_time)` -le "$(timeout)" ]; do \
-		resp=`$(GET_IP_CMD)`; \
-		if test ! -z "$$resp"; then \
-			echo "Resolved to $$resp"; \
-			exit 0; \
-		fi;  \
-		echo "Still waiting..."; \
-		sleep 8; \
-	done; \
-	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
-	exit 1;
-
-dns:
-	cat dnsendpoint.yaml \
-	  | sed -e 's/__NAME__/$(COMPONENT)/g' \
-			-e 's/__EXTERNAL_IP__/$(shell $(GET_IP_CMD))/g' \
-			-e 's/__DOMAIN__/$(DOMAIN_NAME)/g' \
-			-e 's/__APP__/$(URL_PREFIX)/g' \
-			-e 's/__APPS__/$(SSO_URL_PREFIX)/g' \
-		| $(kubectl) apply -f -
-
 output:
-	$(eval LOAD_BALANCER = $(shell $(kubectl) -n ingress get svc $(COMPONENT) -o json | jq -r .status.loadBalancer.ingress[0].ip))
+	$(eval LOAD_BALANCER = $(shell kubectl -n ingress get svc $(COMPONENT) -o json | jq -r .status.loadBalancer.ingress[0].ip))
 	@echo
 	@echo Outputs:
 	@echo ingress_protocol = $(PROTOCOL)
@@ -119,6 +81,3 @@ output:
 uninstall:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT)$$' && \
 		$(helm) delete --purge $(COMPONENT)
-
-.PHONY: wait dns output
-.SILENT: dns
