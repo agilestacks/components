@@ -88,6 +88,7 @@ uninstall:
 	-$(kubectl) delete crd/prometheusrules.monitoring.coreos.com
 	-$(kubectl) delete crd/servicemonitors.monitoring.coreos.com
 	-$(kubectl) delete crd/podmonitors.monitoring.coreos.com
+	-$(kubectl) delete crd/thanosrulers.monitoring.coreos.com
 
 clean:
 	rm -rf $(HELM_HOME) charts/$(notdir $(HELM_CHART))
