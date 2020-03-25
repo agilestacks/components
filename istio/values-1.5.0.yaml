@@ -1,5 +1,5 @@
 kiali:
-  tag: v1.15
+  tag: v1.11
 
 global:
   hub: docker.io/istio

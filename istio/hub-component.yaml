@@ -14,7 +14,7 @@ meta:
     (configures scraping jobs, sets up Grafana dashboards
     to display various Istio metrics).
   category: Networking
-  version: 1.4.3
+  version: 1.5.0
   maturity: beta
   license: Apache 2.0
   source:
@@ -61,7 +61,7 @@ parameters:
         value: istio-system
         env: NAMESPACE
       - name: version.release
-        value: 1.4.3
+        value: 1.5.0
         env: ISTIO_VERSION
       - name: tracing.enabled
         value: false
