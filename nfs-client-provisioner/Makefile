@@ -16,7 +16,7 @@ deploy: sc
 endif
 
 ifneq (,$(NFS_MOUNT_OPTIONS))
-    SET_MOUNT_OPTIONS := "--set 'nfs.mountOptions={ $(shell echo $(NFS_MOUNT_OPTIONS) | sed 's/,/, /g' ) }'"
+    SET_MOUNT_OPTIONS := --set 'nfs.mountOptions={ $(shell echo $(NFS_MOUNT_OPTIONS) | sed 's/,/, /g' ) }'
 endif
 
 init:
