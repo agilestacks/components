@@ -48,21 +48,21 @@ label:
 
 dashboards-%:
 	$(kubectl-prometheus) create configmap grafana-dashboard-citadel \
-		--from-file=prometheus-config/dashboards/citadel-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f -
+		--from-file=prometheus-config/dashboards/citadel-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
 	$(kubectl-prometheus) create configmap grafana-dashboard-galley \
-		--from-file=prometheus-config/dashboards/galley-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f -
+		--from-file=prometheus-config/dashboards/galley-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
 	$(kubectl-prometheus) create configmap grafana-dashboard-istio-mesh \
-		--from-file=prometheus-config/dashboards/istio-mesh-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f -
+		--from-file=prometheus-config/dashboards/istio-mesh-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
 	$(kubectl-prometheus) create configmap grafana-dashboard-istio-performance \
-		--from-file=prometheus-config/dashboards/istio-performance-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f -
+		--from-file=prometheus-config/dashboards/istio-performance-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
 	$(kubectl-prometheus) create configmap grafana-dashboard-istio-service \
-		--from-file=prometheus-config/dashboards/istio-service-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f -
+		--from-file=prometheus-config/dashboards/istio-service-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
 	$(kubectl-prometheus) create configmap grafana-dashboard-istio-workload \
-		--from-file=prometheus-config/dashboards/istio-workload-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f -
+		--from-file=prometheus-config/dashboards/istio-workload-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
 	$(kubectl-prometheus) create configmap grafana-dashboard-mixer \
-		--from-file=prometheus-config/dashboards/mixer-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f -
+		--from-file=prometheus-config/dashboards/mixer-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
 	$(kubectl-prometheus) create configmap grafana-dashboard-pilot \
-		--from-file=prometheus-config/dashboards/pilot-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f -
+		--from-file=prometheus-config/dashboards/pilot-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
 
 
 configure-prometheus: dashboards-apply label
