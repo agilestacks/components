@@ -18,9 +18,8 @@ requires:
   - kubernetes
   - helm
   - tiller
-  - etcd
 provides:
-  - etcd-metal
+  - etcd
 
 parameters:
   - name: dns.domain
@@ -30,7 +29,7 @@ parameters:
     - name: version
       value: 0.10.3
     - name:  name
-      value: etcd-metal
+      value: etcd
       env:   COMPONENT_NAME
     - name:  namespace
       value: dns
@@ -41,8 +40,8 @@ parameters:
       value: 2379
 
 outputs:
-- name: component.etcd-metal.internal.url
-  value: http://etcd-metal.${component.etcd-metal.namespace}.svc.cluster.local:${component.etcd-metal.port}
+- name: component.etcd.internal.url
+  value: http://etcd${component.etcd-metal.namespace}.svc.cluster.local:${component.etcd-metal.port}
 
 templates:
   files:
