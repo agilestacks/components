@@ -30,7 +30,9 @@ parameters:
     value: 7655
   - name: localAddress
     value: 0.0.0.0
-  - name: publicPp
+  - name: apiServer
+    value: https://api.agilestacks.io
+  - name: publishIp
   - name: dataDir
     value: /var/lib/bootproxy
   - name: pathPrefix

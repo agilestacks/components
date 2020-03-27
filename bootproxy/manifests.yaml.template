@@ -15,46 +15,32 @@ spec:
       labels:
         app: bootproxy
     spec:
+      hostNetwork: true
       containers:
       - name: bootproxy
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
         image: {{component.bootproxy.image}}
         imagePullPolicy: Always
         env:
         - name: API_SERVER
-          value: {{component.bootproxy.api_server}}
+          value: {{component.bootproxy.apiServer}}
         - name: API_PATH_PREFIX
-          value: {{component.bootproxy.path_prefix}}
+          value: {{component.bootproxy.pathPrefix}}
         - name: BOOTPROXY_ID
           value: {{component.bootproxy.id}}
         - name: PROXY_PORT
-          value: {{component.bootproxy.proxy_port}}
+          value: {{component.bootproxy.proxyPort}}
         - name: PROXY_ADDRESS
-          value: {{component.bootproxy.local_address}}
+          value: {{component.bootproxy.localAddress}}
         - name: DATA_DIR
-          value: {{component.bootproxy.data_dir}}
+          value: {{component.bootproxy.dataDir}}
         - name: PUBLIC_IP
-          value: {{component.bootproxy.public_ip}}
-        ports:
-        - containerPort: {{component.bootproxy.dhcp_port}}
-          protocol: UDP
+          value: {{component.bootproxy.publicIp}}
         volumeMounts:
         - name: bootproxy-data
-          mountPath: {{component.bootproxy.data_dir}}
+          mountPath: {{component.bootproxy.dataDir}}
       volumes:
       - name: bootproxy-data
         emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: bootproxy
-  namespace: {{component.bootproxy.namespace}}
-  labels:
-    app: bootproxy
-spec:
-  ports:
-  - port: {{component.bootproxy.dhcp_port}}
-    targetPort: {{component.bootproxy.dhcp_port}}
-    protocol: UDP
-  selector:
-    app: bootproxy
