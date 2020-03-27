@@ -16,8 +16,6 @@ meta:
 
 requires:
   - kubernetes
-  - helm
-  - tiller
 provides:
   - etcd
 

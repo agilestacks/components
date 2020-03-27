@@ -16,8 +16,6 @@ meta:
 
 requires:
   - kubernetes
-  - helm
-  - tiller
   - etcd
 provides:
   - coredns
@@ -29,7 +27,7 @@ parameters:
     parameters:
     - name:  name
       value: coredns
-      env:   COMPONENT_NAME      
+      env:   COMPONENT_NAME
     - name: version
       value: 1.6.7
     - name: chart.version
