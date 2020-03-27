@@ -30,7 +30,7 @@ parameters:
     value: 7655
   - name: localAddress
     value: 0.0.0.0
-  - name: apiServer
+  - name: hubApiUrl
     value: https://api.agilestacks.io
   - name: publishIp
   - name: dataDir
