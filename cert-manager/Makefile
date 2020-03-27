@@ -76,22 +76,23 @@ openshift:
 .PHONY: openshift
 
 issuer:
-	for i in $$(seq 1 24); do \
-		if $(kubectl) apply -f solvers/prod-cluster-default-issuer.yaml; then exit 0; fi; \
-		sleep 5; \
+	for i in $$(seq 1 12); do \
+		if $(kubectl) apply -f issuers/prod-cluster-default-issuer.yaml; then exit 0; fi; \
+		sleep 10; \
 	done; \
 	exit 1
-	$(kubectl) apply -f solvers/staging-cluster-default-issuer.yaml
+	$(kubectl) apply -f issuers/staging-cluster-default-issuer.yaml
 .PHONY: issuer
 
 ca-issuer:
-	$(kubectl) apply -f internal-ca
+	$(kubectl) apply -f issuers/ca-issuer-keys.yaml
+	$(kubectl) apply -f issuers/ca-cluster-issuer.yaml
 .PHONY: ca-issuer
 
 aws-dns-key:
-	$(kubectl) apply -f solvers/solver-aws-secret-key.yaml
-	$(kubectl) apply -f solvers/prod-cluster-dns-issuer.yaml
-	$(kubectl) apply -f solvers/staging-cluster-dns-issuer.yaml
+	$(kubectl) apply -f issuers/solver-aws-secret-key.yaml
+	$(kubectl) apply -f issuers/prod-cluster-dns-issuer.yaml
+	$(kubectl) apply -f issuers/staging-cluster-dns-issuer.yaml
 .PHONY: aws-dns-key
 
 undeploy: init

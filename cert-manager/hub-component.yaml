@@ -75,5 +75,4 @@ outputs:
 templates:
   files:
   - "*.template"
-  - "solvers/*.template"
-  - "internal-ca/*.template"
+  - "issuers/*.template"

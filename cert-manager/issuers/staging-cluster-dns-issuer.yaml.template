@@ -12,7 +12,7 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-staging-dns
     solvers:
-    # Enable the HTTP-01 challenge provider
+    # Enable the DNS-01 challenge provider
     - dns01:
         route53:
           region: ${cloud.region}
