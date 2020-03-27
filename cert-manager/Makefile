@@ -75,24 +75,12 @@ openshift:
 	$(kubectl) apply -f cert-manager-openshift-rbac-patch.yaml
 .PHONY: openshift
 
-GREP_CMD := $(kubectl) get crds | grep clusterissuers.cert-manager.io
-wait-crds:
-	$(eval timeout        := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
-	@ echo "Waiting for $(COMPONENT_NAME) to create clusterissuers CRDs"
-	$(eval current_time   := date +%s)
-	while [ `$(current_time)` -le "$(timeout)" ]; do \
-		if $(GREP_CMD); then \
-			echo "Ready!"; \
-			exit 0; \
-		fi;  \
-		echo "Still waiting..."; \
-		sleep 6; \
+issuer:
+	for i in $$(seq 1 24); do \
+		if $(kubectl) apply -f solvers/prod-cluster-default-issuer.yaml; then exit 0; fi; \
+		sleep 5; \
 	done; \
-	echo "ERROR timeout $(WAIT_TIMEOUT) seconds"; \
-	exit 1;
-
-issuer: wait-crds
-	$(kubectl) apply -f solvers/prod-cluster-default-issuer.yaml
+	exit 1
 	$(kubectl) apply -f solvers/staging-cluster-default-issuer.yaml
 .PHONY: issuer
 
@@ -100,7 +88,7 @@ ca-issuer:
 	$(kubectl) apply -f internal-ca
 .PHONY: ca-issuer
 
-aws-dns-key: issuer
+aws-dns-key:
 	$(kubectl) apply -f solvers/solver-aws-secret-key.yaml
 	$(kubectl) apply -f solvers/prod-cluster-dns-issuer.yaml
 	$(kubectl) apply -f solvers/staging-cluster-dns-issuer.yaml
