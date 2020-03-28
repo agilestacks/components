@@ -25,7 +25,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: API_SERVER
-          value: {{component.bootproxy.apiServer}}
+          value: {{component.bootproxy.hubApiUrl}}
         - name: API_PATH_PREFIX
           value: {{component.bootproxy.pathPrefix}}
         - name: BOOTPROXY_ID
@@ -33,11 +33,11 @@ spec:
         - name: PROXY_PORT
           value: {{component.bootproxy.proxyPort}}
         - name: PROXY_ADDRESS
-          value: {{component.bootproxy.localAddress}}
+          value: {{component.bootproxy.listenAddr}}
         - name: DATA_DIR
           value: {{component.bootproxy.dataDir}}
         - name: PUBLIC_IP
-          value: {{component.bootproxy.publicIp}}
+          value: {{component.bootproxy.publishAddr}}
         volumeMounts:
         - name: bootproxy-data
           mountPath: {{component.bootproxy.dataDir}}

@@ -28,11 +28,11 @@ parameters:
     value: 67
   - name: proxyPort
     value: 7655
-  - name: localAddress
+  - name: listenAddr
     value: 0.0.0.0
   - name: hubApiUrl
     value: https://api.agilestacks.io
-  - name: publishIp
+  - name: publishAddr
   - name: dataDir
     value: /var/lib/bootproxy
   - name: pathPrefix
