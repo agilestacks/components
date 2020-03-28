@@ -38,9 +38,9 @@ parameters:
     value: /var/lib/bootproxy
   - name: pathPrefix
     value: "metal/api/v1"
+  - name: serviceAccount
   - name: image
     value: agilestacks/bootproxy:latest
-
 templates:
   extra:
   - kind: mustache

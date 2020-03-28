@@ -38,6 +38,8 @@ spec:
           value: {{component.bootproxy.dataDir}}
         - name: PUBLIC_IP
           value: "{{component.bootproxy.publishAddr}}"
+        - name: SERVICE_ACCOUNT
+          value: "{{component.bootproxy.serviceAccount}}"
         volumeMounts:
         - name: bootproxy-data
           mountPath: {{component.bootproxy.dataDir}}
