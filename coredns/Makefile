@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= coredns
+COMPONENT_NAME ?= dns
 DOMAIN_NAME    ?= test.dev.superhub.io
-NAMESPACE      ?= coredns
+NAMESPACE      ?= dns
 CHART_VERSION  ?= 1.10.0
 
 
@@ -11,7 +11,7 @@ kubectl := kubectl --context="$(DOMAIN_NAME)"
 deploy: install
 
 install:
-	$(kubectl) create ns $(NAMESPACE)
+	-$(kubectl) create ns $(NAMESPACE)
 	$(kubectl) -n $(NAMESPACE) apply -f manifests.yaml
 
 undeploy:

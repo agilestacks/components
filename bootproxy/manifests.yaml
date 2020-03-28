@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bootproxy
-  namespace: {{component.bootproxy.namespace}}
+  namespace: kube-system
   labels:
     app: bootproxy
 spec:
@@ -21,26 +21,26 @@ spec:
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
-        image: {{component.bootproxy.image}}
+        image: agilestacks/bootproxy:latest
         imagePullPolicy: Always
         env:
         - name: API_SERVER
-          value: {{component.bootproxy.hubApiUrl}}
+          value: https://api.agilestacks.io
         - name: API_PATH_PREFIX
-          value: {{component.bootproxy.pathPrefix}}
+          value: metal/api/v1
         - name: BOOTPROXY_ID
-          value: {{component.bootproxy.uid}}
+          value: T72JE93WV5604CZ8WF3N4HA36M
         - name: PROXY_PORT
-          value: "{{component.bootproxy.proxyPort}}"
+          value: "7655"
         - name: PROXY_ADDRESS
-          value: {{component.bootproxy.listenAddr}}
+          value: 0.0.0.0
         - name: DATA_DIR
-          value: {{component.bootproxy.dataDir}}
+          value: /var/lib/bootproxy
         - name: PUBLIC_IP
-          value: "{{component.bootproxy.publishAddr}}"
+          value: "192.168.220.1"
         volumeMounts:
         - name: bootproxy-data
-          mountPath: {{component.bootproxy.dataDir}}
+          mountPath: /var/lib/bootproxy
       volumes:
       - name: bootproxy-data
         emptyDir: {}

@@ -39,7 +39,7 @@ parameters:
 
 outputs:
 - name: component.etcd.internal.url
-  value: http://etcd${component.etcd-metal.namespace}.svc.cluster.local:${component.etcd-metal.port}
+  value: http://etcd-client.${component.etcd-metal.namespace}.svc.cluster.local:${component.etcd-metal.port}
 
 templates:
   files:

@@ -26,6 +26,7 @@ parameters:
     env: NAMESPACE
   - name: dhcpPort
     value: 67
+  - name: uid
   - name: proxyPort
     value: 7655
   - name: listenAddr
