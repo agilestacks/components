@@ -14,9 +14,9 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bootproxy
+  name: etcd-metal
   labels:
-    app: bootproxy
+    app: etcd-metal
 spec:
   replicas: 1
   selector:
