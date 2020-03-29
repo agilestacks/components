@@ -17,6 +17,7 @@ install:
 	$(kubectl) -n $(NAMESPACE) apply -f manifests.yaml
 
 expose:
+	-$(kubectl) -n $(NAMESPACE) delete service etcd-metal
 	$(kubectl) -n $(NAMESPACE) expose deployment $(COMPONENT_NAME) --name=etcd-metal --type=LoadBalancer --external-ip=$(ETCD_LISTEN_ADDR)
 
 undeploy:

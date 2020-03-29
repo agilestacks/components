@@ -22,6 +22,8 @@ undeploy:
 	$(kubectl) -n $(NAMESPACE) delete -f manifests.yaml
 
 expose:
-	$(kubectl) -n $(NAMESPACE) expose deployment $(COMPONENT_NAME) --name=etcd-metal --type=LoadBalancer --external-ip=$(ETCD_LISTEN_ADDR)
+	-$(kubectl) -n $(NAMESPACE) delete service coredns-udp coredns-tcp
+	$(kubectl) -n $(NAMESPACE) expose deployment $(COMPONENT_NAME) --name=coredns-tcp --type=LoadBalancer --external-ip=$(COREDNS_LISTEN_ADDR) --target-port=53 --port=53 --protocol=TCP
+	$(kubectl) -n $(NAMESPACE) expose deployment $(COMPONENT_NAME) --name=coredns-udp --type=LoadBalancer --external-ip=$(COREDNS_LISTEN_ADDR) --target-port=53 --port=53 --protocol=UDP
 
 -include ../Mk/phonies
