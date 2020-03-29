@@ -42,7 +42,8 @@ parameters:
     - name: serviceType
       value: NodePort
     - name: listenAddr
-      value: 192.168.220.1
+      empty: allow
+      env: COREDNS_LISTEN_ADDR
     - name: port
       value: 53
 
