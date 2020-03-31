@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: coredns
+  namespace: ${component.coredns.namespace}
 data:
   Corefile: |
     ${component.coredns.zones}:53 {
@@ -23,8 +24,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: coredns
+  namespace: ${component.coredns.namespace}
   labels:
-    k8s-app: kube-dns
+    asi-app: coredns
     kubernetes.io/name: "CoreDNS"
 spec:
   strategy:
@@ -33,11 +35,11 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      k8s-app: kube-dns
+      k8s-app: coredns
   template:
     metadata:
       labels:
-        k8s-app: kube-dns
+        asi-app: kube-dns
     spec:
       priorityClassName: system-cluster-critical
       serviceAccountName: coredns
@@ -52,9 +54,9 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
-              - key: k8s-app
+              - key: asi-app
                 operator: In
-                values: ["kube-dns"]
+                values: ["coredns"]
             topologyKey: kubernetes.io/hostname
       containers:
       - name: coredns
