@@ -15,7 +15,6 @@ data:
     }
     . {
         forward . 1.1.1.1:53 {
-            except ${component.coredns.secondTierDomain}
         }
     }
 
