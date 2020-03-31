@@ -39,7 +39,7 @@ spec:
   template:
     metadata:
       labels:
-        asi-app: kube-dns
+        asi-app: coredns
     spec:
       priorityClassName: system-cluster-critical
       serviceAccountName: coredns
