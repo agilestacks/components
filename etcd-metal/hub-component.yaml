@@ -36,9 +36,12 @@ parameters:
       value: 1
     - name: port
       value: 2379
-    - name: listenAddr
+    - name: exposeAddr
       empty: allow
-      env: ETCD_LISTEN_ADDR
+      env: ETCD_EXPOSE_ADDR
+    - name: exposePort
+      empty: allow
+      env: ETCD_EXPOSE_PORT
 
 outputs:
 - name: component.etcd.internal.url

@@ -10,7 +10,7 @@ kubectl := kubectl --context="$(DOMAIN_NAME)"
 
 deploy: install
 
-ifneq (,$(COREDNS_LISTEN_ADDR))
+ifneq (,$(COREDNS_EXPOSE_ADDR))
 deploy: expose
 endif
 
@@ -23,7 +23,7 @@ undeploy:
 
 expose:
 	-$(kubectl) -n $(NAMESPACE) delete service coredns-udp coredns-tcp
-	$(kubectl) -n $(NAMESPACE) expose deployment $(COMPONENT_NAME) --name=coredns-tcp --type=LoadBalancer --external-ip=$(COREDNS_LISTEN_ADDR) --target-port=53 --port=53 --protocol=TCP
-	$(kubectl) -n $(NAMESPACE) expose deployment $(COMPONENT_NAME) --name=coredns-udp --type=LoadBalancer --external-ip=$(COREDNS_LISTEN_ADDR) --target-port=53 --port=53 --protocol=UDP
+	$(kubectl) -n $(NAMESPACE) expose deployment $(COMPONENT_NAME) --name=coredns-tcp --type=LoadBalancer --external-ip=$(COREDNS_EXPOSE_ADDR) --target-port=53 --port=53 --protocol=TCP
+	$(kubectl) -n $(NAMESPACE) expose deployment $(COMPONENT_NAME) --name=coredns-udp --type=LoadBalancer --external-ip=$(COREDNS_EXPOSE_ADDR) --target-port=53 --port=53 --protocol=UDP
 
 -include ../Mk/phonies

@@ -41,9 +41,9 @@ parameters:
     - name: etcdUrl
     - name: serviceType
       value: NodePort
-    - name: listenAddr
+    - name: exposeAddr
       empty: allow
-      env: COREDNS_LISTEN_ADDR
+      env: COREDNS_EXPOSE_ADDR
     - name: port
       value: 53
 
