@@ -55,7 +55,7 @@ parameters:
 
   # https://github.com/terraform-providers/terraform-provider-azurerm/issues/3327
   - name: azure.version
-    value: "10.0"
+    value: "11"
     env: TF_VAR_database_version
 
   - name: azure.sku.name
