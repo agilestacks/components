@@ -3,6 +3,7 @@ version: 1
 kind: component
 meta:
   name: postgresql-azure
+  kind: postgresql
   title: Azure PostgreSQL
   brief: Relational database
   description: >
@@ -16,6 +17,9 @@ meta:
 
 requires:
 - azure
+
+provides:
+- postgresql
 
 parameters:
 - name: dns.domain
@@ -87,4 +91,6 @@ outputs:
   fromTfVar: hostname
 - name: component.postgresql.port
   value: 5432
+- name: component.postgresql.database
 - name: component.postgresql.user
+- name: component.postgresql.password

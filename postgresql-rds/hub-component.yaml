@@ -3,6 +3,7 @@ version: 1
 kind: component
 meta:
   name: postgresql-rds
+  kind: postgresql
   title: Amazon RDS
   brief: PostgreSQL database
   description: >
@@ -15,6 +16,9 @@ meta:
 
 requires:
 - aws
+
+provides:
+- postgresql
 
 parameters:
 - name: dns.domain
@@ -73,5 +77,9 @@ outputs:
   fromTfVar: hostname
 - name: component.postgresql.port
   fromTfVar: port
+- name: component.postgresql.database
+  fromTfVar: name
 - name: component.postgresql.user
   fromTfVar: username
+# cannot be captured securely from Terraform outputs
+- name: component.postgresql.password

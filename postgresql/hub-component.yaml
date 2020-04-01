@@ -3,6 +3,7 @@ version: 1
 kind: component
 meta:
   name: postgresql
+  kind: postgresql
   title: PostgreSQL
   brief: Relational database
   description: >
@@ -20,6 +21,7 @@ requires:
 - kubernetes
 - helm
 - tiller
+
 provides:
 - postgresql
 
@@ -52,7 +54,9 @@ outputs:
 - name: component.postgresql.host
   value: ${component.postgresql.name}.${component.postgresql.namespace}.svc.cluster.local
 - name: component.postgresql.port
+- name: component.postgresql.database
 - name: component.postgresql.user
+- name: component.postgresql.password
 - name: component.postgresql.namespace
 
 templates:
