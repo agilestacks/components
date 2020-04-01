@@ -1,8 +1,0 @@
-apiVersion: v1
-description: A Helm chart singleton for argo-metrics
-name: exporter-argo
-version: 0.0.1
-maintainers:
-  - name: Oleg Shepetyuk
-    email: oleg@agilestacks.com
-
