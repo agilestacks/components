@@ -21,13 +21,13 @@ export TF_VAR_cluster_name := $(CLUSTER_NAME)
 export TF_VAR_name := $(NAME)
 export TF_VAR_base_domain := $(BASE_DOMAIN)
 
-export TF_LOG      ?= info
+export TF_LOG      ?=
 export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 TF_CLI_ARGS := -no-color -input=false -lock=false
 TFPLAN := $(TF_DATA_DIR)/$(DOMAIN_NAME).tfplan
 
-terraform ?= terraform-v0.11
+terraform ?= terraform-v0.12
 az ?= az
 kubectl ?= kubectl
 
@@ -48,7 +48,7 @@ init:
 .PHONY: init
 
 plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -out=$(TFPLAN)
 .PHONY: plan
 
 apply:
