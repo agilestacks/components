@@ -44,7 +44,7 @@ parameters:
       value: aws-drainer
       env: TF_VAR_component
     - name: namespace
-      value: aws-drainer
+      value: kube-system
       env: TF_VAR_namespace
 
 templates:
