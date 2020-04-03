@@ -134,6 +134,7 @@ variable "cluster_name" {
 
 # AWS defaults below
 # https://www.terraform.io/docs/providers/aws/r/autoscaling_group.html#mixed_instances_policy-instances_distribution
+# https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_InstancesDistribution.html
 variable "on_demand_base_capacity" {
   type    = string
   default = "0"
@@ -141,12 +142,12 @@ variable "on_demand_base_capacity" {
 
 variable "on_demand_percentage_above_base_capacity" {
   type    = string
-  default = "100"
+  default = "0" # the default is 100, yet we want spot instances thus 0
 }
 
 variable "spot_allocation_strategy" {
   type    = string
-  default = "lowest-price"
+  default = "capacity-optimized"
 }
 
 variable "spot_instance_pools" {

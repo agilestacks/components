@@ -35,13 +35,14 @@ deploy: clean init purge install wait connect enable unseal mount force-disconne
 
 init:
 	@mkdir -p .vault $(HELM_HOME)
-	@$(helm) init --client-only --upgrade
+	$(helm) init --client-only --upgrade
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 install:
+	-$(kubectl) create ns $(NAMESPACE)
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install . \
 			--name $(COMPONENT_NAME) \

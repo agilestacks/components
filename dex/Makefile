@@ -1,9 +1,7 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= dex
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= kube-system
-HUB_PROVIDES   ?=
 
 STATE_BUCKET    ?= terraform.agilestacks.com
 STATE_REGION    ?= us-east-1
@@ -25,6 +23,8 @@ export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+
 
 ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
 	INGRESS:=ingress-tls
@@ -32,11 +32,16 @@ else
 	INGRESS:=ingress
 endif
 
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+deploy: clean install
 
-deploy: clean init plan apply install
+# If external-dns is present, then we rely on our ingress to create the 'auth' subdomain.
+# Otherewise we use terraform
+ifeq (,$(filter external-dns,$(HUB_PROVIDES)))
+deploy: init plan apply
+undeploy: init destroy apply
+endif
 
-ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
+ifeq ($(CLOUD_KIND),aws)
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate" \
@@ -51,9 +56,10 @@ STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$(STATE_BUCKET)" \
 				-backend-config="container_name=$(STATE_CONTAINER)" \
 				-backend-config="resource_group_name=$(TF_VAR_azure_resource_group_name)" \
 				-backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate"
-else
-$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, hybrid)
+else ifneq ($(CLOUD_KIND),metal)
+$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, metal)
 endif
+
 
 $(TF_DATA_DIR):
 	@mkdir -p $@
@@ -97,7 +103,7 @@ install:
 	$(kubectl) apply -f kubernetes/$(INGRESS).yaml
 	$(kubectl) apply -f kubernetes/auth-operator.yaml
 
-undeploy: init destroy apply uninstall
+undeploy: uninstall
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
@@ -118,3 +124,4 @@ clean:
 	rm -rf $(TF_DATA_DIR)
 
 -include ../Mk/phonies
+.IGNORE: undeploy

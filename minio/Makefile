@@ -9,7 +9,7 @@ INGRESS_DOMAIN ?= localhost
 PROTOCOL       ?= http
 ALIAS          ?= $(COMPONENT_NAME)
 DOMAIN         ?= minio
-
+WAIT_TIMEOUT   ?= 180
 DEFAULT_BUCKET ?= default
 
 # secret-name has been driven by fullnameOverride in helm chart
@@ -17,9 +17,9 @@ SECRET         := $(COMPONENT_NAME)
 ACCESS_KEY_REF ?= accesskey
 SECRET_KEY_REF ?= secretkey
 
-kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-jq      := jq -Ms
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+jq      ?= jq -Ms
 
 CHART_VERSION    ?= 1.6.4
 
@@ -74,13 +74,30 @@ fetch:
 		--version $(CHART_VERSION)
 
 namespace:
-	$(kubectl) get $@ $(NAMESPACE) > /dev/null || \
-		$(kubectl) create $@ $(NAMESPACE)
+	- $(kubectl) create namespace $(NAMESPACE)
 
 wait:
 	sleep 10
 
-nats-notifications: wait
+HOST_CMD := host
+PING_CMD := $(HOST_CMD) $(COMPONENT_NAME).$(INGRESS_DOMAIN)
+wait-dns:
+	$(eval timeout        := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
+	@ echo "Waiting for DNS to resolve $(COMPONENT_NAME).$(INGRESS_DOMAIN) with $(HOST_CMD)"
+	$(eval current_time   := date +%s)
+	while [ `$(current_time)` -le "$(timeout)" ]; do \
+		if $(PING_CMD); then \
+			echo "Done!"; \
+			exit 0; \
+		fi;  \
+		echo "Still waiting..."; \
+		sleep 8; \
+	done; \
+	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
+	exit 1;
+
+
+nats-notifications: wait-dns
 	$(mc) --insecure event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
 
 purge:
@@ -96,12 +113,12 @@ install: namespace
 			--replace \
 			--wait
 
-configure:
-	- @ $(mc) --insecure config host add $(ALIAS) \
+configure: wait-dns
+	@ $(mc) --insecure config host add $(ALIAS) \
 		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
 		$(ACCESS_KEY) $(SECRET_KEY) \
-		S3v4
-	- @ $(mc) --insecure config host list
+		--api S3v4
+	@ $(mc) --insecure config host list
 
 unconfigure:
 	- $(mc) config host rm $(ALIAS)

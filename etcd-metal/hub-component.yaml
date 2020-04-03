@@ -16,11 +16,8 @@ meta:
 
 requires:
   - kubernetes
-  - helm
-  - tiller
-  - etcd
 provides:
-  - etcd-metal
+  - etcd
 
 parameters:
   - name: dns.domain
@@ -39,10 +36,16 @@ parameters:
       value: 1
     - name: port
       value: 2379
+    - name: exposeAddr
+      empty: allow
+      env: ETCD_EXPOSE_ADDR
+    - name: exposePort
+      empty: allow
+      env: ETCD_EXPOSE_PORT
 
 outputs:
-- name: component.etcd-metal.internal.url
-  value: http://etcd-metal.${component.etcd-metal.namespace}.svc.cluster.local:${component.etcd-metal.port}
+- name: component.etcd.internal.url
+  value: http://etcd-client.${component.etcd-metal.namespace}.svc.cluster.local:${component.etcd-metal.port}
 
 templates:
   files:

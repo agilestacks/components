@@ -1,3 +1,3 @@
 .helm
 charts/
-values.yaml
+manifests.yaml

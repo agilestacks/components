@@ -8,8 +8,11 @@ ISTIO_VERSION  ?= 1.2.2
 export HELM_HOME ?= $(shell pwd)/.helm
 
 CHARTS_DIR := $(abspath $(HELM_HOME))/charts
+HUB_PROVIDES ?=
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+kubectl-prometheus ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(PROMETHEUS_NAMESPACE)"
+
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 HELM_VALUES_ARGS += -f $(abspath values.yaml)
@@ -31,7 +34,54 @@ apply-template-% delete-template-%: $(CHARTS_DIR)/istio
 		$(HELM_VALUES_ARGS) \
 	| $(kubectl) $(firstword $(subst -, ,$@)) -f -
 
+label:
+	-$(kubectl-prometheus) label configmap \
+		grafana-dashboard-citadel \
+		grafana-dashboard-galley \
+		grafana-dashboard-istio-mesh \
+		grafana-dashboard-istio-performance \
+		grafana-dashboard-istio-service \
+		grafana-dashboard-istio-workload \
+		grafana-dashboard-mixer \
+		grafana-dashboard-pilot \
+		grafana_dashboard=1
+
+dashboards-%:
+	$(kubectl-prometheus) create configmap grafana-dashboard-citadel \
+		--from-file=prometheus-config/dashboards/citadel-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
+	$(kubectl-prometheus) create configmap grafana-dashboard-galley \
+		--from-file=prometheus-config/dashboards/galley-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
+	$(kubectl-prometheus) create configmap grafana-dashboard-istio-mesh \
+		--from-file=prometheus-config/dashboards/istio-mesh-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
+	$(kubectl-prometheus) create configmap grafana-dashboard-istio-performance \
+		--from-file=prometheus-config/dashboards/istio-performance-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
+	$(kubectl-prometheus) create configmap grafana-dashboard-istio-service \
+		--from-file=prometheus-config/dashboards/istio-service-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
+	$(kubectl-prometheus) create configmap grafana-dashboard-istio-workload \
+		--from-file=prometheus-config/dashboards/istio-workload-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
+	$(kubectl-prometheus) create configmap grafana-dashboard-mixer \
+		--from-file=prometheus-config/dashboards/mixer-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
+	$(kubectl-prometheus) create configmap grafana-dashboard-pilot \
+		--from-file=prometheus-config/dashboards/pilot-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
+
+
+configure-prometheus: dashboards-apply label
+	$(kubectl-prometheus) create secret generic additional-scrape-configs \
+		--from-file=prometheus-config/istio-scrape-config.yaml --dry-run -o yaml | $(kubectl-prometheus) apply -f -
+	$(kubectl-prometheus) patch prometheus $(PROMETHEUS_NAME)-prometheus --type=merge \
+		-p '{"spec":{"additionalScrapeConfigs":{"name": "additional-scrape-configs", "key": "istio-scrape-config.yaml"}}}'
+
+unconfigure-prometheus: dashboards-delete
+	-$(kubectl-prometheus) delete secret generic additional-scrape-configs
+
+ifneq (,$(filter prometheus,$(HUB_PROVIDES)))
+HELM_VALUES_ARGS += -f $(abspath kiali-patch-values.yaml)
+install: configure-prometheus namespace install-istio-init wait-crds install-istio apply-template-mutatingwebhook.yaml
+undeploy: purge clean unconfigure-prometheus
+else
 install: namespace install-istio-init wait-crds install-istio apply-template-mutatingwebhook.yaml
+undeploy: purge clean
+endif
 
 install-istio-init: $(CHARTS_DIR)/istio-init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-init$$' || \
@@ -65,8 +115,6 @@ purge-%:
 
 purge: delete-template-mutatingwebhook.yaml purge-$(COMPONENT_NAME) purge-$(COMPONENT_NAME)-init
 
-undeploy: purge clean
-
 wait-crds:
 	@echo "Waiting for CRDs to install"; \
 	for i in $$(seq 1 60); do \
@@ -94,4 +142,4 @@ clean:
 # 	- $(kubectl) delete -f default-gateway.yaml
 
 -include ../Mk/phonies
-.PHONY: install install-istio-init wait-crds install-istio repo
+.PHONY: install install-istio-init wait-crds install-istio repo configure-prometheus unconfigure-prometheus label

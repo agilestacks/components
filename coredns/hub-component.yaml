@@ -16,8 +16,6 @@ meta:
 
 requires:
   - kubernetes
-  - helm
-  - tiller
   - etcd
 provides:
   - coredns
@@ -29,29 +27,29 @@ parameters:
     parameters:
     - name:  name
       value: coredns
-      env:   COMPONENT_NAME      
+      env:   COMPONENT_NAME
     - name: version
       value: 1.6.7
-    - name: chart.version
-      value: 1.10.0
-      env: CHART_VERSION
     - name: replicas
       value: 1
     - name:  namespace
       value: dns
       env:   NAMESPACE
-    - name: zone
-      value: ${dns.domain}
-    - name: etcdHost
-      value: ${component.etcd.url}
+    - name: zones
+    - name: secondTierDomain
+      value: superhub.io
+    - name: etcdUrl
     - name: serviceType
-      value: ClusterIP
+      value: NodePort
+    - name: exposeAddr
+      empty: allow
+      env: COREDNS_EXPOSE_ADDR
     - name: port
       value: 53
 
 outputs:
 - name: component.coredns.port
-- name: component.coredns.zone
+- name: component.coredns.zones
 
 templates:
   files:

@@ -23,6 +23,12 @@ provides:
 parameters:
 - name: cloud.region # for DNS01 ACME solver
   value: us-east-1
+- name: cloud.kind
+  env: CLOUD_KIND
+- name: cloud.aws.secretKey
+  empty: allow
+- name: cloud.aws.accessKey
+  empty: allow
 - name: dns.domain
   env: DOMAIN_NAME
 - name: kubernetes.flavor
@@ -39,9 +45,7 @@ parameters:
   - name: issuerEmail
     value: admin@superhub.io
   - name: defaultIssuerName
-    value: letsencrypt-prod
-   #value: letsencrypt-staging
-   #value: ca-issuer
+    value: letsencrypt-prod-default
   - name: defaultIssuerKind
     value: ClusterIssuer
    #value: Issuer
@@ -58,6 +62,11 @@ parameters:
 - name: component.cert-manager.caIssuer.enabled
   value: '#{size(certmanager.caIssuer.key) > 1}'
   env: CA_ISSUER_ENABLED
+- name: certmanager.awsDnsCredentials.accessKey
+  value: ${cloud.aws.accessKey}
+- name: component.cert-manager.awsDnsCredentials.enabled
+  value: '#{size(certmanager.awsDnsCredentials.accessKey) > 1}'
+  env: AWS_DNS_CREDENTIALS_ENABLED
 
 outputs:
 - name: component.tls.kind
@@ -66,3 +75,4 @@ outputs:
 templates:
   files:
   - "*.template"
+  - "issuers/*.template"

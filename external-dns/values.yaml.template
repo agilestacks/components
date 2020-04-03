@@ -8,7 +8,7 @@ sources:
 # - service
 - ingress
 - crd
-- istio-gateway
+# - istio-gateway
 
 policy: sync
 domainFilters:
@@ -18,9 +18,3 @@ crd:
   apiversion: externaldns.k8s.io/v1alpha1
   kind: DNSEndpoint
 
-istioIngressGateways:
-# FIXME: At present there is unresolved circular dependency. ExternalDNS must know
-# which about Istio Gateway services. However will be provisioned before Istio
-# FIXME: Leaks helm chart sturcture of istio component
-- ${component.istio.namespace}/istio-${component.istio.ingressGateway}
-# - ingressgateway

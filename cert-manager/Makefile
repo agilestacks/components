@@ -7,7 +7,7 @@ HELM_CHART     ?= jetstack/cert-manager
 CHART_VERSION  ?= v0.12.0
 TAG            ?= release-0.12
 KUBE_FLAVOR    ?=
-
+WAIT_TIMEOUT   ?= 180
 export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
@@ -15,16 +15,17 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 ADDITIONAL_VALUES :=
 
-deploy: clean init fetch purge crds install
+deploy: clean init fetch purge crds install issuer
 ifeq ($(KUBE_FLAVOR),openshift)
 deploy: openshift
 ADDITIONAL_VALUES := --values values-openshift.yaml
 endif
-deploy: issuer
 ifeq ($(CA_ISSUER_ENABLED),true)
 deploy: ca-issuer
 endif
-
+ifeq ($(AWS_DNS_CREDENTIALS_ENABLED),true)
+deploy: aws-dns-key
+endif
 init:
 	@mkdir -p $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
@@ -75,18 +76,24 @@ openshift:
 .PHONY: openshift
 
 issuer:
-	for i in $$(seq 1 24); do \
-		if $(kubectl) apply -f prod-cluster-issuer.yaml; then exit 0; fi; \
-		sleep 5; \
+	for i in $$(seq 1 12); do \
+		if $(kubectl) apply -f issuers/prod-cluster-default-issuer.yaml; then exit 0; fi; \
+		sleep 10; \
 	done; \
 	exit 1
-	$(kubectl) apply -f staging-cluster-issuer.yaml
+	$(kubectl) apply -f issuers/staging-cluster-default-issuer.yaml
 .PHONY: issuer
 
 ca-issuer:
-	$(kubectl) apply -f ca-issuer-keys.yaml
-	$(kubectl) apply -f ca-cluster-issuer.yaml
+	$(kubectl) apply -f issuers/ca-issuer-keys.yaml
+	$(kubectl) apply -f issuers/ca-cluster-issuer.yaml
 .PHONY: ca-issuer
+
+aws-dns-key:
+	$(kubectl) apply -f issuers/solver-aws-secret-key.yaml
+	$(kubectl) apply -f issuers/prod-cluster-dns-issuer.yaml
+	$(kubectl) apply -f issuers/staging-cluster-dns-issuer.yaml
+.PHONY: aws-dns-key
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \

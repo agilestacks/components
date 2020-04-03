@@ -1,44 +1,29 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= coredns
+COMPONENT_NAME ?= etcd-metal
 DOMAIN_NAME    ?= test.dev.superhub.io
-NAMESPACE      ?= coredns
+NAMESPACE      ?= dns
 
-export HELM_HOME ?= $(shell pwd)/.helm
+kubectl ?= kubectl --context="$(DOMAIN_NAME)"
 
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+deploy: install
 
-deploy: clean init fetch purge install
-
-init:
-	@mkdir -p $(HELM_HOME) charts
-	$(helm) init --client-only --upgrade
-
-fetch:
-	$(helm) fetch \
-		--destination charts \
-		--untar stable/coredns \
-		--version 1.9.3
-
-purge:
-	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+ifneq (,$(ETCD_EXPOSE_ADDR))
+deploy: expose
+ifeq (,$(ETCD_EXPOSE_PORT))
+ETCD_EXPOSE_PORT := 12379
+endif
+endif
 
 install:
-	$(kubectl) apply -f namespace.yaml
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
-		$(helm) install charts/coredns \
-			--name $(COMPONENT_NAME) \
-			--namespace $(NAMESPACE) \
-			--replace \
-			--values values.yaml
+	-$(kubectl) create ns $(NAMESPACE)
+	$(kubectl) -n $(NAMESPACE) apply -f manifests.yaml
 
-undeploy: init
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+expose:
+	-$(kubectl) -n $(NAMESPACE) delete service etcd-metal
+	$(kubectl) -n $(NAMESPACE) expose deployment $(COMPONENT_NAME) --name=etcd-metal --type=LoadBalancer --external-ip=$(ETCD_EXPOSE_ADDR) --port $(ETCD_EXPOSE_PORT) --target-port 2379
 
-clean:
-	rm -rf $(HELM_HOME) charts
+undeploy:
+	$(kubectl) -n $(NAMESPACE) delete -f manifests.yaml
 
 -include ../Mk/phonies

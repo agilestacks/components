@@ -15,9 +15,9 @@ deploy: purge install
 undeploy: purge
 
 install:
-	$(kubectl) apply -f deploy/manifests.yaml
+	$(kubectl) apply -f manifests.yaml
 
 purge:
-	-$(kubectl) delete -f deploy/manifests.yaml
+	-$(kubectl) delete -f manifests.yaml
 
 .PHONY: login

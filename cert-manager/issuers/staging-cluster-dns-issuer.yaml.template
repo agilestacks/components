@@ -1,0 +1,22 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging-dns
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: ${component.cert-manager.issuerEmail}
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt-staging-dns
+    solvers:
+    # Enable the DNS-01 challenge provider
+    - dns01:
+        route53:
+          region: ${cloud.region}
+          accessKeyID: ${cloud.aws.accessKey}
+          secretAccessKeySecretRef:
+            name: solver-aws-secret-key
+            key: secret-access-key

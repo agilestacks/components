@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bootproxy
+  namespace: kube-system
+  labels:
+    app: bootproxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bootproxy
+  template:
+    metadata:
+      labels:
+        app: bootproxy
+    spec:
+      hostNetwork: true
+      containers:
+      - name: bootproxy
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        image: agilestacks/bootproxy:latest
+        imagePullPolicy: Always
+        env:
+        - name: API_SERVER
+          value: https://api.agilestacks.io
+        - name: API_PATH_PREFIX
+          value: metal/api/v1
+        - name: BOOTPROXY_ID
+          value: T72JE93WV5604CZ8WF3N4HA36M
+        - name: PROXY_PORT
+          value: "7655"
+        - name: PROXY_ADDRESS
+          value: 0.0.0.0
+        - name: DATA_DIR
+          value: /var/lib/bootproxy
+        - name: PUBLIC_IP
+          value: "192.168.220.1"
+        volumeMounts:
+        - name: bootproxy-data
+          mountPath: /var/lib/bootproxy
+      volumes:
+      - name: bootproxy-data
+        emptyDir: {}

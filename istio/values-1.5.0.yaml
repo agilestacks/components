@@ -1,0 +1,11 @@
+kiali:
+  tag: v1.11
+
+global:
+  hub: docker.io/istio
+  tag: 1.5.0
+  proxy_init:
+    image: proxyv2
+
+  # https://github.com/kubeflow/manifests/issues/422#issuecomment-566336889
+  configValidation: false

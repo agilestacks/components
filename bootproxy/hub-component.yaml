@@ -24,22 +24,25 @@ parameters:
   - name: namespace
     value: kube-system
     env: NAMESPACE
-  - name: dhcp_port
+  - name: dhcpPort
     value: 67
-  - name: proxy_port
+  - name: uid
+  - name: proxyPort
     value: 7655
-  - name: local_address
+  - name: listenAddr
     value: 0.0.0.0
-  - name: public_ip
-  - name: data_dir
+  - name: hubApiUrl
+    value: https://api.agilestacks.io
+  - name: publishAddr
+  - name: dataDir
     value: /var/lib/bootproxy
-  - name: path_prefix
+  - name: pathPrefix
     value: "metal/api/v1"
+  - name: serviceAccount
   - name: image
-    value: agilestacks/bootproxy:stable
-
+    value: agilestacks/bootproxy:latest
 templates:
   extra:
   - kind: mustache
     files:
-    - 'deploy/*.template'
+    - '*.template'

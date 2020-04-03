@@ -16,7 +16,7 @@ Please refer to the deployment **flavors** for supported variations
 Current component supports number of deployment variations
 
 - `aws`: deploys harbor to AWS d
-- `hybrid`: private data center or bare metal kubernetes deployment support
+- `metal`: private data center or bare metal kubernetes deployment support
 
 ### AWS
 
@@ -41,12 +41,12 @@ parameters:
 - name: component.tls.kind
   value: acm
   # or value: letsencrypt
-``` 
+```
 
 
-### Hybrid
+### metal
 
-Enabled if `cloud.kind: hybrid`. Supports following options
+Enabled if `cloud.kind: metal`. Supports following options
 
 1. TLS options (configured via `component.tls.kind`). Ingress controller must pass `component.ingress.staticIp`
 - `letsencrypt` - if enabled then Harbor will be installed behind Traefik ingress controller

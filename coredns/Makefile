@@ -1,45 +1,29 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= coredns
+COMPONENT_NAME ?= dns
 DOMAIN_NAME    ?= test.dev.superhub.io
-NAMESPACE      ?= coredns
+NAMESPACE      ?= dns
 CHART_VERSION  ?= 1.10.0
 
-export HELM_HOME ?= $(shell pwd)/.helm
 
-kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+kubectl := kubectl --context="$(DOMAIN_NAME)"
 
-deploy: clean init fetch purge install
+deploy: install
 
-init:
-	@mkdir -p $(HELM_HOME) charts
-	$(helm) init --client-only --upgrade
-
-fetch:
-	$(helm) fetch \
-		--destination charts \
-		--untar stable/coredns \
-		--version $(CHART_VERSION)
-
-purge:
-	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+ifneq (,$(COREDNS_EXPOSE_ADDR))
+deploy: expose
+endif
 
 install:
-	- $(kubectl) create ns $(NAMESPACE)
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
-		$(helm) install charts/coredns \
-			--name $(COMPONENT_NAME) \
-			--namespace $(NAMESPACE) \
-			--replace \
-			--values values.yaml
+	-$(kubectl) create ns $(NAMESPACE)
+	$(kubectl) -n $(NAMESPACE) apply -f manifests.yaml
 
-undeploy: init
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+undeploy:
+	$(kubectl) -n $(NAMESPACE) delete -f manifests.yaml
 
-clean:
-	rm -rf $(HELM_HOME) charts
+expose:
+	-$(kubectl) -n $(NAMESPACE) delete service coredns-udp coredns-tcp
+	$(kubectl) -n $(NAMESPACE) expose deployment $(COMPONENT_NAME) --name=coredns-tcp --type=LoadBalancer --external-ip=$(COREDNS_EXPOSE_ADDR) --target-port=53 --port=53 --protocol=TCP
+	$(kubectl) -n $(NAMESPACE) expose deployment $(COMPONENT_NAME) --name=coredns-udp --type=LoadBalancer --external-ip=$(COREDNS_EXPOSE_ADDR) --target-port=53 --port=53 --protocol=UDP
 
 -include ../Mk/phonies

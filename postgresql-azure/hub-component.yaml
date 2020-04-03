@@ -3,6 +3,7 @@ version: 1
 kind: component
 meta:
   name: postgresql-azure
+  kind: postgresql
   title: Azure PostgreSQL
   brief: Relational database
   description: >
@@ -16,6 +17,9 @@ meta:
 
 requires:
 - azure
+
+provides:
+- postgresql
 
 parameters:
 - name: dns.domain
@@ -55,7 +59,7 @@ parameters:
 
   # https://github.com/terraform-providers/terraform-provider-azurerm/issues/3327
   - name: azure.version
-    value: "10.0"
+    value: "11"
     env: TF_VAR_database_version
 
   - name: azure.sku.name
@@ -87,4 +91,6 @@ outputs:
   fromTfVar: hostname
 - name: component.postgresql.port
   value: 5432
+- name: component.postgresql.database
 - name: component.postgresql.user
+- name: component.postgresql.password

@@ -55,7 +55,7 @@ parameters:
     - name: image.repository
       value: bitnami/redis
     - name: image.tag
-      value: 4.0.13
+      value: 5.0.5
     - name: requests.memory
       value: 256Mi
     - name: requests.cpu
@@ -89,7 +89,7 @@ parameters:
         value: 3.3.0
         env: HA_CHART_VERSION
     - name: chart.version
-      value: 6.1.4
+      value: 9.1.12
       env: CHART_VERSION
 outputs:
   - name: component.redis.host

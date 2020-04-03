@@ -1,2 +1,3 @@
 charts/
 values*.yaml
+.helm
