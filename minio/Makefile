@@ -117,7 +117,7 @@ configure: wait-dns
 	@ $(mc) --insecure config host add $(ALIAS) \
 		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
 		$(ACCESS_KEY) $(SECRET_KEY) \
-		S3v4
+		--api S3v4
 	@ $(mc) --insecure config host list
 
 unconfigure:
