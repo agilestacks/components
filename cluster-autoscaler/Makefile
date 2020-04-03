@@ -12,7 +12,7 @@ AUTOSCALER_1.18_VERSION := v1.18.0
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
-deploy: kube_version:=$(shell $(kubectl) version -o json | jq -r '.serverVersion | .major + "." + .minor')
+deploy: kube_version:=$(shell $(kubectl) version -o json | jq -r '.serverVersion | .major + "." + .minor' | sed -e 's/[^0-9.]//g')
 deploy:
 	$(kubectl) apply -f rbac.yaml
 	$(kubectl) apply -f service-account.yaml
