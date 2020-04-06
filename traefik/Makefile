@@ -99,7 +99,6 @@ install:
 		$(helm) install charts/$(notdir $(CHART)) \
 			--name $(TF_VAR_component) \
 			--namespace $(TF_VAR_namespace) \
-			--replace \
 			--wait \
 			--timeout $(HELM_TIMEOUT) \
 			--values $(VALUES_FILE) \
