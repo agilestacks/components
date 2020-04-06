@@ -45,7 +45,7 @@ else
 endif
 endif
 
-deploy: clean init fetch patch purge install plan output apply
+deploy: clean init fetch patch purge install plan output apply wait
 
 ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
@@ -149,5 +149,31 @@ uninstall:
 
 clean:
 	rm -rf $(HELM_HOME) charts $(TF_DATA_DIR)
+
+wait_app: DOMAIN_NAME:=$(TF_VAR_url_prefix).$(TF_VAR_domain_name)
+wait_app: wait_dns
+
+wait_apps: DOMAIN_NAME:=$(TF_VAR_sso_url_prefix).$(TF_VAR_domain_name)
+wait_apps: wait_dns
+
+wait_dns: WAIT_TIMEOUT=900
+wait_dns:
+	$(eval timeout := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
+	@ echo "Waiting $(DOMAIN_NAME) to resolve"
+	@ while [ "`date +%s`" -le "$(timeout)" ]; do \
+		actual=`nslookup "$(DOMAIN_NAME)" > /dev/null; echo $$?`; \
+		if test "$$actual" = "0"; then \
+			echo "Done!"; \
+			exit 0; \
+		fi; \
+		echo "Still waiting..	."; \
+		sleep 2; \
+	done; \
+	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
+	exit 1
+
+wait: wait_apps wait_app
+
+.PHONY: wait_dns wait_app wait_apps sleep
 
 -include ../Mk/phonies
