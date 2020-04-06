@@ -66,6 +66,7 @@ parameters:
       value: v2.17.0
     - name:  operator.version
       value: v0.38.0
+      env: OPERATOR_VERSION
     - name:  name
       value: prometheus-operator
       env:   COMPONENT_NAME
@@ -120,7 +121,7 @@ parameters:
       env: THANOS_ENABLED
     - name: version
       brief: Thanos version
-      value: v0.4.0
+      value: v0.11.0
     - name: ingress.urlPrefix
       value: thanos
 
