@@ -41,13 +41,13 @@ locals {
   name_prefix     = "${substr(replace(local.name1, ".", "-"), 0, min(32, length(local.name1)-1))}"
 
   ami_id          = "${coalesce(var.ec2_ami_override, data.aws_ami.main.image_id)}"
-  
+
 
   recent          = "${var.linux_version == "*"}"
-  
+
   linux_version   = "${local.instance_gpu == true ? var.linux_gpu_version : var.linux_version }"
-  
-  
+
+
   ami_owners = "${map(
                 "coreos", "595879546273",
                 "flatcar", "075585003325",
@@ -56,10 +56,10 @@ locals {
                 "coreos", "CoreOS-${var.linux_channel}-${local.linux_version}-*",
                 "flatcar", "Flatcar-${var.linux_channel}-${local.linux_version}-*",
               )}"
-  
+
   ami_owner = "${local.ami_owners[var.linux_distro]}"
   ami_name  = "${local.ami_names[var.linux_distro]}"
-  
+
   default_tags = [
     {
       key                 = "Name"
@@ -288,7 +288,7 @@ resource "aws_autoscaling_group" "workers" {
 
   mixed_instances_policy {
     instances_distribution {
-      on_demand_base_capacity = var.on_demand_instance_count
+      on_demand_base_capacity = var.on_demand_base_capacity
       spot_allocation_strategy  = var.allocation_strategy
       on_demand_percentage_above_base_capacity = 0
     }

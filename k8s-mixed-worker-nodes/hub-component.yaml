@@ -74,8 +74,8 @@ parameters:
     - name: allocationStrategy
       env: TF_VAR_allocation_strategy
       value: lowest-price
-    - name: onDemandInstance.count
-      env: TF_VAR_on_demand_instance_count
+    - name: onDemandBaseCapacity
+      env: TF_VAR_on_demand_base_capacity
       value: 0
     - name: linuxVersion
       env: TF_VAR_linux_version

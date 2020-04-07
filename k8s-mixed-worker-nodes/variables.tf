@@ -52,7 +52,7 @@ variable "allocation_strategy" {
   description = "Mixed ASG allocation strategy"
 }
 
-variable "on_demand_instance_count" {
+variable "on_demand_base_capacity" {
   type        = string
   default     = "0"
   description = "On-demand instance count in mixed ASG"
