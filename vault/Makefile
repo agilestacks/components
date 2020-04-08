@@ -28,7 +28,7 @@ storage := dynamodb
 else ifneq ($(BUCKET_NAME),)
 storage := $(BUCKET_KIND)
 else
-$(error One of component.etcd.url, component.dynamodb.table, component.bucket.kind/.name must be provided for Vault storage)
+$(error One of component.etcd.endpoint, component.dynamodb.table, component.bucket.kind/.name must be provided for Vault storage)
 endif
 
 deploy: clean init purge install wait connect enable unseal mount force-disconnect output
