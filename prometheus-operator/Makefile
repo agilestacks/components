@@ -38,7 +38,7 @@ fetch:
 
 patch:
 	sed -i~ -e 's|metrics_path="/metrics/cadvisor", ||' charts/prometheus-operator/templates/prometheus/rules-1.14/k8s.rules.yaml
-	sed -i -E -e 's/(appVersion: ).*/\1$(OPER_VERSION)/' charts/prometheus-operator/Chart.yaml
+	sed -i~ -E -e 's/(appVersion: ).*/\1$(OPER_VERSION)/' charts/prometheus-operator/Chart.yaml
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
