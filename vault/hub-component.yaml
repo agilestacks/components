@@ -13,7 +13,6 @@ meta:
   license: MPL 2.0
   category: Security
   icon: https://s3.amazonaws.com/hashicorp-marketing-web-assets/brand/Vault_VerticalLogo_FullColor.B1xPC0pSax.svg
-  disabled: true
   source:
     dir: ../../components/vault
 
