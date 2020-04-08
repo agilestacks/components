@@ -40,9 +40,9 @@ parameters:
   - name: cloud.region
     empty: allow
   - name: component.ingress.fqdn
-  - name: component.etcd.url
+  - name: component.etcd.endpoint
     empty: allow
-    env: ETCD_URL
+    env: ETCD_ENDPOINT
   - name: component.dynamodb.table
     empty: allow
     env: DYNAMODB_TABLE

@@ -21,7 +21,7 @@ vault   := vault
 UNSEAL_FILE := .vault/unseal.$(DOMAIN_NAME).json
 TIMEOUT := 300
 
-ifneq ($(ETCD_URL),)
+ifneq ($(ETCD_ENDPOINT),)
 storage := etcd
 else ifneq ($(DYNAMODB_TABLE),)
 storage := dynamodb
