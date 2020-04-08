@@ -14,3 +14,4 @@ name: pgweb
 sources:
 - https://github.com/kubernetes/charts
 version: 0.1.0
+appVersion: 0.1.1

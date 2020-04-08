@@ -72,7 +72,7 @@ configure-prometheus: dashboards-apply label
 		-p '{"spec":{"additionalScrapeConfigs":{"name": "additional-scrape-configs", "key": "istio-scrape-config.yaml"}}}'
 
 unconfigure-prometheus: dashboards-delete
-	-$(kubectl-prometheus) delete secret generic additional-scrape-configs
+	-$(kubectl-prometheus) delete secret additional-scrape-configs
 
 ifneq (,$(filter prometheus,$(HUB_PROVIDES)))
 HELM_VALUES_ARGS += -f $(abspath kiali-patch-values.yaml)

@@ -51,10 +51,10 @@ parameters:
     parameters:
       - name: namespace
         env: PROMETHEUS_NAMESPACE
-        empty: allow
+        value: monitoring
       - name: name
         env: PROMETHEUS_NAME
-        empty: allow
+        value: prometheus-operator
   - name: component.istio
     parameters:
       - name: namespace

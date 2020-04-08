@@ -59,13 +59,14 @@ parameters:
       value: stable/prometheus-operator
       env: HELM_CHART
     - name: chart.version
-      value: 8.12.3
+      value: 8.12.9
       env: CHART_VERSION
     - name:  prometheus.version
       brief: Prometheus version
       value: v2.17.0
     - name:  operator.version
       value: v0.38.0
+      env: OPERATOR_VERSION
     - name:  name
       value: prometheus-operator
       env:   COMPONENT_NAME

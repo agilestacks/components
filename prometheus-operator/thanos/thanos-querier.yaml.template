@@ -54,7 +54,7 @@ spec:
     spec:
       containers:
       - name: thanos
-        image: improbable/thanos:${component.prometheus.thanos.version}
+        image: thanosio/thanos:${component.prometheus.thanos.version}
         args:
         - query
         - --log.level=debug
