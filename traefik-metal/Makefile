@@ -26,7 +26,7 @@ helm        ?= helm --kube-context="$(KUBECONFIG_CONTEXT)" --tiller-namespace="k
 VALUES_FILE:=values.yaml
 
 
-deploy: clean init fetch install output
+deploy: clean init fetch patch install output
 undeploy: uninstall
 
 init:
@@ -65,6 +65,13 @@ upgrade:
 		$(TLS_VALUES_FILE) \
 		$(DASHBOARD_VALUES_FILE) \
 		--version $(CHART_VERSION)
+
+# https://github.com/helm/charts/commit/0488c623ee045c90ac3d34a6e7803b3da83a2f62#diff-7085afc89c71e92e4515de4fe9ca0260
+# https://github.com/agilestacks/auth-operator/commit/a47a74dd75bf8133cf514f430581db2ca3a1fe00#diff-310eef67e361cf942a183144b1451b0bR166
+patch:
+	-@sed -i~ -e 's/servicePort: dashboard-http/servicePort: 80/' \
+                        charts/traefik/templates/dashboard-ingress.yaml && \
+                rm -f charts/traefik/templates/dashboard-ingress.yaml~
 
 output:
 	$(eval LOAD_BALANCER = $(shell kubectl -n ingress get svc $(COMPONENT) -o json | jq -r .status.loadBalancer.ingress[0].ip))
