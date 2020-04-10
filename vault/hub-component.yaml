@@ -98,7 +98,7 @@ parameters:
       empty: allow
 
 outputs:
-- name: component.vault.url
+- name: component.vault.endpoint
   fromTfVar: vault_url
 - name: component.vault.token.root
   fromTfVar: root_token

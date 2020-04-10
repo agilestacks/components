@@ -76,30 +76,32 @@ parameters:
         value: 0.1.19
         env: PIPELINE_VERSION
 
-
 outputs:
   - name: component.kubeflow.ambassador.protocol
     fromTfVar: protocol
+  - name: component.kubeflow.url
+    brief: Kubeflow Dashboard
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}
   - name: component.kubeflow.ambassador.url
     brief: Ambassador Diagnostics
+    icon: .hub/icon/ambassador.png
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/ambassador/v0/diag
   - name: component.kubeflow.argo.url
     brief: Argo UI
-    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/argo/
+    icon: .hub/icon/argo.png
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/argo
   - name: component.kubeflow.jupyterhub.url
     brief: Jupyter Hub Admin panel
-    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/hub/
+    icon: .hub/icon/jupyter.svg
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/hub
   - name: component.kubeflow.tf-job.url
     brief: TF Job Dashboard
+    icon: .hub/icon/tensorflow.svg
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/tfjobs/ui
   - name: component.kubeflow.pipelines.url
     brief: Pipelines UI
-    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/pipeline/
-  - name: component.kubeflow.url
-    brief: Kubeflow Dashboard
-    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/
-
-
+    icon: .hub/icon/kubeflow-pipelines.svg
+    value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/pipeline
 
 templates:
   files:
