@@ -33,12 +33,6 @@ variable "keypair" {
   description = "Name of an SSH key located within the AWS region. Example: coreos-user."
 }
 
-variable "instance_type" {
-  type        = string
-  default     = ""
-  description = "Instance size for the worker node(s). Example: `t2.small`."
-}
-
 variable "instance_size" {
   type        = list
   default     = []

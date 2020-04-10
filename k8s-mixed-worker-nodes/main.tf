@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "2.14.0"
+  version = "2.49.0"
 }
 
 provider "aws" {
@@ -33,8 +33,12 @@ data "aws_s3_bucket_object" "bootstrap_script" {
 }
 
 locals {
-  # Terraform 0.12 can't iterate over list in resource block
-  mixed_asg_instances = "${zipmap(range(length(var.instance_size)), var.instance_size)}"
+  worker_instance_types                 = var.instance_size
+  worker_instance_type                  = split(":", local.worker_instance_types[0])[0]
+  worker_instance_types_with_weights    = {
+    for i in local.worker_instance_types:
+      split(":", i)[0] => length(split(":", i)) > 1 ? split(":", i)[1] : "1"
+  }
 
   name1 = "worker-${var.name}"
   name2 = "${substr(local.name1, 0, min(length(local.name1), 63))}"
@@ -213,7 +217,7 @@ resource "aws_launch_template" "worker_mixed_conf" {
   }
 
   image_id      = local.ami_id
-  instance_type = var.instance_size[0]
+  instance_type = local.worker_instance_type
   key_name      = var.keypair
 
 
@@ -296,12 +300,14 @@ resource "aws_autoscaling_group" "workers" {
     launch_template {
       launch_template_specification {
         launch_template_id = aws_launch_template.worker_mixed_conf.id
+        version = "$Latest"
       }
 
       dynamic "override" {
-        for_each = local.mixed_asg_instances
+        for_each = local.worker_instance_types_with_weights
         content {
-          instance_type = override.value
+          instance_type     = override.key
+          weighted_capacity = override.value
         }
       }
 
