@@ -16,6 +16,7 @@ global:
 
   podSecurityPolicy:
     enabled: false
+    useAppArmor: true
 
   # Set the verbosity of cert-manager. Range of 0 - 6 with 6 being the most verbose.
   logLevel: 2
@@ -72,10 +73,24 @@ resources: {}
 
 # Pod Security Context
 # ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-securityContext:
-  enabled: false
-  fsGroup: 1001
-  runAsUser: 1001
+securityContext: {}
+# legacy securityContext parameter format: if enabled is set to true, only fsGroup and runAsUser are supported
+# securityContext:
+#   enabled: false
+#   fsGroup: 1001
+#   runAsUser: 1001
+# to support additional securityContext parameters, omit the `enabled` parameter and simply specify the parameters
+# you want to set, e.g.
+# securityContext:
+#   fsGroup: 1000
+#   runAsUser: 1000
+#   runAsNonRoot: true
+
+volumes: []
+
+volumeMounts: []
+
+deploymentAnnotations: {}
 
 podAnnotations: {}
 
@@ -146,6 +161,10 @@ webhook:
     #   maxSurge: 0
     #   maxUnavailable: 1
 
+  securityContext: {}
+
+  deploymentAnnotations: {}
+
   podAnnotations: {}
 
   # Optional additional arguments for webhook
@@ -184,6 +203,7 @@ webhook:
   securePort: 10250
 
 cainjector:
+  enabled: true
   replicaCount: 1
 
   strategy: {}
@@ -191,6 +211,10 @@ cainjector:
     # rollingUpdate:
     #   maxSurge: 0
     #   maxUnavailable: 1
+
+  securityContext: {}
+
+  deploymentAnnotations: {}
 
   podAnnotations: {}
 
