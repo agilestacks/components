@@ -1,13 +1,12 @@
 .DEFAULT_GOAL := deploy
 
-NAME2 := $(shell echo $(TF_VAR_name) | sed -E -e 's/[^[:alnum:]]+/-/g' | cut -c1-50)
+DOMAIN_NAME ?= test.dev.superhub.io
+NAME2       := $(shell echo $(TF_VAR_name) | sed -E -e 's/[^[:alnum:]]+/-/g' | cut -c1-50)
 
 STATE_BUCKET ?= terraform.agilestacks.com
 STATE_REGION ?= us-east-1
 
 export AWS_DEFAULT_REGION ?= us-east-2
-
-export DOMAIN_NAME ?= test.dev.superhub.io
 
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_name)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log

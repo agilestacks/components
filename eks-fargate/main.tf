@@ -19,9 +19,9 @@ data "aws_eks_cluster" "target" {
 data "aws_subnet_ids" "private" {
   vpc_id = data.aws_eks_cluster.target.vpc_config[0].vpc_id
 
-  # tags = {
-  #   kind = "private"
-  # }
+  tags = {
+    kind = "private"
+  }
 }
 
 resource "aws_iam_role" "fargate" {
