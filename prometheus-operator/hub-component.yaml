@@ -88,6 +88,8 @@ parameters:
       value: 1
     - name: prometheus.retention
       value: 12h
+    - name: prometheus.volumeSize
+      value: 2Gi
   - name: component.prometheus.alertmanager
     parameters:
     - name:  version

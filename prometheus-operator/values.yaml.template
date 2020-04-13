@@ -1781,7 +1781,17 @@ prometheus:
     ## Prometheus StorageSpec for persistent data
     ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md
     ##
-    storageSpec: {}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: default
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: ${component.prometheus.prometheus.volumeSize}
+          volumeMode: Filesystem
+
     #  volumeClaimTemplate:
     #    spec:
     #      storageClassName: gluster
