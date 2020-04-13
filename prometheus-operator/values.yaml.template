@@ -462,6 +462,8 @@ alertmanager:
 ##
 grafana:
   enabled: true
+  plugins:
+  - devopsprodigy-kubegraf-app
 
   ## Deploy default dashboards.
   ##
