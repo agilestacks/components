@@ -1,0 +1,44 @@
+---
+version: 1
+kind: component
+meta:
+  name: eks-fargate
+  brief: EKS Fargate Profile
+  source:
+    dir: ../../components/eks-fargate
+
+requires:
+- kubernetes
+
+provides:
+- eks-fargate
+
+parameters:
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.region
+  env: STATE_REGION
+- name: dns.domain
+  env: DOMAIN_NAME
+
+- name: kubernetes.eks.cluster
+  env: TF_VAR_cluster_name
+# - name: cloud.vpc.worker.subnet.ids
+#   env: SUBNET_IDS
+
+- name: component.worker-pool
+  parameters:
+  - name: shortName
+    value: ${hub.componentName}
+    env: TF_VAR_short_name
+  - name: name
+    value: ${component.worker-pool.shortName}-${dns.domain}
+    env: TF_VAR_name
+  - name: fargate.namespace
+    value: fargate
+    env: TF_VAR_namespace
+  - name: fargate.labels
+    value: '{}'
+    env: TF_VAR_labels
