@@ -26,6 +26,9 @@ parameters:
   - name: namespace
     env: NAMESPACE
     value: automation-tasks
+  - name: isClusterRole
+    env: CLUSTER_ROLE
+    value: false
   - name: role
     env: ROLE
     value: |
