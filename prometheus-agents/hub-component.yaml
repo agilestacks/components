@@ -1,0 +1,35 @@
+---
+version: 1
+kind: component
+meta:
+  name: prometheus-agents
+  brief: Cluster monitoring
+  description: >
+    Component that deploys Prometheus Node Exporter and Kube State Metrics agents
+    to the cluster required by Prometheus to scrape Kubernetes metrics from the
+    cluster
+  source:
+    dir: ../../components/prometheus-agents
+
+requires:
+  - kubernetes
+
+provides:
+  - prometheus-agents
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.prometheusAgents
+    parameters:
+    - name: namespace
+      value: monitoring
+      env: NAMESPACE
+    - name: nodeExporter.version
+      value: v0.18.1
+    - name: kubeStateMetrics.version
+      value: v1.9.4
+
+templates:
+  files:
+    - "*.template"
