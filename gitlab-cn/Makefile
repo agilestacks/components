@@ -17,11 +17,6 @@ HELM_REPO     ?= https://charts.gitlab.io/
 TLS_KIND      ?= letsencrypt
 HELM_VALUES   ?= --values values.yaml
 
-STATE_BUCKET    ?= terraform.agilestacks.com
-STATE_REGION    ?= us-east-1
-STATE_CONTAINER ?= agilestacks
-
-
 kubectl ?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
 helm    ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
 terraform   ?= terraform-v0.11
@@ -117,7 +112,21 @@ destroy: plan
 clean:
 	rm -rf $(HELM_HOME) $(notdir $(CHART))
 
-configure:
+wait: WAIT_TIMEOUT:=1200
+wait: URL:=$(lastword $(subst ://, ,$(GITLAB_URL)))
+wait:
+	$(eval timeout := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
+	@ echo Waiting for $(URL) to respond
+	@ while [ "`date +%s`" -le "$(timeout)" ]; do \
+		result="`nslookup $(URL) > /dev/null; echo $$?`"; \
+		test "$$result" -ne "0" || exit 0; \
+		echo "Still waiting..."; \
+		sleep 2; \
+	done; \
+	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
+	exit 1
+
+configure: wait
 	scripts/create_bot_account.sh
 	scripts/create_minio_buckets.sh
 	@ echo "Generating gitlab token for: $(GITLAB_URL)"

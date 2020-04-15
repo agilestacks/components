@@ -143,15 +143,13 @@ templates:
 outputs:
   - name: component.gitlab.url
     brief: Gitlab URL
-    value: ${component.gitlab.url}
   - name: component.gitlab.server.url
-    brief: Gitlab URL
+    brief: Gitlab API
     value: ${component.gitlab.url}/api/v4
   - name: component.gitlab.registryUrl
     brief: Gitlab Registry URL
-    value: ${component.gitlab.registryUrl}
   - name: component.gitlab.namespace
-    value: ${component.gitlab.namespace}
     brief: Gitlab default group
   - name: component.gitlab.token
+    kind: secret
     fromTfVar: serviceaccount_token

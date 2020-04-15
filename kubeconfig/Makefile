@@ -1,18 +1,25 @@
 .DEFAULT_GOAL := deploy
 
-export DOMAIN_NAME ?= dev.kubernetes.delivery
+DOMAIN_NAME ?= $(error DOMAIN_NAME not deefined)
+export KUBECONFIG  := $(abspath kubeconfig result/kubeconfig.$(DOMAIN_NAME))
 
-deploy: output
-	mkdir -p result
-	mv -f kubeconfig result/kubeconfig.$(DOMAIN_NAME)
+$(KUBECONFIG):
+	mkdir -p $(@D)
+	cat kubeconfig > $@
 
-undeploy:
-	-rm -f result/kubeconfig.$(DOMAIN_NAME)
+deploy: output $(KUBECONFIG) $(CLOUD_KIND)/deploy
+
+$(CLOUD_KIND)/$%:
+	test ! -f $(CLOUD_KIND)/Makefile \
+		|| $(MAKE) -C "$(@D)" $*
+
+undeploy: $(CLOUD_KIND)/undeploy
+	rm -f $(KUBECONFIG)
 
 output:
 	@echo
 	@echo Outputs:
-	@echo kubeconfig = $(abspath .)/result/kubeconfig.$(DOMAIN_NAME)
+	@echo kubeconfig = $(KUBECONFIG)
 	@echo
 
 -include ../Mk/phonies

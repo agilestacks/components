@@ -1,1 +1,10 @@
 charts/
+azure/add-dns-entry.sh
+azure/storageclass.yaml
+gcp/storageclass.yaml
+gcp/add-dns-entry.sh
+aws/acm/values.yaml
+.helm
+values.yaml
+oidc-crd.yaml
+gitlab-dex-provider.yaml

@@ -11,7 +11,7 @@ REQUEST="grant_type=password&username=root&password=${ROOT_PASSWORD}"
 
 while [ -z "$TOKEN" ]
 do
-  RESULT=$(curl -k -H"Accept: application/json" --data "${REQUEST}" --request POST https://gitlab.{{dns.domain}}/oauth/token)
+  RESULT=$(curl -sk -H"Accept: application/json" --data "${REQUEST}" --request POST https://gitlab.{{dns.domain}}/oauth/token)
     TOKEN=$(echo $RESULT | jq --raw-output .access_token)
     if [ -z "$TOKEN" ]; then
         echo "Failed to log into gitlab. Service is still unavailable. Retrying ..."
@@ -23,4 +23,4 @@ if [ $TOKEN == "null" ]; then
     echo "Failed to log into gitlab-ce"
 fi
 
-curl -k -H "Authorization: Bearer ${TOKEN}" https://gitlab.{{dns.domain}}/api/v4/users --data "username=${BOT_NAME}&email=${BOT_NAME}@{{dns.domain}}&password=${BOT_PASSWORD}&name=${BOT_NAME}&admin=true&skip_confirmation=true"
+curl -sk -H "Authorization: Bearer ${TOKEN}" https://gitlab.{{dns.domain}}/api/v4/users --data "username=${BOT_NAME}&email=${BOT_NAME}@{{dns.domain}}&password=${BOT_PASSWORD}&name=${BOT_NAME}&admin=true&skip_confirmation=true"
