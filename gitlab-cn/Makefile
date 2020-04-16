@@ -10,12 +10,18 @@ export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain_name)-$(TF_VAR_component)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 export HELM_HOME   ?= $(shell pwd)/.helm
 
-CHART         ?= gitlab/gitlab
+CHART         ?= gitlab
 CHART_VERSION ?= 1.7.5
 CLOUD_KIND    ?= aws
 HELM_REPO     ?= https://charts.gitlab.io/
 TLS_KIND      ?= letsencrypt
+
 HELM_VALUES   ?= --values values.yaml
+ifeq ($(TLS_KIND), acm)
+HELM_VALUES += --values aws/$(TLS_KIND)/values.yaml)
+endif
+
+CHART_DIR := $(HELM_HOME)/charts/$(CHART)
 
 kubectl ?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
 helm    ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
@@ -47,40 +53,42 @@ endif
 deploy: clean init fetch purge install plan apply configure
 
 $(TF_DATA_DIR):
-	@mkdir -p $@
+	@mkdir -p "$@"
 
-init: $(TF_DATA_DIR)
-	@mkdir -p $(HELM_HOME) charts
+$(CHART_DIR):
+	@mkdir -p "$(@D)"
 	$(helm) init --client-only --upgrade
 	$(helm) repo add gitlab $(HELM_REPO)
 	$(helm) repo update
+	$(helm) fetch gitlab/$(CHART) \
+		--destination "$(@D)" \
+		--untar \
+		--version $(CHART_VERSION)
+
+init: $(TF_DATA_DIR)
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
 		$(STATE_BACKEND_CONFIG) \
 		./$(CLOUD_KIND)
 
-fetch:
-	$(helm) fetch \
-		--destination charts \
-		--untar $(CHART) \
-		--version $(CHART_VERSION)
+fetch: $(CHART_DIR)
 
 purge:
+	$(kubectl) delete secret gitlab-registry-storage
+	$(kubectl) delete secret gitlab-rails-storage
+	$(kubectl) delete secret gitlab-backup-storage
 	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
-	  $(kubectl) -n $(TF_VAR_namespace) delete secret --all && \
 	  $(helm) delete --purge $(TF_VAR_component) || exit 0
 
-install:
-	-$(kubectl) create namespace $(TF_VAR_namespace)
+install: $(CHART_DIR)
+	-$(kubectl) get namespace $(TF_VAR_namespace) 2>/dev/null || \
+		$(kubectl) create namespace $(TF_VAR_namespace)
 	-$(kubectl) create -f oidc-crd.yaml
 	-$(kubectl) create secret generic gitlab-dex-oicd --from-file=provider=gitlab-dex-provider.yaml
 	-scripts/create_minio_secret.sh
 	$(MAKE) -C $(CLOUD_KIND) $@
-ifeq ($(TLS_KIND), acm)
-	$(eval HELM_VALUES=$(shell echo "${HELM_VALUES} -f $(CLOUD_KIND)/$(TLS_KIND)/values.yaml"))
-endif
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
-	  $(helm) install charts/$(notdir $(CHART)) \
+	  $(helm) install $^ \
 	  --timeout 700 \
 	  --name $(TF_VAR_component) \
 	  --namespace $(TF_VAR_namespace) \
@@ -106,15 +114,15 @@ apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 	@echo
 
-destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
+destroy: TF_CLI_ARGS+=-destroy
 destroy: plan
 
 clean:
-	rm -rf $(HELM_HOME) $(notdir $(CHART))
+	rm -rf $(HELM_HOME) $(CHART_DIR) $(TF_DATA_DIR)
 
-wait: WAIT_TIMEOUT:=1200
-wait: URL:=$(lastword $(subst ://, ,$(GITLAB_URL)))
-wait:
+wait-dns: WAIT_TIMEOUT:=1200
+wait-dns: URL:=$(lastword $(subst ://, ,$(GITLAB_URL)))
+wait-dns:
 	$(eval timeout := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
 	@ echo Waiting for $(URL) to respond
 	@ while [ "`date +%s`" -le "$(timeout)" ]; do \
@@ -125,6 +133,27 @@ wait:
 	done; \
 	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
 	exit 1
+
+wait-ready: WAIT_TIMEOUT:=1200
+wait-ready: URL:=$(GITLAB_URL)/-/readiness
+wait-ready:
+	$(eval timeout := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
+	@ echo Waiting for $(URL) to respond ready
+	@ while [ "`date +%s`" -le "$(timeout)" ]; do \
+		code="`curl -kssLo /dev/null -w "%{http_code}" $(URL)`"; \
+		if test "$$code" -eq "200"; then \
+			resp=`curl -kssL $(URL)`; \
+			test `echo $$resp | jq -r .status` = "ok" \
+				&& exit 0 \
+				|| echo "Gitlab responded: $$resp"; \
+		fi; \
+		echo "Still waiting..."; \
+		sleep 2; \
+	done; \
+	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
+	exit 1
+
+wait: wait-dns wait-ready
 
 configure: wait
 	scripts/create_bot_account.sh
@@ -137,3 +166,4 @@ configure: wait
 		--env "GITLAB_ADMIN_PASSWD=$(GITLAB_SERVICEACCOUNT_PASS)"
 
 -include ../Mk/phonies
+.PHONY: wait wait-dns wait-ready
