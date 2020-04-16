@@ -13,8 +13,8 @@
   },
   "devDependencies": {
     "eslint": "^6.5.1",
-    "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.18.0"
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2"
   },
   "engines": {
     "node": ">=12.16",

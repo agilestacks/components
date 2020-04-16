@@ -41,15 +41,15 @@ outputs:
   brief: Docker image
   fromTfVar: image
 - name: component.ecr.url
-  brief: Console URL
+  brief: ECR Console URL
   fromTfVar: console_url
-
 - name: component.docker.registry.kind
   value: ecr
 - name: component.docker.registry.image
   brief: Docker image
   fromTfVar: image
 - name: component.docker.registry.url
+  brief: ECR Registry URL
   fromTfVar: host
 - name: component.docker.auth.host
   fromTfVar: host

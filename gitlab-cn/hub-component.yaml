@@ -143,7 +143,8 @@ templates:
 outputs:
   - name: component.gitlab.url
     brief: Gitlab URL
-  - name: component.gitlab.server.url
+    value: ${component.gitlab.url}
+  - name: component.gitlab.server.endpoint
     brief: Gitlab API
     value: ${component.gitlab.url}/api/v4
   - name: component.gitlab.registryUrl
