@@ -88,19 +88,19 @@ outputs:
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/ambassador/v0/diag
   - name: component.kubeflow.argo.url
     brief: Argo UI
-    icon: .hub/icon/argo.png
+    icon: .hub/icons/argo.png
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/argo
   - name: component.kubeflow.jupyterhub.url
     brief: Jupyter Hub Admin panel
-    icon: .hub/icon/jupyter.svg
+    icon: .hub/icons/jupyter.svg
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/hub
   - name: component.kubeflow.tf-job.url
     brief: TF Job Dashboard
-    icon: .hub/icon/tensorflow.svg
+    icon: .hub/icons/tensorflow.svg
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/tfjobs/ui
   - name: component.kubeflow.pipelines.url
     brief: Pipelines UI
-    icon: .hub/icon/kubeflow-pipelines.svg
+    icon: .hub/icons/kubeflow-pipelines.svg
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/pipeline
 
 templates:
