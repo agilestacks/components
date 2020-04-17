@@ -118,6 +118,9 @@ parameters:
         value: ${component.gitlab.url}/users/auth/${component.gitlab.omniauth.provider.name}/callback
   - name: component.dex.issuer
   - name: component.minio.secret
+  - name: component.minio.secretKey
+  - name: component.minio.accessKey
+  - name: component.bucket.endpoint.internal
   - name: component.bucket
     parameters:
     - name: namespace

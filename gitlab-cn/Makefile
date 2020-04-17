@@ -10,8 +10,8 @@ export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain_name)-$(TF_VAR_component)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 export HELM_HOME   ?= $(shell pwd)/.helm
 
-CHART         ?= gitlab
-CHART_VERSION ?= 1.7.5
+CHART         ?= gitlab/gitlab
+CHART_VERSION ?= 3.1.5
 CLOUD_KIND    ?= aws
 HELM_REPO     ?= https://charts.gitlab.io/
 TLS_KIND      ?= letsencrypt
@@ -22,35 +22,42 @@ HELM_VALUES += --values aws/$(TLS_KIND)/values.yaml)
 endif
 
 CHART_DIR := $(HELM_HOME)/charts/$(CHART)
+GITLAB_CRDS_URL   := https://gitlab.com/gitlab-org/charts/gitlab/raw/v${CHART_VERSION}/support/crd.yaml
 
 kubectl ?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
-helm    ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
+helm    ?= helm3 --kube-context="$(TF_VAR_domain_name)"
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
 
-ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
+deploy: clean purge install
+
+ifneq (,$(filter $(CLOUD_KIND),aws))
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate" \
 				-backend-config="profile=$(AWS_PROFILE)"
+deploy: init plan apply
 else ifeq ($(CLOUD_KIND),gcp)
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="prefix=$(TF_VAR_domain_name)/$(TF_VAR_component)" \
 				-backend-config="credentials=$(GOOGLE_APPLICATION_CREDENTIALS)"
+deploy: init plan apply
 else ifeq ($(CLOUD_KIND),azure)
 STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$(STATE_BUCKET)" \
 				-backend-config="container_name=$(STATE_CONTAINER)" \
 				-backend-config="resource_group_name=$(TF_VAR_azure_resource_group_name)" \
 				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate"
+deploy: init plan apply
+else ifeq ($(CLOUD_KIND),metal)
+	;
 else
-$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, hybrid)
+$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, metal)
 endif
 
-
-deploy: clean init fetch purge install plan apply configure
+deploy: configure
 
 $(TF_DATA_DIR):
 	@mkdir -p "$@"
@@ -71,8 +78,6 @@ init: $(TF_DATA_DIR)
 		$(STATE_BACKEND_CONFIG) \
 		./$(CLOUD_KIND)
 
-fetch: $(CHART_DIR)
-
 purge:
 	$(kubectl) delete secret gitlab-registry-storage
 	$(kubectl) delete secret gitlab-rails-storage
@@ -81,12 +86,12 @@ purge:
 	  $(helm) delete --purge $(TF_VAR_component) || exit 0
 
 install: $(CHART_DIR)
-	-$(kubectl) get namespace $(TF_VAR_namespace) 2>/dev/null || \
-		$(kubectl) create namespace $(TF_VAR_namespace)
+	-$(kubectl) get namespace $(TF_VAR_namespace) 2>/dev/null || $(kubectl) create namespace $(TF_VAR_namespace)
+	-$(kubectl) create namespace $(TF_VAR_namespace)
+	-$(kubectl) apply -f $(GITLAB_CRDS_URL)
 	-$(kubectl) create -f oidc-crd.yaml
 	-$(kubectl) create secret generic gitlab-dex-oicd --from-file=provider=gitlab-dex-provider.yaml
 	-scripts/create_minio_secret.sh
-	$(MAKE) -C $(CLOUD_KIND) $@
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
 	  $(helm) install $^ \
 	  --timeout 700 \
@@ -96,7 +101,6 @@ install: $(CHART_DIR)
 	  --wait \
 	  $(HELM_VALUES) \
 	  --version $(CHART_VERSION)
-	  #$(MAKE) -C $(CLOUD_KIND) dns
 
 undeploy: init destroy apply
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
