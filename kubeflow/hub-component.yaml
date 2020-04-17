@@ -84,7 +84,7 @@ outputs:
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}
   - name: component.kubeflow.ambassador.url
     brief: Ambassador Diagnostics
-    icon: .hub/icon/ambassador.png
+    icon: .hub/icons/ambassador.png
     value: ${component.kubeflow.ambassador.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/ambassador/v0/diag
   - name: component.kubeflow.argo.url
     brief: Argo UI
