@@ -8,7 +8,6 @@ STATE_REGION ?= us-east-1
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
-export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
@@ -48,6 +47,7 @@ refresh:
 
 apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
+	@echo
 
 output:
 	@$(terraform) output -no-color
