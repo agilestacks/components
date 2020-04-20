@@ -10,7 +10,7 @@ export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain_name)-$(TF_VAR_component)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 export HELM_HOME   ?= $(shell pwd)/.helm
 
-CHART         ?= gitlab/gitlab
+CHART         ?= gitlab
 CHART_VERSION ?= 3.1.5
 CLOUD_KIND    ?= aws
 HELM_REPO     ?= https://charts.gitlab.io/
@@ -64,7 +64,6 @@ $(TF_DATA_DIR):
 
 $(CHART_DIR):
 	@mkdir -p "$(@D)"
-	$(helm) init --client-only --upgrade
 	$(helm) repo add gitlab $(HELM_REPO)
 	$(helm) repo update
 	$(helm) fetch gitlab/$(CHART) \
@@ -91,13 +90,11 @@ install: $(CHART_DIR)
 	-$(kubectl) apply -f $(GITLAB_CRDS_URL)
 	-$(kubectl) create -f oidc-crd.yaml
 	-$(kubectl) create secret generic gitlab-dex-oicd --from-file=provider=gitlab-dex-provider.yaml
-	-scripts/create_minio_secret.sh
-	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
-	  $(helm) install $^ \
-	  --timeout 700 \
-	  --name $(TF_VAR_component) \
+	-scripts/create_bucket_secret.sh
+	$(helm) upgrade $(TF_VAR_component) $^ \
+	  --timeout 10m \
+          --install \
 	  --namespace $(TF_VAR_namespace) \
-	  --replace \
 	  --wait \
 	  $(HELM_VALUES) \
 	  --version $(CHART_VERSION)
@@ -161,7 +158,7 @@ wait: wait-dns wait-ready
 
 configure: wait
 	scripts/create_bot_account.sh
-	scripts/create_minio_buckets.sh
+	scripts/create_buckets.sh
 	@ echo "Generating gitlab token for: $(GITLAB_URL)"
 	@ $(kubectl) run --generator=run-pod/v1 --rm -i gitlab-token-generation \
 		--image=docker.io/agilestacks/gitlab-token-generator:latest \
