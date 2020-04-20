@@ -39,8 +39,10 @@ global:
 
   ## doc/charts/globals.md#configure-ingress-settings
   ingress:
-    configureCertmanager: true
-    annotations: {}
+    configureCertmanager: false
+    annotations:
+      kubernetes.io.tls-acme: true
+      cert-manager.io/cluster-issuer: ${component.gitlab.defaultIssuerName}
     enabled: true
     tls:
       enabled: true
@@ -639,7 +641,24 @@ grafana:
 
 ## Settings for individual sub-charts under GitLab
 ## Note: Many of these settings are configurable via globals
-# gitlab:
+gitlab:
+  task-runner:
+    backups:
+      objectStorage:
+        config:
+          secret: gitlab-registry-storage
+          key: config
+
+  unicorn:
+    ingress:
+      tls:
+        secretName: unicorn-tls
+
+  registry:
+    ingress:
+      tls:
+        secretName: unicorn-tls
+
 ## doc/charts/gitlab/migrations
 #   migrations:
 #     enabled: false

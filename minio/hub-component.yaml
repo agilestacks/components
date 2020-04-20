@@ -84,13 +84,11 @@ parameters:
     - name: region
       value: us-east-1
     - name: accessKey
-      value: ""
       empty: allow
-      env: ACCESS_KEY
+      env: MINIO_ACCESS_KEY
     - name: secretKey
-      value: ""
       empty: allow
-      env: SECRET_KEY
+      env: MINIO_SECRET_KEY
     - name: replicas
       value: 4
     - name: mode
@@ -159,19 +157,15 @@ outputs:
   - name: component.bucket.name
     brief: Name of the default bucket
     value: ${component.minio.default.bucket.name}
-  - name: component.bucket.accessKey
-    kind: secret
-    value: ${component.minio.accessKey}
-  - name: component.bucket.secretKey
-    kind: secret
-    value: ${component.minio.secretKey}
   - name: component.bucket.endpoint.internal
     value: http://${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.service.port}
   - name: component.bucket.endpoint
     value: ${component.ingress.protocol}://${component.minio.name}.${component.minio.ingress.baseDomain}
+  - name: component.minio.endpoint
+    value: ${component.ingress.protocol}://${component.minio.name}.${component.minio.ingress.baseDomain}
   - name: component.bucket.region
     value: ${component.minio.region}
-  - name: component.minio.secret
+  - name: component.bucket.secret
     brief: Name of the secret associated with minio credentials
     fromTfVar: secret
   - name: component.minio.url

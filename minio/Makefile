@@ -14,8 +14,8 @@ DEFAULT_BUCKET ?= default
 
 # secret-name has been driven by fullnameOverride in helm chart
 SECRET         := $(COMPONENT_NAME)
-ACCESS_KEY_REF ?= accesskey
-SECRET_KEY_REF ?= secretkey
+MINIO_ACCESS_KEY_REF ?= accesskey
+MINIO_SECRET_KEY_REF ?= secretkey
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
@@ -29,25 +29,26 @@ else
 mc ?= mc --insecure --no-color
 endif
 
-ifeq ($(ACCESS_KEY),)
-	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(ACCESS_KEY_REF)' | base64 -d))
+ifeq ($(MINIO_ACCESS_KEY),)
+	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(MINIO_ACCESS_KEY_REF)' | base64 -d)
 	random     := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
-	ACCESS_KEY := $(or $(secret_val),$(random))
+	MINIO_ACCESS_KEY := $(or $(secret_val),$(random))
 endif
 
-ifeq ($(SECRET_KEY),)
-	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(SECRET_KEY_REF)' | base64 -d))
+ifeq ($(MINIO_SECRET_KEY),)
+	secret_val := $(shell $(kubectl) get secret '$(SECRET)' -o json | jq -r '.data?.$(MINIO_SECRET_KEY_REF)' | base64 -d)
 	random     := $(shell uuidgen | tr ' [:upper:] ' ' [:lower:] ' | tr -d '-')
-	SECRET_KEY := $(or $(secret_val),$(random))
+	MINIO_SECRET_KEY := $(or $(secret_val),$(random))
 endif
+
 
 ifeq ($(NATS_ENABLED),true)
 	MINIO_NOTIFICATIONS += nats-notifications
 endif
 
 HELM_OPTS := --values values.yaml
-HELM_OPTS += --set 'accessKey=$(ACCESS_KEY)'
-HELM_OPTS += --set 'secretKey=$(SECRET_KEY)'
+HELM_OPTS += --set 'accessKey=$(MINIO_ACCESS_KEY)'
+HELM_OPTS += --set 'secretKey=$(MINIO_SECRET_KEY)'
 HELM_OPTS += --set 'fullnameOverride=$(SECRET)'
 
 ifneq ($(TLS_KIND),)
@@ -109,7 +110,7 @@ install: namespace
 configure: wait-dns
 	@ $(mc) --insecure config host add $(ALIAS) \
 		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
-		$(ACCESS_KEY) $(SECRET_KEY) \
+		$(MINIO_ACCESS_KEY) $(MINIO_SECRET_KEY) \
 		--api S3v4
 	@ $(mc) --insecure config host list
 
@@ -123,6 +124,8 @@ undeploy: init unconfigure
 	- $(kubectl) delete job $(COMPONENT_NAME)-make-bucket-job
 
 clean:
+	echo "MINIO_ACCESS_KEY=$(MINIO_ACCESS_KEY)"
+	echo "MINIO_SECRET_KEY=$(MINIO_SECRET_KEY)"
 	rm -rf $(HELM_HOME) charts
 
 output:

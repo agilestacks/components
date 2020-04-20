@@ -2,9 +2,7 @@
 
 KUBE="kubectl --context={{dns.domain}} --namespace={{component.bucket.namespace}}"
 BUCKETHOST={{component.gitlab.name}}
-BUCKET_INTERNAL_ENDPOINT={{component.bucket.endpoint.internal}}
-BUCKET_TMP={{component.bucket.endpoint}}
-BUCKET_ENDPOINT=${BUCKET_INTERNAL_ENDPOINT:-BUCKET_TMP}
+BUCKET_ENDPOINT={{component.bucket.endpoint}}
 
 # connectToBucketService
 # Use a check-sleep-check loop to wait for the service to be available
