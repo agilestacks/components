@@ -21,6 +21,7 @@ requires:
   - kubernetes
   - helm
   - tiller
+  - cert-manager
 
 provides:
   - gitlab
@@ -73,6 +74,8 @@ parameters:
       value: ce
     - name: issuer.email
       value: admin@superhub.io
+    - name: defaultIssuerName
+      value: ${component.cert-manager.defaultIssuerName}
     - name:  namespace
       brief: Kubernetes namespace to install into
       value: ${component.gitlab.name}
@@ -133,9 +136,6 @@ templates:
     - kind: mustache
       files:
         - "scripts/*.template"
-        - "aws/*.sh.template"
-        - "azure/*.sh.template"
-        - "gcp/*.sh.template"
 outputs:
   - name: component.gitlab.url
     brief: Gitlab URL

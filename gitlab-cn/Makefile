@@ -38,7 +38,7 @@ STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
 				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate" \
 				-backend-config="profile=$(AWS_PROFILE)"
-deploy: init plan apply
+#deploy: init plan apply
 else ifeq ($(CLOUD_KIND),gcp)
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
         		-backend-config="region=$(STATE_REGION)" \
@@ -81,8 +81,9 @@ purge:
 	-$(kubectl) delete secret gitlab-registry-storage
 	-$(kubectl) delete secret gitlab-rails-storage
 	-$(kubectl) delete secret gitlab-backup-storage
-	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
-	  $(helm) delete --purge $(TF_VAR_component) || exit 0
+	-$(kubectl) delete -f $(GITLAB_CRDS_URL)
+	$(helm) list --failed --pending -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
+	  $(helm) --namespace $(TF_VAR_namespace) delete $(TF_VAR_component) || exit 0
 
 install: $(CHART_DIR)
 	-$(kubectl) get namespace $(TF_VAR_namespace) 2>/dev/null || $(kubectl) create namespace $(TF_VAR_namespace)
@@ -92,17 +93,21 @@ install: $(CHART_DIR)
 	-$(kubectl) create secret generic gitlab-dex-oicd --from-file=provider=gitlab-dex-provider.yaml
 	-scripts/create_bucket_secret.sh
 	$(helm) upgrade $(TF_VAR_component) $^ \
-	  --timeout 10m \
+	  --timeout 20m \
           --install \
 	  --namespace $(TF_VAR_namespace) \
 	  --wait \
 	  $(HELM_VALUES) \
 	  --version $(CHART_VERSION)
-
-undeploy: init destroy apply
+#undeploy: init destroy apply
+undeploy:
 	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
-	  $(helm) delete --purge $(TF_VAR_component) || exit 0
+	  $(helm) --namespace $(TF_VAR_namespace) delete $(TF_VAR_component) || exit 0
+	$(helm) list --pending --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
+	  $(helm) --namespace $(TF_VAR_namespace) delete $(TF_VAR_component) || exit 0
 	-$(kubectl) delete secret generic gitlab-dex-oicd
+	-kubectl --context="$(TF_VAR_domain_name)" delete ClusterRole $(TF_VAR_component)-prometheus-server
+	-kubectl --context="$(TF_VAR_domain_name)" delete ClusterRoleBinding $(TF_VAR_component)-prometheus-server
 	-$(kubectl) delete -f oidc-crd.yaml | true
 
 plan:
