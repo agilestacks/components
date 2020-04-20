@@ -31,19 +31,20 @@ global:
     https: true
     externalIP:
     ssh: ~
-    gitlab: {}
+    gitlab:
+      https: true
     minio: {}
-    registry: {}
-    tls: {}
+    registry:
+      https: true
 
   ## doc/charts/globals.md#configure-ingress-settings
   ingress:
     configureCertmanager: true
     annotations: {}
     enabled: true
-    tls: {}
-    #   enabled: true
-    #   secretName:
+    tls:
+      enabled: true
+      secretName: gitlab-tls
 
   gitlab:
     ## Enterprise license for this GitLab installation
@@ -99,7 +100,7 @@ global:
 
   ## doc/charts/globals.md#configure-minio-settings
   minio:
-    enabled: true
+    enabled: false
     credentials: {}
       # secret:
 
@@ -183,7 +184,6 @@ global:
       #   cron: "0 12 * * *"
 
 
-
     ## doc/charts/globals.md#gravatarlibravatar-settings
     gravatar:
       plainUrl:
@@ -199,45 +199,54 @@ global:
     lfs:
       enabled: true
       proxy_download: true
-      bucket: git-lfs
-      connection: {}
-        # secret:
-        # key:
+      bucket: ${component.gitlab.name}-git-lfs
+      connection:
+        secret: gitlab-rails-storage
+        key: connection
+
     artifacts:
       enabled: true
       proxy_download: true
-      bucket: gitlab-artifacts
-      connection: {}
-        # secret:
-        # key:
+      bucket: ${component.gitlab.name}-artifacts
+      connection:
+        secret: gitlab-rails-storage
+        key: connection
+
     uploads:
       enabled: true
       proxy_download: true
-      bucket: gitlab-uploads
-      connection: {}
-        # secret:
-        # key:
+      bucket: ${component.gitlab.name}-uploads
+      connection:
+        secret: gitlab-rails-storage
+        key: connection
+
     packages:
       enabled: true
       proxy_download: true
-      bucket: gitlab-packages
-      connection: {}
+      bucket: ${component.gitlab.name}-packages
+      connection:
+        secret: gitlab-rails-storage
+        key: connection
+
     externalDiffs:
       when:
       proxy_download: true
       bucket: gitlab-mr-diffs
-      connection: {}
+      connection:
+        secret: gitlab-rails-storage
+        key: connection
 
     ## doc/charts/globals.md#pseudonymizer-settings
     pseudonymizer:
       configMap:
-      bucket: gitlab-pseudo
-      connection: {}
-        # secret:
-        # key:
+      bucket: ${component.gitlab.name}-pseudo
+      connection:
+        secret: gitlab-rails-storage
+        key: connection
+
     backups:
-      bucket: gitlab-backups
-      tmpBucket: tmp
+      bucket: ${component.gitlab.name}-backups
+      tmpBucket: ${component.gitlab.name}-tmp
 
     ## doc/charts/globals.md#incoming-email-settings
     ## doc/installation/deployment.md#incoming-email
@@ -287,7 +296,7 @@ global:
       autoLinkSamlUser: false
       externalProviders: []
       allowBypassTwoFactor: []
-      providers: []
+      providers:
         - secret: gitlab-dex-oicd
 
   ## End of global.appConfig
@@ -438,25 +447,15 @@ upgradeCheck:
       cpu: 50m
 
 ## Settings to for the Let's Encrypt ACME Issuer
-# certmanager-issuer:
+certmanager-issuer:
   ## The email address to register certificates requested from Let's Encrypt.
   ## Required if using Let's Encrypt.
-  # email: email@example.com
+  email: ${component.gitlab.issuer.email}
 
 ## Installation & configuration of jetstack/cert-manager
 ## See requirements.yaml for current version
 certmanager:
-  createCustomResource: true
-  nameOverride: cert-manager
-  # Install cert-manager chart. Set to false if you already have cert-manager
-  # installed or if you are not using cert-manager.
-  install: true
-  # Other cert-manager configurations from upstream
-  # See https://github.com/jetstack/cert-manager/blob/master/deploy/charts/cert-manager/README.md#configuration
-  rbac:
-    create: true
-  webhook:
-    enabled: false
+  install: false
 
 ## doc/charts/nginx/index.md
 ## doc/architecture/decisions.md#nginx-ingress
@@ -586,11 +585,12 @@ gitlab-runner:
     locked: false
     cache:
       cacheType: s3
-      s3BucketName: runner-cache
+      s3BucketName: ${component.gitlab.name}-runner-cache
+      secretName: gitlab-runner-cache
       cacheShared: true
-      s3BucketLocation: us-east-1
       s3CachePath: gitlab-runner
-      s3CacheInsecure: false
+      s3CacheInsecure: true
+      s3ServerAddress: ${component.bucket.endpoint.internal}
 
 
 ## Installation & configuration of stable/grafana
