@@ -1,10 +1,10 @@
-#!/bin/sh
-echo "$ROLE" > role.yaml
-if [ "$CLUSTER_ROLE" = "true" ]; then
-  kubectl --context="$DOMAIN_NAME" delete clusterrolebinding "$SA"-cluster-role-binding
-  kubectl --context="$DOMAIN_NAME" delete -f role.yaml
+#!/bin/bash
+kubectl="kubectl --context=$DOMAIN_NAME -n $NAMESPACE"
+if test "$CLUSTER_ROLE" = true; then
+  $kubectl delete clusterrolebinding "$SA"-cluster-role-binding
+  echo "$ROLE" | sed -e 's/: Role/: ClusterRole/' | $kubectl delete -f -
 else
-  kubectl --context="$DOMAIN_NAME" -n "$NAMESPACE" delete rolebinding "$SA"-role-binding
-  kubectl --context="$DOMAIN_NAME" -n "$NAMESPACE" delete -f role.yaml
+  $kubectl delete rolebinding "$SA"-role-binding
+  echo "$ROLE" | $kubectl delete -f -
 fi
-kubectl --context="$DOMAIN_NAME" -n "$NAMESPACE" delete serviceaccount "$SA"
+$kubectl delete serviceaccount "$SA"
