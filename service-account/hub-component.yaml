@@ -39,7 +39,7 @@ parameters:
       rules:
       - apiGroups: [""]
         resources: ["pods", "pods/status", "pods/log"]
-        verbs: ["get", "list", "watch"]
+        verbs: ["get", "list", "watch", "patch"]
       - apiGroups: ["batch"]
         resources: ["jobs", "jobs/status"]
         verbs: ["get", "list", "watch", "create"]
