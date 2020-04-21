@@ -1,24 +1,24 @@
 
 
 variable "linux_channel" {
-  type = "string"
+  type = string
   default = "stable"
 }
 
 variable "linux_distro" {
-  type    = "string"
+  type = string
   default = "flatcar"
 }
 
 variable "linux_gpu_version" {
-  type = "string"
+  type = string
   default = "1855.4.0"
   description = "Image version that used"
 }
 
 
 variable "linux_version" {
-  type = "string"
+  type = string
   default = "*"
   description = <<EOF
 Specifies version constraint for CoreOS image. If empty then it will lead to:

@@ -26,12 +26,6 @@ resource "random_string" "rnd" {
   upper = false
 }
 
-data "aws_s3_bucket_object" "bootstrap_script" {
-  provider = aws.bucket
-  bucket   = var.s3_bucket
-  key      = local.bootstrap_script_key
-}
-
 locals {
   worker_instance_types                 = var.instance_size
   worker_instance_type                  = split(":", local.worker_instance_types[0])[0]
@@ -115,7 +109,8 @@ locals {
   }
 
   default_key          = "${var.domain_name}/stack-k8s-aws/ignition/ignition_worker.json"
-  bootstrap_script_key = "${coalesce(var.bootstrap_script_key, local.default_key)}"
+  bootstrap_script_bucket = "${coalesce(replace(var.bootstrap_script_key, "/^s3://(.*?)/.*$/", "$1"), var.s3_bucket)}"
+  bootstrap_script_key = "${coalesce(replace(var.bootstrap_script_key, "/^s3://.*?//", ""), local.default_key)}"
   dest_script_key      = "${dirname(local.bootstrap_script_key)}/pool/${var.name}/${basename(local.bootstrap_script_key)}"
 
   ignition_content = "${data.ignition_config.main.rendered}"
@@ -147,6 +142,11 @@ locals {
   ]
 }
 
+data "aws_s3_bucket_object" "bootstrap_script" {
+  provider = aws.bucket
+  bucket   = local.bootstrap_script_bucket
+  key      = local.bootstrap_script_key
+}
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
   provider = aws.bucket
