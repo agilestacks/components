@@ -43,6 +43,7 @@ parameters:
     parameters:
     - name: shortName
       env: SHORT_NAME
+      empty: allow
     - name: name
       env: TF_VAR_name
       value: ${component.worker-pool.shortName}-${dns.domain}
