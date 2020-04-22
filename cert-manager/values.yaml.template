@@ -6,7 +6,6 @@ global:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   ##
   imagePullSecrets: []
-  isOpenshift: false
   # - name: "image-pull-secret"
 
   # Optional priority class to be used for the cert-manager pods
@@ -25,6 +24,8 @@ global:
     # Override the namespace used to store the ConfigMap for leader election
     namespace: "kube-system"
 
+installCRDs: false
+
 replicaCount: 1
 
 strategy: {}
@@ -33,6 +34,9 @@ strategy: {}
   #   maxSurge: 0
   #   maxUnavailable: 1
 
+# Comma separated list of feature gates that should be enabled on the
+# controller pod.
+featureGates: ""
 
 image:
   repository: quay.io/jetstack/cert-manager-controller
@@ -51,8 +55,9 @@ serviceAccount:
   create: true
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name:
-  annotations: {}
+  # name: ""
+  # Optional additional annotations to add to the controller's ServiceAccount
+  # annotations: {}
 
 # Optional additional arguments
 extraArgs:
@@ -91,9 +96,11 @@ volumes: []
 
 volumeMounts: []
 
-deploymentAnnotations: {}
+# Optional additional annotations to add to the controller Deployment
+# deploymentAnnotations: {}
 
-podAnnotations: {}
+# Optional additional annotations to add to the controller Pods
+# podAnnotations: {}
 
 podLabels: {}
 # Optional DNS settings, useful if you have a public and private DNS zone for
@@ -153,7 +160,6 @@ affinity: {}
 tolerations: []
 
 webhook:
-  enabled: true
   replicaCount: 1
 
   strategy: {}
@@ -164,9 +170,11 @@ webhook:
 
   securityContext: {}
 
-  deploymentAnnotations: {}
+  # Optional additional annotations to add to the webhook Deployment
+  # deploymentAnnotations: {}
 
-  podAnnotations: {}
+  # Optional additional annotations to add to the webhook Pods
+  # podAnnotations: {}
 
   # Optional additional arguments for webhook
   extraArgs: []
@@ -189,13 +197,6 @@ webhook:
     # tag: canary
     pullPolicy: IfNotPresent
 
-  # If true, the apiserver's cabundle will be automatically injected into the
-  # webhook's ValidatingWebhookConfiguration resource by the CA injector.
-  # in future this will default to false, as the apiserver can use the loopback
-  # configuration caBundle to talk to itself in kubernetes 1.11+
-  # see https://github.com/kubernetes/kubernetes/pull/62649
-  injectAPIServerCA: true
-
   # The port that the webhook should listen on for requests.
   # In GKE private clusters, by default kubernetes apiservers are allowed to
   # talk to the cluster nodes only on 443 and 10250. so configuring
@@ -215,9 +216,11 @@ cainjector:
 
   securityContext: {}
 
-  deploymentAnnotations: {}
+  # Optional additional annotations to add to the cainjector Deployment
+  # deploymentAnnotations: {}
 
-  podAnnotations: {}
+  # Optional additional annotations to add to the cainjector Pods
+  # podAnnotations: {}
 
   # Optional additional arguments for cainjector
   extraArgs: []
