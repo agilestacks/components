@@ -71,9 +71,9 @@ parameters:
 
   - name: component.worker-pool.mixed
     parameters:
-    - name: allocationStrategy
+    - name: spotAllocationStrategy
       env: TF_VAR_allocation_strategy
-      value: lowest-price
+      value: capacity-optimized
     - name: onDemandBaseCapacity
       env: TF_VAR_on_demand_base_capacity
       value: 0

@@ -40,9 +40,9 @@ variable "instance_size" {
 }
 
 
-variable "allocation_strategy" {
+variable "spot_allocation_strategy" {
   type        = string
-  default     = "lowest-price"
+  default     = "capacity-optimized"
   description = "Mixed ASG allocation strategy"
 }
 
