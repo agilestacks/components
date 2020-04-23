@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= nats
-DOMAIN_NAME    ?= test.dev.kubernetes.delivery
+DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= argoproj
 CHART          ?= bitnami/nats
 CHART_VERSION  ?= 4.3.12
@@ -11,6 +11,8 @@ export HELM_HOME ?= $(shell pwd)/.helm
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
+deploy: clean init fetch purge install natsboard
+
 init:
 	@mkdir -p $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade --wait
@@ -19,7 +21,7 @@ fetch:
 	$(helm) repo add bitnami https://charts.bitnami.com/bitnami
 	$(helm) fetch \
 		--destination charts \
-		--untar bitnami/nats \
+		--untar $(CHART) \
 		--version $(CHART_VERSION)
 
 purge:
@@ -35,8 +37,6 @@ install:
 			--version $(CHART_VERSION) \
 			--values values.yaml \
 			--wait
-
-deploy: clean init fetch purge install natsboard
 
 natsboard:
 	$(kubectl) apply -f natsboard/deployment.yaml

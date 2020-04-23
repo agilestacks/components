@@ -41,7 +41,7 @@ parameters:
   - name: replicas
     value: 1
   - name: version
-    value: 2.1.6
+    value: 2.1.6-debian-10-r23
   - name: chart.version
     value: 4.3.12
     env: CHART_VERSION
