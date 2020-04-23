@@ -1,13 +1,12 @@
 .DEFAULT_GOAL := deploy
 
-export HELM_HOME ?= $(shell pwd)/.helm
-
 COMPONENT_NAME ?= mongodb
-DOMAIN_NAME    ?= dev.kubernetes.delivery
+DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= mongodb
-CLOUD_KIND     ?= aws
-CHART          ?= charts/mongodb
-CHART_VERSION  ?= 4.3.0
+CHART          ?= bitnami/mongodb
+CHART_VERSION  ?= 7.13.0
+
+export HELM_HOME ?= $(shell pwd)/.helm
 
 TIMEOUT ?= 300
 
@@ -21,9 +20,10 @@ init:
 	@$(helm) init --client-only --upgrade --wait
 
 fetch:
+	$(helm) repo add bitnami https://charts.bitnami.com/bitnami
 	$(helm) fetch \
 		--destination charts \
-		--untar stable/mongodb \
+		--untar $(CHART) \
 		--version $(CHART_VERSION)
 
 purge:
@@ -37,7 +37,6 @@ install:
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--version $(CHART_VERSION) \
-			--replace \
 			--values values.yaml \
 			--wait
 
