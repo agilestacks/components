@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: gitlab-cn
-  title: Gitlab
+  title: GitLab
   brief: Enterprise web based Git and CI/CD
   description: >
     GitLab includes Git repository management, issue tracking, code review, an IDE, activity streams, wikis, and more.
