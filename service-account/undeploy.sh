@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 kubectl="kubectl --context=$DOMAIN_NAME -n $NAMESPACE"
 if test "$CLUSTER_ROLE" = true; then
   $kubectl delete clusterrolebinding "$SA"-cluster-role-binding
@@ -8,3 +8,4 @@ else
   echo "$ROLE" | $kubectl delete -f -
 fi
 $kubectl delete serviceaccount "$SA"
+exit 0

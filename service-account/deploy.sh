@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -xe
 HUB=${HUB:-hub}
 kubectl="kubectl --context=$DOMAIN_NAME -n $NAMESPACE"
 $kubectl create serviceaccount "$SA"
