@@ -49,7 +49,7 @@ parameters:
     env: ISTIO_GATEWAY
     # default works well if we have only one instance of an istio
     # value: ingressgateway
-- name: component.etcd.url
+- name: component.etcd.endpoint
   empty: allow
 - name: component.external-dns
   parameters:

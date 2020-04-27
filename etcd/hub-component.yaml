@@ -94,7 +94,7 @@ parameters:
       env:   RESTORE_SNAPSHOT
 
 outputs:
-  - name: component.etcd.url
+  - name: component.etcd.endpoint
     value: http://${component.etcd.name}-client.${component.etcd.namespace}.svc.cluster.local:2379
 
 templates:

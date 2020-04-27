@@ -3,7 +3,7 @@
 COMPONENT_NAME ?= istio
 NAMESPACE      ?= istio-system
 DOMAIN_NAME    ?= default
-ISTIO_VERSION  ?= 1.2.2
+ISTIO_VERSION  ?= 1.5.0
 
 export HELM_HOME ?= $(shell pwd)/.helm
 

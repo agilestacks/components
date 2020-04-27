@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: namespace
-  brief: Plain Kubernetes namespace
+  brief: Kubernetes namespace
   source:
     dir: ../../components/namespace
 

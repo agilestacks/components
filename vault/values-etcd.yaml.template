@@ -1,5 +1,5 @@
 vault:
   storage:
     etcd:
-      address: ${component.etcd.url}
+      address: ${component.etcd.endpoint}
       etcd_api: ${component.vault.etcd.api}

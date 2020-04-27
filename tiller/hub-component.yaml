@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: tiller
-  brief: Helm's Tiller - cluster side
+  brief: Tiller
   source:
     dir: ../../components/tiller
 

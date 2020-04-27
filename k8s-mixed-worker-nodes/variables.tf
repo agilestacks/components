@@ -1,24 +1,24 @@
 
 
 variable "linux_channel" {
-  type = "string"
+  type = string
   default = "stable"
 }
 
 variable "linux_distro" {
-  type    = "string"
+  type = string
   default = "flatcar"
 }
 
 variable "linux_gpu_version" {
-  type = "string"
+  type = string
   default = "1855.4.0"
   description = "Image version that used"
 }
 
 
 variable "linux_version" {
-  type = "string"
+  type = string
   default = "*"
   description = <<EOF
 Specifies version constraint for CoreOS image. If empty then it will lead to:
@@ -33,12 +33,6 @@ variable "keypair" {
   description = "Name of an SSH key located within the AWS region. Example: coreos-user."
 }
 
-variable "instance_type" {
-  type        = string
-  default     = ""
-  description = "Instance size for the worker node(s). Example: `t2.small`."
-}
-
 variable "instance_size" {
   type        = list
   default     = []
@@ -46,9 +40,9 @@ variable "instance_size" {
 }
 
 
-variable "allocation_strategy" {
+variable "spot_allocation_strategy" {
   type        = string
-  default     = "lowest-price"
+  default     = "capacity-optimized"
   description = "Mixed ASG allocation strategy"
 }
 

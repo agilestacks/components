@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: gitlab-cn
-  title: Gitlab
+  title: GitLab
   brief: Enterprise web based Git and CI/CD
   description: >
     GitLab includes Git repository management, issue tracking, code review, an IDE, activity streams, wikis, and more.
@@ -144,14 +144,13 @@ outputs:
   - name: component.gitlab.url
     brief: Gitlab URL
     value: ${component.gitlab.url}
-  - name: component.gitlab.server.url
-    brief: Gitlab URL
+  - name: component.gitlab.server.endpoint
+    brief: Gitlab API
     value: ${component.gitlab.url}/api/v4
   - name: component.gitlab.registryUrl
     brief: Gitlab Registry URL
-    value: ${component.gitlab.registryUrl}
   - name: component.gitlab.namespace
-    value: ${component.gitlab.namespace}
     brief: Gitlab default group
   - name: component.gitlab.token
+    kind: secret
     fromTfVar: serviceaccount_token

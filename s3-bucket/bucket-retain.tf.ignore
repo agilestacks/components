@@ -1,13 +1,13 @@
 resource "aws_s3_bucket" "main" {
-  bucket = "${local.bucket}"
-  acl = "${var.acl}"
+  bucket = local.bucket
+  acl = var.acl
   # versioning is still a resource block
   versioning {
-    enabled = "${var.versioning}"
+    enabled = var.versioning
   }
   # tags is now a map (not resource block)
   tags = {
-    "Name" = "${var.name}"
+    "Name" = var.name
   }
   lifecycle {
     prevent_destroy = true

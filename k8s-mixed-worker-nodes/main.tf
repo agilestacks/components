@@ -1,10 +1,10 @@
 terraform {
   required_version = ">= 0.11.10"
-  backend          "s3"             {}
+  backend "s3" {}
 }
 
 provider "aws" {
-  version = "2.14.0"
+  version = "2.49.0"
 }
 
 provider "aws" {
@@ -16,8 +16,16 @@ provider "ignition" {
   version = "1.1.0"
 }
 
+provider "local" {
+  version = "1.4.0"
+}
+
+provider "random" {
+  version = "2.1.2"
+}
+
 provider "template" {
-  version = "~> 2.1"
+  version = "2.1.2"
 }
 
 resource "random_string" "rnd" {
@@ -26,15 +34,13 @@ resource "random_string" "rnd" {
   upper = false
 }
 
-data "aws_s3_bucket_object" "bootstrap_script" {
-  provider = aws.bucket
-  bucket   = var.s3_bucket
-  key      = local.bootstrap_script_key
-}
-
 locals {
-  # Terraform 0.12 can't iterate over list in resource block
-  mixed_asg_instances = "${zipmap(range(length(var.instance_size)), var.instance_size)}"
+  worker_instance_types                 = var.instance_size
+  worker_instance_type                  = split(":", local.worker_instance_types[0])[0]
+  worker_instance_types_with_weights    = {
+    for i in local.worker_instance_types:
+      split(":", i)[0] => length(split(":", i)) > 1 ? split(":", i)[1] : "1"
+  }
 
   name1 = "worker-${var.name}"
   name2 = "${substr(local.name1, 0, min(length(local.name1), 63))}"
@@ -111,7 +117,8 @@ locals {
   }
 
   default_key          = "${var.domain_name}/stack-k8s-aws/ignition/ignition_worker.json"
-  bootstrap_script_key = "${coalesce(var.bootstrap_script_key, local.default_key)}"
+  bootstrap_script_bucket = "${coalesce(replace(var.bootstrap_script_key, "/^s3://(.*?)/.*$/", "$1"), var.s3_bucket)}"
+  bootstrap_script_key = "${coalesce(replace(var.bootstrap_script_key, "/^s3://.*?//", ""), local.default_key)}"
   dest_script_key      = "${dirname(local.bootstrap_script_key)}/pool/${var.name}/${basename(local.bootstrap_script_key)}"
 
   ignition_content = "${data.ignition_config.main.rendered}"
@@ -143,6 +150,11 @@ locals {
   ]
 }
 
+data "aws_s3_bucket_object" "bootstrap_script" {
+  provider = aws.bucket
+  bucket   = local.bootstrap_script_bucket
+  key      = local.bootstrap_script_key
+}
 
 resource "aws_s3_bucket_object" "bootstrap_script" {
   provider = aws.bucket
@@ -213,7 +225,7 @@ resource "aws_launch_template" "worker_mixed_conf" {
   }
 
   image_id      = local.ami_id
-  instance_type = var.instance_size[0]
+  instance_type = local.worker_instance_type
   key_name      = var.keypair
 
 
@@ -289,19 +301,21 @@ resource "aws_autoscaling_group" "workers" {
   mixed_instances_policy {
     instances_distribution {
       on_demand_base_capacity = var.on_demand_base_capacity
-      spot_allocation_strategy  = var.allocation_strategy
+      spot_allocation_strategy  = var.spot_allocation_strategy
       on_demand_percentage_above_base_capacity = 0
     }
 
     launch_template {
       launch_template_specification {
         launch_template_id = aws_launch_template.worker_mixed_conf.id
+        version = "$Latest"
       }
 
       dynamic "override" {
-        for_each = local.mixed_asg_instances
+        for_each = local.worker_instance_types_with_weights
         content {
-          instance_type = override.value
+          instance_type     = override.key
+          weighted_capacity = override.value
         }
       }
 

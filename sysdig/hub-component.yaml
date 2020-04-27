@@ -56,6 +56,10 @@ parameters:
     - name:  resources.requests.cpu
       value: 600m
 
+outputs:
+  - name: component.sysdig.url
+    value: https://app.sysdigcloud.com/#/openIdAuthentication
+
 templates:
   files:
     - "*.template"

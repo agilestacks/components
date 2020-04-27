@@ -13,7 +13,6 @@ meta:
   license: MPL 2.0
   category: Security
   icon: https://s3.amazonaws.com/hashicorp-marketing-web-assets/brand/Vault_VerticalLogo_FullColor.B1xPC0pSax.svg
-  disabled: true
   source:
     dir: ../../components/vault
 
@@ -40,9 +39,9 @@ parameters:
   - name: cloud.region
     empty: allow
   - name: component.ingress.fqdn
-  - name: component.etcd.url
+  - name: component.etcd.endpoint
     empty: allow
-    env: ETCD_URL
+    env: ETCD_ENDPOINT
   - name: component.dynamodb.table
     empty: allow
     env: DYNAMODB_TABLE
@@ -99,7 +98,7 @@ parameters:
       empty: allow
 
 outputs:
-- name: component.vault.url
+- name: component.vault.endpoint
   fromTfVar: vault_url
 - name: component.vault.token.root
   fromTfVar: root_token

@@ -91,14 +91,16 @@ outputs:
   value: jenkins.${component.jenkins.namespace}.svc.cluster.local
 - name:  component.jenkins.internal.port
   value: 8080
-- name:  component.jenkins.internal.url
+- name:  component.jenkins.internal.endpoint
   value: http://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
 - name:  component.jenkins.fqdn # for Spinnaker
   value: ${component.jenkins.namespace}.${component.ingress.ssoFqdn}
 - name:  component.jenkins.url
   value: ${component.ingress.protocol}://${component.jenkins.fqdn}
 - name:  component.jenkins.blueOcean.url
+  brief: Blue Ocean UI
   value: ${component.ingress.protocol}://${component.jenkins.fqdn}/blue
+  icon: .hub/icons/jenkinsBlue.png
 
 templates:
   files:

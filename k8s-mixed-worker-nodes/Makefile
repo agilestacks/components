@@ -12,7 +12,8 @@ export TF_VAR_domain_name      ?= $(error undefined env var TF_VAR_domain_name)
 export TF_VAR_subnet_ids       := $(shell echo '$(sort $(SUBNET_ID) $(SUBNET_IDS))' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
 export TF_VAR_sg_ids           := $(shell echo '$(SG_IDS)' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
 export TF_VAR_instance_size    := $(shell echo '$(INSTANCE_SIZE)' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
-export TF_LOG      ?= info
+export TF_VAR_cluster_tag      := $(shell echo $(TF_VAR_domain_name) | sed -e s/\\./-/)
+
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_name)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
@@ -30,7 +31,8 @@ endif
 deploy: init import plan
 	# workaround famous ignition provider bug
 	$(MAKE) apply || \
-	$(MAKE) import plan apply
+		$(MAKE) import plan apply || \
+		$(MAKE) import plan apply
 	$(MAKE) kubernetes/nvidia-gpu-device-plugin.yml
 
 $(TF_DATA_DIR):
@@ -45,7 +47,7 @@ init: $(TF_DATA_DIR)
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
-	$(terraform) plan -var cluster_tag=$${TF_VAR_domain_name/./-} $(TF_CLI_ARGS) -refresh=true -out=$(TFPLAN)
+	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -out=$(TFPLAN)
 
 refresh:
 	$(terraform) refresh $(TF_CLI_ARGS)
@@ -65,8 +67,8 @@ undeploy: init destroy apply
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
+import: worker:=$(shell echo worker-$(TF_VAR_name) | cut -c 1-63)
 import:
-	$(eval worker=$(shell echo worker-$(TF_VAR_name) | cut -c 1-63))
 	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers $(worker)
 
 -include ../Mk/phonies

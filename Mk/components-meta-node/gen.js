@@ -18,14 +18,31 @@ function write(filename, value) {
 
 function checkIcon(name, property) {
     if (!property.startsWith('https://') && !property.startsWith('data:image/')) {
-        throw new Error(`Invalid meta.icon of ${name} component. Must be either proper https URL or Data URI`);
+        throw new Error(`Invalid meta.icon of "${name}" component. Must be either proper https URL or Data URI`);
     }
     return property.replace(/(\r\n|\n|\r)/gm, '');
 }
 
+function extractOutputs(outputs, name, basePath) {
+    return outputs.map(({icon, ...output}) => {
+        if (icon) {
+            try {
+                return {
+                    ...output,
+                    icon: base64.base64Sync(`${basePath}/${icon}`)
+                };
+            } catch (error) {
+                throw new Error(`Can not find icon file of "${output.name}" output for component "${name}"`);
+            }
+        }
+
+        return output;
+    });
+}
+
 function extract(components) {
     return keyBy(
-        components.map(([name, {meta, requires = [], provides = []}, iconFilePath]) => ({
+        components.map(([name, {meta, requires = [], provides = [], outputs = []}, iconFilePath, basePath]) => ({
             name,
             ...pick(meta, [
                 'brief', 'version', 'maturity', 'license', 'title', 'description', 'category'
@@ -37,9 +54,11 @@ function extract(components) {
             ...(iconFilePath ? {icon: base64.base64Sync(iconFilePath)} : {}),
             ...(meta.icon ? {icon: checkIcon(name, meta.icon)} : {}),
             requires,
-            provides
+            provides,
+            outputs: extractOutputs(outputs, name, basePath)
         })),
-        'name');
+        'name'
+    );
 }
 
 function iconPath(basePath) {
@@ -59,10 +78,11 @@ function iconPath(basePath) {
 
 function read(components) {
     const options = {schema: yaml.FAILSAFE_SCHEMA};
-    return components.map(([name, filename, iconFilePath]) => [
+    return components.map(([name, filename, basePath]) => [
         name,
         yaml.safeLoad(fs.readFileSync(filename)),
-        iconFilePath,
+        iconPath(basePath),
+        basePath,
         options
     ]);
 }
@@ -73,7 +93,8 @@ function scan(directory) {
         .map(([name, basePath]) => [
             name,
             path.join(basePath, 'hub-component.yaml'),
-            iconPath(basePath)])
+            basePath
+        ])
         .filter(([, filename]) => fs.existsSync(filename));
 }
 

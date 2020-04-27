@@ -8,21 +8,23 @@ provider "aws" {
 }
 
 locals {
-  bucket = "${var.uglify == "true" ? replace(lower(var.name), ".", "-") : var.name}"
+  bucket = "${var.uglify ? replace(lower(var.name), ".", "-") : var.name}"
 }
 
 data "aws_region" "current" {}
 
 variable "versioning" {
-  default = "false"
+  type = bool
+  default = false
 }
 
 variable "uglify" {
-  default = "false"
+  type = bool
+  default = false
 }
 
 variable "endpoints" {
-  type = "map"
+  type = map(string)
   description = "S3 service endpoints by region"
   default = {
     us-east-1 = "s3.amazonaws.com"
@@ -47,12 +49,12 @@ variable "endpoints" {
 }
 
 variable "name" {
-  type = "string"
+  type = string
   description = "Name of the bucket"
 }
 
 variable "acl" {
-  type = "string"
+  type = string
   description = "S3 bucket ACL"
   default = "private"
 }
@@ -64,7 +66,6 @@ output "endpoint" {
 output "fqdn" {
   value = "${var.endpoints[ data.aws_region.current.name ]}"
 }
-
 
 output "bucket" {
   value = "${aws_s3_bucket.main.bucket}"

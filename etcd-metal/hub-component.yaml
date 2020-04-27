@@ -44,7 +44,7 @@ parameters:
       env: ETCD_EXPOSE_PORT
 
 outputs:
-- name: component.etcd.internal.url
+- name: component.etcd.internal.endpoint
   value: http://etcd-client.${component.etcd-metal.namespace}.svc.cluster.local:${component.etcd-metal.port}
 
 templates:
