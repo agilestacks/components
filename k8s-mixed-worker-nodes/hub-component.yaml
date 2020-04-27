@@ -3,7 +3,11 @@ version: 1
 kind: component
 meta:
   name: k8s-mixed-worker-nodes
+  title: Worker pool
   brief: Kubernetes worker nodes pool
+  description: >
+    A worker nodes pool is a group of nodes within a cluster that all have the same configuration.
+    A pool can contain only a single node or many nodes.
   source:
     dir: ../../components/k8s-mixed-worker-nodes
 
