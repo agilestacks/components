@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 0.11.10"
-  backend          "s3"             {}
+  backend "s3" {}
 }
 
 provider "aws" {
@@ -16,8 +16,16 @@ provider "ignition" {
   version = "1.1.0"
 }
 
+provider "local" {
+  version = "1.4.0"
+}
+
+provider "random" {
+  version = "2.1.2"
+}
+
 provider "template" {
-  version = "~> 2.1"
+  version = "2.1.2"
 }
 
 resource "random_string" "rnd" {
