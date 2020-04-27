@@ -27,8 +27,6 @@ parameters:
     env: TF_VAR_s3_bucket_region
   - name: dns.domain
     env: TF_VAR_domain_name
-  - name: dns.name
-  - name: dns.baseDomain
 
   - name: cloud.vpc.worker.subnet.id
     env: SUBNET_ID
@@ -74,10 +72,7 @@ parameters:
     - name: volume.iops
       env: TF_VAR_root_volume_iops
       value: 100
-    - name: clusterName
-      brief: Name of the cluster to join
-      value: ${dns.name}-${dns.baseDomain}
-      env: TF_VAR_cluster_tag
+
   - name: component.worker-pool.mixed
     parameters:
     - name: spotAllocationStrategy

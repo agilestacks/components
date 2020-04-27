@@ -12,6 +12,7 @@ export TF_VAR_domain_name      ?= $(error undefined env var TF_VAR_domain_name)
 export TF_VAR_subnet_ids       := $(shell echo '$(sort $(SUBNET_ID) $(SUBNET_IDS))' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
 export TF_VAR_sg_ids           := $(shell echo '$(SG_IDS)' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
 export TF_VAR_instance_size    := $(shell echo '$(INSTANCE_SIZE)' | tr ',' ' ' | xargs | $(jq) 'split(" ")')
+export TF_VAR_cluster_tag      := $(shell echo $(TF_VAR_domain_name) | sed -e s/\\./-/)
 
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_name)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
@@ -45,7 +46,7 @@ init: $(TF_DATA_DIR)
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:
-	$(terraform) plan -var cluster_tag=$${TF_VAR_domain_name/./-} $(TF_CLI_ARGS) -refresh=true -out=$(TFPLAN)
+	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -out=$(TFPLAN)
 
 refresh:
 	$(terraform) refresh $(TF_CLI_ARGS)
