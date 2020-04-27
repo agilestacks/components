@@ -89,7 +89,7 @@ parameters:
       value: hvm
     - name: ephemeralStorage.size
       env: TF_VAR_ephemeral_storage_size
-      value: 200
+      value: 30
     - name: ephemeralStorage.type
       env: TF_VAR_ephemeral_storage_type
       value: gp2
