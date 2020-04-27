@@ -67,8 +67,8 @@ undeploy: init destroy apply
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
+import: worker:=$(shell echo worker-$(TF_VAR_name) | cut -c 1-63)
 import:
-	$(eval worker=$(shell echo worker-$(TF_VAR_name) | cut -c 1-63))
 	-$(terraform) import $(TF_OPTS) aws_autoscaling_group.workers $(worker)
 
 -include ../Mk/phonies
