@@ -43,33 +43,33 @@ locals {
   }
 
   name1 = "worker-${var.name}"
-  name2 = "${substr(local.name1, 0, min(length(local.name1), 63))}"
-  name_prefix     = "${substr(replace(local.name1, ".", "-"), 0, min(32, length(local.name1)-1))}"
+  name2 = substr(local.name1, 0, min(length(local.name1), 63))
+  name_prefix     = substr(replace(local.name1, ".", "-"), 0, min(32, length(local.name1)-1))
 
-  ami_id          = "${coalesce(var.ec2_ami_override, data.aws_ami.main.image_id)}"
-
-
-  recent          = "${var.linux_version == "*"}"
-
-  linux_version   = "${local.instance_gpu == true ? var.linux_gpu_version : var.linux_version }"
+  ami_id          = coalesce(var.ec2_ami_override, data.aws_ami.main.image_id)
 
 
-  ami_owners = "${map(
+  recent          = var.linux_version == "*"
+
+  linux_version   = local.instance_gpu == true ? var.linux_gpu_version : var.linux_version
+
+
+  ami_owners = map(
                 "coreos", "595879546273",
                 "flatcar", "075585003325",
-              )}"
-  ami_names = "${map(
+              )
+  ami_names = map(
                 "coreos", "CoreOS-${var.linux_channel}-${local.linux_version}-*",
                 "flatcar", "Flatcar-${var.linux_channel}-${local.linux_version}-*",
-              )}"
+              )
 
-  ami_owner = "${local.ami_owners[var.linux_distro]}"
-  ami_name  = "${local.ami_names[var.linux_distro]}"
+  ami_owner = local.ami_owners[var.linux_distro]
+  ami_name  = local.ami_names[var.linux_distro]
 
   default_tags = [
     {
       key                 = "Name"
-      value               = "${local.name2}"
+      value               = local.name2
       propagate_at_launch = true
     },
     {
@@ -94,7 +94,7 @@ locals {
     },
     {
       key                 = "k8s.io/node-pool/name"
-      value               = "${var.name}"
+      value               = var.name
       propagate_at_launch = true
     },
   ]
@@ -105,48 +105,48 @@ locals {
         propagate_at_launch = true
       },
   ]
-  common_tags = "${map(
-        "Name", "${local.name2}",
+  common_tags = map(
+        "Name", local.name2,
         "kubernetes.io/cluster/${var.cluster_tag}", "owned",
         "superhub.io/stack/${var.domain_name}", "owned"
-    )}"
+    )
 
   tags = {
-    default_tags = "${local.default_tags}"
+    default_tags = local.default_tags
     autoscaling_tags = concat(local.default_tags, local.additional_tags)
   }
 
   default_key          = "${var.domain_name}/stack-k8s-aws/ignition/ignition_worker.json"
-  bootstrap_script_bucket = "${coalesce(replace(var.bootstrap_script_key, "/^s3://(.*?)/.*$/", "$1"), var.s3_bucket)}"
-  bootstrap_script_key = "${coalesce(replace(var.bootstrap_script_key, "/^s3://.*?//", ""), local.default_key)}"
+  bootstrap_script_bucket = coalesce(replace(var.bootstrap_script_key, "/^s3://(.*?)/.*$/", "$1"), var.s3_bucket)
+  bootstrap_script_key = coalesce(replace(var.bootstrap_script_key, "/^s3://.*?//", ""), local.default_key)
   dest_script_key      = "${dirname(local.bootstrap_script_key)}/pool/${var.name}/${basename(local.bootstrap_script_key)}"
 
-  ignition_content = "${data.ignition_config.main.rendered}"
+  ignition_content = data.ignition_config.main.rendered
   filesystems = [
-    "${local.instance_ephemeral_nvme
+    local.instance_ephemeral_nvme
       ? data.ignition_filesystem.var_lib_docker.id
-      : data.ignition_filesystem.ebs_mount.id}",
+      : data.ignition_filesystem.ebs_mount.id,
   ]
 
   arrays = [
-    "${local.nvme_ndevices > 1 ? data.ignition_raid.nvme.id : ""}"
+    local.nvme_ndevices > 1 ? data.ignition_raid.nvme.id : ""
   ]
 
   sys_units = [
-    "${local.instance_ephemeral_nvme
+    local.instance_ephemeral_nvme
       ? data.ignition_systemd_unit.var_lib_docker.id
-      : data.ignition_systemd_unit.ebs_mount.id}",
-    "${data.ignition_systemd_unit.kubelet_ebs.id}",
-    "${data.ignition_systemd_unit.docker_ebs.id}",
-    "${local.instance_gpu == true ? data.ignition_systemd_unit.nvidia.id : ""}",
+      : data.ignition_systemd_unit.ebs_mount.id,
+    data.ignition_systemd_unit.kubelet_ebs.id,
+    data.ignition_systemd_unit.docker_ebs.id,
+    local.instance_gpu == true ? data.ignition_systemd_unit.nvidia.id : "",
   ]
 
   files = [
-    "${data.ignition_file.kubelet_config.id}"
+    data.ignition_file.kubelet_config.id
   ]
   node_labels = [
     "name=${local.name1}",
-    "${local.instance_gpu == true ? "gpu=true" : ""}",
+    local.instance_gpu == true ? "gpu=true" : "",
   ]
 }
 
@@ -177,27 +177,27 @@ data "ignition_config" "main" {
   }
 
   // hcl friendly working around conditional list values
-  arrays      = "${compact(local.arrays)}"
-  filesystems = "${compact(local.filesystems)}"
-  systemd     = "${compact(local.sys_units)}"
-  files       = "${compact(local.files)}"
+  arrays      = compact(local.arrays)
+  filesystems = compact(local.filesystems)
+  systemd     = compact(local.sys_units)
+  files       = compact(local.files)
   # directories = [
-  #   "${data.ignition_directory.pods.id}",
-  #   "${data.ignition_directory.docker.id}",
+  #   data.ignition_directory.pods.id,
+  #   data.ignition_directory.docker.id,
   # ]
   # links       = [
-  #   "${data.ignition_link.pods.id}",
-  #   "${data.ignition_link.docker.id}",
+  #   data.ignition_link.pods.id,
+  #   data.ignition_link.docker.id,
   # ]
 }
 
 data "aws_ami" "main" {
-  owners      = ["${local.ami_owner}"]
-  most_recent = "${local.recent}"
+  owners      = [local.ami_owner]
+  most_recent = local.recent
 
   filter {
     name   = "name"
-    values = ["${local.ami_name}"]
+    values = [local.ami_name]
   }
 
   filter {
