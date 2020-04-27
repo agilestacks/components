@@ -31,7 +31,8 @@ endif
 deploy: init import plan
 	# workaround famous ignition provider bug
 	$(MAKE) apply || \
-	$(MAKE) import plan apply
+		$(MAKE) import plan apply || \
+		$(MAKE) import plan apply
 	$(MAKE) kubernetes/nvidia-gpu-device-plugin.yml
 
 $(TF_DATA_DIR):
