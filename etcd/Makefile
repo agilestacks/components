@@ -141,7 +141,6 @@ install:
 		$(helm) install . \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
-			--replace \
 			--wait \
 			--values values.yaml
 
