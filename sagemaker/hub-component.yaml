@@ -50,8 +50,8 @@ templates:
     - "*.template"
 outputs:
   - name: component.sagemaker.NoteBookInstance.url
-    brief: AWS Console URL
+    brief: 1.AWS Console URL
     fromTfVar: NoteBookInstance
   - name: component.sagemaker.NoteBookUrl.url
-    brief: Your Jupyter notebook
+    brief: 2.Your Jupyter notebook
     fromTfVar: NoteBookUrl
