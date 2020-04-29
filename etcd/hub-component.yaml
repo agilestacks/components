@@ -8,7 +8,7 @@ meta:
   description: >
     Distributed reliable key-value store for the most critical data of a distributed system.
   category: App Stack
-  version: 3.2.26
+  version: 3.2.30
   maturity: ga
   license: Apache 2.0
   source:
@@ -59,7 +59,7 @@ parameters:
       env:   ETCD_CLUSTER_SIZE
     - name:  cluster.version
       brief: etcd version
-      value: v3.2.26
+      value: v3.2.30
       env:   ETCD_VERSION
     - name:  cluster.heartbeatInterval
       value: 200
