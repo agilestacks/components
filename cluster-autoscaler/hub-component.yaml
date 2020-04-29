@@ -11,7 +11,7 @@ meta:
     due to insufficient resources, there are nodes in the cluster that have been underutilized for
     an extended period of time and their pods can be placed on other existing nodes.
   category: Kubernetes Tools
-  version: 1.14.7
+  version: 1.16.5
   maturity: ga
   source:
     dir: ../../components/cluster-autoscaler
