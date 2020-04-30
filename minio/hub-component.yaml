@@ -159,8 +159,6 @@ outputs:
     value: http://${component.minio.name}.${component.minio.namespace}.svc.cluster.local:${component.minio.service.port}
   - name: component.bucket.endpoint
     value: ${component.ingress.protocol}://${component.minio.name}.${component.minio.ingress.baseDomain}
-  - name: component.minio.endpoint
-    value: ${component.ingress.protocol}://${component.minio.name}.${component.minio.ingress.baseDomain}
   - name: component.bucket.region
     value: ${component.minio.region}
   - name: component.bucket.secret
