@@ -145,8 +145,6 @@ parameters:
       value: RELEASE.2019-10-09T22-54-57Z
     - name: chart.version
       value: 2.5.16
-      #value: 2.2.0
-      # value: 1.6.5
       env: CHART_VERSION
 
 outputs:

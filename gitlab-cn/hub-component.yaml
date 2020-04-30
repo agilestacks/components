@@ -22,6 +22,7 @@ requires:
   - helm
   - tiller
   - cert-manager
+  - bucket
 
 provides:
   - gitlab
@@ -92,12 +93,8 @@ parameters:
     - name:  ingress.path
       value: /
     - name: serviceaccount.username
-      value: ""
-      empty: allow
       env: GITLAB_SERVICEACCOUNT
     - name: serviceaccount.password
-      value: ""
-      empty: allow
       env: GITLAB_SERVICEACCOUNT_PASS
     - name: fqdn
       value: gitlab.${dns.domain}

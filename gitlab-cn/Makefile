@@ -11,7 +11,7 @@ export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 export HELM_HOME   ?= $(shell pwd)/.helm
 
 CHART         ?= gitlab
-CHART_VERSION ?= 3.1.5
+CHART_VERSION ?= 3.2.3
 CLOUD_KIND    ?= aws
 HELM_REPO     ?= https://charts.gitlab.io/
 TLS_KIND      ?= letsencrypt
