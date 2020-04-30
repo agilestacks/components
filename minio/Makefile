@@ -92,7 +92,7 @@ wait-dns:
 
 
 nats-notifications: wait-dns
-	$(mc) --insecure event list $(ALIAS)/$(DEFAULT_BUCKET) | grep arn:minio:sqs:us-east-1:1:nats || \
+	$(mc) --insecure event list $(ALIAS)/$(DEFAULT_BUCKET) | grep arn:minio:sqs::1:nats  || \
             $(mc) --insecure event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
 
 purge:
