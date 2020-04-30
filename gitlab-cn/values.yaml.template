@@ -592,7 +592,7 @@ gitlab-runner:
       cacheShared: true
       s3CachePath: gitlab-runner
       s3CacheInsecure: true
-      s3ServerAddress: ${component.bucket.endpoint.internal}
+      s3ServerAddress: ${gitlab.bucket.endpoint}
 
 
 ## Installation & configuration of stable/grafana
