@@ -1,10 +1,18 @@
-#!/bin/bash
-
-KUBE="kubectl --context={{dns.domain}} --namespace={{component.gitlab.namespace}}"
-ROOT_PASSWORD=$($KUBE get secret gitlab-cn-gitlab-initial-root-password -o json | jq --raw-output '.data | map_values(@base64d) | .password')
+#!/bin/bash -x
 
 BOT_NAME={{component.gitlab.serviceaccount.username}}
 BOT_PASSWORD={{component.gitlab.serviceaccount.password}}
+
+if [ -z "$BOT_NAME" ] || [ -z "$BOT_PASSWORD" ]; then
+  echo "Bot name or password is not set.  No bot account will be created"
+  exit 0
+fi
+
+SECRETNAME={{component.gitlab.name}}-gitlab-initial-root-password
+KUBE="kubectl --context={{dns.domain}} --namespace={{component.gitlab.namespace}}"
+JQRES=$($KUBE get secret $SECRETNAME -o json)
+ROOT_PASSWORD=$(echo "$JQRES" | jq --raw-output '.data | map_values(@base64d) | .password')
+
 TOKEN=
 
 REQUEST="grant_type=password&username=root&password=${ROOT_PASSWORD}"
