@@ -1,8 +1,8 @@
 locals {
-  device_root = "/dev/xvda"
+  device_root  = "/dev/xvda"
   device_name1 = "/dev/xvdz"
   mount_path   = "/mnt/containers"
-  mount_name   = "${join("-",compact(split("/", local.mount_path)))}.mount"
+  mount_name   = "${join("-", compact(split("/", local.mount_path)))}.mount"
 }
 
 data "ignition_filesystem" "ebs_mount" {
@@ -86,3 +86,4 @@ EOF
     ignore_changes = [filename]
   }
 }
+
