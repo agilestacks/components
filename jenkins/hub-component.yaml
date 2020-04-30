@@ -96,7 +96,7 @@ outputs:
 - name:  component.jenkins.fqdn # for Spinnaker
   value: ${component.jenkins.namespace}.${component.ingress.ssoFqdn}
 - name:  component.jenkins.url
-  brief: 1.Jenkins
+  brief: 1.Jenkins UI
   value: ${component.ingress.protocol}://${component.jenkins.fqdn}
 - name:  component.jenkins.blueOcean.url
   brief: 2.Blue Ocean UI

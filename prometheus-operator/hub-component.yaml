@@ -137,13 +137,13 @@ templates:
 
 outputs:
   - name: component.prometheus.url
-    brief: 1.Prometheus
+    brief: 1.Prometheus Dashboard
     value: ${component.ingress.protocol}://${component.prometheus.ingress.urlPrefix}.${component.ingress.ssoFqdn}
   - name: component.prometheus.alertmanager.url
     brief: 2.Alertmanager
     value: ${component.ingress.protocol}://${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.ssoFqdn}
   - name: component.prometheus.grafana.url
-    brief: 3.Grafana
+    brief: 3.Grafana Dashboard
     value: ${component.ingress.protocol}://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.ssoFqdn}
   - name: component.prometheus.namespace
   - name: component.prometheus.name
