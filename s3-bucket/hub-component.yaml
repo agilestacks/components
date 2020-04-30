@@ -18,7 +18,7 @@ meta:
 requires:
 - aws
 provides:
-- s3-bucket
+- bucket
 
 parameters:
 - name: terraform.bucket.name
