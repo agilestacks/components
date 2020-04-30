@@ -124,15 +124,23 @@ parameters:
     - name: endpoint
     - name: endpoint.internal
       empty: allow
+  - name: gitlab.bucket.endpointA
+    value: ${component.bucket.endpoint.internal}
+  - name: gitlab.bucket.endpointB
+    value: ${component.bucket.endpoint}
+  - name: gitlab.bucket.endpoint
+    value: '#{size(gitlab.bucket.endpointA) > 0 ? gitlab.bucket.endpointA : gitlab.bucket.endpointB}'
 
 templates:
   files:
     - "*.template"
     - "aws/*/*.yaml.template"
+
   extra:
     - kind: mustache
       files:
         - "scripts/*.template"
+
 outputs:
   - name: component.gitlab.url
     brief: Gitlab URL
