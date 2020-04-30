@@ -1,30 +1,28 @@
-
-
 variable "linux_channel" {
-  type = string
+  type    = string
   default = "stable"
 }
 
 variable "linux_distro" {
-  type = string
+  type    = string
   default = "flatcar"
 }
 
 variable "linux_gpu_version" {
-  type = string
-  default = "1855.4.0"
+  type        = string
+  default     = "1855.4.0"
   description = "Image version that used"
 }
 
-
 variable "linux_version" {
-  type = string
-  default = "*"
+  type        = string
+  default     = "*"
   description = <<EOF
 Specifies version constraint for CoreOS image. If empty then it will lead to:
 - GPU instance will default to 1465.6.0
 - Non cpu instance will default to latest
 EOF
+
 }
 
 variable "keypair" {
@@ -34,11 +32,10 @@ variable "keypair" {
 }
 
 variable "instance_size" {
-  type        = list
+  type        = list(string)
   default     = []
   description = "Instnace size list"
 }
-
 
 variable "spot_allocation_strategy" {
   type        = string
@@ -60,7 +57,7 @@ variable "ec2_ami_override" {
 
 variable "autoscaling_enabled" {
   type        = string
-  default     = "false"
+  default     = false
   description = "Enable autoscaling by adding special auto scale group tags"
 }
 
@@ -96,10 +93,11 @@ variable "root_volume_iops" {
 The amount of provisioned IOPS for the root block device of worker nodes.
 Ignored if the volume type is not io1.
 EOF
+
 }
 
 variable "load_balancers" {
-  type    = list
+  type    = list(string)
   default = []
 
   description = <<EOF
@@ -109,8 +107,8 @@ This is useful for exposing NodePort services via load-balancers managed separat
 Example:
  * `["ingress-nginx"]`
 EOF
-}
 
+}
 
 variable "name" {
   type = string
@@ -121,6 +119,7 @@ Name of the pool
 Example:
  * `gpu1`
 EOF
+
 }
 
 variable "s3_bucket" {
@@ -130,33 +129,35 @@ variable "s3_bucket" {
 S3 bucket name to download igniniton config of
 cluster existing worker nodes from
 EOF
+
 }
 
 variable "s3_bucket_region" {
-  type    = string
-  default = "us-east-1"
+  type        = string
+  default     = "us-east-1"
   description = "Region of s3 bucket (default: us-east-1)"
 }
 
 variable "bootstrap_script_key" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
   description = <<EOF
 Path in s3 bucket to ignition key
 If empty (backward compatibility) then
 default location from stack-k8s-aws
 <DOMAIN_NAME>/stack-k8s-aws/ignition/ignition_worker.json
 EOF
+
 }
 
 variable "sg_ids" {
-  type = list
-  default = []
+  type        = list(string)
+  default     = []
   description = "Security group ids"
 }
 
 variable "subnet_ids" {
-  type    = list
+  type    = list(string)
   default = []
 
   description = "Subnets where additional worker nodes will be joined."
@@ -169,6 +170,7 @@ variable "instance_profile" {
 An IAM instance profile to use for worker nodes.
 Let use initial worker pool instance profile.
 EOF
+
 }
 
 variable "cluster_tag" {
@@ -188,22 +190,22 @@ variable "domain_name" {
 }
 
 variable "ephemeral_storage_size" {
-  default = 200
+  default     = 200
   description = "Size in gigabytes of ebs storage to mount to /var/lib"
 }
 
 variable "ephemeral_storage_iops" {
-  default = 100
+  default     = 100
   description = "Number of input/ouptut operationos for Kubelet ephemeral storage volume"
 }
 
 variable "ephemeral_storage_type" {
-  default = "gp2"
+  default     = "gp2"
   description = "EBS type for Kubelet ephemeral storage volume"
 }
 
 variable "service_dns_ip" {
-  default = ""
+  default     = ""
   description = "Optional. ip address of cluster dns"
 }
 

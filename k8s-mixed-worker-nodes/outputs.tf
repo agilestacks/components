@@ -9,3 +9,4 @@ output "bootstrap_script_s3" {
 output "autoscaling_group_name" {
   value = aws_autoscaling_group.workers.name
 }
+

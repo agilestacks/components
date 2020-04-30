@@ -1,6 +1,4 @@
-
 locals {
-
   # derived from stack-k8s-aws. Code below shows exactly
   # how it is defaulted in stack-k8s-aws
   # see: https://github.com/agilestacks/stack-k8s-aws/blob/master/platforms/aws/config.tf#L111
@@ -28,3 +26,4 @@ data "ignition_file" "kubelet_config" {
     content = data.template_file.kubelet_config.rendered
   }
 }
+

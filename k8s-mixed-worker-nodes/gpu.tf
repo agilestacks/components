@@ -15,3 +15,4 @@ resource "local_file" "systemd1" {
     create_before_destroy = true
   }
 }
+
