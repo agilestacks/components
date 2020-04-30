@@ -20,8 +20,8 @@ requires:
   - gcp
   - kubernetes
   - helm
-  - tiller
   - cert-manager
+  - external-dns
   - bucket
 
 provides:
