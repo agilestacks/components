@@ -25,7 +25,6 @@ install:
 		$(helm) install . \
 			--name $(RELEASE_NAME) \
 			--namespace $(NAMESPACE) \
-			--replace \
 			--values values.yaml
 
 undeploy: init
