@@ -56,7 +56,7 @@ variable "ec2_ami_override" {
 }
 
 variable "autoscaling_enabled" {
-  type        = string
+  type        = bool
   default     = false
   description = "Enable autoscaling by adding special auto scale group tags"
 }
@@ -208,4 +208,3 @@ variable "service_dns_ip" {
   default     = ""
   description = "Optional. ip address of cluster dns"
 }
-

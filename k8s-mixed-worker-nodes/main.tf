@@ -71,7 +71,7 @@ locals {
   ami_owner = local.ami_owners[var.linux_distro]
   ami_name  = local.ami_names[var.linux_distro]
 
-  default_tags = [
+  asg_default_tags = [
     {
       key                 = "Name"
       value               = local.name2
@@ -103,22 +103,18 @@ locals {
       propagate_at_launch = true
     },
   ]
-  additional_tags = [
+  asg_additional_autoscaling_tags = [
     {
       key                 = "k8s.io/cluster-autoscaler/enabled"
       value               = true
       propagate_at_launch = true
     },
   ]
+  asg_autoscaling_tags = concat(local.asg_default_tags, local.asg_additional_autoscaling_tags)
   common_tags = {
     "Name"                                     = local.name2
     "kubernetes.io/cluster/${var.cluster_tag}" = "owned"
     "superhub.io/stack/${var.domain_name}"     = "owned"
-  }
-
-  tags = {
-    default_tags     = local.default_tags
-    autoscaling_tags = concat(local.default_tags, local.additional_tags)
   }
 
   default_key = "${var.domain_name}/stack-k8s-aws/ignition/ignition_worker.json"
@@ -293,13 +289,10 @@ resource "aws_autoscaling_group" "workers" {
   vpc_zone_identifier  = var.subnet_ids
   termination_policies = ["ClosestToNextInstanceHour", "default"]
 
-  # Because of https://github.com/hashifcorp/terraform/issues/12453 conditional operator cannot be used with list values
-  # TODO: change this when will use terraform >=0.12
-  tags = local.tags[var.autoscaling_enabled ? "autoscaling_tags" : "default_tags"]
+  tags = var.autoscaling_enabled ? local.asg_autoscaling_tags : local.asg_default_tags
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = [tags]
   }
 
   mixed_instances_policy {
@@ -338,4 +331,3 @@ resource "local_file" "bootstrap_script" {
     create_before_destroy = true
   }
 }
-
