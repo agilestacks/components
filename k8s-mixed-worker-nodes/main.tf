@@ -60,18 +60,21 @@ locals {
 
   linux_version = local.instance_gpu == true ? var.linux_gpu_version : var.linux_version
 
-  ami_owners = {
-    "coreos"  = "595879546273"
-    "flatcar" = length(regexall("gov", data.aws_region.current.name)) > 0 ? "775307060209" : "075585003325"
-  }
+  // ami_owners = {
+  //   "coreos"  = "595879546273"
+  //   "flatcar" = length(regexall("gov", data.aws_region.current.name)) > 0 ? "775307060209" : "075585003325"
+  // }
 
-  ami_names = {
-    "coreos"  = "CoreOS-${var.linux_channel}-${local.linux_version}-*"
-    "flatcar" = "Flatcar-${var.linux_channel}-${local.linux_version}-*"
-  }
+  // ami_names = {
+  //   "coreos"  = "CoreOS-${var.linux_channel}-${local.linux_version}-*"
+  //   "flatcar" = "Flatcar-${var.linux_channel}-${local.linux_version}-*"
+  // }
 
-  ami_owner = local.ami_owners[var.linux_distro]
-  ami_name  = local.ami_names[var.linux_distro]
+  // ami_owner = local.ami_owners[var.linux_distro]
+  // ami_name  = local.ami_names[var.linux_distro]
+
+  ami_owner = "099720109477"
+  ami_name  = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
 
   asg_default_tags = [
     {
@@ -119,18 +122,6 @@ locals {
     "superhub.io/stack/${var.domain_name}"     = "owned"
   }
 
-  default_key = "${var.domain_name}/stack-k8s-aws/ignition/ignition_worker.json"
-  bootstrap_script_bucket = coalesce(
-    replace(var.bootstrap_script_key, "/^s3://(.*?)/.*$/", "$1"),
-    var.s3_bucket,
-  )
-  bootstrap_script_key = coalesce(
-    replace(var.bootstrap_script_key, "/^s3://.*?//", ""),
-    local.default_key,
-  )
-  dest_script_key = "${dirname(local.bootstrap_script_key)}/pool/${var.name}/${basename(local.bootstrap_script_key)}"
-
-  ignition_content = data.ignition_config.main.rendered
   filesystems = [
     local.instance_ephemeral_nvme ? data.ignition_filesystem.var_lib_docker.id : data.ignition_filesystem.ebs_mount.id,
   ]
@@ -155,44 +146,11 @@ locals {
   ]
 }
 
-data "aws_s3_bucket_object" "bootstrap_script" {
-  provider = aws.bucket
-  bucket   = local.bootstrap_script_bucket
-  key      = local.bootstrap_script_key
-}
-
-resource "aws_s3_bucket_object" "bootstrap_script" {
+// TODO: can we have different tf backends for workers and cluster?
+data "aws_s3_bucket_object" "cloud_init_boot_config" {
   provider = aws.bucket
   bucket   = var.s3_bucket
-  key      = local.dest_script_key
-
-  content = replace(data.aws_s3_bucket_object.bootstrap_script.body,
-      "--node-labels=node-role.kubernetes.io/node",
-      "--node-labels=node-role.kubernetes.io/node,${join(",",compact(local.node_labels))}")
-
-  content_type = "text/json"
-  acl          = "private"
-}
-
-data "ignition_config" "main" {
-  append {
-    source       = "s3://${aws_s3_bucket_object.bootstrap_script.bucket}/${aws_s3_bucket_object.bootstrap_script.key}"
-    verification = "sha512-${sha512(aws_s3_bucket_object.bootstrap_script.content)}"
-  }
-
-  // hcl friendly working around conditional list values
-  arrays      = compact(local.arrays)
-  filesystems = compact(local.filesystems)
-  systemd     = compact(local.sys_units)
-  files       = compact(local.files)
-  # directories = [
-  #   data.ignition_directory.pods.id,
-  #   data.ignition_directory.docker.id,
-  # ]
-  # links       = [
-  #   data.ignition_link.pods.id,
-  #   data.ignition_link.docker.id,
-  # ]
+  key      = var.cloud_init_config_boot_s3
 }
 
 data "aws_ami" "main" {
@@ -232,7 +190,7 @@ resource "aws_launch_template" "worker_mixed_conf" {
   instance_type = local.worker_instance_type
   key_name      = var.keypair
 
-  user_data = base64encode(data.ignition_config.main.rendered)
+  user_data = base64encode(data.aws_s3_bucket_object.cloud_init_boot_config.body)
 
   monitoring {
     enabled = false
@@ -324,12 +282,4 @@ resource "aws_autoscaling_attachment" "workers" {
   count                  = length(var.load_balancers)
   autoscaling_group_name = aws_autoscaling_group.workers.name
   elb                    = var.load_balancers[count.index]
-}
-
-resource "local_file" "bootstrap_script" {
-  content  = aws_s3_bucket_object.bootstrap_script.content
-  filename = "${path.cwd}/.terraform/${var.name}-${random_string.rnd.result}.service"
-  lifecycle {
-    create_before_destroy = true
-  }
 }

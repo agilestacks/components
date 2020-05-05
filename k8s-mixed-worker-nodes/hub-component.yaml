@@ -39,6 +39,8 @@ parameters:
   - name: cloud.ec2.worker.ignitionProfileS3
     env: TF_VAR_bootstrap_script_key
     empty: allow
+  - name: cloud.ec2.worker.cloudInit.config.boot.s3
+    env: TF_VAR_cloud_init_config_boot_s3
   - name: kubernetes.serviceDnsIp
     env: TF_VAR_service_dns_ip
     value: 10.0.3.10
@@ -98,7 +100,5 @@ parameters:
       value: 100
 
 outputs:
-- name: component.k8s-mixed-worker-nodes.bootstrapScriptS3
-  fromTfVar: bootstrap_script_s3
 - name: component.k8s-mixed-worker-nodes.vmType
   value: "${component.worker-pool.mixed.vmType}"
