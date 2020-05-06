@@ -8,6 +8,10 @@ data "aws_route53_zone" "parent" {
 
 resource "aws_route53_zone" "current" {
   name = "${var.name}.${var.base_domain}"
+
+  tags = {
+    "superhub.io/stack/${var.name}.${var.base_domain}": "owned"
+  }
 }
 
 resource "aws_route53_record" "parent" {
