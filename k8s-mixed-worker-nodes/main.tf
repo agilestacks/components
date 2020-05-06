@@ -144,13 +144,14 @@ locals {
     "name=${local.name1}",
     local.instance_gpu == true ? "gpu=true" : "",
   ]
+
+  cloud_init_boot_locaction = regex("^s3://(.+?)/(.+)$", trim(var.cloud_init_config_boot_s3, " "))
 }
 
-// TODO: can we have different tf backends for workers and cluster?
 data "aws_s3_bucket_object" "cloud_init_boot_config" {
   provider = aws.bucket
-  bucket   = var.s3_bucket
-  key      = var.cloud_init_config_boot_s3
+  bucket   = local.cloud_init_boot_locaction[0]
+  key      = local.cloud_init_boot_locaction[1]
 }
 
 data "aws_ami" "main" {
