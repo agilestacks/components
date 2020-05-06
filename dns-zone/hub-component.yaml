@@ -1,0 +1,33 @@
+---
+version: 1
+kind: component
+meta:
+  name: public-dns-zone
+  brief: Component that creates a public DNS zone in AWS
+  source:
+    dir: ../../components/dns-zone
+
+requires:
+  - aws
+provides:
+  - dns-zone
+
+parameters:
+- name: dns.baseDomain
+  env: TF_VAR_base_domain
+- name: dns.name
+  env: TF_VAR_name
+- name: aws.accessKeyId
+  empty: allow
+  env: TF_VAR_aws_access_key_id
+- name: aws.secretAccessKey
+  empty: allow
+  env: TF_VAR_aws_secret_access_key
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.region
+  env: STATE_REGION
+
+outputs:
+- name: dns.domainName
+  value: ${dns.name}.${dns.baseDomain}
