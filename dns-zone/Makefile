@@ -21,7 +21,7 @@ $(TF_DATA_DIR):
 
 provider:
 	rm -f this-account.tf external-account.tf
-	if test -n "$(TF_VAR_aws_access_key_id)"; then \
+	if [ "$(AWS_DNS_CREDENTIALS_ENABLED)" == "true" ]; then \
 		cp providers/external-account.tf . ;\
 	else \
 		cp providers/this-account.tf . ; \

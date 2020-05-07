@@ -2,7 +2,7 @@
 version: 1
 kind: component
 meta:
-  name: public-dns-zone
+  name: dns-zone
   brief: Component that creates a public DNS zone in AWS
   source:
     dir: ../../components/dns-zone
@@ -17,16 +17,24 @@ parameters:
   env: TF_VAR_base_domain
 - name: dns.name
   env: TF_VAR_name
-- name: aws.accessKeyId
-  empty: allow
-  env: TF_VAR_aws_access_key_id
-- name: aws.secretAccessKey
-  empty: allow
-  env: TF_VAR_aws_secret_access_key
+
+- name: cloud
+  parameters:
+    - name: aws.accessKey
+      empty: allow
+      env: TF_VAR_aws_access_key_id
+    - name: aws.secretKey
+      empty: allow
+      env: TF_VAR_aws_secret_access_key
+
 - name: terraform.bucket.name
   env: STATE_BUCKET
 - name: terraform.bucket.region
   env: STATE_REGION
+
+- name: component.dns-zone.awsDnsCredentials.enabled
+  value: '#{size(cloud.aws.accessKey) > 1}'
+  env: AWS_DNS_CREDENTIALS_ENABLED
 
 outputs:
 - name: dns.domainName

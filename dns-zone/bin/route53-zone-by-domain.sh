@@ -7,6 +7,7 @@
 AWS="${AWS:-aws}"
 JQ="${JQ:-jq}"
 DOMAIN="$1"
+AWS_DNS_CREDENTIALS_ENABLED="${AWS_DNS_CREDENTIALS_ENABLED:false}"
 if test -z "$DOMAIN"; then echo "Usage: $0 <domain.name>"; exit 1; fi
 
 TF_VAR_aws_access_key_id="${TF_VAR_aws_access_key_id:=}"
@@ -14,7 +15,7 @@ TF_VAR_aws_secret_access_key="${TF_VAR_aws_secret_access_key:=}"
 
 # A hack: If the Route53 zone is in another AWS account, AWS credentials of
 # that account should be used
-if test -n "$TF_VAR_aws_access_key_id"; then
+if [ "$AWS_DNS_CREDENTIALS_ENABLED" == "true" ]; then
   # A hack: If we run this from within GovCloud env, but want to discover a public Route53
   # zone in commercial AWS, then AWS_DEFAULT_REGION must be reset to some non-govcloud region
   # Otherwise AWS cli will not authorize the request properly
