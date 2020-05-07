@@ -58,6 +58,7 @@ spec:
         - "--entryPoints.traefik.address=:9000"
         - "--entryPoints.web.address=:8000"
         - "--entryPoints.websecure.address=:8443"
+        - "--entryPoints.websecure.http.tls"
         - "--api.dashboard=${component.ingress.dashboard.enabled}"
         - "--ping=true"
         - "--log.level=INFO"
