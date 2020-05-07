@@ -33,7 +33,10 @@ parameters:
   - name: kind
     env:  CLOUD_KIND
   - name: region
-# - name: component.tls.kind
+  - name: aws.secretKey
+    empty: allow
+  - name: aws.accessKey
+    empty: allow
 - name: dns.domain
   env: DOMAIN_NAME
 - name: dns.name
@@ -82,6 +85,9 @@ parameters:
     - name: tsig.keyname
     - name: tsig.secret-alg
       value: hmac-sha256
+    - name: awsDnsCredentials.enabled
+      value: '#{size(cloud.aws.accessKey) > 1}'
+      env: AWS_DNS_CREDENTIALS_ENABLED
 
 templates:
   files:

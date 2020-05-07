@@ -1,0 +1,4 @@
+aws:
+  region: "us-east-1"
+  credentials.accessKey: ${cloud.aws.accessKey}
+  credentials.secretKey: ${cloud.aws.secretKey}
