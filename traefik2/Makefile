@@ -23,10 +23,12 @@ terraform ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-export TF_VAR_component          ?= $(COMPONENT_NAME)
-export TF_VAR_domain_name        ?= $(DOMAIN_NAME)
-export TF_VAR_namespace          ?= $(NAMESPACE)
-export TF_VAR_kubeconfig_context ?= $(KUBECONFIG_CONTEXT)
+export TF_VAR_component          := $(COMPONENT_NAME)
+export TF_VAR_domain_name        := $(DOMAIN_NAME)
+export TF_VAR_url_prefix         := $(URL_PREFIX)
+export TF_VAR_sso_url_prefix     := $(SSO_URL_PREFIX)
+export TF_VAR_namespace          := $(NAMESPACE)
+export TF_VAR_kubeconfig_context := $(KUBECONFIG_CONTEXT)
 
 ifneq (,$(filter $(CLOUD_KIND),aws))
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
@@ -44,8 +46,14 @@ else
 	PROTOCOL:=http
 endif
 
-deploy: clean init crds install elb plan apply dashboard output
+ifneq (,$(filter external-dns,$(HUB_PROVIDES)))
+deploy: crds install elb dns
+undeploy: undns uninstall
+else
+deploy: init crds install elb plan apply
 undeploy: init destroy apply uninstall
+endif
+deploy: dashboard output
 
 $(TF_DATA_DIR):
 	@mkdir -p $@
@@ -82,8 +90,7 @@ install:
 elb:
 	@echo "Waiting for ELB to assign"; \
 	for i in $$(seq 1 30); do \
-		if $(kubectl) get svc \
-				$(COMPONENT_NAME) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}' | \
+		if $(kubectl) get svc $(COMPONENT_NAME) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}' | \
 				grep -F elb.amazonaws.com; then \
 			echo "done"; \
 			exit 0; \
@@ -97,6 +104,18 @@ elb:
 
 dashboard:
 	$(kubectl) apply -f dashboard.yaml
+
+dns: LOAD_BALANCER:=$(shell $(kubectl) get svc $(COMPONENT_NAME) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
+dns:
+	cat dns.yaml | sed -e 's/\$$load_balancer/$(LOAD_BALANCER)/' | $(kubectl) apply -f -
+	@echo
+	@echo Outputs:
+	@echo load_balancer = $(LOAD_BALANCER)
+	@echo load_balancer_dns_record_type = CNAME
+	@echo
+
+undns:
+	-$(kubectl) delete dnsendpoint $(COMPONENT_NAME)
 
 uninstall:
 	-$(kubectl) delete -f dashboard.yaml
@@ -128,4 +147,5 @@ destroy: plan
 clean:
 	rm -rf $(TF_DATA_DIR)
 
+.PHONY: dns undns
 -include ../Mk/phonies
