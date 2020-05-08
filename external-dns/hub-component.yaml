@@ -5,22 +5,19 @@ meta:
   category: Networking
   name: external-dns
   title: External DNS
-  description: >
-    Kubernetes addon that configures DNS servers
-    with information about exposed Kubernetes
-    services to make them discoverable
+  description: ExternalDNS synchronizes exposed Kubernetes Services and Ingresses with DNS providers
   license: Apache 2.0
   maturity: beta
   version: 0.5.18
   source:
-      dir: ../../components/external-dns
+    dir: ../../components/external-dns
 
 requires:
-  - kubernetes
-  - helm
+- kubernetes
+- helm
 
 provides:
-  - external-dns
+- external-dns
 
 lifecycle:
   verbs:
@@ -72,7 +69,7 @@ parameters:
     env: CHART_NAME
   - name: chart.version
     value: 2.20.6
-#    value: 2.15.1
+  #  value: 2.15.1
     env: CHART_VERSION
   - name: rfc2136
     empty: allow
@@ -91,8 +88,8 @@ parameters:
 
 templates:
   files:
-    - "examples/*.template"
-    - "aws/*.template"
-    - "coredns/*.template"
-    - "rfc2136/*.template"
-    - "*.template"
+  - "examples/*.template"
+  - "aws/*.template"
+  - "coredns/*.template"
+  - "rfc2136/*.template"
+  - "*.template"
