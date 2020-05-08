@@ -33,7 +33,7 @@ parameters:
   - name: aws.secretKey
     empty: allow
   - name: aws.accessKey
-    empty: allow
+    empty: ''
 - name: dns.domain
   env: DOMAIN_NAME
 - name: dns.name
