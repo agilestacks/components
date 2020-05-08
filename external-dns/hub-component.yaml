@@ -5,7 +5,7 @@ meta:
   category: Networking
   name: external-dns
   title: External DNS
-  description: ExternalDNS synchronizes exposed Kubernetes Services and Ingresses with DNS providers
+  description: ExternalDNS synchronizes exposed Kubernetes Services and Ingresses with DNS providers.
   license: Apache 2.0
   maturity: beta
   version: 0.5.18
