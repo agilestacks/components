@@ -77,7 +77,6 @@ crds:
 	done; \
 	echo "timeout"; \
 	exit 1;
-.PHONY: crds
 
 install:
 	$(kubectl) apply -f namespace.yaml
@@ -100,7 +99,6 @@ elb:
 	done; \
 	echo "timeout"; \
 	exit 1;
-.PHONY: elb
 
 dashboard:
 	$(kubectl) apply -f dashboard.yaml
@@ -157,5 +155,5 @@ destroy: plan
 clean:
 	rm -rf $(TF_DATA_DIR)
 
-.PHONY: dns undns
+.PHONY: dashboard dns undns
 -include ../Mk/phonies
