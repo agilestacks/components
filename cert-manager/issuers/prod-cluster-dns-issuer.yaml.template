@@ -15,7 +15,7 @@ spec:
     # Enable the DNS-01 challenge provider
     - dns01:
         route53:
-          region: ${cloud.region}
+          region: "us-east-1"
           accessKeyID: ${cloud.aws.accessKey}
           secretAccessKeySecretRef:
             name: solver-aws-secret-key
