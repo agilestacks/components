@@ -46,6 +46,10 @@ else
 endif
 endif
 
+ifneq (,$(AWS_DNS_CREDENTIALS_ENABLED))
+	EXT_DNS_VALUES_FILE:=--values aws/values-tls-ext-dns.yaml
+endif
+
 deploy: clean fetch patch purge install
 ifneq (,$(filter external-dns,$(HUB_PROVIDES)))
 deploy: ext-dns-endpoint-apply ext-dns-output
@@ -147,6 +151,7 @@ install:
 			$(ACM_VALUES_FILE) \
 			$(TLS_VALUES_FILE) \
 			$(DASHBOARD_VALUES_FILE) \
+			$(EXT_DNS_VALUES_FILE) \
 			--version $(CHART_VERSION); \
 	else \
 		$(MAKE) upgrade; \
