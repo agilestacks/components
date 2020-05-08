@@ -189,21 +189,6 @@ variable "domain_name" {
   description = "Domain name of the cluster that for worker pool"
 }
 
-variable "ephemeral_storage_size" {
-  default     = 200
-  description = "Size in gigabytes of ebs storage to mount to /var/lib"
-}
-
-variable "ephemeral_storage_iops" {
-  default     = 100
-  description = "Number of input/ouptut operationos for Kubelet ephemeral storage volume"
-}
-
-variable "ephemeral_storage_type" {
-  default     = "gp2"
-  description = "EBS type for Kubelet ephemeral storage volume"
-}
-
 variable "service_dns_ip" {
   default     = ""
   description = "Optional. ip address of cluster dns"

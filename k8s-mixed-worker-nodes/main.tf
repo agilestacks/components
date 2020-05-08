@@ -122,18 +122,7 @@ locals {
     "superhub.io/stack/${var.domain_name}"     = "owned"
   }
 
-  filesystems = [
-    local.instance_ephemeral_nvme ? data.ignition_filesystem.var_lib_docker.id : data.ignition_filesystem.ebs_mount.id,
-  ]
-
-  arrays = [
-    local.nvme_ndevices > 1 ? data.ignition_raid.nvme.id : "",
-  ]
-
   sys_units = [
-    local.instance_ephemeral_nvme ? data.ignition_systemd_unit.var_lib_docker.id : data.ignition_systemd_unit.ebs_mount.id,
-    data.ignition_systemd_unit.kubelet_ebs.id,
-    data.ignition_systemd_unit.docker_ebs.id,
     local.instance_gpu == true ? data.ignition_systemd_unit.nvidia.id : "",
   ]
 
@@ -146,6 +135,8 @@ locals {
   ]
 
   cloud_init_boot_locaction = regex("^s3://(.+?)/(.+)$", trim(var.cloud_init_config_boot_s3, " "))
+
+  device_root  = "/dev/xvda"
 }
 
 data "aws_s3_bucket_object" "cloud_init_boot_config" {
@@ -196,6 +187,7 @@ resource "aws_launch_template" "worker_mixed_conf" {
   monitoring {
     enabled = false
   }
+
   block_device_mappings {
     device_name = local.device_root
 
@@ -203,16 +195,6 @@ resource "aws_launch_template" "worker_mixed_conf" {
       volume_size           = var.root_volume_size
       volume_type           = var.root_volume_type
       iops                  = var.root_volume_type == "io1" ? var.root_volume_iops : 0
-      encrypted             = true
-      delete_on_termination = true
-    }
-  }
-  block_device_mappings {
-    device_name = local.device_name1
-    ebs {
-      volume_size           = var.ephemeral_storage_size
-      volume_type           = var.ephemeral_storage_type
-      iops                  = var.ephemeral_storage_type == "io1" ? var.ephemeral_storage_iops : 0
       encrypted             = true
       delete_on_termination = true
     }
