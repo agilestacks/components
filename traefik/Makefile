@@ -62,13 +62,32 @@ undeploy: ext-dns-endpoint-delete
 endif
 undeploy: uninstall
 
-ext-dns-endpoint-%: lb
+ext-dns-endpoint-apply: wait-elb elb
 	sed -i~ -e 's/##LB##/$(LOAD_BALANCER)/g' dns-endpoint.yaml
-	-$(kubectl) $* -f dns-endpoint.yaml
+	-$(kubectl) apply -f dns-endpoint.yaml
 
-lb:
+ext-dns-endpoint-delete: elb
+	sed -i~ -e 's/##LB##/$(LOAD_BALANCER)/g' dns-endpoint.yaml
+	-$(kubectl) delete -f dns-endpoint.yaml
+
+elb:
 	$(eval LOAD_BALANCER := $(shell $(kubectl) get svc $(TF_VAR_component) \
     -o jsonpath="{.status.loadBalancer.ingress[*].hostname}"))
+
+wait-elb:
+	@echo "Waiting for ELB to assign"; \
+	for i in $$(seq 1 30); do \
+		if $(kubectl) get svc $(TF_VAR_component) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}' | \
+				grep -F elb.amazonaws.com; then \
+			echo "done"; \
+			exit 0; \
+		fi; \
+		echo "still waiting"; \
+		sleep 10; \
+	done; \
+	echo "timeout"; \
+	exit 1;
+.PHONY: wait-elb
 
 ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
