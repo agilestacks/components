@@ -223,6 +223,7 @@ outputs:
 templates:
   files:
   - values*.yaml.template
+  - dns-endpoint.yaml.template
   directories:
   - .
   - aws

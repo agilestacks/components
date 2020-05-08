@@ -1,0 +1,26 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: ${component.ingress.name}
+spec:
+  endpoints:
+  - dnsName: "${component.ingress.urlPrefix}.${dns.domain}"
+    recordTTL: 300
+    recordType: "CNAME"
+    targets:
+    - "##LB##"
+  - dnsName: "${component.ingress.ssoUrlPrefix}.${dns.domain}"
+    recordTTL: 300
+    recordType: "CNAME"
+    targets:
+    - "##LB##"
+  - dnsName: "*.${component.ingress.urlPrefix}.${dns.domain}"
+    recordTTL: 300
+    recordType: "CNAME"
+    targets:
+    - "##LB##"
+  - dnsName: "*.${component.ingress.ssoUrlPrefix}.${dns.domain}"
+    recordTTL: 300
+    recordType: "CNAME"
+    targets:
+    - "##LB##"
