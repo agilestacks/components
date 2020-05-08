@@ -10,6 +10,7 @@ sources:
 - crd
 # - istio-gateway
 
+interval: 20s
 policy: sync
 domainFilters:
 - "${dns.domain}"
@@ -17,4 +18,3 @@ crd:
   create: true
   apiversion: externaldns.k8s.io/v1alpha1
   kind: DNSEndpoint
-
