@@ -26,8 +26,7 @@ lifecycle:
   - deploy
   - undeploy
   readyConditions:
-  - pauseSeconds: 30
-    dns: ${component.ingress.ssoFqdn}
+  - dns: ${component.ingress.ssoFqdn}
     url: ${component.ingress.protocol}://${component.ingress.fqdn}
 
 parameters:
