@@ -35,7 +35,7 @@ endif
 deploy: clean install
 
 # If external-dns is present, then we rely on our ingress to create the 'auth' subdomain.
-# Otherewise we use terraform
+# Otherwise we use Terraform.
 ifeq (,$(filter external-dns,$(HUB_PROVIDES)))
 deploy: init plan apply
 undeploy: init destroy apply
