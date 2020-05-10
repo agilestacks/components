@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := deploy
 
+HELM_OPTS += --values $(abspath values.yaml)
+
 ifeq (2,$(words $(AWS_ACCESS_KEY_ID) $(AWS_SECRET_ACCESS_KEY)))
 HELM_OPTS += --values $(abspath values-awscreds.yaml)
 else
@@ -13,8 +15,6 @@ $(error Cannot find role by tags: superhub.io/stack/$(DOMAIN_NAME) and superhub.
 endif
 HELM_OPTS += --set 'aws.assumeRoleArn=$(ROLE_ARN)'
 endif
-
-HELM_OPTS += --values $(abspath values.yaml)
 
 install:
 	$(helm) install $(CHART_DIR) \
