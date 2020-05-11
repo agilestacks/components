@@ -2,17 +2,26 @@
 
 HELM_OPTS += --values $(abspath values.yaml)
 
-ifeq (2,$(words $(AWS_ACCESS_KEY_ID) $(AWS_SECRET_ACCESS_KEY)))
+ifeq (2,$(words $(NON_CONFLICTING_AWS_ACCESS_KEY) $(NON_CONFLICTING_AWS_ACCESS_KEY)))
+HELM_OPTS += --set 'aws.region=""'
 HELM_OPTS += --values $(abspath values-awscreds.yaml)
 else
-aws-role-by-tag  := $(abspath ..)/bin/aws-role-by-tag
-ROLE_ARN         := $(shell $(aws-role-by-tag) \
-							--filter "$(CLUSTER_NAME)" \
-							--tag superhub.io/role/kind=worker \
-							--tag superhub.io/stack/$(DOMAIN_NAME))
+
+SCRIPT_CMD := $(abspath ..)/bin/aws-role-by-tag
+SCRIPT_CMD += --filter "$(CLUSTER_NAME)"
+SCRIPT_CMD += --tag superhub.io/role/kind=worker
+SCRIPT_CMD += --tag superhub.io/stack/$(DOMAIN_NAME)
+ROLE_ARN   := $(shell $(SCRIPT_CMD))
 ifeq ($(ROLE_ARN),)
-$(error Cannot find role by tags: superhub.io/stack/$(DOMAIN_NAME) and superhub.io/role/kind=worker)
+$(warning Cannot find ARM role by tags)
+$(warning Trying to run: $(SCRIPT_CMD))
+# uncomment for groubleshooting
+# $(warning $(shell $(SCRIPT_CMD) -x))
+$(error IAM role has not been found!)
 endif
+# .aws/config will be created if and only if AWS region has been defined
+# see: https://github.com/helm/charts/blob/master/stable/external-dns/templates/secret.yaml#L11
+HELM_OPTS += --set 'aws.region="$(NON_CONFLICTING_AWS_REGION)"'
 HELM_OPTS += --set 'aws.assumeRoleArn=$(ROLE_ARN)'
 endif
 

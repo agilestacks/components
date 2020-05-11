@@ -13,6 +13,7 @@ meta:
     dir: ../../components/external-dns
 
 requires:
+- aws
 - kubernetes
 - helm
 
@@ -30,12 +31,14 @@ parameters:
   - name: kind
     env:  CLOUD_KIND
   - name: region
+    empty: allow
+    env: NON_CONFLICTING_AWS_REGION
   - name: aws.secretKey
     empty: allow
-    env: AWS_SECRET_ACCESS_KEY
+    env: NON_CONFLICTING_AWS_SECRET_KEY
   - name: aws.accessKey
     empty: allow
-    env: AWS_ACCESS_KEY_ID
+    env: NON_CONFLICTING_AWS_ACCESS_KEY
 - name: dns.domain
   env: DOMAIN_NAME
 - name: dns.name
