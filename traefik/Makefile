@@ -46,7 +46,7 @@ else
 endif
 endif
 
-ifneq (,$(AWS_DNS_CREDENTIALS_ENABLED))
+ifeq (2,$(words $(CLOUD_AWS_ACCESS_KEY) $(CLOUD_AWS_SECRET_KEY)))
 	EXT_DNS_VALUES_FILE:=--values aws/values-tls-ext-dns.yaml
 endif
 

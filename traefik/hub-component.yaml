@@ -51,9 +51,11 @@ parameters:
 - name: dns.name
   env: TF_VAR_name
 - name: cloud.aws.secretKey
+  env: CLOUD_AWS_SECRET_KEY
   empty: allow
 - name: cloud.aws.accessKey
-  value: ''
+  env: CLOUD_AWS_ACCESS_KEY
+  empty: allow
 - name: cloud.azureResourceGroupName
   value: superhub-${cloud.region}
   env: TF_VAR_azure_resource_group_name
@@ -160,9 +162,6 @@ parameters:
   # implemented only for ELB on AWS
   - name: kubernetes.loadBalancer.timeout
     value: 60
-  - name: awsDnsCredentials.enabled
-    value: '#{size(cloud.aws.accessKey) > 1}'
-    env: AWS_DNS_CREDENTIALS_ENABLED
 
 - name: component.acm.certificateArn
   empty: allow
