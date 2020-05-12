@@ -57,6 +57,9 @@ parameters:
         value: prometheus-operator
   - name: component.istio
     parameters:
+      - name: name
+        value: istio
+        env: COMPONENT_NAME
       - name: namespace
         value: istio-system
         env: NAMESPACE
@@ -107,4 +110,5 @@ outputs:
 templates:
   files:
     - "prometheus-config/*.template"
+    - "external-dns/*.template"
     - "*.template"

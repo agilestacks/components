@@ -4,4 +4,5 @@
 /default-gateway.yaml
 /values-1.2.2.yaml
 .terraform
-
+/prometheus-config/istio-scrape-config.yaml
+/external-dns/.tmp-*
