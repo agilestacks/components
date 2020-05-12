@@ -86,6 +86,9 @@ parameters:
     - name: linuxVersion
       env: TF_VAR_linux_version
       value: "*"
+    - name: ubuntuVersion
+      env: TF_VAR_ubuntu_version
+      value: focal-20.04
     - name: vmType
       env: TF_VAR_virtualization_type
       value: hvm

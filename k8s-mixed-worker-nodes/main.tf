@@ -74,7 +74,7 @@ locals {
   // ami_name  = local.ami_names[var.linux_distro]
 
   ami_owner = "099720109477"
-  ami_name  = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
+  ami_name  = "ubuntu/images/hvm-ssd/ubuntu-${var.ubuntu_version}-amd64-server-*"
 
   asg_default_tags = [
     {

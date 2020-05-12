@@ -8,6 +8,13 @@ variable "linux_distro" {
   default = "flatcar"
 }
 
+
+variable "ubuntu_version" {
+  type    = string
+  description = "Ubuntu version used for worker"
+}
+
+
 variable "linux_gpu_version" {
   type        = string
   default     = "1855.4.0"
