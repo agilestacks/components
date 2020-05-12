@@ -3,7 +3,7 @@
 HELM_OPTS += --values $(abspath values.yaml)
 
 ifeq (2,$(words $(NON_CONFLICTING_AWS_ACCESS_KEY) $(NON_CONFLICTING_AWS_ACCESS_KEY)))
-HELM_OPTS += --set 'aws.region=""'
+HELM_OPTS += --set 'aws.region='
 HELM_OPTS += --values $(abspath values-awscreds.yaml)
 else
 
