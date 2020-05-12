@@ -3,7 +3,7 @@ version: 1
 kind: component
 meta:
   name: dns-zone
-  brief: Component that creates a public DNS zone in AWS
+  brief: Route53 DNS Zone
   source:
     dir: ../../components/dns-zone
 
