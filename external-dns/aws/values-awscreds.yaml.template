@@ -1,5 +1,4 @@
 aws:
-  region: ""
   credentials:
     accessKey: "${cloud.aws.accessKey}"
     secretKey: "${cloud.aws.secretKey}"
