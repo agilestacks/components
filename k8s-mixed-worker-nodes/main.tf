@@ -35,6 +35,8 @@ resource "random_string" "rnd" {
   upper   = false
 }
 
+data "aws_region" "current" {}
+
 locals {
   worker_instance_types = var.instance_size
 
@@ -60,7 +62,7 @@ locals {
 
   ami_owners = {
     "coreos"  = "595879546273"
-    "flatcar" = "075585003325"
+    "flatcar" = length(regexall("gov", data.aws_region.current.name)) > 0 ? "775307060209" : "075585003325"
   }
 
   ami_names = {
