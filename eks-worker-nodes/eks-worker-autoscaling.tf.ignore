@@ -45,8 +45,8 @@ resource "aws_launch_template" "node" {
   }
 
   block_device_mappings {
-    # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html
-    device_name = "/dev/xvda"
+    device_name = data.aws_ami.eks_worker.root_device_name
+
     ebs {
       volume_size = var.root_volume_size
       volume_type = var.root_volume_type
