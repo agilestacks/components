@@ -33,19 +33,6 @@ $(error "shortName" parameter must be a prefix to "name" parameter $(TF_VAR_name
 endif
 
 
-AMI_COMPLETE = $(if $(strip $(TF_VAR_ami_name)),*,)|$(if $(strip $(TF_VAR_ami_owner)),*,)
-
-ifeq ($(AMI_COMPLETE),*|)
-$(error $(AMI_COMPLETE) amiName should be used with amiOwner)
-endif
-
-ifeq ($(AMI_COMPLETE),|*)
-$(error amiOwner should be used with amiName)
-endif
-
-AMI := $(if $(TF_VAR_ami_name),custom,default)
-
-
 deploy: init import plan
 	# workaround famous ignition provider bug
 	$(MAKE) apply || \
@@ -57,11 +44,7 @@ deploy: init import plan
 $(TF_DATA_DIR) $(TMP):
 	@rm -rf $@ && mkdir -p $@
 
-ami: ami-$(AMI).tf.ignore
-	@cp -v ami-$(AMI).tf.ignore ami.tf
-.PHONY: ami
-
-init: ami
+init:
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
         -backend-config="bucket=$(TF_VAR_s3_bucket)" \
