@@ -74,6 +74,12 @@ parameters:
     - name: volume.iops
       env: TF_VAR_root_volume_iops
       value: 100
+    - name: amiOwner
+      env: TF_VAR_ami_owner
+      empty: allow
+    - name: amiName
+      env: TF_VAR_ami_name
+      empty: allow
 
   - name: component.worker-pool.mixed
     parameters:

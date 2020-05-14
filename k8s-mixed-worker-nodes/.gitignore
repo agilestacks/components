@@ -1,2 +1,3 @@
 .terraform
 .tmp
+ami.tf

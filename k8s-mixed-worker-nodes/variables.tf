@@ -56,10 +56,16 @@ variable "on_demand_base_capacity" {
   description = "On-demand instance count in mixed ASG"
 }
 
-variable "ec2_ami_override" {
+variable "ami_name" {
   type        = string
   default     = ""
-  description = "(optional) AMI override for all nodes. Example: `ami-foobar123`."
+  description = "(optional) AMI override name for all nodes. Example: `ubuntu/images/hvm-ssd/ubuntu-*`."
+}
+
+variable "ami_owner" {
+  type        = string
+  default     = ""
+  description = "(optional) AMI override owner for all nodes. Example: `099720109477`."
 }
 
 variable "autoscaling_enabled" {

@@ -54,28 +54,6 @@ locals {
     min(32, length(local.name1) - 1),
   )
 
-  ami_id = coalesce(var.ec2_ami_override, data.aws_ami.main.image_id)
-
-  recent = var.linux_version == "*"
-
-  linux_version = local.instance_gpu == true ? var.linux_gpu_version : var.linux_version
-
-  // ami_owners = {
-  //   "coreos"  = "595879546273"
-  //   "flatcar" = length(regexall("gov", data.aws_region.current.name)) > 0 ? "775307060209" : "075585003325"
-  // }
-
-  // ami_names = {
-  //   "coreos"  = "CoreOS-${var.linux_channel}-${local.linux_version}-*"
-  //   "flatcar" = "Flatcar-${var.linux_channel}-${local.linux_version}-*"
-  // }
-
-  // ami_owner = local.ami_owners[var.linux_distro]
-  // ami_name  = local.ami_names[var.linux_distro]
-
-  ami_owner = "099720109477"
-  ami_name  = "ubuntu/images/hvm-ssd/ubuntu-${var.ubuntu_version}-amd64-server-*"
-
   asg_default_tags = [
     {
       key                 = "Name"
@@ -135,34 +113,12 @@ locals {
   ]
 
   cloud_init_boot_locaction = regex("^s3://(.+?)/(.+)$", trim(var.cloud_init_config_boot_s3, " "))
-
-  device_root  = "/dev/xvda"
 }
 
 data "aws_s3_bucket_object" "cloud_init_boot_config" {
   provider = aws.bucket
   bucket   = local.cloud_init_boot_locaction[0]
   key      = local.cloud_init_boot_locaction[1]
-}
-
-data "aws_ami" "main" {
-  owners      = [local.ami_owner]
-  most_recent = local.recent
-
-  filter {
-    name = "name"
-    values = [local.ami_name]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
 }
 
 resource "aws_launch_template" "worker_mixed_conf" {
@@ -178,7 +134,7 @@ resource "aws_launch_template" "worker_mixed_conf" {
     name = var.instance_profile
   }
 
-  image_id      = local.ami_id
+  image_id      = data.aws_ami.main.image_id
   instance_type = local.worker_instance_type
   key_name      = var.keypair
 
@@ -189,7 +145,7 @@ resource "aws_launch_template" "worker_mixed_conf" {
   }
 
   block_device_mappings {
-    device_name = local.device_root
+    device_name = data.aws_ami.main.root_device_name
 
     ebs {
       volume_size           = var.root_volume_size
