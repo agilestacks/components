@@ -95,8 +95,8 @@ wait: $(TMP)
 
 	@ while [ `$(current_time)` -le "$(timeout)" ]; do \
 		asg_group_nodes=`$(kubectl) get nodes -l $(asg_nodes_selector) -o json`; \
-		ready="`echo $$asg_group_nodes | $(jq) -r --arg  readyStatus True $(jq_status_nodes_expr) | xargs -L1 echo '   '`"; \
-		not_ready="`echo $$asg_group_nodes | $(jq) -r --arg  readyStatus False $(jq_status_nodes_expr) | xargs -L1 echo '   '`"; \
+		ready="`echo $$asg_group_nodes | $(jq) -r --arg  readyStatus True $(jq_status_nodes_expr) | xargs -n1 echo '   '`"; \
+		not_ready="`echo $$asg_group_nodes | $(jq) -r --arg  readyStatus False $(jq_status_nodes_expr) | xargs -n1 echo '   '`"; \
 		test -n "$$ready" && \
 			echo "Ready nodes (expecting at least $(MIN_NUMB_NODES)):" && \
 			echo "$$ready"; \
