@@ -221,8 +221,8 @@ wait_dns:
 			echo "Done!"; \
 			exit 0; \
 		fi; \
-		echo "Still waiting..	."; \
-		sleep 10; \
+		echo "Still waiting.."; \
+		sleep 30; \
 	done; \
 	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
 	exit 1
