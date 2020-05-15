@@ -121,6 +121,13 @@ data "aws_s3_bucket_object" "cloud_init_boot_config" {
   key      = local.cloud_init_boot_locaction[1]
 }
 
+data "template_file" "worker_user_data" {
+  template = data.aws_s3_bucket_object.cloud_init_boot_config.body
+  vars = {
+    ASG_NAME = local.name2
+  }
+}
+
 resource "aws_launch_template" "worker_mixed_conf" {
   name_prefix = local.name_prefix
 
@@ -138,7 +145,7 @@ resource "aws_launch_template" "worker_mixed_conf" {
   instance_type = local.worker_instance_type
   key_name      = var.keypair
 
-  user_data = base64encode(data.aws_s3_bucket_object.cloud_init_boot_config.body)
+  user_data = base64encode(data.template_file.worker_user_data.rendered)
 
   monitoring {
     enabled = false

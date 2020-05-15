@@ -85,30 +85,24 @@ wait: $(TMP)
 	$(eval current_time := date +%s)
 
 	$(eval autoscaling_group_name := $(shell $(terraform) output autoscaling_group_name))
-	$(eval jq_group_node_ids := $(jq) -r '.AutoScalingGroups[0].Instances[].InstanceId')
+	$(eval asg_nodes_selector := node.kubernetes.io/node-pool-name=$(autoscaling_group_name))
 
-	$(eval resolve_aws_node_ids := $(aws) autoscaling describe-auto-scaling-groups --auto-scaling-group-names  $(autoscaling_group_name) \
-			| $(jq_group_node_ids) | xargs)
-
-	$(eval jq_status_nodes_expr := 'select(.status.conditions[] | .type == "Ready" and .status == $$$$readyStatus) | .metadata.name')
-
-	$(eval jq_group_node_names := $(jq) '.items[] | select( .spec.providerID | split("/") | last | IN($$$$ARGS.positional[]))')
+	$(eval jq_status_nodes_expr := '.items[] | select(.status.conditions[] | .type == "Ready" and .status == $$$$readyStatus) | .metadata.name')
 
 	@ echo "Waiting for cluster nodes within $(autoscaling_group_name) to boot"
 
 	$(eval timeout := $(shell echo "`$(current_time)` + $(WAIT_TIMEOUT)" | bc ))
 
 	@ while [ `$(current_time)` -le "$(timeout)" ]; do \
-		aws_node_ids="`$(resolve_aws_node_ids)`"; \
-		nodes_json="$(TMP)/debug-`$(current_time)`.json"; \
-		$(kubectl) get nodes -o json > $$nodes_json; \
-		asg_group_nodes="`$(jq_group_node_names) --args $$aws_node_ids < $$nodes_json`"; \
-		ready="`echo $$asg_group_nodes | $(jq) -r --arg  readyStatus True $(jq_status_nodes_expr) | xargs`"; \
-		not_ready="`echo $$asg_group_nodes | $(jq) -r --arg  readyStatus False $(jq_status_nodes_expr) | xargs`"; \
+		asg_group_nodes=`$(kubectl) get nodes -l $(asg_nodes_selector) -o json`; \
+		ready="`echo $$asg_group_nodes | $(jq) -r --arg  readyStatus True $(jq_status_nodes_expr) | xargs -L1 echo '   '`"; \
+		not_ready="`echo $$asg_group_nodes | $(jq) -r --arg  readyStatus False $(jq_status_nodes_expr) | xargs -L1 echo '   '`"; \
 		test -n "$$ready" && \
-			echo "Ready nodes [$$ready] expecting at least $(MIN_NUMB_NODES)";\
+			echo "Ready nodes (expecting at least $(MIN_NUMB_NODES)):" && \
+			echo "$$ready"; \
 		test -n "$$not_ready" && \
-			echo "Not ready nodes [$$not_ready]";\
+			echo "Not ready nodes:" && \
+			echo "$$not_ready"; \
 		ready_count="`echo $$ready | wc -w | xargs`"; \
 		not_ready_count="`echo $$not_ready | wc -w | xargs`"; \
 		up_count="`echo $$ready_count + $$not_ready_count | bc`"; \
