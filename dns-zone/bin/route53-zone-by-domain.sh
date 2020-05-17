@@ -16,11 +16,8 @@ TF_VAR_aws_secret_access_key="${TF_VAR_aws_secret_access_key:=}"
 # A hack: If the Route53 zone is in another AWS account, AWS credentials of
 # that account should be used
 if [ "$AWS_DNS_CREDENTIALS_ENABLED" == "true" ]; then
-  # A hack: If we run this from within GovCloud env, but want to discover a public Route53
-  # zone in commercial AWS, then AWS_DEFAULT_REGION must be reset to some non-govcloud region
-  # Otherwise AWS cli will not authorize the request properly
+  unset AWS_SESSION_TOKEN
   export AWS_DEFAULT_REGION=us-east-1
-
   export AWS_ACCESS_KEY_ID=$TF_VAR_aws_access_key_id
   export AWS_SECRET_ACCESS_KEY=$TF_VAR_aws_secret_access_key
 fi
