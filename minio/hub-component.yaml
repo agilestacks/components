@@ -39,6 +39,7 @@ parameters:
     env: DOMAIN
   - name: dns.domain
     env: DOMAIN_NAME
+  - name: cloud.region
   - name: component.ingress
     parameters:
     - name: fqdn
@@ -82,7 +83,8 @@ parameters:
       value: ${dns.name}-${hub.componentName}
       env: COMPONENT_NAME
     - name: region
-      value: us-east-1
+      value: ${cloud.region}
+      env: REGION
     - name: accessKey
       value: ""
       empty: allow

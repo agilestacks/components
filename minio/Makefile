@@ -11,6 +11,7 @@ ALIAS          ?= $(COMPONENT_NAME)
 DOMAIN         ?= minio
 WAIT_TIMEOUT   ?= 180
 DEFAULT_BUCKET ?= default
+REGION         ?= us-east-1
 
 # secret-name has been driven by fullnameOverride in helm chart
 SECRET         := $(COMPONENT_NAME)
@@ -91,7 +92,7 @@ wait-dns:
 
 
 nats-notifications: wait-dns
-	$(mc) --insecure event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
+	$(mc) --insecure event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:$(REGION):1:nats
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
