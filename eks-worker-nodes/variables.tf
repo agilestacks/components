@@ -17,8 +17,8 @@ variable "spot_price" {
 }
 
 variable "autoscaling_enabled" {
-  type        = string
-  default     = "false"
+  type        = bool
+  default     = false
   description = "Enable autoscaling by adding special auto scale group tags"
 }
 

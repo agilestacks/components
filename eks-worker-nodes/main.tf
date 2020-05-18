@@ -35,7 +35,7 @@ locals {
 
   instance_gpu = contains(local.gpu_instance_types, var.instance_type)
 
-  default_tags = [
+  asg_default_tags = [
     {
       key                 = "Name"
       value               = "eks-node-${local.name2}"
@@ -48,7 +48,7 @@ locals {
     },
   ]
 
-  autoscaling_tags = [
+  asg_additional_autoscaling_tags = [
     {
       key                 = "k8s.io/cluster-autoscaler/enabled"
       value               = "true"
@@ -56,8 +56,5 @@ locals {
     },
   ]
 
-  tags = {
-    default_tags     = local.default_tags
-    autoscaling_tags = concat(local.default_tags, local.autoscaling_tags)
-  }
+  asg_autoscaling_tags = concat(local.asg_default_tags, local.asg_additional_autoscaling_tags)
 }

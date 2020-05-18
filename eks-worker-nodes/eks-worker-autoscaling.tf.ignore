@@ -132,8 +132,7 @@ resource "aws_autoscaling_group" "nodes" {
     }
   }
 
-  # TODO update to Terraform 0.12
-  tags = local.tags[var.autoscaling_enabled == "true" ? "autoscaling_tags" : "default_tags"]
+  tags = var.autoscaling_enabled ? local.asg_autoscaling_tags : local.asg_default_tags
 
   # lifecycle {
   #   create_before_destroy = true
