@@ -10,7 +10,7 @@ sources:
 - crd
 # - istio-gateway
 
-interval: 20s
+interval: 5s
 policy: sync
 domainFilters:
 - "${dns.domain}"
