@@ -13,7 +13,7 @@ SCRIPT_CMD += --tag superhub.io/role/kind=worker
 SCRIPT_CMD += --tag superhub.io/stack/$(DOMAIN_NAME)
 ROLE_ARN   := $(shell $(SCRIPT_CMD))
 ifeq ($(ROLE_ARN),)
-$(warning Cannot find ARM role by tags)
+$(warning Cannot find ARN role by tags)
 $(warning Trying to run: $(SCRIPT_CMD))
 # uncomment for groubleshooting
 # $(warning $(shell $(SCRIPT_CMD) -x))
