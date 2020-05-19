@@ -1,28 +1,28 @@
 locals {
-  device_root = "/dev/xvda"
+  device_root  = "/dev/xvda"
   device_name1 = "/dev/xvdz"
   mount_path   = "/mnt/containers"
-  mount_name   = "${join("-",compact(split("/", local.mount_path)))}.mount"
+  mount_name   = "${join("-", compact(split("/", local.mount_path)))}.mount"
 }
 
 data "ignition_filesystem" "ebs_mount" {
   mount {
-    device = "${local.device_name1}"
+    device = local.device_name1
     format = "ext4"
   }
 }
 
 data "ignition_systemd_unit" "ebs_mount" {
-  name    = "${local.mount_name}"
+  name    = local.mount_name
   enabled = true
-  content = "${local_file.ebs_mount.content}"
+  content = local_file.ebs_mount.content
 }
 
 data "ignition_systemd_unit" "kubelet_ebs" {
   name = "kubelet.service"
   dropin {
     name    = "20-wait-volume-mount.conf"
-    content = "${local_file.kubelet_dropin.content}"
+    content = local_file.kubelet_dropin.content
   }
 }
 
@@ -30,7 +30,7 @@ data "ignition_systemd_unit" "docker_ebs" {
   name = "docker.service"
   dropin {
     name    = "10-wait-volume-mount.conf"
-    content = "${local_file.docker_dropin.content}"
+    content = local_file.docker_dropin.content
   }
 }
 
@@ -86,3 +86,4 @@ EOF
     ignore_changes = [filename]
   }
 }
+

@@ -1,0 +1,4 @@
+external-account.tf
+this-account.tf
+!providers/*
+.terraform

@@ -8,8 +8,8 @@ meta:
   description: >
     Træfik (pronounced traffic) is a modern HTTP reverse proxy and load balancer that makes deploying microservices easy.
   category: Edge Proxy
-  version: 2.1.9
-  maturity: alpha
+  version: 2.2.1
+  maturity: beta
   license: MIT
   icon: https://www.jpaul.me/wp-content/uploads/2018/12/traefik-300.png
   source:
@@ -26,8 +26,7 @@ lifecycle:
   - deploy
   - undeploy
   readyConditions:
-  - pauseSeconds: 30
-    dns: ${component.ingress.ssoFqdn}
+  - dns: ${component.ingress.ssoFqdn}
     url: ${component.ingress.protocol}://${component.ingress.fqdn}
 
 parameters:
@@ -66,10 +65,10 @@ parameters:
   parameters:
   - name: urlPrefix
     value: app2
-    env: TF_VAR_url_prefix
+    env: URL_PREFIX
   - name: ssoUrlPrefix
     value: apps2
-    env: TF_VAR_sso_url_prefix
+    env: SSO_URL_PREFIX
   - name: name
     env: COMPONENT_NAME
     value: traefik2
@@ -92,7 +91,7 @@ parameters:
 - name: component.traefik
   parameters:
   - name: app.version
-    value: 2.1.9
+    value: 2.2.1
   - name: kubernetes.nodeSelector
     value: '{}'
   - name: kubernetes.tolerations

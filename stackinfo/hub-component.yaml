@@ -3,7 +3,8 @@ version: 1
 kind: component
 meta:
   name: stackinfo
-  brief: Create a container where to store stack metadata
+  brief: Stack metadata
+  description: Create a container where to store stack metadata
   source:
     dir: ../../components/stackinfo
 

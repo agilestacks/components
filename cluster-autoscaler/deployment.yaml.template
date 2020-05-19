@@ -20,7 +20,7 @@ spec:
       - effect: NoSchedule
         key: node-role.kubernetes.io/master
       containers:
-        - image: gcr.io/google-containers/cluster-autoscaler:${component.cluster-autoscaler.version}
+        - image: us.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler:${component.cluster-autoscaler.version}
           name: ${component.cluster-autoscaler.name}
           resources:
             limits:

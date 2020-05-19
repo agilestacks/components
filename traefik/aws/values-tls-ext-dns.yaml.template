@@ -1,0 +1,7 @@
+acme:
+  dnsProvider:
+    name: route53
+    route53:
+      AWS_REGION: ""
+      AWS_ACCESS_KEY_ID: "${cloud.aws.accessKey}"
+      AWS_SECRET_ACCESS_KEY: "${cloud.aws.secretKey}"

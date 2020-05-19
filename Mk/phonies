@@ -4,11 +4,13 @@
 .PHONY: clean
 .PHONY: configure
 .PHONY: connect
+.PHONY: crds
 .PHONY: delete
 .PHONY: deploy
 .PHONY: deploy-test
 .PHONY: destroy
 .PHONY: disconnect
+.PHONY: elb
 .PHONY: enable
 .PHONY: fetch
 .PHONY: get

@@ -8,7 +8,6 @@ ISTIO_VERSION  ?= 1.5.0
 export HELM_HOME ?= $(shell pwd)/.helm
 
 CHARTS_DIR := $(abspath $(HELM_HOME))/charts
-HUB_PROVIDES ?=
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 kubectl-prometheus ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(PROMETHEUS_NAMESPACE)"
@@ -21,10 +20,11 @@ HELM_VALUES_ARGS += -f $(abspath values-$(ISTIO_VERSION).yaml)
 deploy: clean install usage
 
 $(CHARTS_DIR)/%: init repo
-	$(helm) fetch istio/$* \
-		--version "$(ISTIO_VERSION)" \
-		--untar \
-		--untardir $(dir $@)
+	test -d "$@" || \
+		$(helm) fetch istio/$* \
+			--version "$(ISTIO_VERSION)" \
+			--untar \
+			--untardir $(dir $@)
 
 # More info auto-injection: https://github.com/istio/istio/issues/6476#issuecomment-399219937
 apply-template-% delete-template-%: $(CHARTS_DIR)/istio
@@ -65,6 +65,11 @@ dashboards-%:
 		--from-file=prometheus-config/dashboards/pilot-dashboard.json --dry-run -o yaml | $(kubectl-prometheus) $* -f - || exit 0
 
 
+ifneq (,$(filter prometheus,$(HUB_PROVIDES)))
+HELM_VALUES_ARGS += -f $(abspath kiali-patch-values.yaml)
+install: configure-prometheus 
+undeploy: unconfigure-prometheus
+
 configure-prometheus: dashboards-apply label
 	$(kubectl-prometheus) create secret generic additional-scrape-configs \
 		--from-file=prometheus-config/istio-scrape-config.yaml --dry-run -o yaml | $(kubectl-prometheus) apply -f -
@@ -73,14 +78,18 @@ configure-prometheus: dashboards-apply label
 
 unconfigure-prometheus: dashboards-delete
 	-$(kubectl-prometheus) delete secret additional-scrape-configs
+endif
 
-ifneq (,$(filter prometheus,$(HUB_PROVIDES)))
-HELM_VALUES_ARGS += -f $(abspath kiali-patch-values.yaml)
-install: configure-prometheus namespace install-istio-init wait-crds install-istio apply-template-mutatingwebhook.yaml
-undeploy: purge clean unconfigure-prometheus
-else
+undeploy: purge clean 
 install: namespace install-istio-init wait-crds install-istio apply-template-mutatingwebhook.yaml
-undeploy: purge clean
+
+ifneq (,$(filter external-dns,$(HUB_PROVIDES)))
+external-dns/deploy:
+	$(MAKE) -C "$(@D)" $(@F)
+
+install: external-dns/deploy
+
+.PHONY: external-dns/deploy
 endif
 
 install-istio-init: $(CHARTS_DIR)/istio-init

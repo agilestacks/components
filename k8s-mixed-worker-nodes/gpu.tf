@@ -4,8 +4,8 @@ locals {
 
 data "ignition_systemd_unit" "nvidia" {
   name    = "nvidia.service"
-  enabled = "${local.instance_gpu}"
-  content = "${local_file.systemd1.content}"
+  enabled = local.instance_gpu
+  content = local_file.systemd1.content
 }
 
 resource "local_file" "systemd1" {
@@ -15,3 +15,4 @@ resource "local_file" "systemd1" {
     create_before_destroy = true
   }
 }
+

@@ -74,9 +74,9 @@ init: $(TF_DATA_DIR)
 fetch: $(CHART_DIR)
 
 purge:
-	$(kubectl) delete secret gitlab-registry-storage
-	$(kubectl) delete secret gitlab-rails-storage
-	$(kubectl) delete secret gitlab-backup-storage
+	-$(kubectl) delete secret gitlab-registry-storage
+	-$(kubectl) delete secret gitlab-rails-storage
+	-$(kubectl) delete secret gitlab-backup-storage
 	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
 	  $(helm) delete --purge $(TF_VAR_component) || exit 0
 

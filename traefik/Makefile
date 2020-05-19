@@ -25,6 +25,7 @@ export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain_name)-$(TF_VAR_component)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
+kubectl 		?= kubectl --context="$(TF_VAR_domain_name)" -n $(TF_VAR_namespace)
 helm        ?= helm --kube-context="$(TF_VAR_kubeconfig_context)" --tiller-namespace="kube-system"
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
@@ -45,7 +46,52 @@ else
 endif
 endif
 
-deploy: clean init fetch patch purge install plan output apply wait
+ifeq (2,$(words $(CLOUD_AWS_ACCESS_KEY) $(CLOUD_AWS_SECRET_KEY)))
+	EXT_DNS_VALUES_FILE:=--values aws/values-tls-ext-dns.yaml
+endif
+
+deploy: clean fetch patch purge install
+ifneq (,$(filter external-dns,$(HUB_PROVIDES)))
+deploy: ext-dns-endpoint-apply ext-dns-output
+else
+deploy: init plan output apply
+endif
+deploy: wait
+
+undeploy: fetch
+ifeq (,$(filter external-dns,$(HUB_PROVIDES)))
+undeploy: init destroy apply
+else
+undeploy: ext-dns-endpoint-delete
+endif
+undeploy: uninstall
+
+ext-dns-endpoint-apply: wait-elb elb
+	sed -i~ -e 's/##LB##/$(LOAD_BALANCER)/g' dns-endpoint.yaml
+	-$(kubectl) apply -f dns-endpoint.yaml
+
+ext-dns-endpoint-delete: elb
+	sed -i~ -e 's/##LB##/$(LOAD_BALANCER)/g' dns-endpoint.yaml
+	-$(kubectl) delete -f dns-endpoint.yaml
+
+elb:
+	$(eval LOAD_BALANCER := $(shell $(kubectl) get svc $(TF_VAR_component) \
+    -o jsonpath="{.status.loadBalancer.ingress[*].hostname}"))
+
+wait-elb:
+	@echo "Waiting for ELB to assign"; \
+	for i in $$(seq 1 30); do \
+		if $(kubectl) get svc $(TF_VAR_component) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}' | \
+				grep -F elb.amazonaws.com; then \
+			echo "done"; \
+			exit 0; \
+		fi; \
+		echo "still waiting"; \
+		sleep 10; \
+	done; \
+	echo "timeout"; \
+	exit 1;
+.PHONY: wait-elb
 
 ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
@@ -70,14 +116,14 @@ $(TF_DATA_DIR):
 	@mkdir -p $@
 
 init: $(TF_DATA_DIR)
-	@mkdir -p $(HELM_HOME) charts
-	$(helm) init --client-only --upgrade --wait
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
 		$(STATE_BACKEND_CONFIG) \
 		./$(CLOUD_KIND)
 
 fetch:
+	@mkdir -p $(HELM_HOME) charts
+	$(helm) init --client-only --upgrade --wait
 	$(helm) fetch \
 		--destination charts \
 		--untar $(CHART) \
@@ -105,6 +151,7 @@ install:
 			$(ACM_VALUES_FILE) \
 			$(TLS_VALUES_FILE) \
 			$(DASHBOARD_VALUES_FILE) \
+			$(EXT_DNS_VALUES_FILE) \
 			--version $(CHART_VERSION); \
 	else \
 		$(MAKE) upgrade; \
@@ -130,14 +177,23 @@ apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 	@echo
 
+ext-dns-output:
+	@echo
+	@echo Outputs:
+	@echo ingress_protocol = $(PROTOCOL)
+	@echo ingress_fqdn = $(TF_VAR_url_prefix).$(TF_VAR_domain_name)
+	@echo sso_ingress_fqdn = $(TF_VAR_sso_url_prefix).$(TF_VAR_domain_name)
+	@echo load_balancer = $(LOAD_BALANCER)
+	@echo load_balancer_dns_record_type = CNAME
+	@echo provides = $(PROVIDES)
+	@echo
+
 output:
 	@echo
 	@echo Outputs:
 	@echo ingress_protocol = $(PROTOCOL)
 	@echo provides = $(PROVIDES)
 	@echo
-
-undeploy: init destroy apply uninstall
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
@@ -165,8 +221,8 @@ wait_dns:
 			echo "Done!"; \
 			exit 0; \
 		fi; \
-		echo "Still waiting..	."; \
-		sleep 2; \
+		echo "Still waiting.."; \
+		sleep 30; \
 	done; \
 	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
 	exit 1
