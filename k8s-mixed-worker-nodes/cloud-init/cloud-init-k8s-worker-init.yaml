@@ -1,0 +1,22 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+write_files:
+  - path: '/etc/systemd/system/kbd-join.service'
+    permissions: '0644'
+    encoding: 'base64'
+    owner: root:root
+    content: ${SYSTEMD_KBD_JOIN}
+  - path: '/opt/kubeadm/kubeadm-join.yaml.template'
+    permissions: '0644'
+    encoding: 'base64'
+    owner: 'root'
+    content: ${KUBEADM_JOIN}
+runcmd:
+  - systemctl enable kbd-join
+  - systemctl start kbd-join
+final_message: cloud-init worker has completed

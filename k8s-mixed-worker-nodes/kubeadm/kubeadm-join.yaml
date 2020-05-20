@@ -1,0 +1,14 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    token: ${KUBEADM_TOKEN}
+    apiServerEndpoint: ${API_URL}
+    unsafeSkipCAVerification: true
+nodeRegistration:
+  name: $NODE_NAME
+  kubeletExtraArgs:
+    cloud-provider: aws
+    node-ip: $NODE_IP
+    node-labels: node.kubernetes.io/node-pool-name=${ASG_NAME}

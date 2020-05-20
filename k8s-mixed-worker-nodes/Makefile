@@ -18,6 +18,8 @@ export TF_VAR_sg_ids           := $(shell echo '$(SG_IDS)' | tr ',' ' ' | xargs 
 export TF_VAR_instance_size    := $(shell echo '$(INSTANCE_SIZE)' | tr ',' ' ' | xargs | $(jq) -R 'split(" ")')
 export TF_VAR_cluster_tag      := $(shell echo $(TF_VAR_domain_name) | sed -e s/\\./-/)
 
+export TF_VAR_s3_base_path     := $(TF_VAR_domain_name)/k8s-mixed-worker-nodes/$(TF_VAR_name)
+
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_name)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
@@ -49,7 +51,7 @@ init:
         -backend=true -reconfigure \
         -backend-config="bucket=$(TF_VAR_s3_bucket)" \
         -backend-config="region=$(TF_VAR_s3_bucket_region)" \
-        -backend-config="key=$(TF_VAR_domain_name)/k8s-mixed-worker-nodes/$(TF_VAR_name)/terraform.tfstate" \
+        -backend-config="key=$(TF_VAR_s3_base_path)/terraform.tfstate" \
         -backend-config="profile=$(AWS_PROFILE)"
 
 plan:

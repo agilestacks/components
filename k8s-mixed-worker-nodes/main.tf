@@ -111,21 +111,6 @@ locals {
     "name=${local.name1}",
     local.instance_gpu == true ? "gpu=true" : "",
   ]
-
-  cloud_init_boot_locaction = regex("^s3://(.+?)/(.+)$", trim(var.cloud_init_config_boot_s3, " "))
-}
-
-data "aws_s3_bucket_object" "cloud_init_boot_config" {
-  provider = aws.bucket
-  bucket   = local.cloud_init_boot_locaction[0]
-  key      = local.cloud_init_boot_locaction[1]
-}
-
-data "template_file" "worker_user_data" {
-  template = data.aws_s3_bucket_object.cloud_init_boot_config.body
-  vars = {
-    ASG_NAME = local.name2
-  }
 }
 
 resource "aws_launch_template" "worker_mixed_conf" {
@@ -145,7 +130,7 @@ resource "aws_launch_template" "worker_mixed_conf" {
   instance_type = local.worker_instance_type
   key_name      = var.keypair
 
-  user_data = base64encode(data.template_file.worker_user_data.rendered)
+  user_data = base64encode(data.template_cloudinit_config.worker.rendered)
 
   monitoring {
     enabled = false

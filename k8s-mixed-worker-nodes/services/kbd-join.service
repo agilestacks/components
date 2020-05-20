@@ -1,0 +1,36 @@
+[Unit]
+Description=Kubeadm worker bootstarp
+ConditionPathExists=!/opt/kubeadm/kbd-join.done
+Requires=docker.service
+After=docker.service
+
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+WorkingDirectory=/opt/kubeadm/
+Environment=PATH=/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin
+
+User=root
+Group=root
+
+# kubeadm would be 'ExecStart' but it does a daemon-reload which screws things up, so we work around with 'ExecStartPre'
+# https://github.com/systemd/systemd/issues/518
+ExecStartPre=/bin/bash -c ' \
+        NODE_IP="`/usr/bin/curl -s http://169.254.169.254/latest/meta-data/local-ipv4`"; \
+        NODE_NAME="`/usr/bin/curl -s http://169.254.169.254/latest/meta-data/local-hostname`"; \
+        /usr/bin/envsubst < /opt/kubeadm/kubeadm-join.yaml.template > /opt/kubeadm/kubeadm-join.yaml'
+
+ExecStartPre=/usr/bin/timeout 600s /bin/bash -c ' \
+echo "Waiting for API server dns to resolve"; \
+until [ `dig +short "${API_HOST}" | xargs shuf -n1 -e` != "127.0.0.1" ]; do \
+    echo "Still waiting..."; sleep 5; \
+done; echo "Done!" \
+'
+
+ExecStart=/usr/bin/kubeadm join --config=/opt/kubeadm/kubeadm-join.yaml
+ExecStartPost=/bin/touch /opt/kubeadm/kbd-join.done
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target

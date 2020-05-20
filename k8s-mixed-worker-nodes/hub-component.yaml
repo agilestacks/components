@@ -39,8 +39,12 @@ parameters:
   - name: cloud.ec2.worker.ignitionProfileS3
     env: TF_VAR_bootstrap_script_key
     empty: allow
-  - name: cloud.ec2.worker.cloudInit.config.boot.s3
-    env: TF_VAR_cloud_init_config_boot_s3
+  - name: kubernetes.api.endpoint
+    env: TF_VAR_kube_apiserver_url
+  - name: kubernetes.version
+    env: TF_VAR_kubernetes_version
+  - name: kubernetes.bootstrap.token
+    env: TF_VAR_kubeadm_token
   - name: kubernetes.serviceDnsIp
     env: TF_VAR_service_dns_ip
     value: 10.0.3.10

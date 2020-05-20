@@ -151,6 +151,10 @@ variable "s3_bucket_region" {
   description = "Region of s3 bucket (default: us-east-1)"
 }
 
+variable "s3_base_path" {
+  type        = string
+}
+
 variable "bootstrap_script_key" {
   type        = string
   default     = ""
@@ -191,6 +195,19 @@ variable "cluster_tag" {
   description = "Tag to enable worker nodes to join the Kube cluster"
 }
 
+variable "kubeadm_token" {
+  type  = string
+  description = "Cluster bootstrap token"
+}
+
+variable "kubernetes_version" {
+  type  = string
+}
+
+variable "kube_apiserver_url" {
+  type  = string
+}
+
 variable "virtualization_type" {
   type        = string
   default     = "hvm"
@@ -205,9 +222,4 @@ variable "domain_name" {
 variable "service_dns_ip" {
   default     = ""
   description = "Optional. ip address of cluster dns"
-}
-
-variable "cloud_init_config_boot_s3" {
-  type        = string
-  description = "Cloud init boot config location"
 }
