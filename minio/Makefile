@@ -125,8 +125,6 @@ undeploy: init unconfigure
 	- $(kubectl) delete job $(COMPONENT_NAME)-make-bucket-job
 
 clean:
-	echo "MINIO_ACCESS_KEY=$(MINIO_ACCESS_KEY)"
-	echo "MINIO_SECRET_KEY=$(MINIO_SECRET_KEY)"
 	rm -rf $(HELM_HOME) charts
 
 output:
