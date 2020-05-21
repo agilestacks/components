@@ -67,8 +67,8 @@ parameters:
   - name: provider
     value: aws
     env: PROVIDER
-  - name: cloud.region
-    empty: allow
+  - name: domainFilters
+    value: "['${dns.domain}']"
   - name: chart.name
     value: "bitnami/external-dns"
     env: CHART_NAME
