@@ -10,13 +10,14 @@ connectToBucketService() {
   SECRETS=$($KUBE get secret {{component.bucket.secret}} -o json | jq '.data | map_values(@base64d)')
   BUCKET_ACCESS_KEY=$(echo $SECRETS | jq --raw-output '.accesskey')
   BUCKET_SECRET_KEY=$(echo $SECRETS | jq --raw-output '.secretkey')
+  echo "Checking connection to the bucket endpoint=${BUCKET_ENDPOINT} using access_key=${BUCKET_ACCESS_KEY}"
   MC_COMMAND="mc config host add $BUCKETHOST $BUCKET_ENDPOINT $BUCKET_ACCESS_KEY $BUCKET_SECRET_KEY" ;
   # echo "${MC_COMMAND}"
   $MC_COMMAND ;
   STATUS=$? ;
   until [ $STATUS -eq 0 ] ;
   do
-    sleep 1 ; # 1 second intervals between attempts
+    sleep 5 ; # 5 second intervals between attempts
     $MC_COMMAND ;
     STATUS=$? ;
   done ;
