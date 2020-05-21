@@ -1,17 +1,13 @@
 .DEFAULT_GOAL := deploy
 
-export TF_VAR_component          ?= gitlab-cn
-export TF_VAR_domain_name        ?= test.dev.superhub.io
-export TF_VAR_namespace          ?= gitlab
-export TF_VAR_kubeconfig_context ?= $(TF_VAR_domain_name)
+export COMPONENT_NAME ?= gitlab-cn
+export DOMAIN_NAME    ?= test.dev.superhub.io
+export NAMESPACE      ?= gitlab
 
-export TF_LOG      ?= info
-export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain_name)-$(TF_VAR_component)
-export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
-export HELM_HOME   ?= $(shell pwd)/.helm
+export HELM_HOME      ?= $(shell pwd)/.helm
 
 CHART         ?= gitlab
-CHART_VERSION ?= 1.7.5
+CHART_VERSION ?= 3.3.5
 CLOUD_KIND    ?= aws
 HELM_REPO     ?= https://charts.gitlab.io/
 TLS_KIND      ?= letsencrypt
@@ -22,42 +18,15 @@ HELM_VALUES += --values aws/$(TLS_KIND)/values.yaml)
 endif
 
 CHART_DIR := $(HELM_HOME)/charts/$(CHART)
+GITLAB_CRDS_URL   := https://gitlab.com/gitlab-org/charts/gitlab/raw/v${CHART_VERSION}/support/crd.yaml
 
-kubectl ?= kubectl --context="$(TF_VAR_domain_name)" --namespace="$(TF_VAR_namespace)"
-helm    ?= helm --kube-context="$(TF_VAR_domain_name)" --tiller-namespace="kube-system"
-terraform   ?= terraform-v0.11
-TF_CLI_ARGS ?= -no-color -input=false
-TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm3 --kube-context="$(DOMAIN_NAME)"
 
-
-ifneq (,$(filter $(CLOUD_KIND),aws hybrid))
-STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
-        		-backend-config="region=$(STATE_REGION)" \
-				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate" \
-				-backend-config="profile=$(AWS_PROFILE)"
-else ifeq ($(CLOUD_KIND),gcp)
-STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
-        		-backend-config="region=$(STATE_REGION)" \
-				-backend-config="prefix=$(TF_VAR_domain_name)/$(TF_VAR_component)" \
-				-backend-config="credentials=$(GOOGLE_APPLICATION_CREDENTIALS)"
-else ifeq ($(CLOUD_KIND),azure)
-STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$(STATE_BUCKET)" \
-				-backend-config="container_name=$(STATE_CONTAINER)" \
-				-backend-config="resource_group_name=$(TF_VAR_azure_resource_group_name)" \
-				-backend-config="key=$(TF_VAR_domain_name)/$(TF_VAR_component)/terraform.tfstate"
-else
-$(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, hybrid)
-endif
-
-
-deploy: clean init fetch purge install plan apply configure
-
-$(TF_DATA_DIR):
-	@mkdir -p "$@"
+deploy: clean purge install configure
 
 $(CHART_DIR):
 	@mkdir -p "$(@D)"
-	$(helm) init --client-only --upgrade
 	$(helm) repo add gitlab $(HELM_REPO)
 	$(helm) repo update
 	$(helm) fetch gitlab/$(CHART) \
@@ -65,57 +34,39 @@ $(CHART_DIR):
 		--untar \
 		--version $(CHART_VERSION)
 
-init: $(TF_DATA_DIR)
-	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
-        -backend=true -reconfigure \
-		$(STATE_BACKEND_CONFIG) \
-		./$(CLOUD_KIND)
-
-fetch: $(CHART_DIR)
-
 purge:
 	-$(kubectl) delete secret gitlab-registry-storage
 	-$(kubectl) delete secret gitlab-rails-storage
 	-$(kubectl) delete secret gitlab-backup-storage
-	$(helm) list --deleted --failed -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
-	  $(helm) delete --purge $(TF_VAR_component) || exit 0
+	-$(kubectl) delete -f $(GITLAB_CRDS_URL)
+	$(helm) list --failed --pending -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+	  $(helm) --namespace $(NAMESPACE) delete $(COMPONENT_NAME) || exit 0
 
 install: $(CHART_DIR)
-	-$(kubectl) get namespace $(TF_VAR_namespace) 2>/dev/null || \
-		$(kubectl) create namespace $(TF_VAR_namespace)
+	-$(kubectl) get namespace $(NAMESPACE) 2>/dev/null || $(kubectl) create namespace $(NAMESPACE)
+	-$(kubectl) create namespace $(NAMESPACE)
+	-$(kubectl) apply -f $(GITLAB_CRDS_URL)
 	-$(kubectl) create -f oidc-crd.yaml
 	-$(kubectl) create secret generic gitlab-dex-oicd --from-file=provider=gitlab-dex-provider.yaml
-	-scripts/create_minio_secret.sh
-	$(MAKE) -C $(CLOUD_KIND) $@
-	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' || \
-	  $(helm) install $^ \
-	  --timeout 700 \
-	  --name $(TF_VAR_component) \
-	  --namespace $(TF_VAR_namespace) \
-	  --replace \
+	-scripts/create_bucket_secret.sh
+	$(helm) upgrade $(COMPONENT_NAME) $^ \
+          --install \
+          --atomic \
+	  --timeout 20m \
+	  --namespace $(NAMESPACE) \
 	  --wait \
 	  $(HELM_VALUES) \
 	  --version $(CHART_VERSION)
-	  #$(MAKE) -C $(CLOUD_KIND) dns
 
-undeploy: init destroy apply
-	$(helm) list -q --namespace $(TF_VAR_namespace) | grep -E '^$(TF_VAR_component)$$' && \
-	  $(helm) delete --purge $(TF_VAR_component) || exit 0
+undeploy:
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+	  $(helm) --namespace $(NAMESPACE) delete $(COMPONENT_NAME) || exit 0
+	$(helm) list --pending --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+	  $(helm) --namespace $(NAMESPACE) delete $(COMPONENT_NAME) || exit 0
 	-$(kubectl) delete secret generic gitlab-dex-oicd
+	-kubectl --context="$(DOMAIN_NAME)" delete ClusterRole $(COMPONENT_NAME)-prometheus-server
+	-kubectl --context="$(DOMAIN_NAME)" delete ClusterRoleBinding $(COMPONENT_NAME)-prometheus-server
 	-$(kubectl) delete -f oidc-crd.yaml | true
-
-plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN) ./$(CLOUD_KIND)
-
-refresh:
-	$(terraform) refresh $(TF_CLI_ARGS) ./$(CLOUD_KIND)
-
-apply:
-	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
-	@echo
-
-destroy: TF_CLI_ARGS+=-destroy
-destroy: plan
 
 clean:
 	rm -rf $(HELM_HOME) $(CHART_DIR) $(TF_DATA_DIR)
@@ -157,7 +108,7 @@ wait: wait-dns wait-ready
 
 configure: wait
 	scripts/create_bot_account.sh
-	scripts/create_minio_buckets.sh
+	scripts/create_buckets.sh
 	@ echo "Generating gitlab token for: $(GITLAB_URL)"
 	@ $(kubectl) run --generator=run-pod/v1 --rm -i gitlab-token-generation \
 		--image=docker.io/agilestacks/gitlab-token-generator:latest \

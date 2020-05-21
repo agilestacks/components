@@ -1,21 +1,23 @@
 #!/bin/bash
 
 KUBE="kubectl --context={{dns.domain}} --namespace={{component.bucket.namespace}}"
+BUCKETHOST={{component.gitlab.name}}
+BUCKET_ENDPOINT={{component.bucket.endpoint}}
 
-# connectToMinio
-# Use a check-sleep-check loop to wait for Minio service to be available
-connectToMinio() {
-  SECRETS=$($KUBE get secret {{component.minio.secret}} -o json | jq '.data | map_values(@base64d)')
-  MINIO_ACCESS_KEY=$(echo $SECRETS | jq --raw-output '.accesskey')
-  MINIO_SECRET_KEY=$(echo $SECRETS | jq --raw-output '.secretkey')
-  MINIO_ENDPOINT={{component.bucket.endpoint}}
-  MC_COMMAND="mc config host add glminio $MINIO_ENDPOINT $MINIO_ACCESS_KEY $MINIO_SECRET_KEY" ;
+# connectToBucketService
+# Use a check-sleep-check loop to wait for the service to be available
+connectToBucketService() {
+  SECRETS=$($KUBE get secret {{component.bucket.secret}} -o json | jq '.data | map_values(@base64d)')
+  BUCKET_ACCESS_KEY=$(echo $SECRETS | jq --raw-output '.accesskey')
+  BUCKET_SECRET_KEY=$(echo $SECRETS | jq --raw-output '.secretkey')
+  echo "Checking connection to the bucket endpoint=${BUCKET_ENDPOINT} using access_key=${BUCKET_ACCESS_KEY}"
+  MC_COMMAND="mc config host add $BUCKETHOST $BUCKET_ENDPOINT $BUCKET_ACCESS_KEY $BUCKET_SECRET_KEY" ;
   # echo "${MC_COMMAND}"
   $MC_COMMAND ;
   STATUS=$? ;
   until [ $STATUS -eq 0 ] ;
   do
-    sleep 1 ; # 1 second intervals between attempts
+    sleep 5 ; # 5 second intervals between attempts
     $MC_COMMAND ;
     STATUS=$? ;
   done ;
@@ -27,17 +29,17 @@ connectToMinio() {
 # Check if the bucket exists, by using the exit code of `mc ls`
 checkBucketExists() {
   BUCKET=$1
-    CMD=$(mc ls glminio/$BUCKET > /dev/null 2>&1)
+    CMD=$(mc ls $BUCKETHOST/$BUCKET > /dev/null 2>&1)
     return $?
 }
 
 # createBucket ($bucket, $policy, $purge)
 # Ensure bucket exists, purging if asked to
 createBucket() {
-  BUCKET=$1
+  BUCKETBASE=$1
   POLICY=$2
   PURGE=$3
-
+  BUCKET="{{component.gitlab.name}}-$BUCKETBASE"
 
   # Purge the bucket, if set & exists
   # Since PURGE is user input, check explicitly for `true`
@@ -45,7 +47,7 @@ createBucket() {
     if checkBucketExists $BUCKET ; then
       echo "Purging bucket '$BUCKET'."
       set +e ; # don't exit if this fails
-      mc rm -r --force glminio/$BUCKET
+      mc rm -r --force $BUCKETHOST/$BUCKET
       set -e ; # reset `e` as active
     else
       echo "Bucket '$BUCKET' does not exist, skipping purge."
@@ -55,7 +57,7 @@ createBucket() {
   # Create the bucket if it does not exist
   if ! checkBucketExists $BUCKET ; then
     echo "Creating bucket '$BUCKET'"
-    mc mb glminio/$BUCKET
+    mc mb $BUCKETHOST/$BUCKET
   else
     echo "Bucket '$BUCKET' already exists."
   fi
@@ -63,17 +65,17 @@ createBucket() {
   # At this point, the bucket should exist, skip checking for existance
   # Set policy on the bucket
   echo "Setting policy of bucket '$BUCKET' to '$POLICY'."
-  mc policy set $POLICY glminio/$BUCKET
+  mc policy set $POLICY $BUCKETHOST/$BUCKET
 }
 
-connectToMinio
-createBucket gitlab-registry none false
+connectToBucketService
+createBucket registry none false
 createBucket git-lfs none false
 createBucket runner-cache none false
-createBucket gitlab-uploads none false
-createBucket gitlab-artifacts none false
-createBucket gitlab-backups none false
-createBucket gitlab-packages none false
+createBucket uploads none false
+createBucket artifacts none false
+createBucket backups none false
+createBucket packages none false
 createBucket tmp none false
-createBucket gitlab-pseudo none false
-createBucket gitlab-mr-diffs none false
+createBucket pseudo none false
+createBucket mr-diffs none false

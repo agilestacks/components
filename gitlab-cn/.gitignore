@@ -8,3 +8,4 @@ aws/acm/values.yaml
 values.yaml
 oidc-crd.yaml
 gitlab-dex-provider.yaml
+.terraform

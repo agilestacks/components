@@ -68,6 +68,9 @@ parameters:
 outputs:
 - name: component.tls.kind
   value: letsencrypt
+- name: component.cert-manager.defaultIssuerName
+- name: component.cert-manager.defaultIssuerKind
+- name: component.cert-manager.issuerEmail
 
 templates:
   files:
