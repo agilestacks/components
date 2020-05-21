@@ -8,7 +8,7 @@ meta:
   description: >
     GitLab includes Git repository management, issue tracking, code review, an IDE, activity streams, wikis, and more.
   category: DevOps Stack
-  version: 12.9.3
+  version: 12.10.6
   maturity: ga
   license: MIT
   source:
@@ -16,36 +16,20 @@ meta:
 
 requires:
   - aws
-  - azure
-  - gcp
   - kubernetes
   - helm
   - cert-manager
-  - external-dns
   - bucket
 
 provides:
   - gitlab
 
 parameters:
-  - name: terraform.bucket.name
-    env: STATE_BUCKET
-  - name: terraform.bucket.region
-    env: STATE_REGION
-  - name: terraform.bucket.container
-    empty: allow
-    env: STATE_CONTAINER
   - name: cloud.kind
     env: CLOUD_KIND
   - name: dns.domain
-    env: TF_VAR_domain_name
+    env: DOMAIN_NAME
   - name: dns.name
-  - name: cloud.azureResourceGroupName
-    env: TF_VAR_azure_resource_group_name
-    empty: allow
-  - name: cloud.gcpProjectId
-    empty: allow
-    env: TF_VAR_gcp_project_id
   - name: component.ingress.kubernetes.ingressClass
     empty: allow
   - name: component.ingress.protocol
@@ -60,7 +44,7 @@ parameters:
   - name: component.gitlab
     parameters:
     - name: name
-      env: TF_VAR_component
+      env: COMPONENT_NAME
       value: gitlab-${dns.name}-${hub.componentName}
     - name: chart
       value: gitlab
@@ -69,7 +53,7 @@ parameters:
       value: https://charts.gitlab.io
       env: HELM_REPO
     - name: chart.version
-      value: 3.2.3
+      value: 3.3.5
       env: CHART_VERSION
     - name: edition
       value: ce
@@ -80,7 +64,7 @@ parameters:
     - name:  namespace
       brief: Kubernetes namespace to install into
       value: ${component.gitlab.name}
-      env:   TF_VAR_namespace
+      env:   NAMESPACE
     - name:  software.version
       brief: Gitlab Version
       value: 12.9.3
