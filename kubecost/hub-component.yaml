@@ -1,0 +1,56 @@
+---
+version: 1
+kind: component
+meta:
+  name: kubecost
+  title: Kubecost
+  brief: Kubernetes recource managment
+  description: >
+    Kubecost gives you visibility into your Kubernetes resources to reduce spend and prevent resource-based outages.
+  version: 1.59.0
+  source:
+    dir: ../../components/kubecost
+
+requires:
+  - kubernetes
+  - helm
+provides:
+  - kubecost
+
+parameters:
+  - name: dns.domain
+  - name: component.ingress.protocol
+  - name: component.ingress.ssoFqdn
+  - name: component.ingress.kubernetes.ingressClass
+    empty: allow
+  - name: component.kubecost
+    parameters:
+    - name: name
+      value: kubecost-${dns.name}-${hub.componentName}
+      env: COMPONENT_NAME
+    - name: service.port
+      value: 9090
+    - name: ingress.urlPrefix
+      value: kubecost-${dns.name}-${hub.componentName}
+    - name: ingress.path
+      value: /
+    - name: token
+      empty: allow
+      env: KUBECOST_TOKEN
+    - name: namespace
+      value: kubecost
+      env: NAMESPACE
+    - name: version
+      value: v1.59.0
+      env: VERSION
+
+
+outputs:
+  - name: component.kubecost.url
+    value: ${component.ingress.protocol}://${component.kubecost.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+
+
+
+templates:
+  files:
+  - "*.template"

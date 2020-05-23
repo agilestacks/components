@@ -1,0 +1,5 @@
+/.helm
+/charts
+/ingress.yaml
+/namespace.yaml
+/values.yaml
