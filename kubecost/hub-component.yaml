@@ -7,7 +7,11 @@ meta:
   brief: Kubernetes recource managment
   description: >
     Kubecost gives you visibility into your Kubernetes resources to reduce spend and prevent resource-based outages.
+  category: Kubernetes Tools
   version: 1.59.0
+  maturity: alpha
+  keywords:
+    - aws
   source:
     dir: ../../components/kubecost
 
