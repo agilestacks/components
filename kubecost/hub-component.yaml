@@ -51,7 +51,7 @@ parameters:
 
 outputs:
   - name: component.kubecost.url
-    value: ${component.ingress.protocol}://${component.kubecost.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.kubecost.ingress.urlPrefix}.${component.ingress.ssoFqdn}/overview.html
 
 
 
