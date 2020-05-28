@@ -23,6 +23,11 @@ provides:
 
 parameters:
   - name: dns.domain
+    env: DOMAIN_NAME
+  - name: terraform.bucket.name
+    env:  STATE_BUCKET
+  - name: terraform.bucket.region
+    env:  STATE_REGION
   - name: component.ingress.protocol
   - name: component.ingress.ssoFqdn
   - name: component.ingress.kubernetes.ingressClass
@@ -38,6 +43,15 @@ parameters:
       value: kubecost-${dns.name}-${hub.componentName}
     - name: ingress.path
       value: /
+    - name: spotData.bucket.name
+      value: ${terraform.bucket.name}
+      env: TF_VAR_spot_data_bucket
+    - name: spotData.bucket.region
+      value: ${terraform.bucket.region}
+      env: TF_VAR_spot_data_bucket_region
+    - name: spotData.prefix
+      value: ${dns.domain}/kubecost/${component.kubecost.name}/spot-data-feed
+      env: TF_VAR_spot_data_prefix
     - name: token
       empty: allow
       env: KUBECOST_TOKEN
