@@ -1,0 +1,92 @@
+---
+version: 1
+kind: component
+meta:
+  name: kubeflow
+  title: Kubeflow
+  brief: Machine learning
+  description: >
+    Cloud Native platform for machine learning based on Google’s internal machine learning pipelines.
+  category: AI and Machine Learning
+  version: 1.0.2
+  maturity: alpha
+  licence: Apache 2.0
+  source:
+    dir: ../../components/kubeflow-v0.7
+
+requires:
+  - kubernetes
+  # - ingress
+  # - istio
+
+provides:
+  - kubeflow
+  # - istio
+
+parameters:
+  - name: dns.domain
+    env: HUB_DOMAIN_NAME
+  - name: component.dex.issuer
+    env: HUB_DEX_ISSUER
+  - name: component.dex.namespace
+    value: kube-system
+    env: HUB_DEX_NAMESPACE
+  - name: component.istio.ingressGateway
+    value: ingressgateway
+    # uncomment if will be needed for jsonnet
+    # env: HUB_ISTIO_INGRESSGATEWAY
+  - name: component.kubeflow
+    parameters:
+      # To deploy multiple kubeflow on the same cluster
+      # will require to separate it by the namespace
+      # we will use a component..name for namespace
+      - name: name
+        value: kubeflow
+        env: HUB_COMPONENT_NAME
+      - name: namespace
+        value: kubeflow
+        env: HUB_COMPONENT_NAMESPACE
+      - name: istio.namespace
+        value: istio-system
+        env: HUB_ISTIO_NAMESPACE
+      - name: version
+        value: v1.0.2
+        env: HUB_COMPONENT_VERSION
+      - name: oidc.authURI
+        value: ${component.dex.issuer}
+        env: HUB_OIDC_AUTH_URI
+      - name: oidc.clientId
+        value: ${component.kubeflow.name}-client
+        env: HUB_OIDC_CLIENT_ID
+      - name: oidc.secret
+        # mutual trust secret between dex and kubeflow
+        # must be changed by the user to smth really random
+        # At present this is in sync to the defaults in `istio/oidc-authservice` kfapp
+        value: pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok
+        env: HUB_OIDC_SECRET
+      - name: oidc.redirectURI
+        value: http://${component.kubeflow.name}.${dns.domain}/login/oidc
+        env: HUB_OIDC_REDIRECT_URI
+      - name: oidc.passwd
+        empty: allow
+        parameters:
+        - name: 0.user
+          value: admin@agilestacks.com
+          env: HUB_DEX_USER
+        - name: 0.password
+          value: 12341234
+          env: PLAIN_PASS
+          
+outputs: []
+    # - name: component.kubeflow.url
+    # brief: Kubeflow Central Dashboard
+    # value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/
+
+templates:
+  files:
+    - "*.template"
+    # - hack/istio/istio/base/*.template
+    - hack/istio/istio/overlays/agilestacks/*.template
+    - hack/knative/knative-serving-install/overlays/agilestacks/*.template
+    - hack/argo/overlays/agilestacks/*.template
+    - hack/istio/oidc-authservice/overlays/agilestacks/*.template

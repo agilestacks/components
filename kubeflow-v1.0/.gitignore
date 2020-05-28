@@ -1,0 +1,12 @@
+.cache
+kustomize/
+/ingress-istio.yaml
+/ingress.yaml
+/kfctl-istio.yaml
+lib/
+bin/kfctl
+kfctl.tar.gz
+!kustomize.yaml
+kfctl_istio_dex.json
+oidc.yaml
+/ingress.yaml
