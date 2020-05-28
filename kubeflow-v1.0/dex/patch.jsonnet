@@ -33,10 +33,10 @@ std.manifestYamlDoc(
     connectors: [
       conn {
         config+:{
-          scopes: "profile email groups openid"
+          scopes: ["profile", "email", "groups", "openid"]
         }
       }
-      for conn in dex.connectors
+      for conn in config.connectors
     ],
   }
 )

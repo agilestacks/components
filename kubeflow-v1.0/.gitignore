@@ -10,3 +10,11 @@ kfctl.tar.gz
 kfctl_istio_dex.json
 oidc.yaml
 /ingress.yaml
+/hack/argo/overlays/agilestacks/cluster-role-binding.yaml
+/hack/argo/overlays/agilestacks/config-map.yaml
+/hack/argo/overlays/agilestacks/deployment.yaml
+/hack/argo/overlays/agilestacks/params.env
+/hack/argo/overlays/agilestacks/service-account.yaml
+/hack/knative/knative-serving-install/overlays/agilestacks/gateway.yaml
+/hack/istio/istio/overlays/agilestacks/params.env
+/hack/istio/istio/overlays/agilestacks/kf-istio-resources.yaml
