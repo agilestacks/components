@@ -39,7 +39,6 @@ parameters:
       value: spot-term-notifier
       env:   NAMESPACE
     - name: slackUrl
-      value: https://hooks.slack.com/services/PUTYOURSLACKHOOKURLHERE
 
 templates:
   files:
