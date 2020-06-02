@@ -135,6 +135,6 @@ clean:
 # 	$(jq) '.items[] | select(.subjects[]?.namespace=="kubeflow").metadata.name')
 cleanup-namespace:
 	$(kubectl) delete applications --all
+	$(kubectl) delete profiles --all
 	$(kubectl) delete validatingwebhookconfigurations --all
 	$(kubectl) delete mutatingwebhookconfigurations --all
-	# $(kubectl) delete clusterrolebinding $(CRB) 

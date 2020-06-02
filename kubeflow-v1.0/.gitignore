@@ -7,7 +7,7 @@ lib/
 bin/kfctl
 kfctl.tar.gz
 !kustomize.yaml
-kfctl_istio_dex.json
+/kfctl_istio_dex.json
 oidc.yaml
 /ingress.yaml
 /hack/argo/overlays/agilestacks/cluster-role-binding.yaml

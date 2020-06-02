@@ -30,13 +30,14 @@ std.manifestYamlDoc(
   config {
     enablePasswordDB: true,
     staticPasswords: staticPasswords + optional,
-    connectors: [
-      conn {
-        config+:{
-          scopes: ["profile", "email", "groups", "openid"]
-        }
-      }
-      for conn in config.connectors
-    ],
+    // connectors: [
+    //   conn {
+    //     config:{
+    //       scopes: ["profile", "email", "groups", "openid"]
+    //       // scopes: ["email", "profile"]
+    //     }
+    //   }
+    //   for conn in config.connectors
+    // ],
   }
 )

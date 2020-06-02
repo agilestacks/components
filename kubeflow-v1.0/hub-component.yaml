@@ -66,8 +66,9 @@ parameters:
         env: HUB_OIDC_SECRET
       - name: oidc.redirectURI
         value: http://${component.kubeflow.name}.${dns.domain}/login/oidc
+        # value: http://${component.kubeflow.name}.${dns.domain}/login/callback
         env: HUB_OIDC_REDIRECT_URI
-      - name: oidc.passwd
+      - name: passwd
         empty: allow
         parameters:
         - name: 0.user
@@ -84,9 +85,9 @@ outputs: []
 
 templates:
   files:
-    - "*.template"
-    # - hack/istio/istio/base/*.template
-    - hack/istio/istio/overlays/agilestacks/*.template
-    - hack/knative/knative-serving-install/overlays/agilestacks/*.template
+    # - "*.template"
     - hack/argo/overlays/agilestacks/*.template
+    - hack/istio/istio/overlays/agilestacks/*.template
     - hack/istio/oidc-authservice/overlays/agilestacks/*.template
+    - hack/knative/knative-serving-install/overlays/agilestacks/*.template
+    - hack/profiles/overlays/agilestacks/*.template
