@@ -7,7 +7,7 @@ data "aws_ami" "eks_worker" {
   }
 
   most_recent = true
-  owners      = ["amazon"]
+  owners      = ["amazon", "151742754352"] # GovCloud
 }
 
 # https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2019-02-11/amazon-eks-nodegroup.yaml
