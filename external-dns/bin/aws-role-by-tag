@@ -20,7 +20,7 @@ while [ "$1" != "" ]; do
         -h | --help )       usage
                             exit
                             ;;
-        -x )                set -x 
+        -x )                set -x
                             ;;
         * )                 usage
                             exit 1
