@@ -20,6 +20,10 @@ init: $(TF_DATA_DIR)
 	-backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate" \
 	-backend-config="profile=$(AWS_PROFILE)"
 
+import:
+	-$(terraform) import $(TF_CLI_ARGS) aws_iam_role_policy.policy external-dns-$(CLUSTER_NAME):$(CLUSTER_NAME)-default
+	-$(terraform) import $(TF_CLI_ARGS) aws_iam_role.role external-dns-$(CLUSTER_NAME)
+
 plan:
 	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -out=$(TFPLAN)
 
@@ -29,9 +33,9 @@ apply:
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
-role: init plan apply
+role: init import plan apply
 
-unrole: init destroy apply
+unrole: init import destroy apply
 
 arn:
 	$(eval ROLE_ARN := $(shell TF_DATA_DIR=$(TF_DATA_DIR) $(terraform) output role_arn))
@@ -57,4 +61,4 @@ deploy:
 			--wait $(HELM_OPTS)
 
 .DEFAULT_GOAL: deploy
-.PHONY: deploy undeploy role unrole arn init plan apply destroy
+.PHONY: deploy undeploy role unrole arn init plan apply destroy import
