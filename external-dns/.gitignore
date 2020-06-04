@@ -3,3 +3,4 @@ examples/*.yaml
 metal/*.yaml
 .helm
 values.yaml
+aws/.terraform
