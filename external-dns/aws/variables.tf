@@ -2,12 +2,6 @@ variable "domain_name" {
   type        = string
 }
 
-variable "name" {
-  type        = string
-  description = "AWS IAM Role name"
-  default     = "external-dns"
-}
-
 variable "policy" {
   type        = string
   description = "AWS IAM role policy"

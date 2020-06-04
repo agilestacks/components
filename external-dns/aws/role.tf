@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 resource "aws_iam_role" "role" {
-  name               = var.name
+  name               = "external-dns-${element(split(".", var.domain_name), 0)}"
 
   assume_role_policy = <<EOF
 {
@@ -26,7 +26,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "policy" {
-  name   = "${var.name}-policy"
+  name   = "${element(split(".", var.domain_name), 0)}-default"
 
   role   = aws_iam_role.role.id
   policy = var.policy
