@@ -43,6 +43,9 @@ parameters:
       value: kubecost-${dns.name}-${hub.componentName}
     - name: ingress.path
       value: /
+    - name: spotData.enabled
+      value: false
+      env: SPOT_DATA_ENABLED
     - name: spotData.bucket.name
       value: ${terraform.bucket.name}
       env: TF_VAR_spot_data_bucket

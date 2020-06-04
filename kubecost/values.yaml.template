@@ -3,9 +3,7 @@
 kubecostProductConfigs:
   clusterName: "${dns.domain}"
 
-awsSpotDataRegion: "${component.kubecost.spotData.bucket.region}"
-awsSpotDataBucket: "${component.kubecost.spotData.bucket.name}"
-awsSpotDataPrefix: "${component.kubecost.spotData.prefix}"
+kubecostToken: ${component.kubecost.token}
 
 service:
   port: ${component.kubecost.service.port}

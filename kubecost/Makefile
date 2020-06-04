@@ -12,19 +12,31 @@ AWS_DEFAULT_REGION      ?= us-east-2
 HELM_HOME               ?= $(shell pwd)/.helm
 TF_DATA_DIR             ?= .terraform/$(COMPONENT_NAME)
 TF_LOG_PATH             ?= $(TF_DATA_DIR)/terraform.log
-TF_CLI_ARGS    ?= -no-color -input=false
-TFPLAN         := $(TF_DATA_DIR)/terraform.tfplan
-TFSTATE        := $(TF_DATA_DIR)/terraform.tfstate
+TF_CLI_ARGS             ?= -no-color -input=false
+TFPLAN                  := $(TF_DATA_DIR)/terraform.tfplan
+TFSTATE                 := $(TF_DATA_DIR)/terraform.tfstate
+SPOT_DATA_ENABLED       ?= true
 
 terraform      ?= terraform-v0.12
 kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
+HELM_ARGS_PROJECT_ID    := --set-string kubecostProductConfigs.projectID="`$(terraform) output account_id`"
+HELM_ARGS_SPOT_DATA     := --values spot-data-feed.yaml
 
+ifneq ($(SPOT_DATA_ENABLED),true)
+    SPOT_DATA_ENABLED:=
+    HELM_ARGS_PROJECT_ID:=
+    HELM_ARGS_SPOT_DATA:=
+endif
 
 deploy: init import plan apply fetch purge install
 
-init: $(TF_DATA_DIR) $(HELM_HOME) charts
+spot-data:
+	rm -rf spot-data-feed.tf
+	test -z "$(SPOT_DATA_ENABLED)" || cp spot-data-feed.tf.ignore spot-data-feed.tf
+
+init: $(TF_DATA_DIR) $(HELM_HOME) charts spot-data
 	$(helm) init --client-only --upgrade
 
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
@@ -36,6 +48,11 @@ init: $(TF_DATA_DIR) $(HELM_HOME) charts
 
 $(TF_DATA_DIR) $(HELM_HOME) charts:
 	@rm -rf $@ && mkdir -p $@
+
+
+import:
+	-$(terraform) import $(TF_CLI_ARGS) aws_spot_datafeed_subscription.kubecost spot-datafeed-subscription
+
 
 plan:
 	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -state="$(TFSTATE)" -out="$(TFPLAN)"
@@ -68,7 +85,8 @@ install:
 			--namespace $(NAMESPACE) \
 			--wait \
 			--values values.yaml \
-			$(if $(KUBECOST_TOKEN),--set kubecostToken="$(KUBECOST_TOKEN)") \
+			$(HELM_ARGS_SPOT_DATA) \
+			$(HELM_ARGS_PROJECT_ID) \
 			--version $(VERSION); \
 	else \
 		$(MAKE) upgrade; \
@@ -76,12 +94,13 @@ install:
 
 	$(kubectl) apply -f ingress.yaml
 
-
 upgrade:
 	$(helm) upgrade $(COMPONENT_NAME) charts/$(notdir $(HELM_CHART)) \
 		--namespace $(NAMESPACE) \
 		--wait \
 		--values values.yaml \
+		$(HELM_ARGS_SPOT_DATA) \
+		$(HELM_ARGS_PROJECT_ID) \
 		--version $(VERSION)
 
 
