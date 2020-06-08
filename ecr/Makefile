@@ -8,13 +8,12 @@ STATE_REGION ?= us-east-1
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
-export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(subst /,-,$(COMPONENT_NAME))
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
 export TF_VAR_name := $(shell echo '$(COMPONENT_NAME)' | tr '[:upper:]' '[:lower:]' | sed -e 's/^[[:space:]]*//;s/[[:space:]]*$$//;s/[[:space:]]/_/g')
 
-terraform   ?= terraform-v0.11
+terraform   ?= terraform-v0.12
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
@@ -32,7 +31,7 @@ init: $(TF_DATA_DIR)
 		-backend-config="profile=$(AWS_PROFILE)"
 
 plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN)
+	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -out=$(TFPLAN)
 
 refresh:
 	$(terraform) refresh $(TF_CLI_ARGS)
@@ -49,9 +48,9 @@ destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
 import:
-	-$(terraform) import $(TF_CLI_ARGS) module.ecr.aws_ecr_repository.main $(TF_VAR_name)
+	-$(terraform) import $(TF_CLI_ARGS) aws_ecr_repository.main $(TF_VAR_name)
 
 clean:
-	rm -rf .terraform
+	rm -rf $(TF_DATA_DIR)
 
 -include ../Mk/phonies

@@ -30,7 +30,7 @@ $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
 init: $(TF_DATA_DIR)
-	@cp -v eks-worker-$(WORKER_IMPL).tf.ignore eks-worker.tf
+	@cp -v fragments/eks-worker-$(WORKER_IMPL).tf eks-worker.tf
 	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \

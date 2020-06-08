@@ -45,7 +45,7 @@ function extract(components) {
         components.map(([name, {meta, requires = [], provides = [], outputs = []}, iconFilePath, basePath]) => ({
             name,
             ...pick(meta, [
-                'brief', 'version', 'maturity', 'license', 'title', 'description', 'category'
+                'brief', 'version', 'maturity', 'license', 'title', 'description', 'category', 'keywords'
             ]),
             ...mapValues(
                 pick(meta, 'disabled'),

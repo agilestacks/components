@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "2.14.0"
+  version = "2.61.0"
 }
 
 # data "aws_region" "current" {}
@@ -57,7 +57,9 @@ resource "aws_route53_zone" "internal" {
   # Terraform aws_vpc resource:
   # enable_dns_hostnames = true
   # enable_dns_support   = true
-  vpc_id = "${var.vpc_id}"
+  vpc {
+    vpc_id = "${var.vpc_id}"
+  }
 
   force_destroy = true
 }

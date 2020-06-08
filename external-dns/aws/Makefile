@@ -2,34 +2,63 @@
 
 HELM_OPTS += --values $(abspath values.yaml)
 
+terraform := terraform-v0.12
+TF_CLI_ARGS                   ?= -no-color -input=false
+export TF_DATA_DIR            ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
+export TF_VAR_domain_name			:= $(DOMAIN_NAME)
+TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
+TFSTATE     := $(TF_DATA_DIR)/terraform.tfstate
+
+$(TF_DATA_DIR):
+	@rm -rf $@ && mkdir -p $@
+
+init: $(TF_DATA_DIR)
+	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
+	-backend=true -reconfigure \
+	-backend-config="bucket=$(STATE_BUCKET)" \
+	-backend-config="region=$(STATE_REGION)" \
+	-backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate" \
+	-backend-config="profile=$(AWS_PROFILE)"
+
+import:
+	-$(terraform) import $(TF_CLI_ARGS) aws_iam_role_policy.policy external-dns-$(CLUSTER_NAME):$(CLUSTER_NAME)-default
+	-$(terraform) import $(TF_CLI_ARGS) aws_iam_role.role external-dns-$(CLUSTER_NAME)
+
+plan:
+	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -out=$(TFPLAN)
+
+apply:
+	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
+
+destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
+destroy: plan
+
+role: init import plan apply
+
+unrole: init import destroy apply
+
+arn:
+	$(eval ROLE_ARN := $(shell TF_DATA_DIR=$(TF_DATA_DIR) $(terraform) output role_arn))
+	$(eval HELM_OPTS += --set 'aws.assumeRoleArn=$(ROLE_ARN)')
+	$(eval HELM_OPTS += --set 'aws.region=$(NON_CONFLICTING_AWS_REGION)')
+
+undeploy:
+	-$(helm) delete --purge $(COMPONENT_NAME)
+
 ifeq (2,$(words $(NON_CONFLICTING_AWS_ACCESS_KEY) $(NON_CONFLICTING_AWS_ACCESS_KEY)))
 HELM_OPTS += --set 'aws.region='
 HELM_OPTS += --values $(abspath values-awscreds.yaml)
 else
-
-SCRIPT_CMD := $(abspath ..)/bin/aws-role-by-tag
-SCRIPT_CMD += --filter "$(CLUSTER_NAME)"
-SCRIPT_CMD += --tag superhub.io/role/kind=worker
-SCRIPT_CMD += --tag superhub.io/stack/$(DOMAIN_NAME)
-ROLE_ARN   := $(shell $(SCRIPT_CMD))
-ifeq ($(ROLE_ARN),)
-$(warning Cannot find ARN role by tags)
-$(warning Trying to run: $(SCRIPT_CMD))
-# uncomment for groubleshooting
-# $(warning $(shell $(SCRIPT_CMD) -x))
-$(error IAM role has not been found!)
-endif
-# .aws/config will be created if and only if AWS region has been defined
-# see: https://github.com/helm/charts/blob/master/stable/external-dns/templates/secret.yaml#L11
-HELM_OPTS += --set 'aws.region="$(NON_CONFLICTING_AWS_REGION)"'
-HELM_OPTS += --set 'aws.assumeRoleArn=$(ROLE_ARN)'
+deploy: role arn
+undeploy: unrole
 endif
 
-install:
-	$(helm) install $(CHART_DIR) \
-		--name $(COMPONENT_NAME) \
-		--namespace $(NAMESPACE) \
-		--wait $(HELM_OPTS)
+deploy:
+	$(helm) ls -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
+		$(helm) install $(CHART_DIR) \
+			--name $(COMPONENT_NAME) \
+			--namespace $(NAMESPACE) \
+			--wait $(HELM_OPTS)
 
-.DEFAULT_GOAL: install
-.PHONY: install
+.DEFAULT_GOAL: deploy
+.PHONY: deploy undeploy role unrole arn init plan apply destroy import

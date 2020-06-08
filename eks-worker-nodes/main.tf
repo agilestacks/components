@@ -4,11 +4,11 @@ terraform {
 }
 
 provider "aws" {
-  version = "2.49.0"
+  version = "2.61.0"
 }
 
 locals {
-  version = "1.15"
+  version = "1.16"
   gpu_instance_types = [
     "p2.xlarge",
     "p2.8xlarge",

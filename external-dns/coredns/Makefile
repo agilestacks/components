@@ -2,12 +2,15 @@
 
 HELM_OPTS += --values $(abspath values.yaml)
 
-install:
+deploy:
 	$(helm) install $(CHART_DIR) \
 		--name $(COMPONENT_NAME) \
 		--namespace $(NAMESPACE) \
 		--wait \
 		$(HELM_OPTS)
+
+undeploy:
+	-$(helm) delete --purge $(COMPONENT_NAME)
 
 .DEFAULT_GOAL: install
 .PHONY: install

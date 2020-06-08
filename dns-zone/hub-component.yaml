@@ -32,10 +32,6 @@ parameters:
 - name: terraform.bucket.region
   env: STATE_REGION
 
-- name: component.dns-zone.awsDnsCredentials.enabled
-  value: '#{size(cloud.aws.accessKey) > 1}'
-  env: AWS_DNS_CREDENTIALS_ENABLED
-
 outputs:
 - name: dns.domainName
   value: ${dns.name}.${dns.baseDomain}

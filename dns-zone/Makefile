@@ -1,18 +1,18 @@
 .DEFAULT_GOAL := deploy
 
-export TF_VAR_name										?= public-dns
-export TF_VAR_base_domain 						?= gov-01.dev.superhub.io
-export TF_VAR_aws_access_key_id 			?=
+export TF_VAR_name                    ?= public-dns
+export TF_VAR_base_domain             ?= gov-01.dev.superhub.io
+export TF_VAR_aws_access_key_id       ?=
 export TF_VAR_aws_secret_access_key   ?=
 
-DOMAIN_NAME										:= $(TF_VAR_name).$(TF_VAR_base_domain)
-COMPONENT_NAME								?= dns-zone
-STATE_BUCKET 	                ?= agilestacks.gov-01.dev.superhub.io
+DOMAIN_NAME                   := $(TF_VAR_name).$(TF_VAR_base_domain)
+COMPONENT_NAME                ?= dns-zone
+STATE_BUCKET                  ?= agilestacks.gov-01.dev.superhub.io
 STATE_REGION                  ?= us-gov-east-1
 
-TF_CLI_ARGS 	 		        		?= -no-color -input=false
+TF_CLI_ARGS                   ?= -no-color -input=false
 export TF_DATA_DIR            ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
-TFPLAN      									:= $(TF_DATA_DIR)/terraform.tfplan
+TFPLAN                        := $(TF_DATA_DIR)/terraform.tfplan
 
 terraform                     ?= terraform-v0.12
 
@@ -21,7 +21,7 @@ $(TF_DATA_DIR):
 
 provider:
 	rm -f this-account.tf external-account.tf
-	if [ "$(AWS_DNS_CREDENTIALS_ENABLED)" == "true" ]; then \
+	if [ -n "$(TF_VAR_aws_access_key_id)" ]; then \
 		cp providers/external-account.tf . ;\
 	else \
 		cp providers/this-account.tf . ; \

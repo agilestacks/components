@@ -31,15 +31,11 @@ $(CHART_DIR):
 		--untar --untardir $(dir $@)
 	$(rsync) --exclude-from='overrides/.cpignore' overrides/ $@
 
-purge:
-	- $(helm) delete --purge $(COMPONENT_NAME)
+deploy: init $(CHART_DIR)
+	make -C "$(PROVIDER)" deploy
 
-$(PROVIDER):
-	$(helm) ls -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
-		make -C "$@" install
+undeploy: init
+	make -C "$(PROVIDER)" undeploy
 
-deploy:   init $(CHART_DIR) $(PROVIDER)
-undeploy: init purge
-
-.PHONY: deploy purge undeploy $(PROVIDER) init $(CHART_DIR)
-.EXPORT_ALL_VARIABLES: $(PROVIDER)
+.PHONY: deploy purge undeploy init $(CHART_DIR)
+.EXPORT_ALL_VARIABLES: deploy undeploy

@@ -10,10 +10,9 @@ sources:
 - crd
 # - istio-gateway
 
-interval: 5s
+interval: 20s
 policy: sync
-domainFilters:
-- "${dns.domain}"
+domainFilters: ${component.external-dns.domainFilters}
 crd:
   create: true
   apiversion: externaldns.k8s.io/v1alpha1
