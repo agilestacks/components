@@ -87,6 +87,14 @@ parameters:
     - name: tsig.keyname
     - name: tsig.secret-alg
       value: hmac-sha256
+- name: terraform.bucket
+  parameters:
+  - name: name
+    env: STATE_BUCKET
+    empty: allow
+  - name: region
+    env: STATE_REGION
+    empty: allow
 
 templates:
   files:
