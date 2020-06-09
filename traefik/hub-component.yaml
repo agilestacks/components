@@ -30,9 +30,6 @@ lifecycle:
   - deploy
   - undeploy
   - upgrade
-  readyConditions:
-  - dns: ${component.ingress.ssoFqdn}
-    url: ${component.ingress.protocol}://${component.ingress.ssoFqdn}
 
 parameters:
 - name: terraform.bucket.name
