@@ -510,7 +510,7 @@ grafana:
     #   config_file: /etc/grafana/ldap.toml
     auth.generic_oauth:
       name: Okta
-      enabled: true
+      enabled: ${component.prometheus.oauth.enabled}
       scopes: openid profile email
       client_id: ${component.prometheus.grafana.oidcId}
       client_secret: ${component.prometheus.grafana.oidcSecret}
