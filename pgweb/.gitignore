@@ -2,3 +2,4 @@
 /charts
 /*.yaml
 !/hub-component.yaml
+!/Chart.yaml
