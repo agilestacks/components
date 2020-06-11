@@ -80,7 +80,7 @@ undeploy: init destroy
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy:
-	$(kubectl) delete -f ingress.yaml
+	- $(kubectl) delete -f ingress.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
