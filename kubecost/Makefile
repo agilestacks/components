@@ -10,59 +10,31 @@ HELM_CHART              ?= $(HELM_REPO_NAME)/cost-analyzer
 VERSION                 ?= v1.59.0
 AWS_DEFAULT_REGION      ?= us-east-2
 HELM_HOME               ?= $(shell pwd)/.helm
-TF_DATA_DIR             ?= .terraform/$(COMPONENT_NAME)
-TF_LOG_PATH             ?= $(TF_DATA_DIR)/terraform.log
-TF_CLI_ARGS             ?= -no-color -input=false
-TFPLAN                  := $(TF_DATA_DIR)/terraform.tfplan
-TFSTATE                 := $(TF_DATA_DIR)/terraform.tfstate
-SPOT_DATA_ENABLED       ?= true
 
-terraform      ?= terraform-v0.12
+aws            ?= aws
 kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
-HELM_ARGS_PROJECT_ID    := --set-string kubecostProductConfigs.projectID="`$(terraform) output account_id`"
-HELM_ARGS_SPOT_DATA     := --values spot-data-feed.yaml
 
-ifneq ($(SPOT_DATA_ENABLED),true)
+SPOT_DATA_ENABLED := $(if $(and $(SPOT_DATA_BUCKET_NAME), $(SPOT_DATA_BUCKET_REGION), $(SPOT_DATA_PREFIX)),true)
+
+ifeq ($(SPOT_DATA_ENABLED),true)
+	RESOLVE_AWS_ACCOUNT     := $(aws) sts get-caller-identity --query Account --output text
+	HELM_ARGS_PROJECT_ID    := --set-string kubecostProductConfigs.projectID="`$(RESOLVE_AWS_ACCOUNT)`"
+	HELM_ARGS_SPOT_DATA     := --values spot-data-feed.yaml
+else
     SPOT_DATA_ENABLED:=
     HELM_ARGS_PROJECT_ID:=
     HELM_ARGS_SPOT_DATA:=
 endif
 
-deploy: init import plan apply fetch purge install
+deploy: init fetch purge install
 
-spot-data:
-	rm -rf spot-data-feed.tf
-	test -z "$(SPOT_DATA_ENABLED)" || cp spot-data-feed.tf.ignore spot-data-feed.tf
-
-init: $(TF_DATA_DIR) $(HELM_HOME) charts spot-data
+init: $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
 
-	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
-        -backend=true -reconfigure \
-        -backend-config="bucket=$(STATE_BUCKET)" \
-        -backend-config="region=$(STATE_REGION)" \
-        -backend-config="key=$(DOMAIN_NAME)/kubecost/$(COMPONENT_NAME)/terraform.tfstate" \
-        -backend-config="profile=$(AWS_PROFILE)"
-
-$(TF_DATA_DIR) $(HELM_HOME) charts:
+$(HELM_HOME) charts:
 	@rm -rf $@ && mkdir -p $@
-
-
-import:
-	-$(terraform) import $(TF_CLI_ARGS) aws_spot_datafeed_subscription.kubecost spot-datafeed-subscription
-
-
-plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -state="$(TFSTATE)" -out="$(TFPLAN)"
-
-refresh:
-	$(terraform) refresh $(TF_CLI_ARGS)
-
-apply:
-	$(terraform) apply $(TF_CLI_ARGS) -auto-approve -state-out="$(TFSTATE)" "$(TFPLAN)"
-
 
 fetch:
 	$(helm) repo add kubecost $(HELM_REPO_URL)
@@ -104,10 +76,10 @@ upgrade:
 		--version $(VERSION)
 
 
-undeploy: init destroy apply
+undeploy: init destroy
 
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
-destroy: plan
+destroy:
 	$(kubectl) delete -f ingress.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0

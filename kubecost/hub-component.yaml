@@ -28,6 +28,12 @@ parameters:
     env:  STATE_BUCKET
   - name: terraform.bucket.region
     env:  STATE_REGION
+  - name: component.aws-spot-data-feed.bucket.name
+    empty: allow
+  - name: component.aws-spot-data-feed.bucket.region
+    empty: allow
+  - name: component.aws-spot-data-feed.prefix
+    empty: allow
   - name: component.ingress.protocol
   - name: component.ingress.ssoFqdn
   - name: component.ingress.kubernetes.ingressClass
@@ -43,18 +49,15 @@ parameters:
       value: kubecost-${dns.name}-${hub.componentName}
     - name: ingress.path
       value: /
-    - name: spotData.enabled
-      value: false
-      env: SPOT_DATA_ENABLED
     - name: spotData.bucket.name
-      value: ${terraform.bucket.name}
-      env: TF_VAR_spot_data_bucket
+      value: ${component.aws-spot-data-feed.bucket.name}
+      env: SPOT_DATA_BUCKET_NAME
     - name: spotData.bucket.region
-      value: ${terraform.bucket.region}
-      env: TF_VAR_spot_data_bucket_region
+      value: ${component.aws-spot-data-feed.bucket.region}
+      env: SPOT_DATA_BUCKET_REGION
     - name: spotData.prefix
-      value: ${dns.domain}/kubecost/${component.kubecost.name}/spot-data-feed
-      env: TF_VAR_spot_data_prefix
+      value: ${component.aws-spot-data-feed.prefix}
+      env: SPOT_DATA_PREFIX
     - name: token
       empty: allow
       env: KUBECOST_TOKEN

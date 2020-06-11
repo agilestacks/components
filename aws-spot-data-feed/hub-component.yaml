@@ -1,0 +1,48 @@
+---
+version: 1
+kind: component
+meta:
+  name: aws-spot-data-feed
+  title: Spot data
+  brief: Aws spot data feed
+  description: |
+    To help you understand the charges for your Spot Instances,
+    Amazon EC2 provides a data feed that describes your Spot Instance usage and pricing. This data feed is sent to an Amazon S3 bucket that you specify when you subscribe to the data feed.
+  category: NoAWS Native
+  maturity: alpha
+  keywords:
+    - aws
+  source:
+    dir: ../../components/aws-spot-data-feed
+
+provides:
+  - aws-spot-data-feed
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: terraform.bucket.name
+    env:  STATE_BUCKET
+  - name: terraform.bucket.region
+    env:  STATE_REGION
+  - name: component.aws-spot-data-feed
+    parameters:
+    - name: name
+      value: aws-spot-data-feed-${dns.name}-${hub.componentName}
+      env: COMPONENT_NAME
+    - name: bucket.name
+      value: ${terraform.bucket.name}
+      env: TF_VAR_spot_data_bucket
+    - name: bucket.region
+      value: ${terraform.bucket.region}
+      env: TF_VAR_spot_data_bucket_region
+    - name: prefix
+      value: ${dns.domain}/aws-spot-data-feed/${component.aws-spot-data-feed.name}/data
+      env: TF_VAR_spot_data_prefix
+
+
+outputs:
+  - name: component.aws-spot-data-feed.bucket.name
+  - name: component.aws-spot-data-feed.bucket.region
+  - name: component.aws-spot-data-feed.prefix
+
