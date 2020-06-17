@@ -1,14 +1,6 @@
 apiVersion: auth.agilestacks.com/v1alpha1
 kind: Oidc
 metadata:
-  labels:
-    controller-tools.k8s.io: "1.0"
-    app.kubernetes.io/name: oidc-authservice
-    app.kubernetes.io/instance: oidc-authservice-v1.0.0
-    app.kubernetes.io/managed-by: kfctl
-    app.kubernetes.io/component: oidc-authservice
-    app.kubernetes.io/part-of: kubeflow
-    app.kubernetes.io/version: v1.0.0
   name: ${component.kubeflow.name}-client
   namespace: ${component.kubeflow.namespace}
 spec:

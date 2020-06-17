@@ -31,8 +31,13 @@ parameters:
   - name: component.dex.namespace
     value: kube-system
     env: HUB_DEX_NAMESPACE
-  - name: component.istio.ingressGateway
-    value: ingressgateway
+  - name: component.istio
+    parameters: 
+    - name: namespace
+      value: istio-system
+      env: HUB_ISTIO_NAMESPACE
+    - name: ingressGateway
+      value: ${component.kubeflow.name}-ingressgateway
     # uncomment if will be needed for jsonnet
     # env: HUB_ISTIO_INGRESSGATEWAY
   - name: component.kubeflow
@@ -43,12 +48,11 @@ parameters:
       - name: name
         value: kubeflow
         env: HUB_COMPONENT_NAME
+      - name: istio.ingressGateway
+        value: ${component.kubeflow.name}-ingressgateway
       - name: namespace
         value: kubeflow
         env: HUB_COMPONENT_NAMESPACE
-      - name: istio.namespace
-        value: istio-system
-        env: HUB_ISTIO_NAMESPACE
       - name: version
         value: v1.0.2
         env: HUB_COMPONENT_VERSION
