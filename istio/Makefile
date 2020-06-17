@@ -9,17 +9,18 @@ export HELM_HOME ?= $(shell pwd)/.helm
 
 CHARTS_DIR := $(abspath $(HELM_HOME))/charts
 
-kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-kubectl-prometheus ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(PROMETHEUS_NAMESPACE)"
+rsync := rsync -aIqv
+kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+kubectl-prometheus := kubectl --context="$(DOMAIN_NAME)" --namespace="$(PROMETHEUS_NAMESPACE)"
 
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-
+helm := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 HELM_VALUES_ARGS += -f $(abspath values.yaml)
 HELM_VALUES_ARGS += -f $(abspath values-$(ISTIO_VERSION).yaml)
+# HELM_VALUES_ARGS += -f $(abspath values-gw.yaml)
 
 deploy: clean install usage
 
-$(CHARTS_DIR)/%: init repo
+$(CHARTS_DIR)/%: init
 	test -d "$@" || \
 		$(helm) fetch istio/$* \
 			--version "$(ISTIO_VERSION)" \
@@ -66,9 +67,9 @@ dashboards-%:
 
 
 ifneq (,$(filter prometheus,$(HUB_PROVIDES)))
-HELM_VALUES_ARGS += -f $(abspath kiali-patch-values.yaml)
+HELM_VALUES_ARGS += --set "kiali.prometheusAddr=$(PROMETHEUS_ADDR)"
+HELM_VALUES_ARGS += --set "prometheus.enabled=true"
 install: configure-prometheus 
-undeploy: unconfigure-prometheus
 
 configure-prometheus: dashboards-apply label
 	$(kubectl-prometheus) create secret generic additional-scrape-configs \
@@ -78,9 +79,14 @@ configure-prometheus: dashboards-apply label
 
 unconfigure-prometheus: dashboards-delete
 	-$(kubectl-prometheus) delete secret additional-scrape-configs
+
+undeploy: unconfigure-prometheus
+
+.PHONY: configure-prometheus unconfigure-prometheus
 endif
 
-undeploy: purge clean 
+undeploy: purge clean
+
 install: namespace install-istio-init wait-crds install-istio apply-template-mutatingwebhook.yaml
 
 ifneq (,$(filter external-dns,$(HUB_PROVIDES)))
@@ -92,6 +98,10 @@ install: external-dns/deploy
 .PHONY: external-dns/deploy
 endif
 
+ifeq (,$(filter cert-manager,$(HUB_PROVIDES)))
+	HELM_VALUES_ARGS += --set 'certmanager.enabled=false'
+endif
+
 install-istio-init: $(CHARTS_DIR)/istio-init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)-init$$' || \
 		$(helm) install $< \
@@ -100,12 +110,15 @@ install-istio-init: $(CHARTS_DIR)/istio-init
 			--replace --wait $(HELM_VALUES_ARGS)
 
 install-istio: $(CHARTS_DIR)/istio
+	$(rsync) $(abspath hack)/ $^
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $< \
-			 --debug --dep-up \
+			--dep-up --replace \
 			--name "$(COMPONENT_NAME)" \
 			--namespace "$(NAMESPACE)" \
-			--replace --wait $(HELM_VALUES_ARGS)
+			--replace --wait \
+			-f $(CHARTS_DIR)/istio/values.yaml \
+			$(HELM_VALUES_ARGS)
 
 namespace:
 	$(kubectl) get namespace $(NAMESPACE) || \
@@ -114,8 +127,6 @@ namespace:
 init:
 	@ test -f "$(HELM_HOME)/repository/repositories.yaml" || \
 		$(helm) init --client-only --upgrade --wait
-
-repo:
 	$(helm) repo add istio https://storage.googleapis.com/istio-release/releases/$(ISTIO_VERSION)/charts/
 
 purge-%:
