@@ -1,0 +1,6 @@
+/.helm
+/charts
+/ingress.yaml
+/namespace.yaml
+/values.yaml
+/spot-data-feed.yaml

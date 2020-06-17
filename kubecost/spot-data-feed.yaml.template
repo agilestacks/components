@@ -1,0 +1,6 @@
+# https://github.com/kubecost/cost-analyzer-helm-chart/blob/master/cost-analyzer/values.yaml
+
+kubecostProductConfigs:
+  awsSpotDataRegion: "${component.kubecost.spotData.bucket.region}"
+  awsSpotDataBucket: "${component.kubecost.spotData.bucket.name}"
+  awsSpotDataPrefix: "${component.kubecost.spotData.prefix}"
