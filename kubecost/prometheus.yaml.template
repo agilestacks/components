@@ -1,0 +1,10 @@
+# https://github.com/kubecost/cost-analyzer-helm-chart/blob/master/cost-analyzer/values.yaml
+
+global:
+  prometheus:
+    enabled: false
+    fqdn: http://${component.prometheus.name}-prometheus.${component.prometheus.namespace}.svc.cluster.local:9090
+
+  grafana:
+    enabled: false
+    domainName: ${component.prometheus.name}-grafana.${component.prometheus.namespace}.svc.cluster.local

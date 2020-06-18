@@ -2,5 +2,6 @@
 /charts
 /ingress.yaml
 /namespace.yaml
-/values.yaml
+/prometheus.yaml
 /spot-data-feed.yaml
+/values.yaml

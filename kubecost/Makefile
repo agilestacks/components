@@ -59,6 +59,7 @@ install:
 			--values values.yaml \
 			$(HELM_ARGS_SPOT_DATA) \
 			$(HELM_ARGS_PROJECT_ID) \
+			--values prometheus.yaml \
 			--version $(VERSION); \
 	else \
 		$(MAKE) upgrade; \
@@ -73,6 +74,7 @@ upgrade:
 		--values values.yaml \
 		$(HELM_ARGS_SPOT_DATA) \
 		$(HELM_ARGS_PROJECT_ID) \
+		--values prometheus.yaml \
 		--version $(VERSION)
 
 

@@ -18,6 +18,7 @@ meta:
 requires:
   - kubernetes
   - helm
+  - prometheus
 provides:
   - kubecost
 
@@ -37,6 +38,10 @@ parameters:
   - name: component.ingress.protocol
   - name: component.ingress.ssoFqdn
   - name: component.ingress.kubernetes.ingressClass
+    empty: allow
+  - name: component.prometheus.name
+    empty: allow
+  - name: component.prometheus.namespace
     empty: allow
   - name: component.kubecost
     parameters:
