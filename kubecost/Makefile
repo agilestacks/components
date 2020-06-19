@@ -90,7 +90,7 @@ destroy:
 	- $(kubectl) delete -f ingress.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	- $(ubectl-prometheus) delete -f prometheus/rules.yaml
-	- $(ubectl-prometheus) delete -f prometheus/scrape-config.yaml
+	- $(kubectl-prometheus) delete -f prometheus/rules.yaml
+	- $(kubectl-prometheus) delete -f prometheus/scrape-config.yaml
 
 -include ../Mk/phonies
