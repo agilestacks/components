@@ -41,6 +41,7 @@ parameters:
     empty: allow
   - name: component.prometheus.name
     empty: allow
+    env: PROMETHEUS_NAME
   - name: component.prometheus.namespace
     empty: allow
     env: PROMETHEUS_NAMESPACE

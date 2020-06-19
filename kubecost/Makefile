@@ -12,8 +12,9 @@ VERSION                 ?= v1.59.0
 AWS_DEFAULT_REGION      ?= us-east-2
 HELM_HOME               ?= $(shell pwd)/.helm
 
-aws            ?= aws
-kubectl        ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+aws                ?= aws
+kubectl            ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+kubectl-prometheus ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(PROMETHEUS_NAMESPACE)"
 helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 
@@ -51,8 +52,9 @@ purge:
 
 install:
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply --namespace=$(PROMETHEUS_NAMESPACE) -f prometheus/rules.yaml
-	# $(kubectl) apply --namespace=$(PROMETHEUS_NAMESPACE) -f prometheus/scrape-config.yaml
+	$(kubectl-prometheus) apply -f prometheus/rules.yaml
+	$(kubectl-prometheus) apply -f prometheus/scrape-config.yaml
+	$(kubectl-prometheus) patch prometheus $(PROMETHEUS_NAME)-prometheus --type=merge -p "`cat prometheus/kubecost-prometheus.yaml`"
 
 	if ! $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$'; then \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
@@ -88,7 +90,7 @@ destroy:
 	- $(kubectl) delete -f ingress.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	- $(kubectl) delete --namespace=$(PROMETHEUS_NAMESPACE) -f prometheus/rules.yaml
-	# - $(kubectl) delete --namespace=$(PROMETHEUS_NAMESPACE) -f prometheus/scrape-config.yaml
+	- $(ubectl-prometheus) delete -f prometheus/rules.yaml
+	- $(ubectl-prometheus) delete -f prometheus/scrape-config.yaml
 
 -include ../Mk/phonies

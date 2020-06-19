@@ -2,13 +2,13 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   labels:
-    app: prometheus-operator
-    release: prometheus-operator
+    app: ${component.prometheus.name}
+    release: ${component.prometheus.name}
   name: ${component.prometheus.name}-${component.kubecost.name}
   namespace: ${component.prometheus.namespace}
 spec:
   groups:
-  - name: ${component.prometheus.namespace}/${component.kubecost.name}
+  - name: ${component.kubecost.namespace}/${component.kubecost.name}
     rules:
     - expr: sum(rate(container_cpu_usage_seconds_total{container_name!=""}[5m]))
       record: cluster:cpu_usage:rate5m
