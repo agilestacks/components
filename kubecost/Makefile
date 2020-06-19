@@ -4,6 +4,7 @@
 COMPONENT_NAME          ?= kubecost
 DOMAIN_NAME             ?= test.dev.superhub.io
 NAMESPACE               ?= kubecost
+PROMETHEUS_NAMESPACE    ?= monitoring
 HELM_REPO_URL           ?= https://kubecost.github.io/cost-analyzer/
 HELM_REPO_NAME          ?= kubecost
 HELM_CHART              ?= $(HELM_REPO_NAME)/cost-analyzer
@@ -50,6 +51,8 @@ purge:
 
 install:
 	$(kubectl) apply -f namespace.yaml
+	$(kubectl) apply --namespace=$(PROMETHEUS_NAMESPACE) -f prometheus/rules.yaml
+	# $(kubectl) apply --namespace=$(PROMETHEUS_NAMESPACE) -f prometheus/scrape-config.yaml
 
 	if ! $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$'; then \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
@@ -85,5 +88,7 @@ destroy:
 	- $(kubectl) delete -f ingress.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	- $(kubectl) delete --namespace=$(PROMETHEUS_NAMESPACE) -f prometheus/rules.yaml
+	# - $(kubectl) delete --namespace=$(PROMETHEUS_NAMESPACE) -f prometheus/scrape-config.yaml
 
 -include ../Mk/phonies

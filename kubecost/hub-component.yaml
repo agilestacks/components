@@ -43,6 +43,7 @@ parameters:
     empty: allow
   - name: component.prometheus.namespace
     empty: allow
+    env: PROMETHEUS_NAMESPACE
   - name: component.kubecost
     parameters:
     - name: name
@@ -79,7 +80,7 @@ outputs:
     value: ${component.ingress.protocol}://${component.kubecost.ingress.urlPrefix}.${component.ingress.ssoFqdn}/overview.html
 
 
-
 templates:
   files:
-  - "*.template"
+    - "prometheus/*.template"
+    - "*.template"
