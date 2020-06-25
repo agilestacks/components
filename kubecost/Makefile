@@ -11,11 +11,13 @@ HELM_CHART              ?= $(HELM_REPO_NAME)/cost-analyzer
 VERSION                 ?= v1.59.0
 AWS_DEFAULT_REGION      ?= us-east-2
 HELM_HOME               ?= $(shell pwd)/.helm
+TIMEOUT                 ?= 600
 
 aws                ?= aws
 kubectl            ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 kubectl-prometheus ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(PROMETHEUS_NAMESPACE)"
-helm           ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm               ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+jq                 ?= jq
 
 
 SPOT_DATA_ENABLED := $(if $(and $(SPOT_DATA_BUCKET_NAME), $(SPOT_DATA_BUCKET_REGION), $(SPOT_DATA_PREFIX)),true)
@@ -30,7 +32,7 @@ else
     HELM_ARGS_SPOT_DATA:=
 endif
 
-deploy: init fetch purge install
+deploy: init fetch purge install wait
 
 init: $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
@@ -82,6 +84,22 @@ upgrade:
 		--values prometheus.yaml \
 		--version $(VERSION)
 
+wait:
+	$(eval timeout=$(shell echo "`date +%s` + $(TIMEOUT)" | bc ))
+	$(eval cost_analyzer_pod=$(kubectl) get pod -l app=cost-analyzer -o=json)
+	$(eval check_conttainers=$(jq) '.items[]?.status.conditions[] | select(.type == "ContainersReady" and .status == "True")')
+	@ echo "Waiting for Cost Analizer pod up and running"
+
+	@ while [ `date +%s` -le "$(timeout)" ]; do \
+		if [[ "`$(cost_analyzer_pod) | $(check_conttainers)`" ]]; then \
+			echo " done"; \
+			exit 0; \
+		fi; \
+		echo "still waiting..."; \
+		sleep 8; \
+	done; \
+	echo " ERROR timeout $(TIMEOUT)sec"; \
+	exit 1
 
 undeploy: init destroy
 
