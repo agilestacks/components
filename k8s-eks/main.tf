@@ -39,6 +39,10 @@ data "aws_route53_zone" "base" {
 resource "aws_route53_zone" "main" {
   name          = "${var.name}.${data.aws_route53_zone.base.name}"
   force_destroy = true
+
+  tags = "${map(
+    "superhub.io/stack/${var.name}.${var.base_domain}", "owned"
+  )}"
 }
 
 resource "aws_route53_record" "parent" {
