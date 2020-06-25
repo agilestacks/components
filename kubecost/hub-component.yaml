@@ -1,0 +1,87 @@
+---
+version: 1
+kind: component
+meta:
+  name: kubecost
+  title: Kubecost
+  brief: Kubernetes recource managment
+  description: >
+    Kubecost gives you visibility into your Kubernetes resources to reduce spend and prevent resource-based outages.
+  category: Kubernetes Tools
+  version: 1.59.0
+  maturity: alpha
+  keywords:
+    - aws
+  source:
+    dir: ../../components/kubecost
+
+requires:
+  - kubernetes
+  - helm
+  - prometheus
+provides:
+  - kubecost
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: terraform.bucket.name
+    env:  STATE_BUCKET
+  - name: terraform.bucket.region
+    env:  STATE_REGION
+  - name: component.aws-spot-data-feed.bucket.name
+    empty: allow
+  - name: component.aws-spot-data-feed.bucket.region
+    empty: allow
+  - name: component.aws-spot-data-feed.prefix
+    empty: allow
+  - name: component.ingress.protocol
+  - name: component.ingress.ssoFqdn
+  - name: component.ingress.kubernetes.ingressClass
+    empty: allow
+  - name: component.prometheus.name
+    empty: allow
+    env: PROMETHEUS_NAME
+  - name: component.prometheus.namespace
+    empty: allow
+    env: PROMETHEUS_NAMESPACE
+  - name: component.kubecost
+    parameters:
+    - name: name
+      value: kubecost-${dns.name}-${hub.componentName}
+      env: COMPONENT_NAME
+    - name: service.port
+      value: 9090
+    - name: ingress.urlPrefix
+      value: kubecost-${dns.name}-${hub.componentName}
+    - name: ingress.path
+      value: /
+    - name: spotData.bucket.name
+      value: ${component.aws-spot-data-feed.bucket.name}
+      env: SPOT_DATA_BUCKET_NAME
+    - name: spotData.bucket.region
+      value: ${component.aws-spot-data-feed.bucket.region}
+      env: SPOT_DATA_BUCKET_REGION
+    - name: spotData.prefix
+      value: ${component.aws-spot-data-feed.prefix}
+      env: SPOT_DATA_PREFIX
+    - name: token
+      empty: allow
+      env: KUBECOST_TOKEN
+    - name: namespace
+      value: kubecost
+      env: NAMESPACE
+    - name: version
+      value: v1.59.0
+      env: VERSION
+
+
+outputs:
+  - name: component.kubecost.url
+    value: ${component.ingress.protocol}://${component.kubecost.ingress.urlPrefix}.${component.ingress.ssoFqdn}/overview.html
+
+
+templates:
+  files:
+    - "prometheus/*.template"
+    - "*.template"

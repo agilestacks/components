@@ -1,0 +1,8 @@
+apiVersion: kubeflow.org/v1beta1
+kind: Profile
+metadata:
+  name: default
+spec:
+  owner:
+    kind: User
+    name: ${component.kubeflow.passwd.0.user}

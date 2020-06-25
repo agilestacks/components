@@ -4,6 +4,9 @@ bases:
 - ../../base
 resources:
 - oidc.yaml
+- istio-gateway.yaml
+patchesStrategicMerge:
+- envoy-filter.yaml
 commonLabels:
   app.kubernetes.io/name: oidc-authservice
   app.kubernetes.io/instance: oidc-authservice-v1.0.0
@@ -11,3 +14,4 @@ commonLabels:
   app.kubernetes.io/component: oidc-authservice
   app.kubernetes.io/part-of: kubeflow
   app.kubernetes.io/version: v1.0.0
+  app: oidc-authservice

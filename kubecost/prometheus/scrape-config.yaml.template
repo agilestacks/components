@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${component.prometheus.name}-${component.kubecost.name}-scrape-config
+  namespace: ${component.prometheus.namespace}
+type: Opaque
+stringData:
+  kubecost-scrape-configs.yaml: |
+    - job_name: ${component.kubecost.namespace}/${component.kubecost.name}
+      honor_labels: true
+      scrape_interval: 1m
+      scrape_timeout: 10s
+      metrics_path: /metrics
+      scheme: http
+      dns_sd_configs:
+      - names:
+        - ${component.kubecost.name}-cost-analyzer.${component.kubecost.namespace}
+        type: 'A'
+        port: 9003

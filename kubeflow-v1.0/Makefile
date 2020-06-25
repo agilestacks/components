@@ -2,13 +2,12 @@
 
 export KF_TARBALL         := https://github.com/kubeflow/manifests/tarball/v1.0.2
 # manifests-0.7-branch is a directory inside the tarball
-export KF_REPO            := $(abspath .cache/repo)
-export KF_KUSTOM_REPO     := $(abspath kustomrepo)
+export KF_REPO            := .cache/repo
 
 # export HUB_ASI_LOCAL_REPO := $(abspath kfrepo)
 export HUB_DEX_URL        := http://dex.kube-system.svc.cluster.local:5556/dex
-LIBSONNET     := $(abspath .cache/lib/kfctl.libsonnet)
-LIBSONNET     += $(abspath .cache/lib/utils.libsonnet)
+LIBSONNET     := .cache/lib/kfctl.libsonnet
+LIBSONNET     += .cache/lib/utils.libsonnet
 
 kubectl       := kubectl -n "$(HUB_COMPONENT_NAMESPACE)"
 jq            := jq -cMr
@@ -20,7 +19,7 @@ jsonnet       += $(addprefix -V ,$(filter KF_%,$(.VARIABLES)))
 jsonnet       += $(addprefix --jpath ,$(dir $(LIBSONNET)))
 KF_DEF        := kfctl_istio_dex.json
 KFCTL_TARBALL := https://github.com/kubeflow/kfctl/releases/download/v1.0.2/kfctl_v1.0.2-0-ga476281_$(shell uname -s | tr '[:upper:]' '[:lower:]').tar.gz
-
+KF_APP        := kustomzie
 kfctl         := $(shell which kfctl)
 ifeq ($(kfctl),)
 kfctl := $(abspath bin/kfctl)
@@ -28,13 +27,13 @@ export PATH := $(dir $(kfctl)):$(PATH)
 endif
 
 $(kfctl):
-	mkdir -p $(@D)
-	$(curl) "$(KFCTL_TARBALL)" | tar xz -C $(@D)
-	chmod +x $@
+	mkdir -p "$(@D)"
+	$(curl) "$(KFCTL_TARBALL)" | tar xz -C "$(@D)"
+	chmod +x "$@"
 
 $(KF_REPO):
-	mkdir -p $@
-	$(curl) $(KF_TARBALL) | tar xf - -C $@ --strip-components 1
+	mkdir -p "$@"
+	$(curl) "$(KF_TARBALL)" | tar xf - -C "$@" --strip-components 1
 
 %.libsonnet:
 	@ mkdir -p $(@D)
@@ -71,19 +70,24 @@ namespace:
 	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) 2>/dev/null || \
 		$(kubectl) create namespace $(HUB_COMPONENT_NAMESPACE)
 
-apply build delete: $(KF_REPO) $(kfctl)
-apply build: $(KF_DEF) namespace
-	$(kfctl) $@ -V -f "$(abspath $<)"
+$(KF_DEF): $(KF_REPO)
+$(KF_APP): $(KF_DEF)
+$(KF_APP): build
+apply delete build: $(kfctl)
+apply delete: $(KF_APP)
+apply: namespace
+apply build: $(KF_DEF)
+	$(kfctl) $@ -V -f "$<"
+delete: $(KF_DEF) drop-finalizers
+	$(kfctl) $@ --delete_storage -V -f "$<"
 
 drop-finalizers:
 	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o json \
 		| jq '. | del(.spec.finalizers)' \
 		| $(kubectl) replace --raw "/api/v1/namespaces/$(HUB_COMPONENT_NAMESPACE)/finalize" -f -
 
-delete: $(KF_DEF) drop-finalizers
-	$(kfctl) $@ --delete_storage -V -f "$(abspath $<)"
 
-deploy: clean patch dex build apply
+deploy: clean patch dex apply
 undeploy: clean build patch delete cleanup-namespace
 # undeploy: build delete wait_nons
 
@@ -123,7 +127,7 @@ wait_nons:
 	echo "ERROR timeout $(WAIT_TIMEOUT)sec; Moving on";
 
 clean:
-	rm -rf $(KF_DEF) $(KF_REPO) .cache kustomize $(LIBSONNET)
+	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET)
 	# rm -rf $(KF_DEF) kustomize $(LIBSONNET)
 
 .PHONY: deploy undeploy clean apply build delete wait wait_nons patch dex

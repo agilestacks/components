@@ -1,0 +1,9 @@
+# https://github.com/kubecost/cost-analyzer-helm-chart/blob/master/cost-analyzer/values.yaml
+
+kubecostProductConfigs:
+  clusterName: "${dns.domain}"
+
+kubecostToken: ${component.kubecost.token}
+
+service:
+  port: ${component.kubecost.service.port}

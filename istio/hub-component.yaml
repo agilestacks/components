@@ -55,6 +55,10 @@ parameters:
       - name: name
         env: PROMETHEUS_NAME
         value: prometheus-operator
+      - name: addr
+        value: http://${component.prometheus.name}-prometheus.${component.prometheus.namespace}.svc.cluster.local:9090
+        env: PROMETHEUS_ADDR
+
   - name: component.istio
     parameters:
       - name: name
@@ -68,18 +72,8 @@ parameters:
         env: ISTIO_VERSION
       - name: tracing.enabled
         value: false
-      - name: prometheus.enabled
-        value: false
       - name: grafana.enabled
         value: false
-      - name: certmanager.enabled
-        value: false
-      - name: ingressGateway.default.dnsZone
-        value: mesh
-        env: DEFAULT_GATEWAY_ZONE
-      - name: ingressGateway.default.name
-        value: default-ingressgateway
-        env: DEFAULT_INGRESS_GATEWAY
       - name: ingressGateway
         brief: Links a Gateway resource to current istio (`spec.selector.istio`)
         value: ingressgateway
@@ -100,9 +94,6 @@ outputs:
   - name: component.istio.kiali.url
     brief: Istio Service Graph
     value: ${component.ingress.protocol}://${component.istio.kiali.urlPrefix}.${component.ingress.ssoFqdn}
-  - name: component.istio.ingressGateway.default.fqdn
-    value: ${component.istio.ingressGateway.default.dnsZone}.${dns.domain}
-  - name: component.istio.ingressGateway.default.name
   - name: component.istio.namespace
   - name: component.istio.ingressGateway
     brief: Used to link a Gateway resource to current istio (`spec.selector.istio`)

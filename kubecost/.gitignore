@@ -1,0 +1,8 @@
+/.helm
+/charts
+/ingress.yaml
+/namespace.yaml
+/prometheus.yaml
+/prometheus/*.yaml
+/spot-data-feed.yaml
+/values.yaml

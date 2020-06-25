@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${component.kubecost.name}
+  namespace: ${component.kubecost.namespace}
+  labels:
+    provider: agilestacks.com
+  annotations:
+    agilestacks.com/stack-component: kubecost
+    kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
+spec:
+  rules:
+  - host: ${component.kubecost.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    http:
+      paths:
+      - path: ${component.kubecost.ingress.path}
+        backend:
+          serviceName: ${component.kubecost.name}-cost-analyzer
+          servicePort: ${component.kubecost.service.port}

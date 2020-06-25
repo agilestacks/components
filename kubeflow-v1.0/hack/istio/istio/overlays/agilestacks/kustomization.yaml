@@ -11,3 +11,11 @@ configMapGenerator:
   env: params.env
 configurations:
 - params.yaml
+commonLabels:
+  app.kubernetes.io/name: kubeflow-gateway
+  app.kubernetes.io/instance: istio
+  app.kubernetes.io/managed-by: kfctl
+  app.kubernetes.io/component: istio
+  app.kubernetes.io/part-of: kubeflow
+  kustomize.component: istio
+  app: kubeflow

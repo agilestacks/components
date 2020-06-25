@@ -9,25 +9,24 @@ local findByName(containers, desired) =
   local a = std.prune(std.foldl(indexes, containers, []));
   if std.length(a) > 0 then a[0] else null;
 
-local hasArg(args, value) = 
+local contains(args, value) = 
   local r = [a for a in args if a == value];
   if std.length(r) > 0 then true else false;
 
 local istioGw     = std.format("--istio-ingress-gateway=%s/%s", [istioNs, gwSvc]);
-local gwSrc       = "--source=istio-gateway";
 local containers  = deployment.spec.template.spec.containers;
 local extDns      = findByName(containers, "external-dns");
 assert extDns != null: "Cannot find container: external-dns";
 
 std.prune([
-  if !hasArg(containers[extDns].args, gwSrc) then {
+  if !contains(containers[extDns].args, "--source=istio-gateway") then {
     "op": "add",
     "path": std.format("/spec/template/spec/containers/%s/args/0", [extDns]),
-    "value": gwSrc,
+    "value": "--source=istio-gateway",
   },
-  if !hasArg(containers[extDns].args, istioGw) then {
-    "op": "add",
-    "path": std.format("/spec/template/spec/containers/%s/args/0", [extDns]),
-    "value": istioGw,
-  },
+  // if !contains(containers[extDns].args, istioGw) then {
+  //   "op": "add",
+  //   "path": std.format("/spec/template/spec/containers/%s/args/0", [extDns]),
+  //   "value": istioGw,
+  // },
 ])

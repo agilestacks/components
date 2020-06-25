@@ -29,8 +29,9 @@ local istio = [
       kf.NameValue("skip_auth_uri",      std.extVar("HUB_OIDC_AUTH_URI")),
       kf.NameValue("userid-header",      "kubeflow-userid"),
       // kf.NameValue("userid-prefix", ""),
-      istioNamespace]),
-  kf.KustomizeConfig("istio/add-anonymous-user-filter"),
+      istioNamespace
+      ]),
+  kf.KustomizeConfig("istio/add-anonymous-user-filter", overlays=["agilestacks"]),
 ];
 
 local installCertManager = false;

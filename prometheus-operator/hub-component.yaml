@@ -28,6 +28,7 @@ parameters:
   - name: component.ingress.ssoFqdn
   - name: component.ingress.protocol
   - name: component.dex.issuer
+    empty: allow
   - name: dns.domain
     env: DOMAIN_NAME
   - name: terraform.bucket.name
@@ -79,6 +80,8 @@ parameters:
     - name:  psp.enabled
       value: true
     - name:  ingress.enabled
+      value: true
+    - name:  oauth.enabled
       value: true
     - name:  ingress.urlPrefix
       value: prometheus
