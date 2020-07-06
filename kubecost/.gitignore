@@ -6,3 +6,7 @@
 /prometheus/*.yaml
 /spot-data-feed.yaml
 /values.yaml
+/prometheus-current-secret.json
+/prometheus-current-scrapes.json
+/prometheus-kubecost-scrape.json
+/prometheus-scrapes-concurency.json
