@@ -52,7 +52,7 @@ endif
 
 deploy: clean fetch patch purge install
 ifneq (,$(filter external-dns,$(HUB_PROVIDES)))
-deploy: ext-dns-endpoint-apply ext-dns-output
+deploy: wait-elb ext-dns-endpoint-apply ext-dns-output
 else
 deploy: init plan output apply
 endif
@@ -66,17 +66,10 @@ undeploy: ext-dns-endpoint-delete
 endif
 undeploy: uninstall
 
-ext-dns-endpoint-apply: wait-elb elb
-	sed -i~ -e 's/##LB##/$(LOAD_BALANCER)/g' dns-endpoint.yaml
-	-$(kubectl) apply -f dns-endpoint.yaml
-
-ext-dns-endpoint-delete: elb
-	sed -i~ -e 's/##LB##/$(LOAD_BALANCER)/g' dns-endpoint.yaml
-	-$(kubectl) delete -f dns-endpoint.yaml
-
-elb:
-	$(eval LOAD_BALANCER := $(shell $(kubectl) get svc $(TF_VAR_component) \
-    -o jsonpath="{.status.loadBalancer.ingress[*].hostname}"))
+ext-dns-endpoint-%: LOAD_BALANCER:=$(shell $(kubectl) get svc $(TF_VAR_component) \
+						-o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
+ext-dns-endpoint-%:
+	sed 's/##LB##/$(LOAD_BALANCER)/g' dns-endpoint.yaml | $(kubectl) $* -f -
 
 wait-elb:
 	@echo "Waiting for ELB to assign"; \
@@ -177,6 +170,8 @@ apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 	@echo
 
+ext-dns-output: LOAD_BALANCER:=$(shell $(kubectl) get svc $(TF_VAR_component) \
+				-o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
 ext-dns-output:
 	@echo
 	@echo Outputs:
