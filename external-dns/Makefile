@@ -20,8 +20,10 @@ init: $(HELM_HOME)
 
 HELM_OPTS += --values $(abspath values.yaml)
 ifneq (,$(filter istio,$(HUB_PROVIDES)))
-HELM_OPTS += --set 'sources=$(shell $(yq) read -j values.yaml | $(jq) '.sources + ["istio-gateway"] | unique')'
-HELM_OPTS += --set 'istioIngressGateways=["$(ISTIO_NAMESPACE)/$(ISTIO_GATEWAY)"]'
+HELM_OPTS += --set 'sources=$(shell \
+	$(yq) read -j values.yaml | \
+	$(jq) -r '.sources + ["istio-gateway"] | unique | "{"+join(",")+"}"'\
+)'
 endif
 
 $(CHART_DIR):
