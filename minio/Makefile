@@ -46,6 +46,7 @@ ifeq ($(NATS_ENABLED),true)
 	MINIO_NOTIFICATIONS += nats-notifications
 endif
 
+HELM_OPTS := --values charts/minio/values.yaml
 HELM_OPTS := --values values.yaml
 HELM_OPTS += --set 'accessKey=$(MINIO_ACCESS_KEY)'
 HELM_OPTS += --set 'secretKey=$(MINIO_SECRET_KEY)'
@@ -73,21 +74,19 @@ namespace:
 wait:
 	sleep 10
 
-HOST_CMD := host
-PING_CMD := $(HOST_CMD) $(COMPONENT_NAME).$(INGRESS_DOMAIN)
-wait-dns:
-	$(eval timeout        := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
-	@ echo "Waiting for DNS to resolve $(COMPONENT_NAME).$(INGRESS_DOMAIN) with $(HOST_CMD)"
-	$(eval current_time   := date +%s)
-	while [ `$(current_time)` -le "$(timeout)" ]; do \
-		if $(PING_CMD); then \
+wait-dns: ENDPOINT:=$(COMPONENT_NAME).$(INGRESS_DOMAIN)
+wait-dns: TIMEOUT:=$(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc )
+wait-dns: 
+	@ echo "Waiting for DNS to resolve  with $(ENDPOINT)"
+	@ while [ `date +%s` -le "$(TIMEOUT)" ]; do \
+		if nslookup $(ENDPOINT) > /dev/null; then \
 			echo "Done!"; \
 			exit 0; \
 		fi;  \
 		echo "Still waiting..."; \
 		sleep 8; \
 	done; \
-	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
+	echo "Error: timed out"; \
 	exit 1;
 
 

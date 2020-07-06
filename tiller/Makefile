@@ -13,7 +13,7 @@ init:
 	$(helm) init --upgrade --service-account tiller
 
 undeploy:
-	$(helm) reset --force
+	-$(helm) reset --force
 	-$(kubectl) delete -f tiller-rbac.yaml
 
 wait:
