@@ -105,13 +105,14 @@ dashboard:
 
 dns: DNS1=$(URL_PREFIX).$(DOMAIN_NAME)
 dns: DNS2=$(SSO_URL_PREFIX).$(DOMAIN_NAME)
+dns: NAMESERVER=$(firstword $(shell dig +short NS $(DOMAIN_NAME)))
 dns: LOAD_BALANCER=$(shell $(kubectl) get svc $(COMPONENT_NAME) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
 dns:
 	cat dns.yaml | sed -e 's/\$$load_balancer/$(LOAD_BALANCER)/' | $(kubectl) apply -f -
 	@echo "Waiting for DNS records to propagate";
 	@for i in $$(seq 1 60); do \
-		if nslookup $(DNS1) >/dev/null; then \
-			if nslookup $(DNS2) >/dev/null; then \
+		if nslookup $(DNS1) $(NAMESERVER) >/dev/null; then \
+			if nslookup $(DNS2) $(NAMESERVER) >/dev/null; then \
 				echo "done"; \
 				exit 0; \
 			fi; \
