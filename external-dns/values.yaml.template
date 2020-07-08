@@ -12,7 +12,6 @@ sources:
 
 interval: 20s
 policy: sync
-domainFilters: ${component.external-dns.domainFilters}
 crd:
   create: true
   apiversion: externaldns.k8s.io/v1alpha1

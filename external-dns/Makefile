@@ -26,6 +26,11 @@ HELM_OPTS += --set 'sources=$(shell \
 )'
 endif
 
+ifneq (,DOMAIN_FILTERS)
+HELM_OPTS += --set 'domainFilters={$(subst $(space),$(comma),$(foreach d,$(DOMAIN_FILTERS),$(d)))}'
+endif
+
+
 $(CHART_DIR):
 	rm -rf $@
 	$(helm) fetch $(CHART_NAME) \

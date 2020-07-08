@@ -3,6 +3,3 @@ provider: aws
 txtPrefix: "meta."
 aws:
   zoneType: "public"
-  zoneTags: [
-    "superhub.io/stack/${dns.domain}"
-  ]

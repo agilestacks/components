@@ -68,7 +68,9 @@ parameters:
     value: aws
     env: PROVIDER
   - name: domainFilters
-    value: "['${dns.domain}']"
+    env: DOMAIN_FILTERS
+    empty: allow
+  #   value: "['${dns.domain}']"
   - name: chart.name
     value: "bitnami/external-dns"
     env: CHART_NAME
@@ -87,6 +89,10 @@ parameters:
     - name: tsig.keyname
     - name: tsig.secret-alg
       value: hmac-sha256
+  - name: route53.zoneTags
+    value: superhub.io/stack/${dns.domain}
+    empty: allow
+    env: ROUTE53_ZONE_TAGS
 - name: terraform.bucket
   parameters:
   - name: name
