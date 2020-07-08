@@ -1,8 +1,11 @@
-apiVersion: kubeflow.org/v1beta1
+apiVersion: kubeflow.org/v1
 kind: Profile
 metadata:
-  name: default
+  name: workspace
+  finalizers:
+  - profile-finalizer
 spec:
   owner:
     kind: User
     name: ${component.kubeflow.passwd.0.user}
+  resourceQuotaSpec: {}

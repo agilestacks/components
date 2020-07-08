@@ -10,6 +10,7 @@ LIBSONNET     := .cache/lib/kfctl.libsonnet
 LIBSONNET     += .cache/lib/utils.libsonnet
 
 kubectl       := kubectl -n "$(HUB_COMPONENT_NAMESPACE)"
+
 jq            := jq -cMr
 curl          := curl -qfSL --silent --create-dirs
 rsync         := rsync -aIuv --exclude-from '$(abspath .cpignore)'
@@ -70,14 +71,18 @@ namespace:
 	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) 2>/dev/null || \
 		$(kubectl) create namespace $(HUB_COMPONENT_NAMESPACE)
 
+bucket/deploy:
+	$(MAKE) -C "$(@D)" $(@F)
+
 $(KF_DEF): $(KF_REPO)
 $(KF_APP): $(KF_DEF)
 $(KF_APP): build
-apply delete build: $(kfctl)
+apply delete build: $(kfctl) patch
 apply delete: $(KF_APP)
-apply: namespace
+apply: namespace bucket/deploy
 apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
+	
 delete: $(KF_DEF) drop-finalizers
 	$(kfctl) $@ --delete_storage -V -f "$<"
 
@@ -88,8 +93,16 @@ drop-finalizers:
 
 
 deploy: clean patch dex apply
-undeploy: clean build patch delete cleanup-namespace
-# undeploy: build delete wait_nons
+
+undeploy: clean patch delete
+	$(kubectl) delete --all --force applications 
+	# $(kubectl) delete --all --force profiles
+	$(kubectl) delete --all --force validatingwebhookconfigurations
+	$(kubectl) delete --all --force mutatingwebhookconfigurations
+	$(kubectl) delete rolebinding,clusterrolebinding,sa centraldashboard
+	$(kubectl) delete --all --force \
+		daemonsets,replicasets,services,deployments,pods,rc,configmaps,secrets,services,ingress,statefulsets,gateways,envoyfilters,jobs.batch,jobs
+
 
 wait: EXPECTED_APPS := 28
 wait: WAIT_TIMEOUT  := 1800
@@ -127,7 +140,7 @@ wait_nons:
 	echo "ERROR timeout $(WAIT_TIMEOUT)sec; Moving on";
 
 clean:
-	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET)
+	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
 	# rm -rf $(KF_DEF) kustomize $(LIBSONNET)
 
 .PHONY: deploy undeploy clean apply build delete wait wait_nons patch dex
@@ -137,8 +150,3 @@ clean:
 
 # cleanup-namespace: CRB:=$(shell $(kubectl) get clusterrolebindings -o json | \
 # 	$(jq) '.items[] | select(.subjects[]?.namespace=="kubeflow").metadata.name')
-cleanup-namespace:
-	$(kubectl) delete applications --all
-	$(kubectl) delete profiles --all
-	$(kubectl) delete validatingwebhookconfigurations --all
-	$(kubectl) delete mutatingwebhookconfigurations --all

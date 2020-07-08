@@ -24,68 +24,94 @@ provides:
   # - istio
 
 parameters:
-  - name: dns.domain
-    env: HUB_DOMAIN_NAME
-  - name: component.dex.issuer
-    env: HUB_DEX_ISSUER
-  - name: component.dex.namespace
-    value: kube-system
-    env: HUB_DEX_NAMESPACE
-  - name: component.istio
-    parameters: 
-    - name: namespace
-      value: istio-system
-      env: HUB_ISTIO_NAMESPACE
-    - name: ingressGateway
+- name: dns.domain
+  env: HUB_DOMAIN_NAME
+- name: component.dex.issuer
+  env: HUB_DEX_ISSUER
+- name: component.dex.namespace
+  value: kube-system
+  env: HUB_DEX_NAMESPACE
+- name: component.kubeflow
+  parameters:
+    # To deploy multiple kubeflow on the same cluster
+    # will require to separate it by the namespace
+    # we will use a component..name for namespace
+    - name: name
+      value: kubeflow
+      env: HUB_COMPONENT_NAME
+    - name: istio.ingressGateway
       value: ${component.kubeflow.name}-ingressgateway
-    # uncomment if will be needed for jsonnet
-    # env: HUB_ISTIO_INGRESSGATEWAY
-  - name: component.kubeflow
-    parameters:
-      # To deploy multiple kubeflow on the same cluster
-      # will require to separate it by the namespace
-      # we will use a component..name for namespace
-      - name: name
-        value: kubeflow
-        env: HUB_COMPONENT_NAME
-      - name: istio.ingressGateway
-        value: ${component.kubeflow.name}-ingressgateway
-      - name: namespace
-        value: kubeflow
-        env: HUB_COMPONENT_NAMESPACE
-      - name: version
-        value: v1.0.2
-        env: HUB_COMPONENT_VERSION
-      - name: oidc.authURI
-        value: ${component.dex.issuer}
-        env: HUB_OIDC_AUTH_URI
-      - name: oidc.clientId
-        value: ${component.kubeflow.name}-client
-        env: HUB_OIDC_CLIENT_ID
-      - name: oidc.secret
-        # mutual trust secret between dex and kubeflow
-        # must be changed by the user to smth really random
-        # At present this is in sync to the defaults in `istio/oidc-authservice` kfapp
-        value: pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok
-        env: HUB_OIDC_SECRET
-      - name: oidc.redirectURI
-        value: http://${component.kubeflow.name}.${dns.domain}/login/oidc
-        # value: http://${component.kubeflow.name}.${dns.domain}/login/callback
-        env: HUB_OIDC_REDIRECT_URI
-      - name: passwd
-        empty: allow
-        parameters:
-        - name: 0.user
-          value: admin@agilestacks.com
-          env: HUB_DEX_USER
-        - name: 0.password
-          value: 12341234
-          env: PLAIN_PASS
-          
-outputs: []
-    # - name: component.kubeflow.url
-    # brief: Kubeflow Central Dashboard
-    # value: ${component.ingress.protocol}://${component.kubeflow.urlPrefix}.${dns.domain}/
+    - name: namespace
+      value: kubeflow
+      env: HUB_COMPONENT_NAMESPACE
+    - name: version
+      value: v1.0.2
+      env: HUB_COMPONENT_VERSION
+    - name: oidc.authURI
+      value: ${component.dex.issuer}
+      env: HUB_OIDC_AUTH_URI
+    - name: oidc.clientId
+      value: ${component.kubeflow.name}-client
+      env: HUB_OIDC_CLIENT_ID
+    - name: oidc.secret
+      # mutual trust secret between dex and kubeflow
+      # must be changed by the user to smth really random
+      # At present this is in sync to the defaults in `istio/oidc-authservice` kfapp
+      value: pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok
+      env: HUB_OIDC_SECRET
+    - name: oidc.redirectURI
+      value: http://${component.kubeflow.name}.${dns.domain}/login/oidc
+      # value: http://${component.kubeflow.name}.${dns.domain}/login/callback
+      env: HUB_OIDC_REDIRECT_URI
+    - name: passwd
+      empty: allow
+      parameters:
+      - name: 0.user
+        value: admin@agilestacks.com
+        env: HUB_DEX_USER
+      - name: 0.password
+        value: 12341234
+        env: PLAIN_PASS
+- name: component.istio
+  parameters: 
+  - name: namespace
+    value: istio-system
+    env: HUB_ISTIO_NAMESPACE
+  - name: ingressGateway
+    value: ${component.kubeflow.name}-ingressgateway
+- name: component.minio.namespace
+  value: ${component.kubeflow.namespace}
+- name: component.bucket
+  parameters: 
+  - name: endpoint
+    env: HUB_S3_ENDPOINT
+  - name: region
+    env: HUB_S3_REGION
+  - name: accessKey
+    env: HUB_S3_ACCESS_KEY
+  - name: secretKey
+    env: HUB_S3_SECRET_KEY
+  - name: name
+    env: HUB_S3_BUCKET
+    value: ${component.kubeflow.name}-mlpipelines
+- name: component.mysql
+  empty: allow
+  parameters:
+  - name: host
+    value: mysql
+    env: HUB_MYSQL_HOST
+  - name: user
+    env: HUB_MYSQL_DB_USER
+  - name: password
+    env: HUB_MYSQL_DB_PASS
+  - name: database
+    env: HUB_MYSQL_DB_NAME
+    value: mlpipeline
+
+outputs:
+- name: component.kubeflow.url
+  brief: Kubeflow Central Dashboard
+  value: http://${component.kubeflow.name}.${dns.domain}/
 
 templates:
   files:
@@ -95,3 +121,6 @@ templates:
     - hack/istio/oidc-authservice/overlays/agilestacks/*.template
     - hack/knative/knative-serving-install/overlays/agilestacks/*.template
     - hack/profiles/overlays/agilestacks/*.template
+    - hack/pipeline/api-service/overlays/agilestacks/*.template
+    - profiles/*.template
+    - hack/common/centraldashboard/base/*.template

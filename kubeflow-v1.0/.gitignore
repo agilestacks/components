@@ -18,3 +18,6 @@ oidc.yaml
 /hack/knative/knative-serving-install/overlays/agilestacks/gateway.yaml
 /hack/istio/istio/overlays/agilestacks/params.env
 /hack/istio/istio/overlays/agilestacks/kf-istio-resources.yaml
+/hack/common/centraldashboard/base/clusterrole-binding.yaml.template
+/hack/common/centraldashboard/base/role-binding.yaml.template
+/hack/profiles/overlays/agilestacks/profile.yaml
