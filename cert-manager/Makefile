@@ -93,7 +93,6 @@ aws-dns-key:
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	-$(kubectl) get crd -o name | grep -F .cert-manager.io | xargs $(kubectl) delete
 
 clean:
 	rm -rf $(HELM_HOME) charts/$(notdir $(HELM_CHART))
