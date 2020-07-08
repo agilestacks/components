@@ -9,7 +9,6 @@ INGRESS_DOMAIN ?= localhost
 PROTOCOL       ?= http
 ALIAS          ?= $(COMPONENT_NAME)
 DOMAIN         ?= minio
-WAIT_TIMEOUT   ?= 180
 DEFAULT_BUCKET ?= default
 
 # secret-name has been driven by fullnameOverride in helm chart
@@ -56,7 +55,26 @@ ifneq ($(TLS_KIND),)
 HELM_OPTS += --values $(TLS_KIND)/values.yaml
 endif
 
-deploy: clean init fetch purge install configure $(MINIO_NOTIFICATIONS) output
+deploy: clean init fetch purge install configure output wait-dns 
+ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
+wait-tls: ENDPOINT:=$(COMPONENT_NAME).$(INGRESS_DOMAIN)
+wait-tls: TIMEOUT:=$(shell echo "`date +%s` + 600" | bc )
+wait-tls:
+	@ echo "Waiting for valid TLS for $(ENDPOINT):"
+	@ while [ `date +%s` -le "$(TIMEOUT)" ]; do \
+		if ! (openssl s_client -connect $(ENDPOINT):443 \
+			-servername $($(ENDPOINT) ) </dev/null \
+			| openssl x509 -in /dev/stdin -noout) 2>&1 | grep -q 'verify error'; then \
+			echo "Done!"; \
+			exit 0; \
+		fi;  \
+		echo "Still waiting..."; \
+		sleep 8; \
+	done; \
+	echo "Error: timed out"; \
+	exit 1;
+deploy: wait-tls
+endif
 
 init:
 	mkdir -p $(HELM_HOME)
@@ -69,15 +87,16 @@ fetch:
 		--version $(CHART_VERSION)
 
 namespace:
-	- $(kubectl) create namespace $(NAMESPACE)
+	$(kubectl) get namespace $(NAMESPACE) || \
+		$(kubectl) create namespace $(NAMESPACE)
 
 wait:
 	sleep 10
 
 wait-dns: ENDPOINT:=$(COMPONENT_NAME).$(INGRESS_DOMAIN)
-wait-dns: TIMEOUT:=$(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc )
+wait-dns: TIMEOUT:=$(shell echo "`date +%s` + 600" | bc )
 wait-dns: 
-	@ echo "Waiting for DNS to resolve  with $(ENDPOINT)"
+	@ echo "Waiting for DNS to resolve $(ENDPOINT):"
 	@ while [ `date +%s` -le "$(TIMEOUT)" ]; do \
 		if nslookup $(ENDPOINT) > /dev/null; then \
 			echo "Done!"; \
@@ -89,10 +108,9 @@ wait-dns:
 	echo "Error: timed out"; \
 	exit 1;
 
-
-nats-notifications: wait-dns
-	$(mc) --insecure event list $(ALIAS)/$(DEFAULT_BUCKET) | grep arn:minio:sqs::1:nats  || \
-            $(mc) --insecure event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
+# nats-notifications: wait-dns
+# 	$(mc) --insecure event list $(ALIAS)/$(DEFAULT_BUCKET) | grep arn:minio:sqs::1:nats  || \
+#             $(mc) --insecure event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
@@ -107,17 +125,17 @@ install: namespace
 			--replace \
 			--wait
 
-configure: wait-dns
-	@ $(mc) --insecure config host add $(ALIAS) \
-		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
-		$(MINIO_ACCESS_KEY) $(MINIO_SECRET_KEY) \
-		--api S3v4
-	@ $(mc) --insecure config host list
+# configure: wait-dns
+# 	@ $(mc) --insecure config host add $(ALIAS) \
+# 		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
+# 		$(MINIO_ACCESS_KEY) $(MINIO_SECRET_KEY) \
+# 		--api S3v4
+# 	@ $(mc) --insecure config host list
 
-unconfigure:
-	- $(mc) config host rm $(ALIAS)
+# unconfigure:
+# 	- $(mc) config host rm $(ALIAS)
 
-undeploy: init unconfigure
+undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	- $(kubectl) delete pvc $(COMPONENT_NAME)
