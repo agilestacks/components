@@ -1,0 +1,11 @@
+image: "${component.mysql.image.name}"
+imageTag: "${component.mysql.image.tag}"
+mysqlAllowEmptyPassword: ${component.mysql.allowEmptyPassword}
+
+persistence:
+  enabled: true
+  size: ${component.mysql.volumeSize}
+
+serviceAccount:
+  create: true
+  name: ${hub.componentName}
