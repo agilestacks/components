@@ -12,6 +12,7 @@ sources:
 
 interval: 20s
 policy: sync
+triggerLoopOnEvent: true
 crd:
   create: true
   apiversion: externaldns.k8s.io/v1alpha1
