@@ -50,7 +50,7 @@ $(SCRAPES_CONCURENCY): $(CURRENT_SCRAPES) $(KUBECOST_SCRAPE)
 		--ext-code KUBECOST_SCRAPE="`cat $(KUBECOST_SCRAPE)`" > $@
 
 scrapes-concurency: $(SCRAPES_CONCURENCY)
-	@echo Concurency scrapes flow
+	@echo Concurrency scrapes flow
 	@echo Patching `$(CURRENT_SCRAPE_NAME)` secret
 	$(kubectl) patch secret `$(CURRENT_SCRAPE_NAME)` --type=merge -p "`cat $(SCRAPES_CONCURENCY)`"
 
