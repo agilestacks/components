@@ -3,7 +3,8 @@ local currentScrapes = std.extVar("CURRENT_SCRAPES");
 local kubecostScrape = std.extVar("KUBECOST_SCRAPE");
 
 local updatedConfigs = std.uniq(
-    [kubecostScrape],
+    [kubecostScrape]
+    +
     currentScrapes
 );
 

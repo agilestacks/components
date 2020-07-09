@@ -4,7 +4,6 @@
 COMPONENT_NAME          ?= kubecost
 DOMAIN_NAME             ?= test.dev.superhub.io
 NAMESPACE               ?= kubecost
-PROMETHEUS_NAMESPACE    ?= monitoring
 HELM_REPO_URL           ?= https://kubecost.github.io/cost-analyzer/
 HELM_REPO_NAME          ?= kubecost
 HELM_CHART              ?= $(HELM_REPO_NAME)/cost-analyzer
@@ -12,16 +11,12 @@ VERSION                 ?= v1.59.0
 AWS_DEFAULT_REGION      ?= us-east-2
 HELM_HOME               ?= $(shell pwd)/.helm
 TIMEOUT                 ?= 600
-SCRAPE_CONFIGS_NAME     ?= $(error SCRAPE_CONFIGS_NAME is not provided)
-SCRAPE_CONFIGS_KEY      ?= $(error SCRAPE_CONFIGS_KEY is not provided)
+
 
 aws                ?= aws
 kubectl            ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-kubectl-prometheus ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(PROMETHEUS_NAMESPACE)"
 helm               ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 jq                 ?= jq
-yq                 ?= yq
-
 
 SPOT_DATA_ENABLED := $(if $(and $(SPOT_DATA_BUCKET_NAME), $(SPOT_DATA_BUCKET_REGION), $(SPOT_DATA_PREFIX)),true)
 
@@ -35,20 +30,7 @@ else
     HELM_ARGS_SPOT_DATA:=
 endif
 
-PROMETHEUS_ENTITY        := $(kubectl-prometheus) get prometheus $(PROMETHEUS_NAME)-prometheus -o json
-SCRAPES_CONCURENCY_QUERY := $(jq) '.spec.additionalScrapeConfigs? | select(.name and .key and (.name != "$(SCRAPE_CONFIGS_NAME)" or .key != "$(SCRAPE_CONFIGS_KEY)"))'
-SCRAPES_CONCURENCY       := $(shell $(PROMETHEUS_ENTITY) | $(SCRAPES_CONCURENCY_QUERY))
-CURRENT_SCRAPE_NAME      := $(PROMETHEUS_ENTITY) | $(jq) -r .spec.additionalScrapeConfigs.name
-CURRENT_SCRAPE_KEY       := $(PROMETHEUS_ENTITY) | $(jq) -r .spec.additionalScrapeConfigs.key
-
-ifeq ($(SCRAPES_CONCURENCY),)
-    SCRAPES_FLOW := autonomy
-else
-    SCRAPES_FLOW := concurency
-endif
-
-# deploy: init fetch purge prometheus install wait
-deploy: prometheus
+deploy: init fetch purge prometheus install wait
 
 init: $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
@@ -68,33 +50,8 @@ purge:
 		&& $(helm) delete --purge $(COMPONENT_NAME) \
 		|| exit 0
 
-prometheus-scrapes-autonomy:
-	@echo Autonomy scrapes flow
-	$(kubectl-prometheus) apply -f prometheus/scrape-config.yaml
-	$(kubectl-prometheus) patch prometheus $(PROMETHEUS_NAME)-prometheus --type=merge -p "`cat prometheus/kubecost-prometheus.yaml`"
-
-prometheus-current-secret.json:
-	$(kubectl-prometheus) get secret `$(CURRENT_SCRAPE_NAME)` -o json > $@
-
-prometheus-current-scrapes.json: prometheus-current-secret.json
-	cat prometheus-current-secret.json | $(jq) -r ".data.\"`$(CURRENT_SCRAPE_KEY)`\"" | base64 -d | yq read -j - > $@
-
-prometheus-kubecost-scrape.json: prometheus/scrape-config.yaml
-	cat prometheus/scrape-config.yaml | $(yq) read - 'stringData."$(SCRAPE_CONFIGS_KEY)"' | $(yq) read -j - "0" > $@
-
-prometheus-scrapes-concurency.json: prometheus-current-scrapes.json prometheus-kubecost-scrape.json
-	jsonnet prometheus/concurency-scrape.jsonnet \
-		--ext-str SECRET_KEY=`$(CURRENT_SCRAPE_KEY)` \
-		--ext-code CURRENT_SECRET="`cat prometheus-current-secret.json`" \
-		--ext-code CURRENT_SCRAPES="`cat prometheus-current-scrapes.json`" \
-		--ext-code KUBECOST_SCRAPE="`cat prometheus-kubecost-scrape.json`" > $@
-
-prometheus-scrapes-concurency: prometheus-scrapes-concurency.json
-	@echo Concurency scrapes flow
-	$(kubectl-prometheus) patch secret `$(CURRENT_SCRAPE_NAME)` --type=merge -p "`cat prometheus-scrapes-concurency.json`"
-
-prometheus: prometheus-scrapes-${SCRAPES_FLOW}
-	$(kubectl-prometheus) apply -f prometheus/rules.yaml
+prometheus:
+	$(MAKE) -C "$@"
 
 install:
 	$(kubectl) apply -f namespace.yaml
@@ -149,7 +106,7 @@ destroy:
 	- $(kubectl) delete -f ingress.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	- $(kubectl-prometheus) delete -f prometheus/rules.yaml
-	- $(kubectl-prometheus) delete -f prometheus/scrape-config.yaml
+	$(MAKE) -C prometheus destroy
 
 -include ../Mk/phonies
+.PHONY: prometheus
