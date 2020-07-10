@@ -5,7 +5,7 @@ CHART_NAME  := stable/mysql
 CHART_DIR   := $(HELM_HOME)/charts/$(notdir $(CHART_NAME))
 export HELM_HOME
 
-kubectl   := kubectl -c "$(DOMAIN_NAME)" -n "$(NAMESPACE)"
+kubectl   := kubectl --context="$(DOMAIN_NAME)" -n "$(NAMESPACE)"
 helm      := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 HELM_OPTS += --values $(abspath $(CHART_DIR)/values.yaml)
 HELM_OPTS += --values $(abspath values.yaml)
@@ -19,13 +19,13 @@ HELM_OPTS += --set 'mysqlUser=$(DB_USER)'
 endif
 
 ifneq (,$(DB_PASSWORD))
-HELM_OPTS += --set 'mysqlPassword=$(DB_PASSWORD)'
+HELM_OPTS += --set 'mysqlPassword=$$DB_PASSWORD'
 else
 HELM_OPTS += --set 'mysqlAllowEmptyPassword=true'
 endif
 
 ifneq (,$(ROOT_PASSWORD))
-HELM_OPTS += --set 'mysqlRootPassword=$(ROOT_PASSWORD)'
+HELM_OPTS += --set 'mysqlRootPassword=$$ROOT_PASSWORD'
 else
 HELM_OPTS += --set 'allowEmptyRootPassword=true'
 endif
@@ -34,7 +34,11 @@ ifneq (,$(shell $(kubectl) get pvc $(COMPONENT_NAME) -o name 2>/dev/null))
 HELM_OPTS += --set 'persistence.existingClaim=$(COMPONENT_NAME)'
 endif
 
-deploy: $(CHART_DIR)
+namespace:
+	$(kubectl) get namespace $(NAMESPACE) || \
+		$(kubectl) create namespace $(NAMESPACE)
+
+deploy: $(CHART_DIR) namespace
 	$(helm) --namespace $(NAMESPACE) ls -q | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART_DIR) \
 			--name $(COMPONENT_NAME) \
@@ -55,7 +59,7 @@ $(CHART_DIR): $(HELM_HOME)
 		--version=$(CHART_VERSION) \
 		--untar --untardir $(dir $@)
 
-.SILENT:   deploy undeploy $(HELM_HOME)
-.IGNORE:   undeploy
+.SILENT:   undeploy $(HELM_HOME)
+.IGNORE:   undeploy namespace
 .PRECIOUS: $(CHART_DIR)
 .PHONY: deploy undeploy
