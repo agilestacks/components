@@ -2,7 +2,12 @@ local kf                = import "kfctl.libsonnet";
 local utils             = import "utils.libsonnet";
 
 local istio = [
-  kf.KustomizeConfig("istio/cluster-local-gateway", parameters={"namespace": "istio-system"}),
+  kf.KustomizeConfig("istio/cluster-local-gateway", 
+    parameters={
+      "namespace": "istio-system",
+      // OFF is interpreted as "false".  
+      "clusterRbacConfig": "OFF",
+    }),
   kf.KustomizeConfig("istio/kfserving-gateway", parameters={"namespace": "istio-system"}),
   kf.KustomizeConfig("istio/istio", overlays=["agilestacks"], parameters={"clusterRbacConfig": "OFF"}),
   kf.KustomizeConfig("istio/oidc-authservice", overlays=["application", "agilestacks"],
@@ -41,6 +46,7 @@ local argo = [
 ];
 
 local centraldashboard = [
+  kf.KustomizeConfig("kubeflow-roles"),
   kf.KustomizeConfig("common/centraldashboard", 
     overlays=["istio", "application"],
     parameters={
@@ -130,6 +136,7 @@ local pipeline = [
       s3EndpointHost: s3url.host,
       s3EndpointPort: s3url.port,
     }),
+  kf.KustomizeConfig("pipeline/persistent-agent", overlays=["application"]),
   kf.KustomizeConfig("pipeline/pipelines-runner", overlays=["application"]),
   kf.KustomizeConfig("pipeline/pipelines-ui", overlays=["istio", "application"]),
   kf.KustomizeConfig("pipeline/scheduledworkflow", overlays=["application"]),
@@ -180,7 +187,7 @@ kf.Definition(
       // + mysql
       + pipeline
       + seldon
-      + profile
+      + profile,
     repos: [kf.Repo("manifests", std.extVar("KF_REPO"))],
     version: std.extVar("HUB_COMPONENT_VERSION"),
   },

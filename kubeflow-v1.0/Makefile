@@ -64,22 +64,19 @@ $(KF_REPO):
 patch: $(KF_REPO)
 	$(rsync) $(abspath hack)/ $^
 
-dex:
+dex bucket:
 	$(MAKE) -C "$@"
 
 namespace:
 	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) 2>/dev/null || \
 		$(kubectl) create namespace $(HUB_COMPONENT_NAMESPACE)
 
-bucket/deploy:
-	$(MAKE) -C "$(@D)" $(@F)
-
 $(KF_DEF): $(KF_REPO)
 $(KF_APP): $(KF_DEF)
 $(KF_APP): build
 apply delete build: $(kfctl) patch
 apply delete: $(KF_APP)
-apply: namespace bucket/deploy
+apply: namespace bucket
 apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
 	
@@ -143,9 +140,10 @@ clean:
 	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
 	# rm -rf $(KF_DEF) kustomize $(LIBSONNET)
 
-.PHONY: deploy undeploy clean apply build delete wait wait_nons patch dex
+.PHONY: deploy undeploy clean apply build delete wait wait_nons patch dex bucket
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
-.IGNORE: delete drop-finalizers cleanup-namespace oidc-delete
+.IGNORE: delete drop-finalizers cleanup-namespace oidc-delete dex bucket
+
 .DELETE_ON_ERROR: $(KF_DEF) $(KF_REPO)
 
 # cleanup-namespace: CRB:=$(shell $(kubectl) get clusterrolebindings -o json | \

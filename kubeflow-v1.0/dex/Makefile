@@ -28,8 +28,8 @@ $(PATCHFILE): $(PAYLOAD)
 
 patch: $(PATCHFILE)
 	@ echo "patchig configmap/dex ..."
-	$(kubectl) patch configmap/dex --type merge -p='{"data":{"config.yaml": $(shell cat $^)}}' > /dev/null
-	$(kubectl) rollout restart deployment/dex
+	$(kubectl) patch configmap/dex --type merge -p='{"data":{"config.yaml": $(shell cat $^)}}' 2>/dev/null
+	$(kubectl) rollout restart deployment/dex 2>/dev/null
 
 deploy: patch
 
