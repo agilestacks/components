@@ -139,9 +139,9 @@ undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	# TODO: implement pv cleanup
-	$(kubectl) patch pvc $(COMPONENT_NAME) -p '{"metadata":{"finalizers":null}}'		
-	$(kubectl) delete pvc --force $(COMPONENT_NAME)
 	$(kubectl) delete job $(COMPONENT_NAME)-make-bucket-job
+	kubectl --context="$(DOMAIN_NAME)" patch pvc $(COMPONENT_NAME) -p '{"metadata":{"finalizers":null}}'		
+	kubectl --context="$(DOMAIN_NAME)" delete pvc --force $(COMPONENT_NAME)
 
 clean:
 	rm -rf $(HELM_HOME) charts
