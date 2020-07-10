@@ -61,7 +61,7 @@ wait-tls: ENDPOINT:=$(COMPONENT_NAME).$(INGRESS_DOMAIN)
 wait-tls: TIMEOUT:=$(shell echo "`date +%s` + 600" | bc )
 wait-tls:
 	@ echo "Waiting for valid TLS for $(ENDPOINT):"
-	@ while [ `date +%s` -le "$(TIMEOUT)" ]; do \
+	while [ `date +%s` -le "$(TIMEOUT)" ]; do \
 		if ! (openssl s_client -connect $(ENDPOINT):443 \
 			-servername $($(ENDPOINT) ) </dev/null \
 			| openssl x509 -in /dev/stdin -noout) 2>&1 | grep -q 'verify error'; then \
@@ -97,7 +97,7 @@ wait-dns: ENDPOINT:=$(COMPONENT_NAME).$(INGRESS_DOMAIN)
 wait-dns: TIMEOUT:=$(shell echo "`date +%s` + 600" | bc )
 wait-dns: 
 	@ echo "Waiting for DNS to resolve $(ENDPOINT):"
-	@ while [ `date +%s` -le "$(TIMEOUT)" ]; do \
+	while [ `date +%s` -le "$(TIMEOUT)" ]; do \
 		if nslookup $(ENDPOINT) > /dev/null; then \
 			echo "Done!"; \
 			exit 0; \
@@ -118,7 +118,7 @@ purge:
 
 install: namespace
 	@ echo Running helm install charts/minio...
-	@ $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/minio $(HELM_OPTS) \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
@@ -138,8 +138,10 @@ install: namespace
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	- $(kubectl) delete pvc $(COMPONENT_NAME)
-	- $(kubectl) delete job $(COMPONENT_NAME)-make-bucket-job
+	# TODO: implement pv cleanup
+	$(kubectl) patch pvc $(COMPONENT_NAME) -p '{"metadata":{"finalizers":null}}'		
+	$(kubectl) delete pvc --force $(COMPONENT_NAME)
+	$(kubectl) delete job $(COMPONENT_NAME)-make-bucket-job
 
 clean:
 	rm -rf $(HELM_HOME) charts
@@ -151,3 +153,6 @@ output:
 	@ echo
 
 -include ../Mk/phonies
+
+.IGNORE: undeploy
+.SILENT: output install wait-dns wait-tls init
