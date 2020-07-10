@@ -5,21 +5,33 @@ CHART_NAME  := stable/mysql
 CHART_DIR   := $(HELM_HOME)/charts/$(notdir $(CHART_NAME))
 export HELM_HOME
 
-helm        := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
-
-HELM_OPTS   += --values $(abspath $(CHART_DIR)/values.yaml)
-HELM_OPTS   += --values $(abspath values.yaml)
+kubectl   := kubectl -c "$(DOMAIN_NAME)" -n "$(NAMESPACE)"
+helm      := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+HELM_OPTS += --values $(abspath $(CHART_DIR)/values.yaml)
+HELM_OPTS += --values $(abspath values.yaml)
 
 ifneq (,$(DB_NAME))
-HELM_OPTS   += --set 'mysqlDatabase=$(DB_NAME)'
+HELM_OPTS += --set 'mysqlDatabase=$(DB_NAME)'
 endif
 
 ifneq (,$(DB_USER))
-HELM_OPTS   += --set 'mysqlUser=$(DB_USER)'
+HELM_OPTS += --set 'mysqlUser=$(DB_USER)'
 endif
 
 ifneq (,$(DB_PASSWORD))
-HELM_OPTS   += --set 'mysqlPassword=$(DB_PASSWORD)'
+HELM_OPTS += --set 'mysqlPassword=$(DB_PASSWORD)'
+else
+HELM_OPTS += --set 'mysqlAllowEmptyPassword=true'
+endif
+
+ifneq (,$(ROOT_PASSWORD))
+HELM_OPTS += --set 'mysqlPassword=$(ROOT_PASSWORD)'
+else
+HELM_OPTS += --set 'allowEmptyRootPassword=true'
+endif
+
+ifneq (,$(shell $(kubectl) get pvc $(COMPONENT_NAME) -o name 2>/dev/null))
+HELM_OPTS += --set 'persistence.existingClaim=$(COMPONENT_NAME)'
 endif
 
 deploy: $(CHART_DIR)
@@ -27,7 +39,6 @@ deploy: $(CHART_DIR)
 		$(helm) install $(CHART_DIR) \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
-			--name $(COMPONENT_NAME) \
 			--wait $(HELM_OPTS)
 
 undeploy: $(CHART_DIR)

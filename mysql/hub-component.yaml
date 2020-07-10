@@ -46,6 +46,8 @@ parameters:
     env: DB_PASSWORD
   - name: database
     env: DB_NAME
+  - name: rootPassword
+    env: ROOT_PASSWORD
   - name: image.name
     value: mysql
   - name: image.tag
@@ -53,12 +55,10 @@ parameters:
   - name: chart.version
     value: 1.6.6
     env: CHART_VERSION
-  - name: allowEmptyPassword
-    value: "false" 
-  - name: user
-  - name: password
   - name: volumeSize
     value: 8Gi
+  - name: storageClass
+    value: default
 
 outputs:
 - name: component.mysql.host
@@ -67,6 +67,8 @@ outputs:
 - name: component.mysql.database
 - name: component.mysql.user
 - name: component.mysql.password
+  kind: secret
+- name: component.mysql.rootPassword
   kind: secret
 
 templates:
