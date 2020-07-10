@@ -122,5 +122,6 @@ templates:
     - hack/knative/knative-serving-install/overlays/agilestacks/*.template
     - hack/profiles/overlays/agilestacks/*.template
     - hack/pipeline/api-service/overlays/agilestacks/*.template
-    - profiles/*.template
     - hack/common/centraldashboard/base/*.template
+    - hack/metadata/overlays/agilestacks/*.template
+    - profiles/*.template

@@ -55,8 +55,17 @@ local centraldashboard = [
     }),
 ];
 
+local mysqlPass = std.extVar("HUB_MYSQL_DB_PASS");
 local metadata = [
-  kf.KustomizeConfig("metadata", overlays=["istio", "db", "application"]),
+  kf.KustomizeConfig("metadata", 
+    overlays=["istio", "application", "agilestacks"],
+    parameters={
+      MYSQL_DATABASE: "metadb",
+      MYSQL_HOST:     std.extVar("HUB_MYSQL_HOST"),
+      MYSQL_USERNAME: std.extVar("HUB_MYSQL_DB_USER"),
+      MYSQL_PASSWORD: mysqlPass,
+      MYSQL_ALLOW_EMPTY_PASSWORD: std.length(mysqlPass) == 0,
+    }),
 ];
 
 local spark = [

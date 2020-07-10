@@ -1,0 +1,47 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+bases:
+- ../../base
+resources:
+- metadata-service.yaml
+configMapGenerator:
+- name: metadata-db-parameters
+  env: params.env
+patchesStrategicMerge:
+- metadata-deployment.yaml
+vars:
+- name: MYSQL_HOST
+  objref:
+    kind: ConfigMap
+    name: metadata-db-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.MYSQL_HOST
+- name: MYSQL_PORT
+  objref:
+    kind: ConfigMap
+    name: metadata-db-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.MYSQL_PORT
+- name: MYSQL_DATABASE
+  objref:
+    kind: ConfigMap
+    name: metadata-db-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.MYSQL_DATABASE
+- name: MYSQL_USERNAME
+  objref:
+    kind: ConfigMap
+    name: metadata-db-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.MYSQL_USERNAME
+- name: MYSQL_PASSWORD
+  objref:
+    kind: ConfigMap
+    name: metadata-db-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.MYSQL_PASSWORD

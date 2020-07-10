@@ -21,3 +21,4 @@ oidc.yaml
 /hack/common/centraldashboard/base/clusterrole-binding.yaml.template
 /hack/common/centraldashboard/base/role-binding.yaml.template
 /hack/profiles/overlays/agilestacks/profile.yaml
+/hack/metadata/overlays/agilestacks/params.env
