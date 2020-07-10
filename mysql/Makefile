@@ -25,7 +25,7 @@ HELM_OPTS += --set 'mysqlAllowEmptyPassword=true'
 endif
 
 ifneq (,$(ROOT_PASSWORD))
-HELM_OPTS += --set 'mysqlPassword=$(ROOT_PASSWORD)'
+HELM_OPTS += --set 'mysqlRootPassword=$(ROOT_PASSWORD)'
 else
 HELM_OPTS += --set 'allowEmptyRootPassword=true'
 endif
