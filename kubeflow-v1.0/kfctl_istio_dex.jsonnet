@@ -1,6 +1,8 @@
 local kf                = import "kfctl.libsonnet";
 local utils             = import "utils.libsonnet";
 
+local s3url = utils.parse_url(std.extVar("HUB_S3_ENDPOINT"));
+
 local istio = [
   kf.KustomizeConfig("istio/cluster-local-gateway", 
     parameters={
@@ -42,7 +44,15 @@ local metacontroller = [
 ];
 
 local argo = [
-  kf.KustomizeConfig("argo", overlays = ["istio", "application", "agilestacks"])
+  kf.KustomizeConfig("argo", 
+    overlays = ["istio", "application", "agilestacks"],
+    parameters = {
+      // minio config
+      accesskey:                  std.extVar("HUB_S3_ACCESS_KEY"),
+      secretkey:                  std.extVar("HUB_S3_SECRET_KEY"),
+      artifactRepositoryBucket:   std.extVar("HUB_S3_BUCKET"),
+      artifactRepositoryEndpoint: s3url.host + ":" + s3url.port,
+    })
 ];
 
 local centraldashboard = [
@@ -59,9 +69,11 @@ local mysqlPass = std.extVar("HUB_MYSQL_DB_PASS");
 local metadata = [
   kf.KustomizeConfig("metadata", 
     overlays=["istio", "application", "agilestacks"],
-    parameters={
+    parameters = {
       MYSQL_DATABASE: "metadb",
       MYSQL_HOST:     std.extVar("HUB_MYSQL_HOST"),
+      // because of template '$()' syntax overlap database user and secret
+      // defined in: hack/metadata/overlays/agilestacks/secrets.env.template
       MYSQL_USERNAME: std.extVar("HUB_MYSQL_DB_USER"),
       MYSQL_PASSWORD: mysqlPass,
       MYSQL_ALLOW_EMPTY_PASSWORD: std.length(mysqlPass) == 0,
@@ -129,7 +141,6 @@ local mysql = [
     }),
 ];
 
-local s3url = utils.parse_url(std.extVar("HUB_S3_ENDPOINT"));
 local pipeline = [
   kf.KustomizeConfig("pipeline/api-service", 
     overlays=["application", "agilestacks"],

@@ -22,3 +22,5 @@ oidc.yaml
 /hack/common/centraldashboard/base/role-binding.yaml.template
 /hack/profiles/overlays/agilestacks/profile.yaml
 /hack/metadata/overlays/agilestacks/params.env
+/hack/argo/overlays/agilestacks/mlpipeline-minio-artifact.env
+/hack/argo/overlays/agilestacks/mlpipeline-secret.yaml

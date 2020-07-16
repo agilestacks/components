@@ -9,3 +9,8 @@ patchesStrategicMerge:
 - deployment.yaml
 - service-account.yaml
 - service.yaml
+secretGenerator:
+- name: mlpipeline-minio-artifact
+  env: mlpipeline-minio-artifact.env
+generatorOptions:
+  disableNameSuffixHash: true

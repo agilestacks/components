@@ -93,7 +93,7 @@ parameters:
     env: HUB_S3_SECRET_KEY
   - name: name
     env: HUB_S3_BUCKET
-    value: ${component.kubeflow.name}-mlpipelines
+    value: ${component.kubeflow.name}-pipelines
 - name: component.mysql
   empty: allow
   parameters:
@@ -121,7 +121,6 @@ templates:
     - hack/istio/oidc-authservice/overlays/agilestacks/*.template
     - hack/knative/knative-serving-install/overlays/agilestacks/*.template
     - hack/profiles/overlays/agilestacks/*.template
-    - hack/pipeline/api-service/overlays/agilestacks/*.template
+    # - hack/pipeline/api-service/overlays/agilestacks/*.template
     - hack/common/centraldashboard/base/*.template
     - hack/metadata/overlays/agilestacks/*.template
-    - profiles/*.template
