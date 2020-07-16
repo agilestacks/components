@@ -91,6 +91,7 @@ drop-finalizers:
 
 deploy: clean patch dex apply
 
+undeploy: SA:=$(shell $(kubectl) get serviceaccount -l 'app.kubernetes.io/part-of=kubeflow' -o name | xargs)
 undeploy: clean patch delete
 	$(kubectl) delete --all --force applications 
 	# $(kubectl) delete --all --force profiles
@@ -99,6 +100,7 @@ undeploy: clean patch delete
 	$(kubectl) delete rolebinding,clusterrolebinding,sa centraldashboard
 	$(kubectl) delete --all --force \
 		daemonsets,replicasets,services,deployments,pods,rc,configmaps,secrets,services,ingress,statefulsets,gateways,envoyfilters,jobs.batch,jobs
+	$(kubectl) delete $(SA)
 
 
 wait: EXPECTED_APPS := 28
