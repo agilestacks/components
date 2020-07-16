@@ -79,4 +79,3 @@ lifecycle:
   verbs:
   - deploy
   - undeploy
-

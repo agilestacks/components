@@ -19,18 +19,18 @@ HELM_OPTS += --set 'mysqlUser=$(DB_USER)'
 endif
 
 ifneq (,$(DB_PASSWORD))
-HELM_OPTS += --set 'mysqlPassword=$$DB_PASSWORD'
+HELM_OPTS += --set 'mysqlPassword=$(DB_PASSWORD)'
 else
 HELM_OPTS += --set 'mysqlAllowEmptyPassword=true'
 endif
 
 ifneq (,$(ROOT_PASSWORD))
-HELM_OPTS += --set 'mysqlRootPassword=$$ROOT_PASSWORD'
+HELM_OPTS += --set 'mysqlRootPassword=$(ROOT_PASSWORD)'
 else
 HELM_OPTS += --set 'allowEmptyRootPassword=true'
 endif
 
-ifneq (,$(shell $(kubectl) get pvc $(COMPONENT_NAME) -o name 2>/dev/null))
+ifeq (0,$(shell $(kubectl) get pvc $(COMPONENT_NAME) >/dev/null 2>&1 | echo $?))
 HELM_OPTS += --set 'persistence.existingClaim=$(COMPONENT_NAME)'
 endif
 
@@ -39,6 +39,7 @@ namespace:
 		$(kubectl) create namespace $(NAMESPACE)
 
 deploy: $(CHART_DIR) namespace
+	@ echo "Installing '$(COMPONENT_NAME)' from helm chart at: $(CHART_DIR)"
 	$(helm) --namespace $(NAMESPACE) ls -q | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART_DIR) \
 			--name $(COMPONENT_NAME) \
@@ -59,7 +60,7 @@ $(CHART_DIR): $(HELM_HOME)
 		--version=$(CHART_VERSION) \
 		--untar --untardir $(dir $@)
 
-.SILENT:   undeploy $(HELM_HOME)
+.SILENT:   undeploy $(HELM_HOME) deploy
 .IGNORE:   undeploy namespace
 .PRECIOUS: $(CHART_DIR)
 .PHONY: deploy undeploy
