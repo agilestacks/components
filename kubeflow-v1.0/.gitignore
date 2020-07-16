@@ -24,3 +24,4 @@ oidc.yaml
 /hack/metadata/overlays/agilestacks/params.env
 /hack/argo/overlays/agilestacks/mlpipeline-minio-artifact.env
 /hack/argo/overlays/agilestacks/mlpipeline-secret.yaml
+/hack/metadata/overlays/agilestacks/secrets.env

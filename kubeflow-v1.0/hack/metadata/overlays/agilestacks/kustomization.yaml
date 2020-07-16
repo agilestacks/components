@@ -7,6 +7,9 @@ resources:
 configMapGenerator:
 - name: metadata-db-parameters
   env: params.env
+secretGenerator:
+- name: metadata-db-secrets
+  env: secrets.env
 patchesStrategicMerge:
 - metadata-deployment.yaml
 vars:

@@ -19,8 +19,8 @@ spec:
         envFrom:
           - configMapRef:
               name: metadata-db-parameters
-          - secretRef:
-              name: metadata-db-secrets
+          # - secretRef:
+          #     name: metadata-db-secrets
         command: ["./server/server",
                   "--http_port=8080",
                   "--mysql_service_host=$(MYSQL_HOST)",
@@ -50,8 +50,8 @@ spec:
           envFrom:
           - configMapRef:
               name: metadata-db-parameters
-          - secretRef:
-              name: metadata-db-secrets
+          # - secretRef:
+          #     name: metadata-db-secrets
           - configMapRef:
               name: grpc-configmap
           args: ["--grpc_port=$(METADATA_GRPC_SERVICE_PORT)",
