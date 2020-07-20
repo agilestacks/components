@@ -12,7 +12,7 @@ meta:
   maturity: alpha
   licence: Apache 2.0
   source:
-    dir: ../../components/kubeflow-v0.7
+    dir: ../../components/kubeflow-v1.0
 
 requires:
   - kubernetes
@@ -73,7 +73,7 @@ parameters:
         value: 12341234
         env: PLAIN_PASS
 - name: component.istio
-  parameters: 
+  parameters:
   - name: namespace
     value: istio-system
     env: HUB_ISTIO_NAMESPACE
@@ -82,7 +82,7 @@ parameters:
 - name: component.minio.namespace
   value: ${component.kubeflow.namespace}
 - name: component.bucket
-  parameters: 
+  parameters:
   - name: endpoint
     env: HUB_S3_ENDPOINT
   - name: region
