@@ -81,12 +81,17 @@ parameters:
     value: email
   - name: component.dex.saml.groupsAttr
     value: groups
-  - name: component.dex.okta.issuer
-    value: https://dev-458481.oktapreview.com
-  - name: component.dex.okta.clientId
-    value: unknown
-  - name: component.dex.okta.clientSecret
-    value: unknown
+  - name: component.dex.okta
+    empty: allow
+    parameters:
+      - name: issuer
+      - name: clientId
+      - name: clientSecret
+  - name: component.dex.passwordDb
+    empty: allow
+    parameters:
+      - name: email
+      - name: passwordHash # Bcrypt encoded password
   - name: component.dex.authproxy.image
     value: agilestacks/oauth2_proxy:v2.3
   - name: component.dex.authOperator.image
@@ -94,7 +99,7 @@ parameters:
   - name: component.dex.authproxy.emailDomain
     value: "'*'"
   - name: component.dex.authproxy.cookieExpire
-    value: "'8h0m0s'"
+    value: "'12h0m0s'"
 
 outputs:
   - name: component.dex.issuer
@@ -103,3 +108,7 @@ outputs:
 templates:
   files:
     - "kubernetes/*.template"
+  extra:
+    - kind: go
+      files:
+        - "kubernetes/*.gotemplate"

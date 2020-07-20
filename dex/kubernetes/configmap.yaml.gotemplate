@@ -2,10 +2,10 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: dex
-  namespace: ${component.dex.namespace}
+  namespace: {{.component.dex.namespace}}
 data:
   config.yaml: |
-    issuer: ${component.ingress.protocol}://${component.dex.oidcIssuerFqdn}
+    issuer: {{.component.ingress.protocol}}://{{.component.dex.oidcIssuerFqdn}}
     storage:
       type: kubernetes
       config:
@@ -18,17 +18,29 @@ data:
       tlsKey: /etc/dex-grpc-server-secret/tls-key
       tlsClientCA: /etc/dex-grpc-server-secret/ca-cert
     connectors:
+{{if .component.dex.okta.issuer}}
     - type: oidc
       id: okta
       name: Okta
       config:
-        issuer: ${component.dex.okta.issuer}
-        clientID: ${component.dex.okta.clientId}
-        clientSecret: ${component.dex.okta.clientSecret}
-        redirectURI: ${component.ingress.protocol}://${component.dex.oidcIssuerFqdn}/callback
-        userInfoURI: ${component.dex.okta.issuer}/oauth2/v1/userinfo
+        issuer: {{.component.dex.okta.issuer}}
+        clientID: {{.component.dex.okta.clientId}}
+        clientSecret: {{.component.dex.okta.clientSecret}}
+        redirectURI: {{.component.ingress.protocol}}://{{.component.dex.oidcIssuerFqdn}}/callback
+        userInfoURI: {{.component.dex.okta.issuer}}/oauth2/v1/userinfo
         GetUserInfo: true
         insecureSkipEmailVerified: true
+{{end}}
+{{if .component.dex.passwordDb.email}}
+    enablePasswordDB: true
+    staticPasswords:
+    - email: '{{.component.dex.passwordDb.email}}'
+      username: '{{.component.dex.passwordDb.email}}'
+      hash: '{{.component.dex.passwordDb.passwordHash}}'
+      userID: '{{.component.dex.passwordDb.email | b64enc}}'
+{{else}}
+    enablePasswordDB: false
+{{end}}
     oauth2:
       skipApprovalScreen: true
     expiry:
@@ -46,9 +58,8 @@ data:
       - agilestacks-console
       name: 'Kubectl'
       secret: LD8eafPG6-Wcc-a1sSk3XQ
-    enablePasswordDB: false
   consoleClientID: agilestacks-console
   consoleSecret: FlAYFMJHIj-W5Nm3yCbYow
-  issuer: "${component.ingress.protocol}://${component.dex.oidcIssuerFqdn}"
+  issuer: "{{.component.ingress.protocol}}://{{.component.dex.oidcIssuerFqdn}}"
   kubectlClientID: agilestacks-kubectl
   kubectlSecret: LD8eafPG6-Wcc-a1sSk3XQ
