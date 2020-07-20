@@ -25,7 +25,7 @@ data:
         issuer: ${component.dex.okta.issuer}
         clientID: ${component.dex.okta.clientId}
         clientSecret: ${component.dex.okta.clientSecret}
-        redirectURI: ${component.ingress.protocol}://auth.${dns.domain}/callback
+        redirectURI: ${component.ingress.protocol}://${component.dex.oidcIssuerFqdn}/callback
         userInfoURI: ${component.dex.okta.issuer}/oauth2/v1/userinfo
         GetUserInfo: true
         insecureSkipEmailVerified: true
@@ -40,10 +40,6 @@ data:
       redirectURIs: []
       name: 'Agilestacks Control plane'
       secret: FlAYFMJHIj-W5Nm3yCbYow
-    - id: gitlab-oidc-client
-      redirectURIs: ['https://git.${dns.domain}/users/auth/ssoagilestacks/callback']
-      name: 'Gitlab'
-      secret: CHANGEMETOARANDOMLYGENERATEDSTRING
     - id: agilestacks-kubectl
       public: true
       trustedPeers:
