@@ -10,6 +10,7 @@ LIBSONNET     := .cache/lib/kfctl.libsonnet
 LIBSONNET     += .cache/lib/utils.libsonnet
 
 kubectl       := kubectl -n "$(HUB_COMPONENT_NAMESPACE)"
+
 jq            := jq -cMr
 curl          := curl -qfSL --silent --create-dirs
 rsync         := rsync -aIuv --exclude-from '$(abspath .cpignore)'
@@ -63,7 +64,7 @@ $(KF_REPO):
 patch: $(KF_REPO)
 	$(rsync) $(abspath hack)/ $^
 
-dex:
+dex bucket:
 	$(MAKE) -C "$@"
 
 namespace:
@@ -73,11 +74,12 @@ namespace:
 $(KF_DEF): $(KF_REPO)
 $(KF_APP): $(KF_DEF)
 $(KF_APP): build
-apply delete build: $(kfctl)
+apply delete build: $(kfctl) patch
 apply delete: $(KF_APP)
-apply: namespace
+apply: namespace bucket
 apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
+	
 delete: $(KF_DEF) drop-finalizers
 	$(kfctl) $@ --delete_storage -V -f "$<"
 
@@ -88,8 +90,18 @@ drop-finalizers:
 
 
 deploy: clean patch dex apply
-undeploy: clean build patch delete cleanup-namespace
-# undeploy: build delete wait_nons
+
+undeploy: SA:=$(shell $(kubectl) get serviceaccount -l 'app.kubernetes.io/part-of=kubeflow' -o name | xargs)
+undeploy: clean patch delete
+	$(kubectl) delete --all --force applications 
+	# $(kubectl) delete --all --force profiles
+	$(kubectl) delete --all --force validatingwebhookconfigurations
+	$(kubectl) delete --all --force mutatingwebhookconfigurations
+	$(kubectl) delete rolebinding,clusterrolebinding,sa centraldashboard
+	$(kubectl) delete --all --force \
+		daemonsets,replicasets,services,deployments,pods,rc,configmaps,secrets,services,ingress,statefulsets,gateways,envoyfilters,jobs.batch,jobs
+	$(kubectl) delete $(SA)
+
 
 wait: EXPECTED_APPS := 28
 wait: WAIT_TIMEOUT  := 1800
@@ -127,18 +139,14 @@ wait_nons:
 	echo "ERROR timeout $(WAIT_TIMEOUT)sec; Moving on";
 
 clean:
-	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET)
+	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
 	# rm -rf $(KF_DEF) kustomize $(LIBSONNET)
 
-.PHONY: deploy undeploy clean apply build delete wait wait_nons patch dex
+.PHONY: deploy undeploy clean apply build delete wait wait_nons patch dex bucket
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
-.IGNORE: delete drop-finalizers cleanup-namespace oidc-delete
+.IGNORE: delete drop-finalizers cleanup-namespace oidc-delete dex bucket
+
 .DELETE_ON_ERROR: $(KF_DEF) $(KF_REPO)
 
 # cleanup-namespace: CRB:=$(shell $(kubectl) get clusterrolebindings -o json | \
 # 	$(jq) '.items[] | select(.subjects[]?.namespace=="kubeflow").metadata.name')
-cleanup-namespace:
-	$(kubectl) delete applications --all
-	$(kubectl) delete profiles --all
-	$(kubectl) delete validatingwebhookconfigurations --all
-	$(kubectl) delete mutatingwebhookconfigurations --all

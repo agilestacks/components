@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := deploy
 
-DOMAIN_NAME  ?= dev.test.superhub.io
+DOMAIN_NAME  ?= test.dev.superhub.io
 NAMESPACE    ?= kubernetes-dashboard
 HUB_PROVIDES ?=
 

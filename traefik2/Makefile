@@ -72,7 +72,7 @@ crds:
 			echo "done"; \
 			exit 0; \
 		fi; \
-		echo "still waiting"; \
+		echo "Still waiting..."; \
 		sleep 10; \
 	done; \
 	echo "timeout"; \
@@ -94,7 +94,7 @@ elb:
 			echo "done"; \
 			exit 0; \
 		fi; \
-		echo "still waiting"; \
+		echo "Still waiting..."; \
 		sleep 10; \
 	done; \
 	echo "timeout"; \
@@ -103,19 +103,26 @@ elb:
 dashboard:
 	$(kubectl) apply -f dashboard.yaml
 
+# dns: NAMESERVER=$(firstword $(shell dig +short NS $(DOMAIN_NAME)))
+dns: DNS1=$(URL_PREFIX).$(DOMAIN_NAME)
+dns: DNS2=$(SSO_URL_PREFIX).$(DOMAIN_NAME)
 dns: LOAD_BALANCER=$(shell $(kubectl) get svc $(COMPONENT_NAME) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
 dns:
 	cat dns.yaml | sed -e 's/\$$load_balancer/$(LOAD_BALANCER)/' | $(kubectl) apply -f -
-	@echo "Waiting for DNS records to propagate"; \
-	for i in $$(seq 1 30); do \
-		if nslookup -q=ns $(DOMAIN_NAME). |grep 'nameserver =' |cut -d= -f2 |head -2 |xargs -tn1 nslookup $(SSO_URL_PREFIX).$(DOMAIN_NAME). >/dev/null; then \
-			echo "done"; \
-			exit 0; \
+	@echo "Waiting for DNS records to propagate";
+	@for i in $$(seq 1 60); do \
+		if nslookup $(DNS1) >/dev/null; then \
+			if nslookup $(DNS2) >/dev/null; then \
+				echo "done"; \
+				exit 0; \
+			fi; \
 		fi; \
+		echo "Still waiting..."; \
 		sleep 10; \
 	done; \
-	echo "timeout"; \
-	exit 1;
+	echo "Error: timed out"; \
+	exit 1
+
 	@echo
 	@echo Outputs:
 	@echo load_balancer = $(LOAD_BALANCER)

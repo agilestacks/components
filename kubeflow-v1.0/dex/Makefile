@@ -3,7 +3,6 @@
 
 jq      := jq -cMr
 yq      := yq
-RAND    := $(shell uuidgen | tr '[:upper:]' '[:lower:]' | cut -c-4)
 
 HUB_DEX_NAMESPACE := $(firstword $(HUB_DEX_NAMESPACE) kube-system)
 kubectl := kubectl --context="$(DOMAIN_NAME)" -o json -n $(HUB_DEX_NAMESPACE)
@@ -28,8 +27,9 @@ $(PATCHFILE): $(PAYLOAD)
 	$(jsonnet) -o $@ patch.jsonnet
 
 patch: $(PATCHFILE)
-	$(kubectl) patch configmap/dex --type merge -p='{"data":{"config.yaml": $(shell cat $^)}}'
-	$(kubectl) rollout restart deployment/dex
+	@ echo "patchig configmap/dex ..."
+	$(kubectl) patch configmap/dex --type merge -p='{"data":{"config.yaml": $(shell cat $^)}}' 2>/dev/null
+	$(kubectl) rollout restart deployment/dex 2>/dev/null
 
 deploy: patch
 
@@ -37,3 +37,4 @@ clean:
 	rm -rf .cache
 
 .PHONY: deploy undeploy patch
+.SILENT: patch

@@ -53,6 +53,10 @@ deploy: role arn
 undeploy: unrole
 endif
 
+ifneq (,ROUTE53_ZONE_TAGS)
+HELM_OPTS += --set 'aws.zoneTags={$(subst $(space),$(comma),$(foreach i,$(ROUTE53_ZONE_TAGS),$(i)))}'
+endif
+
 deploy:
 	$(helm) ls -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install $(CHART_DIR) \

@@ -1,4 +1,4 @@
 spec:
     additionalScrapeConfigs:
-        name: ${component.prometheus.name}-${component.kubecost.name}-scrape-config
-        key: kubecost-scrape-configs.yaml
+        name: ${component.kubecost.additionalScrapeConfigs.name}
+        key: ${component.kubecost.additionalScrapeConfigs.key}

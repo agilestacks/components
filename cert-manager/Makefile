@@ -4,7 +4,7 @@ COMPONENT_NAME ?= cert-manager
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE 	   ?= cert-manager
 HELM_CHART     ?= jetstack/cert-manager
-VERSION        ?= v0.14.2
+VERSION        ?= v0.15.2
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
@@ -33,7 +33,7 @@ fetch:
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) && \
-		$(kubectl) get crd -o name | grep -F certmanager.k8s.io | xargs $(kubectl) delete || exit 0
+		$(kubectl) get crd -o name | grep -F cert-manager.io | xargs $(kubectl) delete || exit 0
 
 crds:
 	$(kubectl) apply -f https://github.com/jetstack/cert-manager/releases/download/$(VERSION)/cert-manager.crds.yaml
@@ -93,7 +93,6 @@ aws-dns-key:
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	-$(kubectl) get crd -o name | grep -F .cert-manager.io | xargs $(kubectl) delete
 
 clean:
 	rm -rf $(HELM_HOME) charts/$(notdir $(HELM_CHART))

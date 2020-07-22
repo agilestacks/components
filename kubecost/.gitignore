@@ -4,5 +4,7 @@
 /namespace.yaml
 /prometheus.yaml
 /prometheus/*.yaml
+/prometheus/.artifacts
 /spot-data-feed.yaml
 /values.yaml
+

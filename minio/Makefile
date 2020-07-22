@@ -9,7 +9,6 @@ INGRESS_DOMAIN ?= localhost
 PROTOCOL       ?= http
 ALIAS          ?= $(COMPONENT_NAME)
 DOMAIN         ?= minio
-WAIT_TIMEOUT   ?= 180
 DEFAULT_BUCKET ?= default
 
 # secret-name has been driven by fullnameOverride in helm chart
@@ -46,6 +45,7 @@ ifeq ($(NATS_ENABLED),true)
 	MINIO_NOTIFICATIONS += nats-notifications
 endif
 
+HELM_OPTS := --values charts/minio/values.yaml
 HELM_OPTS := --values values.yaml
 HELM_OPTS += --set 'accessKey=$(MINIO_ACCESS_KEY)'
 HELM_OPTS += --set 'secretKey=$(MINIO_SECRET_KEY)'
@@ -55,7 +55,26 @@ ifneq ($(TLS_KIND),)
 HELM_OPTS += --values $(TLS_KIND)/values.yaml
 endif
 
-deploy: clean init fetch purge install configure $(MINIO_NOTIFICATIONS) output
+deploy: clean init fetch purge install configure output wait-dns 
+ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
+wait-tls: ENDPOINT:=$(COMPONENT_NAME).$(INGRESS_DOMAIN)
+wait-tls: TIMEOUT:=$(shell echo "`date +%s` + 600" | bc )
+wait-tls:
+	@ echo "Waiting for valid TLS for $(ENDPOINT):"
+	while [ `date +%s` -le "$(TIMEOUT)" ]; do \
+		if ! (openssl s_client -connect $(ENDPOINT):443 \
+			-servername $($(ENDPOINT) ) </dev/null \
+			| openssl x509 -in /dev/stdin -noout) 2>&1 | grep -q 'verify error'; then \
+			echo "Done!"; \
+			exit 0; \
+		fi;  \
+		echo "Still waiting..."; \
+		sleep 8; \
+	done; \
+	echo "Error: timed out"; \
+	exit 1;
+deploy: wait-tls
+endif
 
 init:
 	mkdir -p $(HELM_HOME)
@@ -68,32 +87,30 @@ fetch:
 		--version $(CHART_VERSION)
 
 namespace:
-	- $(kubectl) create namespace $(NAMESPACE)
+	$(kubectl) get namespace $(NAMESPACE) || \
+		$(kubectl) create namespace $(NAMESPACE)
 
 wait:
 	sleep 10
 
-HOST_CMD := host
-PING_CMD := $(HOST_CMD) $(COMPONENT_NAME).$(INGRESS_DOMAIN)
-wait-dns:
-	$(eval timeout        := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
-	@ echo "Waiting for DNS to resolve $(COMPONENT_NAME).$(INGRESS_DOMAIN) with $(HOST_CMD)"
-	$(eval current_time   := date +%s)
-	while [ `$(current_time)` -le "$(timeout)" ]; do \
-		if $(PING_CMD); then \
+wait-dns: ENDPOINT:=$(COMPONENT_NAME).$(INGRESS_DOMAIN)
+wait-dns: TIMEOUT:=$(shell echo "`date +%s` + 600" | bc )
+wait-dns: 
+	@ echo "Waiting for DNS to resolve $(ENDPOINT):"
+	while [ `date +%s` -le "$(TIMEOUT)" ]; do \
+		if nslookup $(ENDPOINT) > /dev/null; then \
 			echo "Done!"; \
 			exit 0; \
 		fi;  \
 		echo "Still waiting..."; \
 		sleep 8; \
 	done; \
-	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
+	echo "Error: timed out"; \
 	exit 1;
 
-
-nats-notifications: wait-dns
-	$(mc) --insecure event list $(ALIAS)/$(DEFAULT_BUCKET) | grep arn:minio:sqs::1:nats  || \
-            $(mc) --insecure event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
+# nats-notifications: wait-dns
+# 	$(mc) --insecure event list $(ALIAS)/$(DEFAULT_BUCKET) | grep arn:minio:sqs::1:nats  || \
+#             $(mc) --insecure event add $(ALIAS)/$(DEFAULT_BUCKET) arn:minio:sqs:us-east-1:1:nats
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
@@ -101,28 +118,30 @@ purge:
 
 install: namespace
 	@ echo Running helm install charts/minio...
-	@ $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
+	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
 		$(helm) install charts/minio $(HELM_OPTS) \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--replace \
 			--wait
 
-configure: wait-dns
-	@ $(mc) --insecure config host add $(ALIAS) \
-		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
-		$(MINIO_ACCESS_KEY) $(MINIO_SECRET_KEY) \
-		--api S3v4
-	@ $(mc) --insecure config host list
+# configure: wait-dns
+# 	@ $(mc) --insecure config host add $(ALIAS) \
+# 		$(PROTOCOL)://$(COMPONENT_NAME).$(INGRESS_DOMAIN) \
+# 		$(MINIO_ACCESS_KEY) $(MINIO_SECRET_KEY) \
+# 		--api S3v4
+# 	@ $(mc) --insecure config host list
 
-unconfigure:
-	- $(mc) config host rm $(ALIAS)
+# unconfigure:
+# 	- $(mc) config host rm $(ALIAS)
 
-undeploy: init unconfigure
+undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	- $(kubectl) delete pvc $(COMPONENT_NAME)
-	- $(kubectl) delete job $(COMPONENT_NAME)-make-bucket-job
+	# TODO: implement pv cleanup
+	$(kubectl) delete job $(COMPONENT_NAME)-make-bucket-job
+	kubectl --context="$(DOMAIN_NAME)" patch pvc $(COMPONENT_NAME) -p '{"metadata":{"finalizers":null}}'		
+	kubectl --context="$(DOMAIN_NAME)" delete pvc --force $(COMPONENT_NAME)
 
 clean:
 	rm -rf $(HELM_HOME) charts
@@ -134,3 +153,6 @@ output:
 	@ echo
 
 -include ../Mk/phonies
+
+.IGNORE: undeploy
+.SILENT: output install wait-dns wait-tls init

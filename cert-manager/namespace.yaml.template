@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: ${component.cert-manager.namespace}
   labels:
-    certmanager.k8s.io/disable-validation: "true"
+    cert-manager.io/disable-validation: "true"

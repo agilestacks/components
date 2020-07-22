@@ -4,7 +4,6 @@
 COMPONENT_NAME          ?= kubecost
 DOMAIN_NAME             ?= test.dev.superhub.io
 NAMESPACE               ?= kubecost
-PROMETHEUS_NAMESPACE    ?= monitoring
 HELM_REPO_URL           ?= https://kubecost.github.io/cost-analyzer/
 HELM_REPO_NAME          ?= kubecost
 HELM_CHART              ?= $(HELM_REPO_NAME)/cost-analyzer
@@ -13,26 +12,25 @@ AWS_DEFAULT_REGION      ?= us-east-2
 HELM_HOME               ?= $(shell pwd)/.helm
 TIMEOUT                 ?= 600
 
+
 aws                ?= aws
 kubectl            ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-kubectl-prometheus ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(PROMETHEUS_NAMESPACE)"
 helm               ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 jq                 ?= jq
-
 
 SPOT_DATA_ENABLED := $(if $(and $(SPOT_DATA_BUCKET_NAME), $(SPOT_DATA_BUCKET_REGION), $(SPOT_DATA_PREFIX)),true)
 
 ifeq ($(SPOT_DATA_ENABLED),true)
-	RESOLVE_AWS_ACCOUNT     := $(aws) sts get-caller-identity --query Account --output text
-	HELM_ARGS_PROJECT_ID    := --set-string kubecostProductConfigs.projectID="`$(RESOLVE_AWS_ACCOUNT)`"
-	HELM_ARGS_SPOT_DATA     := --values spot-data-feed.yaml
+    RESOLVE_AWS_ACCOUNT     := $(aws) sts get-caller-identity --query Account --output text
+    HELM_ARGS_PROJECT_ID    := --set-string kubecostProductConfigs.projectID="`$(RESOLVE_AWS_ACCOUNT)`"
+    HELM_ARGS_SPOT_DATA     := --values spot-data-feed.yaml
 else
     SPOT_DATA_ENABLED:=
     HELM_ARGS_PROJECT_ID:=
     HELM_ARGS_SPOT_DATA:=
 endif
 
-deploy: init fetch purge install wait
+deploy: init fetch purge prometheus install wait
 
 init: $(HELM_HOME) charts
 	$(helm) init --client-only --upgrade
@@ -52,11 +50,11 @@ purge:
 		&& $(helm) delete --purge $(COMPONENT_NAME) \
 		|| exit 0
 
+prometheus:
+	$(MAKE) -C "$@"
+
 install:
 	$(kubectl) apply -f namespace.yaml
-	$(kubectl-prometheus) apply -f prometheus/rules.yaml
-	$(kubectl-prometheus) apply -f prometheus/scrape-config.yaml
-	$(kubectl-prometheus) patch prometheus $(PROMETHEUS_NAME)-prometheus --type=merge -p "`cat prometheus/kubecost-prometheus.yaml`"
 
 	if ! $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$'; then \
 		$(helm) install charts/$(notdir $(HELM_CHART)) \
@@ -108,7 +106,7 @@ destroy:
 	- $(kubectl) delete -f ingress.yaml
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
-	- $(kubectl-prometheus) delete -f prometheus/rules.yaml
-	- $(kubectl-prometheus) delete -f prometheus/scrape-config.yaml
+	$(MAKE) -C prometheus destroy
 
 -include ../Mk/phonies
+.PHONY: prometheus

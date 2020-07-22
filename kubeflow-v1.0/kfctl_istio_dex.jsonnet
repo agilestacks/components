@@ -1,44 +1,40 @@
 local kf                = import "kfctl.libsonnet";
 local utils             = import "utils.libsonnet";
 
-local istioNamespace    = kf.NameValue("namespace", "istio-system");
-local ksystemNamespace  = kf.NameValue("namespace", "kube-system");
-local certMgrNamespace  = kf.NameValue("namespace", "cert-manager");
-local knativeNamespace  = kf.NameValue("namespace", "knative-serving");
-local kubeflowNamespace = kf.NameValue("namespace", std.extVar("HUB_COMPONENT_NAMESPACE"));
-
-// local name              = std.extVar("HUB_COMPONENT_NAME");
-// local dexUrl = std.format("http://dex.%s.svc.cluster.local:5556/dex", kubeflowNamespace.value);
-// local dexUrl      = std.extVar("HUB_OIDC_AUTH_URI");
+local s3url = utils.parse_url(std.extVar("HUB_S3_ENDPOINT"));
 
 local istio = [
-  // kf.KustomizeConfig("istio/istio-crds", parameters=[istioNamespace]),
-  // kf.KustomizeConfig("istio/istio-install", parameters=[istioNamespace]),
-  kf.KustomizeConfig("istio/cluster-local-gateway", parameters=[istioNamespace]),
-  kf.KustomizeConfig("istio/kfserving-gateway", parameters=[istioNamespace]),
-  kf.KustomizeConfig("istio/istio", overlays=["agilestacks"],
-    parameters=[kf.NameValue("clusterRbacConfig", "OFF")],
-  ),
+  kf.KustomizeConfig("istio/cluster-local-gateway", 
+    parameters={
+      "namespace": "istio-system",
+      // OFF is interpreted as "false".  
+      "clusterRbacConfig": "OFF",
+    }),
+  kf.KustomizeConfig("istio/kfserving-gateway", parameters={"namespace": "istio-system"}),
+  kf.KustomizeConfig("istio/istio", overlays=["agilestacks"], parameters={"clusterRbacConfig": "OFF"}),
   kf.KustomizeConfig("istio/oidc-authservice", overlays=["application", "agilestacks"],
-    parameters=[
-      kf.NameValue("client_id",          std.extVar("HUB_OIDC_CLIENT_ID")),
-      kf.NameValue("oidc_provider",      std.extVar("HUB_OIDC_AUTH_URI")),
-      kf.NameValue("oidc_redirect_uri",  std.extVar("HUB_OIDC_REDIRECT_URI")),
-      kf.NameValue("oidc_auth_url",      std.extVar("HUB_OIDC_AUTH_URI") + "/auth"),
-      kf.NameValue("application_secret", std.extVar("HUB_OIDC_SECRET")),
-      kf.NameValue("skip_auth_uri",      std.extVar("HUB_OIDC_AUTH_URI")),
-      kf.NameValue("userid-header",      "kubeflow-userid"),
-      // kf.NameValue("userid-prefix", ""),
-      istioNamespace
-      ]),
+    parameters={
+      "client_id":          std.extVar("HUB_OIDC_CLIENT_ID"),
+      "oidc_provider":      std.extVar("HUB_OIDC_AUTH_URI"),
+      "oidc_redirect_uri":  std.extVar("HUB_OIDC_REDIRECT_URI"),
+      "oidc_auth_url":      std.extVar("HUB_OIDC_AUTH_URI") + "/auth",
+      "application_secret": std.extVar("HUB_OIDC_SECRET"),
+      "skip_auth_uri":      std.extVar("HUB_OIDC_AUTH_URI"),
+      "userid-header":      "kubeflow-userid",
+      "namespace":          "istio-system"
+    }),
   kf.KustomizeConfig("istio/add-anonymous-user-filter", overlays=["agilestacks"]),
 ];
 
 local installCertManager = false;
 local certManager = if installCertManager then [
-  kf.KustomizeConfig("cert-manager/cert-manager-crds", parameters=[certMgrNamespace],),
-  kf.KustomizeConfig("cert-manager/cert-manager-kube-system-resources", parameters=[ksystemNamespace],),
-  kf.KustomizeConfig("cert-manager/cert-manager", overlays=["self-signed", "application"], parameters=[certMgrNamespace],),
+  kf.KustomizeConfig("cert-manager/cert-manager-crds", 
+    parameters={"namespace": "cert-manager"}),
+  kf.KustomizeConfig("cert-manager/cert-manager-kube-system-resources", 
+    parameters={"namespace": "kube-system"}),
+  kf.KustomizeConfig("cert-manager/cert-manager", 
+    overlays=["self-signed", "application"], 
+    parameters={"namespace": "cert-manager"}),
 ] else [];
 
 local metacontroller = [
@@ -48,17 +44,40 @@ local metacontroller = [
 ];
 
 local argo = [
-  kf.KustomizeConfig("argo", overlays = ["istio", "application", "agilestacks"])
+  kf.KustomizeConfig("argo", 
+    overlays = ["istio", "application", "agilestacks"],
+    parameters = {
+      // minio config
+      accesskey:                  std.extVar("HUB_S3_ACCESS_KEY"),
+      secretkey:                  std.extVar("HUB_S3_SECRET_KEY"),
+      artifactRepositoryBucket:   std.extVar("HUB_S3_BUCKET"),
+      artifactRepositoryEndpoint: s3url.host + ":" + s3url.port,
+    })
 ];
 
 local centraldashboard = [
+  kf.KustomizeConfig("kubeflow-roles"),
   kf.KustomizeConfig("common/centraldashboard", 
     overlays=["istio", "application"],
-    parameters=[kf.NameValue("userid-header", "kubeflow-userid")]),
+    parameters={
+      "userid-header": "kubeflow-userid",
+      "namespace":     std.extVar("HUB_COMPONENT_NAMESPACE")
+    }),
 ];
 
+local mysqlPass = std.extVar("HUB_MYSQL_DB_PASS");
 local metadata = [
-  kf.KustomizeConfig("metadata", overlays=["istio", "db", "application"]),
+  kf.KustomizeConfig("metadata", 
+    overlays=["istio", "application", "agilestacks"],
+    parameters = {
+      MYSQL_DATABASE: "metadb",
+      MYSQL_HOST:     std.extVar("HUB_MYSQL_HOST"),
+      // because of template '$()' syntax overlap database user and secret
+      // defined in: hack/metadata/overlays/agilestacks/secrets.env.template
+      MYSQL_USERNAME: std.extVar("HUB_MYSQL_DB_USER"),
+      MYSQL_PASSWORD: mysqlPass,
+      MYSQL_ALLOW_EMPTY_PASSWORD: std.length(mysqlPass) == 0,
+    }),
 ];
 
 local spark = [
@@ -71,8 +90,12 @@ local pytorch = [
 ];
 
 local kfserving = [
-  kf.KustomizeConfig("knative/knative-serving-crds", overlays=["application"], parameters=[knativeNamespace]),
-  kf.KustomizeConfig("knative/knative-serving-install", overlays=["application","agilestacks"], parameters=[knativeNamespace]),
+  kf.KustomizeConfig("knative/knative-serving-crds", 
+    overlays=["application"], 
+    parameters={"namespace": "knative-serving"}),
+  kf.KustomizeConfig("knative/knative-serving-install", 
+    overlays=["application","agilestacks"], 
+    parameters={"namespace": "knative-serving"}),
   kf.KustomizeConfig("kfserving/kfserving-crds", overlays=["application"]),
   kf.KustomizeConfig("kfserving/kfserving-install", overlays=["application"]),
 ];
@@ -88,7 +111,7 @@ local kfserving = [
 local jupyter = [
   kf.KustomizeConfig("jupyter/jupyter-web-app", 
     overlays=["istio", "application"],
-    parameters=[kf.NameValue("userid-header", "kubeflow-userid")]),  
+    parameters={"userid-header": "kubeflow-userid"}),  
   kf.KustomizeConfig("jupyter/notebook-controller", overlays=["istio", "application"]),
 ];
 
@@ -103,16 +126,37 @@ local katib = [
   kf.KustomizeConfig("katib/katib-controller", overlays=["istio", "application"]),
 ];
 
-local pipeline = [
-  kf.KustomizeConfig("pipeline/api-service", overlays=["application"]),
+local minio = [
   kf.KustomizeConfig("pipeline/minio", overlays=["application"],
-    parameters=[
-      kf.NameValue("minioPvcName", "kf-"+std.extVar("HUB_COMPONENT")+"-minio")
-    ]),
-  kf.KustomizeConfig( "pipeline/mysql", overlays=["application"],
-    parameters=[
-      kf.NameValue("mysqlPvcName", "kf-"+std.extVar("HUB_COMPONENT")+"-minio")
-    ]),
+  parameters={
+    "minioPvcName": "kf-"+std.extVar("HUB_COMPONENT")+"-minio"
+  }),
+];
+
+local mysql = [
+  kf.KustomizeConfig( "pipeline/mysql", 
+    overlays=["application"],
+    parameters={
+      mysqlPvcName: std.extVar("HUB_COMPONENT") + "-minio"
+    }),
+];
+
+local pipeline = [
+  kf.KustomizeConfig("pipeline/api-service", 
+    overlays=["application", "agilestacks"],
+    parameters={
+      mysqlHost:      std.extVar("HUB_MYSQL_HOST"),
+      mysqlUser:      std.extVar("HUB_MYSQL_DB_USER"),
+      mysqlPassword:  std.extVar("HUB_MYSQL_DB_PASS"),
+      mysqlDatabase:  std.extVar("HUB_MYSQL_DB_NAME"),
+      s3AccessKey:    std.extVar("HUB_S3_ACCESS_KEY"),
+      s3SecretKey:    std.extVar("HUB_S3_SECRET_KEY"),
+      s3BucketName:   std.extVar("HUB_S3_BUCKET"),
+      s3Region:       std.extVar("HUB_S3_REGION"),
+      s3EndpointHost: s3url.host,
+      s3EndpointPort: s3url.port,
+    }),
+  kf.KustomizeConfig("pipeline/persistent-agent", overlays=["application"]),
   kf.KustomizeConfig("pipeline/pipelines-runner", overlays=["application"]),
   kf.KustomizeConfig("pipeline/pipelines-ui", overlays=["istio", "application"]),
   kf.KustomizeConfig("pipeline/scheduledworkflow", overlays=["application"]),
@@ -132,20 +176,17 @@ local admissionWebHook = if installCertManager then [
 
 local profile = [
   kf.KustomizeConfig("profiles", overlays=["application", "istio", "agilestacks"],
-    parameters=[
-      kf.NameValue("userid-header", "kubeflow-userid"),
-      kf.NameValue("admin", std.extVar("HUB_DEX_USER")),
-    ]
+    parameters={
+      "userid-header": "kubeflow-userid",
+      "admin": std.extVar("HUB_DEX_USER"),
+    }
   )
 ];
 
-local kfdef = kf.Definition(name=std.extVar("HUB_COMPONENT"), namespace=kubeflowNamespace.value) {
+kf.Definition(
+  name=std.extVar("HUB_COMPONENT"), 
+  namespace=std.extVar("HUB_COMPONENT_NAMESPACE")) {
   spec+: {
-    repos: [
-      kf.Repo("manifests", std.extVar("KF_REPO")),
-      // kf.Repo("manifests", std.extVar("KF_TARBALL")),
-      // kf.Repo("agilestacks", std.extVar("KF_KUSTOM_REPO")),
-    ],
     applications+: []
       + metacontroller
       + istio 
@@ -162,19 +203,15 @@ local kfdef = kf.Definition(name=std.extVar("HUB_COMPONENT"), namespace=kubeflow
       // + spartakus
       + tensorboard
       + katib
+      // + minio
+      // + mysql
       + pipeline
       + seldon
-      + profile
-  }
-};
-
-kfdef + {
+      + profile,
+    repos: [kf.Repo("manifests", std.extVar("KF_REPO"))],
+    version: std.extVar("HUB_COMPONENT_VERSION"),
+  },
   metadata+: {
     clusterName: std.extVar("HUB_DOMAIN_NAME"),
-  },
-  spec+: {
-    version: std.extVar("HUB_COMPONENT_VERSION"),
-    // useBasicAuth: false,
-    // useIstio: false,
-  },
+  }
 }

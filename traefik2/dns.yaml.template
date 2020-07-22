@@ -9,18 +9,18 @@ spec:
     recordType: CNAME
     targets:
     - $load_balancer
-  - dnsName: "*.${component.ingress.urlPrefix}.${dns.domain}"
-    recordTTL: 300
-    recordType: CNAME
-    targets:
-    - $load_balancer
+  # - dnsName: "*.${component.ingress.urlPrefix}.${dns.domain}"
+  #   recordTTL: 300
+  #   recordType: CNAME
+  #   targets:
+  #   - $load_balancer
   - dnsName: "${component.ingress.ssoUrlPrefix}.${dns.domain}"
     recordTTL: 300
     recordType: CNAME
     targets:
     - $load_balancer
-  - dnsName: "*.${component.ingress.ssoUrlPrefix}.${dns.domain}"
-    recordTTL: 300
-    recordType: CNAME
-    targets:
-    - $load_balancer
+  # - dnsName: "*.${component.ingress.ssoUrlPrefix}.${dns.domain}"
+  #   recordTTL: 300
+  #   recordType: CNAME
+  #   targets:
+  #   - $load_balancer

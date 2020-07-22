@@ -74,6 +74,12 @@ parameters:
     - name: version
       value: v1.59.0
       env: VERSION
+    - name: additionalScrapeConfigs.name
+      value: ${component.prometheus.name}-${component.kubecost.name}-scrape-config
+      env: SCRAPE_CONFIGS_NAME
+    - name: additionalScrapeConfigs.key
+      value: kubecost-scrape-configs.yaml
+      env: SCRAPE_CONFIGS_KEY
 
 
 outputs:
