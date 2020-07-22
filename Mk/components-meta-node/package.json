@@ -6,9 +6,8 @@
     "lint": "eslint gen.js"
   },
   "dependencies": {
-    "base64-img": "^1.0.4",
-    "js-yaml": "^3.13.1",
-    "lodash": "^4.17.14",
+    "js-yaml": "^3.14.0",
+    "lodash": "^4.17.19",
     "ulog": "^1.1.0"
   },
   "devDependencies": {
