@@ -9,7 +9,7 @@ meta:
     Cloud Native platform for machine learning based on Google’s internal machine learning pipelines.
   category: AI and Machine Learning
   version: 1.0.2
-  maturity: alpha
+  maturity: beta
   licence: Apache 2.0
   source:
     dir: ../../components/kubeflow-v1.0

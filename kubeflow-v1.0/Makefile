@@ -62,7 +62,7 @@ $(KF_REPO):
 # 	$(rsync) $@ $^/$* 
 # patch: OVERLAYS:=$(sort $(dir $(wildcard patches/**)))
 patch: $(KF_REPO)
-	$(rsync) $(abspath hack)/ $^
+	$(rsync) $(abspath ext)/ $^
 
 dex bucket:
 	$(MAKE) -C "$@"
