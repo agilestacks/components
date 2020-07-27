@@ -65,7 +65,7 @@ parameters:
     value: external-dns
     env: COMPONENT_NAME
   - name: interval
-    env: 1m
+    value: 1m
   - name: provider
     value: aws
     env: PROVIDER
