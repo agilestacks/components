@@ -6,7 +6,7 @@ meta:
   title: Kubeflow
   brief: Machine learning
   description: >
-    Cloud Native platform for machine learning based on Google’s internal machine learning pipelines.
+    Kubeflow is an open source machine learning platform built on top of Kubernetes.
   category: AI and Machine Learning
   version: 1.0.2
   maturity: beta
