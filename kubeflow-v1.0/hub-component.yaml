@@ -116,6 +116,7 @@ templates:
   files:
     - ext/argo/overlays/agilestacks/*.template
     - ext/istio/istio/overlays/agilestacks/*.template
+    - ext/istio/add-anonymous-user-filter/overlays/agilstacks/*.template
     - ext/istio/oidc-authservice/overlays/agilestacks/*.template
     - ext/knative/knative-serving-install/overlays/agilestacks/*.template
     - ext/profiles/overlays/agilestacks/*.template
