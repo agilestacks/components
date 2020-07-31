@@ -25,9 +25,9 @@ lifecycle:
   verbs:
   - deploy
   - undeploy
-  readyConditions:
-  - dns: ${component.ingress.ssoFqdn}
-    url: ${component.ingress.protocol}://${component.ingress.fqdn}
+  # readyConditions:
+  # - dns: ${component.ingress.ssoFqdn}
+  # - url: ${component.ingress.protocol}://${component.ingress.fqdn}
 
 parameters:
 - name: terraform.bucket.name

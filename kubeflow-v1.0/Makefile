@@ -58,9 +58,6 @@ $(KF_REPO):
 		exit 1; \
 	fi
 
-# patches/%: $(KF_REPO)
-# 	$(rsync) $@ $^/$* 
-# patch: OVERLAYS:=$(sort $(dir $(wildcard patches/**)))
 patch: $(KF_REPO)
 	$(rsync) $(abspath ext)/ $^
 
@@ -87,7 +84,6 @@ drop-finalizers:
 	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o json \
 		| jq '. | del(.spec.finalizers)' \
 		| $(kubectl) replace --raw "/api/v1/namespaces/$(HUB_COMPONENT_NAMESPACE)/finalize" -f -
-
 
 deploy: clean patch dex apply
 
@@ -140,13 +136,9 @@ wait_nons:
 
 clean:
 	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
-	# rm -rf $(KF_DEF) kustomize $(LIBSONNET)
 
 .PHONY: deploy undeploy clean apply build delete wait wait_nons patch dex bucket
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
 .IGNORE: delete drop-finalizers cleanup-namespace oidc-delete dex bucket
 
 .DELETE_ON_ERROR: $(KF_DEF) $(KF_REPO)
-
-# cleanup-namespace: CRB:=$(shell $(kubectl) get clusterrolebindings -o json | \
-# 	$(jq) '.items[] | select(.subjects[]?.namespace=="kubeflow").metadata.name')

@@ -1,71 +1,72 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= s3
-DOMAIN_NAME    ?= dev.kubernetes.delivery
+TF_DATA_DIR        ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
+TF_LOG_PATH        ?= $(TF_DATA_DIR)/terraform.log
+TF_VAR_name        := $(COMPONENT_NAME)
+TF_OPTS            := -no-color
+TF_INPUT           := 0
+TF_IN_AUTOMATION   := 1 
+TF_PLAN            := $(TF_DATA_DIR)/terraform.tfplan
+terraform          := terraform-v0.12
+jq                 := jq -M
 
-STATE_BUCKET ?= terraform.agilestacks.com
-STATE_REGION ?= us-east-1
-
-export AWS_DEFAULT_REGION ?= us-east-2
-
-export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
-export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
-
-export TF_VAR_name := $(COMPONENT_NAME)
-
-terraform   ?= terraform-v0.12
-TF_CLI_ARGS ?= -input=false
-TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
-
-RECLAIM     ?= delete
+export $(filter TF_%,$(.VARIABLES))
 
 deploy: init plan
 	$(MAKE) apply || \
 	$(MAKE) import plan apply
+	# hub cli doesn't support optional outputs
+	test "true" = `$(terraform) output -json | $(jq) 'has("kms_key_id")'` || \
+		echo "kms_key_id = "
+	echo ""
 
-$(TF_DATA_DIR):
-	@rm -rf $@ && mkdir -p $@
+# Terraform doesn't allow conditional nested objects
+# and interpolation for resource lifecycle
+ifeq (sse-kms,$(ENCRYPTION))
+bucket.tf: TF_FILE:=bucket-kms.tf.ignore
+else ifneq (,$(ENCRYPTION))
+$(error Unsupported option '$(ENCRYPTION)'; today we only support 'sse-kms')
+else
+bucket.tf: TF_FILE:=bucket-$(RECLAIM).tf.ignore
+endif
 
-# Terraform doesn't allow interpolation for lifecycle
 bucket.tf:
-	cp -f bucket-$(RECLAIM).tf.ignore $@
-.PHONY: bucket.tf
+	cp -f $(TF_FILE) $@
 
-init: $(TF_DATA_DIR) bucket.tf
-	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
+init: bucket.tf
+	rm -rf $(TF_DATA_DIR)
+	mkdir -p $(TF_DATA_DIR)
+	$(terraform) init -get=true -force-copy $(TF_OPTS) \
         -backend=true -reconfigure \
         -backend-config="bucket=$(STATE_BUCKET)" \
         -backend-config="region=$(STATE_REGION)" \
         -backend-config="key=$(DOMAIN_NAME)/s3-bucket/$(COMPONENT_NAME)/terraform.tfstate" \
         -backend-config="profile=$(AWS_PROFILE)"
 
-plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -out=$(TFPLAN)
+$(TF_PLAN):
+	$(terraform) plan $(TF_OPTS) -refresh=true -out=$@
 
-refresh:
-	$(terraform) refresh $(TF_CLI_ARGS)
+apply: $(TF_PLAN)
+	$(terraform) apply $(TF_OPTS) -auto-approve $^
 
-apply:
-	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
-	@echo
+destroy: TF_OPTS+=-destroy
+destroy: $(TF_PLAN)
 
-output:
-	@$(terraform) output -no-color
-
-# see https://github.com/hashicorp/terraform/issues/17599
-undeploy: init
-ifeq ($(RECLAIM),retain)
-	- $(MAKE) TF_CLI_ARGS="$(TF_CLI_ARGS) -destroy" plan \
-	&& $(MAKE) apply TF_CLI_ARGS="$(TF_CLI_ARGS)"
-else
-	$(MAKE) TF_CLI_ARGS="$(TF_CLI_ARGS) -destroy" plan \
-	&& $(MAKE) apply TF_CLI_ARGS="$(TF_CLI_ARGS)"
-endif
+undeploy: init destroy apply
 
 import:
-	-$(terraform) import $(TF_CLI_ARGS) aws_s3_bucket.main $(TF_VAR_name)
+	$(terraform) import $(TF_OPTS) aws_s3_bucket.main $(TF_VAR_name)
 
 clean:
-	rm -rf .terraform bucket.tf
+	rm -rf $(TF_DATA_DIR) bucket.tf
+
+ifeq ($(RECLAIM),retain)
+# see https://github.com/hashicorp/terraform/issues/17599
+.IGNORE: undeploy
+endif
+.INTERMEDIATE: $(TF_DATA_DIR) $(TF_PLAN)
+.SILENT:       deploy $(TF_DATA_DIR)
+.IGNORRE:      import destroy
+.PHONY:        destroy bucket.tf
 
 -include ../Mk/phonies

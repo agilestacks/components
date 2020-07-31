@@ -34,6 +34,10 @@ parameters:
   - name: name
     value: bucket.${dns.domain}
     env: COMPONENT_NAME
+  - name: encryption
+    empty: allow
+    brief: supported values (empty or kms)
+    env: ENCRYPTION
   - name: acl
     value: private
     env: ACL
@@ -62,3 +66,5 @@ outputs:
   fromTfVar: fqdn
 - name: component.bucket.region
   fromTfVar: region
+- name: component.s3.kmsKeyId
+  fromTfVar: kms_key_id
