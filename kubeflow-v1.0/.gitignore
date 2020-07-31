@@ -16,6 +16,7 @@ oidc.yaml
 /ext/argo/overlays/agilestacks/params.env
 /ext/argo/overlays/agilestacks/service-account.yaml
 /ext/knative/knative-serving-install/overlays/agilestacks/gateway.yaml
+/ext/istio/add-anonymous-user-filter/overlays/agilestacks/envoy-filter.yaml
 /ext/istio/istio/overlays/agilestacks/params.env
 /ext/istio/istio/overlays/agilestacks/kf-istio-resources.yaml
 /ext/common/centraldashboard/base/clusterrole-binding.yaml.template
