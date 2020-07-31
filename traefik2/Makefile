@@ -111,7 +111,7 @@ dns:
 	cat dns.yaml | sed -e 's/\$$load_balancer/$(LOAD_BALANCER)/' | $(kubectl) apply -f -
 	@echo "Waiting for DNS records to propagate";
 	@for i in $$(seq 1 60); do \
-		if nslookup $(DNS1)     $(NAMESERVER:.=) >/dev/null; then \
+		if nslookup $(DNS1) $(NAMESERVER:.=) >/dev/null; then \
 			if nslookup $(DNS2) $(NAMESERVER:.=) >/dev/null; then \
 				echo "done"; \
 				exit 0; \
@@ -128,10 +128,6 @@ dns:
 	@echo load_balancer = $(LOAD_BALANCER)
 	@echo load_balancer_dns_record_type = CNAME
 	@echo
-
-test: NAMESERVER:=ns-1040.awsdns-02.org.
-test:
-	$(error oopsie: $(NAMESERVER:.=) bac)
 
 undns:
 	-$(kubectl) delete dnsendpoint $(COMPONENT_NAME)
