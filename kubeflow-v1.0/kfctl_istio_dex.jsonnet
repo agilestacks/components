@@ -23,7 +23,7 @@ local istio = [
       "userid-header":      "kubeflow-userid",
       "namespace":          "istio-system"
     }),
-  kf.KustomizeConfig("istio/add-anonymous-user-filter", overlays=["agilestacks"]),
+  // kf.KustomizeConfig("istio/add-anonymous-user-filter", overlays=["agilestacks"]),
 ];
 
 local installCertManager = false;
