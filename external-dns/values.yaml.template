@@ -1,7 +1,7 @@
 image:
   registry: docker.io
   repository: bitnami/external-dns
-  tag: 0.7.2
+  tag: 0.7.3
   pullPolicy: Always
 
 sources:
