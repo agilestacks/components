@@ -18,6 +18,7 @@ init: $(HELM_HOME)
 	@ $(helm) init --client-only --upgrade
 	@ $(helm) repo add bitnami https://charts.bitnami.com/bitnami
 
+HELM_OPTS := --set 'txtOwnerId=$(firstword $(shell md5sum <<<"$(DOMAIN_NAME)"))'
 HELM_OPTS += --values $(abspath values.yaml)
 ifneq (,$(filter istio,$(HUB_PROVIDES)))
 HELM_OPTS += --set 'sources=$(shell \
