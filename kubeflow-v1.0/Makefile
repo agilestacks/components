@@ -2,6 +2,7 @@
 
 export KF_TARBALL         := https://github.com/kubeflow/manifests/tarball/v1.0.2
 # manifests-0.7-branch is a directory inside the tarball
+export KF_TARBALL_FILE    := .cache/kubeflow.tar
 export KF_REPO            := .cache/repo
 
 # export HUB_ASI_LOCAL_REPO := $(abspath kfrepo)
@@ -27,14 +28,20 @@ kfctl := $(abspath bin/kfctl)
 export PATH := $(dir $(kfctl)):$(PATH)
 endif
 
+
+
 $(kfctl):
 	mkdir -p "$(@D)"
 	$(curl) "$(KFCTL_TARBALL)" | tar xz -C "$(@D)"
 	chmod +x "$@"
 
-$(KF_REPO):
+$(KF_TARBALL_FILE):
+	mkdir -p $(dir $@)
+	$(curl) "$(KF_TARBALL)" > "$@"
+
+$(KF_REPO): $(KF_TARBALL_FILE)
 	mkdir -p "$@"
-	$(curl) "$(KF_TARBALL)" | tar xf - -C "$@" --strip-components 1
+	tar xf - -C "$@" --strip-components 1 < $(KF_TARBALL_FILE)
 
 %.libsonnet:
 	@ mkdir -p $(@D)
@@ -76,7 +83,7 @@ apply delete: $(KF_APP)
 apply: namespace bucket
 apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
-	
+
 delete: $(KF_DEF) drop-finalizers
 	$(kfctl) $@ --delete_storage -V -f "$<"
 
@@ -89,7 +96,7 @@ deploy: clean patch dex apply
 
 undeploy: SA:=$(shell $(kubectl) get serviceaccount -l 'app.kubernetes.io/part-of=kubeflow' -o name | xargs)
 undeploy: clean patch delete
-	$(kubectl) delete --all --force applications 
+	$(kubectl) delete --all --force applications
 	# $(kubectl) delete --all --force profiles
 	$(kubectl) delete --all --force validatingwebhookconfigurations
 	$(kubectl) delete --all --force mutatingwebhookconfigurations
@@ -135,7 +142,8 @@ wait_nons:
 	echo "ERROR timeout $(WAIT_TIMEOUT)sec; Moving on";
 
 clean:
-	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
+	rm -rf $(KF_DEF) $(KF_REPO) $(KF_TARBALL_FILE) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
+
 
 .PHONY: deploy undeploy clean apply build delete wait wait_nons patch dex bucket
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
