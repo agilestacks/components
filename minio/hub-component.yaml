@@ -163,6 +163,10 @@ outputs:
   - name: component.bucket.secret
     brief: Name of the secret associated with minio credentials
     fromTfVar: secret
+  - name: component.bucket.accessKey
+    value: ${component.minio.accessKey}
+  - name: component.bucket.secretKey
+    value: ${component.minio.secretKey}
   - name: component.minio.url
     value: ${component.ingress.protocol}://${component.minio.name}.${component.minio.ingress.baseDomain}/minio
     brief: Minio web console UI url
