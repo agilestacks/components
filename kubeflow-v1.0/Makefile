@@ -142,11 +142,12 @@ wait_nons:
 	echo "ERROR timeout $(WAIT_TIMEOUT)sec; Moving on";
 
 clean:
-	rm -rf $(KF_DEF) $(KF_REPO) $(KF_TARBALL_FILE) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
+	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
 
 
 .PHONY: deploy undeploy clean apply build delete wait wait_nons patch dex bucket
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
 .IGNORE: delete drop-finalizers cleanup-namespace oidc-delete dex bucket
+.INTERMEDIATE: $(KF_TARBALL_FILE)
 
 .DELETE_ON_ERROR: $(KF_DEF) $(KF_REPO)
