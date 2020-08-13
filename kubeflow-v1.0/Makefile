@@ -10,7 +10,7 @@ export HUB_DEX_URL        := http://dex.kube-system.svc.cluster.local:5556/dex
 LIBSONNET     := .cache/lib/kfctl.libsonnet
 LIBSONNET     += .cache/lib/utils.libsonnet
 
-kubectl       := kubectl -n "$(HUB_COMPONENT_NAMESPACE)"
+kubectl       := kubectl --context="$(HUB_DOMAIN_NAME)" --namespace="$(HUB_COMPONENT_NAMESPACE)"
 
 jq            := jq -cMr
 curl          := curl -qfSL --silent --create-dirs
@@ -29,6 +29,11 @@ export PATH := $(dir $(kfctl)):$(PATH)
 endif
 
 
+kubecontext: CURRENTT_CONTEXT := $(shell kubectl config get current-context)
+kubecontext:
+	@test "$(CURRENTT_CONTEXT)" == "$(HUB_DOMAIN_NAME)" \
+	|| echo As kfctl relays on kubectl\'s current context so we are to switch it to $(HUB_DOMAIN_NAME) \
+	&& kubectl config use-context "$(HUB_DOMAIN_NAME)"
 
 $(kfctl):
 	mkdir -p "$(@D)"
@@ -83,6 +88,7 @@ apply delete: $(KF_APP)
 apply: namespace bucket
 apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
+apply delete: kubecontext
 
 delete: $(KF_DEF) drop-finalizers
 	$(kfctl) $@ --delete_storage -V -f "$<"

@@ -8,7 +8,7 @@ HUB_DEX_NAMESPACE := $(firstword $(HUB_DEX_NAMESPACE) kube-system)
 kubectl := kubectl --context="$(DOMAIN_NAME)" -o json -n $(HUB_DEX_NAMESPACE)
 
 ifneq ($(PLAIN_PASS),)
-HUB_DEX_PASSWD := $(shell htpasswd -bnB -C 12 "" $(PLAIN_PASS)  | tr -d ':\n')
+HUB_DEX_PASSWD := no #$(shell htpasswd -bnB -C 12 "" $(PLAIN_PASS)  | tr -d ':\n')
 endif
 
 TEMPDIR   := $(shell mkdir -p .cache; mktemp -d .cache/XXXXXX)
