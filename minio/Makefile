@@ -55,7 +55,7 @@ ifneq ($(TLS_KIND),)
 HELM_OPTS += --values $(TLS_KIND)/values.yaml
 endif
 
-deploy: clean init fetch purge install configure output wait-dns 
+deploy: clean init fetch purge install output wait-dns
 ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
 wait-tls: ENDPOINT:=$(COMPONENT_NAME).$(INGRESS_DOMAIN)
 wait-tls: TIMEOUT:=$(shell echo "`date +%s` + 600" | bc )
