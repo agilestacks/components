@@ -93,20 +93,20 @@ change-kubecontext:
 
 deploy: clean apply
 
-cleanup-% undeploy: NS:=$(shell $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o name 2>/dev/null | xargs)
 cleanup-%: RESOURCES:=$(shell $(kubectl) api-resources --namespaced=true -o name | xargs)
+cleanup-% undeploy: NS:=$(basename $(shell $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o name 2>/dev/null | xargs))
 cleanup-kubeflow:
-	if test -n $(NS); then \
-		echo "Cleaning up dangling resources in $(NS)...;
+	echo "Cleaning up dangling resources in namespace $(NS)..."
+	if test -n "$(NS)"; then \
 		for r in $(RESOURCES); do \
-			$(kubectl) delete $$r --all -n $(NS) 2>/dev/null; \
+			$(kubectl) -n "$(NS)" delete $$r --all > /dev/null; \
 		done; \
 	fi
 
-cleanup-istio-system: NS:=$(shell $(kubectl) get namespace $(HUB_ISTIO_NAMESPACE) -o name | xargs)
-	echo "Cleaning up dangling kubeflow resources in $(HUB_ISTIO_NAMESPACE)..."
+cleanup-istio-system:
+	echo "Cleaning up dangling resources in $(HUB_ISTIO_NAMESPACE)..."
 	for r in $(RESOURCES); do \
-		$(kubectl) delete $$r -n $(HUB_ISTIO_NAMESPACE) -l 'app.kubernetes.io/part-of=kubeflow' 2>/dev/null; \
+		$(kubectl) delete $$r -n $(HUB_ISTIO_NAMESPACE) -l 'app.kubernetes.io/part-of=kubeflow' > /dev/null; \
 	done;
 
 undeploy: clean delete cleanup-kubeflow cleanup-istio-system
