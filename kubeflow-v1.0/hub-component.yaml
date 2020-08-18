@@ -26,11 +26,16 @@ provides:
 parameters:
 - name: dns.domain
   env: HUB_DOMAIN_NAME
-- name: component.dex.issuer
-  env: HUB_DEX_ISSUER
-- name: component.dex.namespace
-  value: kube-system
-  env: HUB_DEX_NAMESPACE
+- name: component.dex
+  parameters:
+  - name: issuer
+    env: HUB_DEX_ISSUER
+  - name: component.dex.namespace
+    value: dex
+    env: HUB_DEX_NAMESPACE
+  - name: passwordDb.email
+    value: support@agilestacks.com
+    empty: allow
 - name: component.kubeflow
   parameters:
     # To deploy multiple kubeflow on the same cluster
@@ -62,15 +67,9 @@ parameters:
     - name: oidc.redirectURI
       value: http://${component.kubeflow.name}.${dns.domain}/login/oidc
       env: HUB_OIDC_REDIRECT_URI
-    - name: passwd
-      empty: allow
-      parameters:
-      - name: 0.user
-        value: admin@agilestacks.com
-        env: HUB_DEX_USER
-      - name: 0.password
-        value: 12341234
-        env: PLAIN_PASS
+    - name: profile.owner.username
+      value: ${component.dex.passwordDb.email}
+      env: HUB_DEX_USER
 - name: component.istio
   parameters:
   - name: namespace
@@ -78,8 +77,8 @@ parameters:
     env: HUB_ISTIO_NAMESPACE
   - name: ingressGateway
     value: ${component.kubeflow.name}-ingressgateway
-- name: component.minio.namespace
-  value: ${component.kubeflow.namespace}
+# - name: component.minio.namespace
+#   value: ${component.kubeflow.namespace}
 - name: component.bucket
   parameters:
   - name: endpoint

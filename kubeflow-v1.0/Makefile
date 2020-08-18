@@ -10,7 +10,7 @@ export HUB_DEX_URL        := http://dex.kube-system.svc.cluster.local:5556/dex
 LIBSONNET     := .cache/lib/kfctl.libsonnet
 LIBSONNET     += .cache/lib/utils.libsonnet
 
-kubectl       := kubectl --context="$(HUB_DOMAIN_NAME)" --namespace="$(HUB_COMPONENT_NAMESPACE)"
+kubectl       := kubectl --context="$(HUB_DOMAIN_NAME)"
 
 jq            := jq -cMr
 curl          := curl -qfSL --silent --create-dirs
@@ -20,7 +20,8 @@ jsonnet       += $(addprefix -V ,$(filter HUB_%,$(.VARIABLES)))
 jsonnet       += $(addprefix -V ,$(filter KF_%,$(.VARIABLES)))
 jsonnet       += $(addprefix --jpath ,$(dir $(LIBSONNET)))
 KF_DEF        := kfctl_istio_dex.json
-KFCTL_TARBALL := https://github.com/kubeflow/kfctl/releases/download/v1.0.2/kfctl_v1.0.2-0-ga476281_$(shell uname -s | tr '[:upper:]' '[:lower:]').tar.gz
+ARCH          := $(shell uname -s | tr '[:upper:]' '[:lower:]')
+KFCTL_TARBALL := https://github.com/kubeflow/kfctl/releases/download/v1.1.0/kfctl_v1.1.0-0-g9a3621e_$(ARCH).tar.gz
 KF_APP        := kustomzie
 kfctl         := $(shell which kfctl)
 ifeq ($(kfctl),)
@@ -28,12 +29,6 @@ kfctl := $(abspath bin/kfctl)
 export PATH := $(dir $(kfctl)):$(PATH)
 endif
 
-
-kubecontext: CURRENTT_CONTEXT := $(shell kubectl config get current-context)
-kubecontext:
-	@test "$(CURRENTT_CONTEXT)" == "$(HUB_DOMAIN_NAME)" \
-	|| echo As kfctl relays on kubectl\'s current context so we are to switch it to $(HUB_DOMAIN_NAME) \
-	&& kubectl config use-context "$(HUB_DOMAIN_NAME)"
 
 $(kfctl):
 	mkdir -p "$(@D)"
@@ -73,7 +68,7 @@ $(KF_REPO): $(KF_TARBALL_FILE)
 patch: $(KF_REPO)
 	$(rsync) $(abspath ext)/ $^
 
-dex bucket:
+bucket:
 	$(MAKE) -C "$@"
 
 namespace:
@@ -84,76 +79,52 @@ $(KF_DEF): $(KF_REPO)
 $(KF_APP): $(KF_DEF)
 $(KF_APP): build
 apply delete build: $(kfctl) patch
-apply delete: $(KF_APP)
+apply delete: $(KF_APP) change-kubecontext
 apply: namespace bucket
+
 apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
-apply delete: kubecontext
 
-delete: $(KF_DEF) drop-finalizers
+delete: $(KF_DEF)
 	$(kfctl) $@ --delete_storage -V -f "$<"
 
-drop-finalizers:
-	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o json \
-		| jq '. | del(.spec.finalizers)' \
-		| $(kubectl) replace --raw "/api/v1/namespaces/$(HUB_COMPONENT_NAMESPACE)/finalize" -f -
+change-kubecontext:
+	kubectl config use-context "$(HUB_DOMAIN_NAME)"
 
-deploy: clean patch dex apply
+deploy: clean apply
 
-undeploy: SA:=$(shell $(kubectl) get serviceaccount -l 'app.kubernetes.io/part-of=kubeflow' -o name | xargs)
-undeploy: clean patch delete
-	$(kubectl) delete --all --force applications
-	# $(kubectl) delete --all --force profiles
-	$(kubectl) delete --all --force validatingwebhookconfigurations
-	$(kubectl) delete --all --force mutatingwebhookconfigurations
-	$(kubectl) delete rolebinding,clusterrolebinding,sa centraldashboard
-	$(kubectl) delete --all --force \
-		daemonsets,replicasets,services,deployments,pods,rc,configmaps,secrets,services,ingress,statefulsets,gateways,envoyfilters,jobs.batch,jobs
-	$(kubectl) delete $(SA)
+cleanup-% undeploy: NS:=$(shell $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o name 2>/dev/null | xargs)
+cleanup-%: RESOURCES:=$(shell $(kubectl) api-resources --namespaced=true -o name | xargs)
+cleanup-kubeflow:
+	if test -n $(NS); then \
+		echo "Cleaning up dangling resources in $(NS)...;
+		for r in $(RESOURCES); do \
+			$(kubectl) delete $$r --all -n $(NS) 2>/dev/null; \
+		done; \
+	fi
 
+cleanup-istio-system: NS:=$(shell $(kubectl) get namespace $(HUB_ISTIO_NAMESPACE) -o name | xargs)
+	echo "Cleaning up dangling kubeflow resources in $(HUB_ISTIO_NAMESPACE)..."
+	for r in $(RESOURCES); do \
+		$(kubectl) delete $$r -n $(HUB_ISTIO_NAMESPACE) -l 'app.kubernetes.io/part-of=kubeflow' 2>/dev/null; \
+	done;
 
-wait: EXPECTED_APPS := 28
-wait: WAIT_TIMEOUT  := 1800
-wait:
-	$(eval count_apps := $(kubectl) get applications.app.k8s.io -l 'app.kubernetes.io/managed-by=kfctl' -o json)
-	$(eval count_apps += | $(jq) '[ .items[]? | select(.status.conditions[]?.type="ready").metadata.name ] | length')
-	$(eval timeout    := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
-	$(eval current_time   := date +%s)
-	@ echo 'Waiting for kubeflow applications to report "ready"'
-	@ while [ `$(current_time)` -le "$(timeout)" ]; do \
-		ready=`$(count_apps)`; \
-		if [ "$$ready" -ge '$(EXPECTED_APPS)' ]; then \
-			echo "Succeeded (ready: $$ready; expected: $(EXPECTED_APPS))"; \
-			exit 0; \
-		fi; \
-		echo "Still waiting (ready: $$ready; expected: $(EXPECTED_APPS))..."; \
-		sleep 8; \
-	done; \
-	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
-	exit 1;
-
-wait_nons:
-	$(eval timeout := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
-	$(eval current_time := date +%s)
-	@ echo 'Waiting for $(HUB_COMPONENT_NAMESPACE) namespace to be deleted'
-	@ while [ `$(current_time)` -le "$(timeout)" ]; do \
-		rv=`$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) > /dev/null 2>&1; echo $$?`; \
-		$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) > /dev/null 2>&1 || { \
-			echo "Done!"; \
-			exit 0; \
-		}; \
-		echo "Still waiting..."; \
-		sleep 8; \
-	done; \
-	echo "ERROR timeout $(WAIT_TIMEOUT)sec; Moving on";
+undeploy: clean delete cleanup-kubeflow cleanup-istio-system
+undeploy: 
+	if test -n "$(NS)"; then \
+		$(kubectl) get namespace "$(NS)" -o json \
+			| jq '. | del(.spec.finalizers)' \
+			| $(kubectl) replace --raw "/api/v1/namespaces/$(NS)/finalize" -f - ; \
+		$(kubectl) delete namespace "$(NS)"; \
+	fi
+	$(kubectl) delete serviceaccount -l 'app.kubernetes.io/part-of=kubeflow';
 
 clean:
 	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
 
-
-.PHONY: deploy undeploy clean apply build delete wait wait_nons patch dex bucket
+.PHONY: deploy undeploy clean apply build delete patch bucket change-kubecontext
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
-.IGNORE: delete drop-finalizers cleanup-namespace oidc-delete dex bucket
+.IGNORE: delete bucket undeploy cleanup-kubeflow cleanup-istio-system
 .INTERMEDIATE: $(KF_TARBALL_FILE)
-
+.SILENT: undeploy cleanup-kubeflow cleanup-istio-system
 .DELETE_ON_ERROR: $(KF_DEF) $(KF_REPO)

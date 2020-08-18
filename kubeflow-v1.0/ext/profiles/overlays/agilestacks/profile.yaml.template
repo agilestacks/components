@@ -7,5 +7,5 @@ metadata:
 spec:
   owner:
     kind: User
-    name: ${component.kubeflow.passwd.0.user}
+    name: ${component.kubeflow.profile.owner.username}
   resourceQuotaSpec: {}
