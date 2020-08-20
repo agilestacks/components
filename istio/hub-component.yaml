@@ -59,6 +59,9 @@ parameters:
         value: http://${component.prometheus.name}-prometheus.${component.prometheus.namespace}.svc.cluster.local:9090
         env: PROMETHEUS_ADDR
 
+  - name: component.cert-manager.defaultIssuerName
+  - name: component.cert-manager.defaultIssuerKind
+
   - name: component.istio
     parameters:
       - name: name

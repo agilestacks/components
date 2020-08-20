@@ -32,21 +32,17 @@ global:
 
   k8sIngress:
     enabled: false
-    gatewayName: ${component.istio.ingressGateway}
-    enableHttps: false
 
   sds:
     enabled: false
 
 gateways:
   enabled: true
-  # if skipped chart will fail with
-  # error: can't give argument to non-function $spec.sds
-  sds:
-    enabled: false
 
   istio-ingressgateway:
     enabled: true
+    sds:
+      enabled: false
     labels:
       app: istio-ingressgateway
       istio: ${component.istio.ingressGateway}

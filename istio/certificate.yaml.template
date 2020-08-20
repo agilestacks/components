@@ -1,0 +1,19 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: ${component.istio.name}-cert
+  namespace: ${component.istio.namespace}
+spec:
+  secretName: ${component.istio.name}-cert
+  issuerRef:
+    name: ${component.cert-manager.defaultIssuerName}
+    kind: ${component.cert-manager.defaultIssuerKind}
+  commonName: ${component.ingress.fqdn}
+  dnsNames:
+  - ${component.ingress.fqdn}
+  acme:
+    config:
+    - http01:
+        ingressClass: istio
+      domains:
+      - ${component.ingress.fqdn}

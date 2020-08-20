@@ -1,0 +1,13 @@
+#certmanager:
+#  enabled: true
+
+global:
+  k8sIngress:
+    enabled: true
+    gatewayName: ${component.istio.ingressGateway}
+    enableHttps: true
+
+gateways:
+  istio-ingressgateway:
+    sds:
+      enabled: true

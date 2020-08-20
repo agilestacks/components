@@ -1,8 +1,10 @@
 !values-*.yaml
 /.helm
 /values.yaml
+/values-tls.yaml
 /default-gateway.yaml
 /values-1.2.2.yaml
+/certificate.yaml
 .terraform
 /prometheus-config/istio-scrape-config.yaml
 /external-dns/.tmp-*
