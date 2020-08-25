@@ -4,7 +4,7 @@ COMPONENT_NAME ?= cert-manager
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE 	   ?= cert-manager
 HELM_CHART     ?= jetstack/cert-manager
-VERSION        ?= v0.15.2
+VERSION        ?= v0.16.1
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
