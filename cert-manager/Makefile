@@ -77,6 +77,8 @@ issuer:
 	done; \
 	exit 1
 	$(kubectl) apply -f issuers/staging-cluster-default-issuer.yaml
+	$(kubectl) apply -f issuers/prod-cluster-dns-issuer.yaml
+	$(kubectl) apply -f issuers/staging-cluster-dns-issuer.yaml
 .PHONY: issuer
 
 ca-issuer:
@@ -86,8 +88,6 @@ ca-issuer:
 
 aws-dns-key:
 	$(kubectl) apply -f issuers/solver-aws-secret-key.yaml
-	$(kubectl) apply -f issuers/prod-cluster-dns-issuer.yaml
-	$(kubectl) apply -f issuers/staging-cluster-dns-issuer.yaml
 .PHONY: aws-dns-key
 
 undeploy: init
