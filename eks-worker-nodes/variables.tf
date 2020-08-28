@@ -1,3 +1,9 @@
+variable "k8s_version" {
+  type        = string
+  description = "Kubernetes version"
+  default     = "1.17"
+}
+
 variable "keypair" {
   type        = string
   default     = "agilestacks"
