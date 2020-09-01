@@ -32,6 +32,7 @@ lifecycle:
     - disconnect
     - seal
     - unseal
+    - backup
 
 parameters:
   - name: dns.domain

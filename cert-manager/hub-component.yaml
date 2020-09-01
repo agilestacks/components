@@ -9,7 +9,7 @@ meta:
     Let’s Encrypt is a free, automated, and open certificate authority (CA), run for the public’s benefit.
     It is a service provided by the Internet Security Research Group (ISRG).
   category: Transport Layer Security
-  version: v0.15.2
+  version: v0.16.1
   maturity: ga
   license: Apache 2.0
   source:
@@ -45,7 +45,10 @@ parameters:
     value: letsencrypt-prod-default
   - name: defaultIssuerKind
     value: ClusterIssuer
-   #value: Issuer
+  - name: dnsIssuerName
+    value: letsencrypt-prod-dns
+  - name: dnsIssuerKind
+    value: ClusterIssuer
   - name: caIssuer
     empty: allow
     parameters:
@@ -53,12 +56,13 @@ parameters:
       value: ca-issuer
     - name: key
     - name: cert
-# alias for CEL expression
-- name: certmanager.caIssuer.key
+# CA issuer
+- name: certmanager.caIssuer.key # alias for CEL expression
   value: ${component.cert-manager.caIssuer.key}
 - name: component.cert-manager.caIssuer.enabled
   value: '#{size(certmanager.caIssuer.key) > 1}'
   env: CA_ISSUER_ENABLED
+# static AWS credentials for DNS solver on-prem
 - name: certmanager.awsDnsCredentials.accessKey
   value: ${cloud.aws.accessKey}
 - name: component.cert-manager.awsDnsCredentials.enabled
@@ -70,9 +74,15 @@ outputs:
   value: letsencrypt
 - name: component.cert-manager.defaultIssuerName
 - name: component.cert-manager.defaultIssuerKind
+- name: component.cert-manager.dnsIssuerName
+- name: component.cert-manager.dnsIssuerKind
 - name: component.cert-manager.issuerEmail
 
 templates:
   files:
   - "*.template"
   - "issuers/*.template"
+  extra:
+    - kind: go
+      files:
+        - "issuers/*.gotemplate"

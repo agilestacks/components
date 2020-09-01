@@ -2,6 +2,7 @@
 
 export KF_TARBALL         := https://github.com/kubeflow/manifests/tarball/v1.0.2
 # manifests-0.7-branch is a directory inside the tarball
+export KF_TARBALL_FILE    := .cache/kubeflow.tar
 export KF_REPO            := .cache/repo
 
 # export HUB_ASI_LOCAL_REPO := $(abspath kfrepo)
@@ -9,7 +10,7 @@ export HUB_DEX_URL        := http://dex.kube-system.svc.cluster.local:5556/dex
 LIBSONNET     := .cache/lib/kfctl.libsonnet
 LIBSONNET     += .cache/lib/utils.libsonnet
 
-kubectl       := kubectl -n "$(HUB_COMPONENT_NAMESPACE)"
+kubectl       := kubectl --context="$(HUB_DOMAIN_NAME)"
 
 jq            := jq -cMr
 curl          := curl -qfSL --silent --create-dirs
@@ -19,7 +20,8 @@ jsonnet       += $(addprefix -V ,$(filter HUB_%,$(.VARIABLES)))
 jsonnet       += $(addprefix -V ,$(filter KF_%,$(.VARIABLES)))
 jsonnet       += $(addprefix --jpath ,$(dir $(LIBSONNET)))
 KF_DEF        := kfctl_istio_dex.json
-KFCTL_TARBALL := https://github.com/kubeflow/kfctl/releases/download/v1.0.2/kfctl_v1.0.2-0-ga476281_$(shell uname -s | tr '[:upper:]' '[:lower:]').tar.gz
+ARCH          := $(shell uname -s | tr '[:upper:]' '[:lower:]')
+KFCTL_TARBALL := https://github.com/kubeflow/kfctl/releases/download/v1.1.0/kfctl_v1.1.0-0-g9a3621e_$(ARCH).tar.gz
 KF_APP        := kustomzie
 kfctl         := $(shell which kfctl)
 ifeq ($(kfctl),)
@@ -27,14 +29,19 @@ kfctl := $(abspath bin/kfctl)
 export PATH := $(dir $(kfctl)):$(PATH)
 endif
 
+
 $(kfctl):
 	mkdir -p "$(@D)"
 	$(curl) "$(KFCTL_TARBALL)" | tar xz -C "$(@D)"
 	chmod +x "$@"
 
-$(KF_REPO):
+$(KF_TARBALL_FILE):
+	mkdir -p $(dir $@)
+	$(curl) "$(KF_TARBALL)" > "$@"
+
+$(KF_REPO): $(KF_TARBALL_FILE)
 	mkdir -p "$@"
-	$(curl) "$(KF_TARBALL)" | tar xf - -C "$@" --strip-components 1
+	tar xf - -C "$@" --strip-components 1 < $(KF_TARBALL_FILE)
 
 %.libsonnet:
 	@ mkdir -p $(@D)
@@ -58,13 +65,10 @@ $(KF_REPO):
 		exit 1; \
 	fi
 
-# patches/%: $(KF_REPO)
-# 	$(rsync) $@ $^/$* 
-# patch: OVERLAYS:=$(sort $(dir $(wildcard patches/**)))
 patch: $(KF_REPO)
-	$(rsync) $(abspath hack)/ $^
+	$(rsync) $(abspath ext)/ $^
 
-dex bucket:
+bucket:
 	$(MAKE) -C "$@"
 
 namespace:
@@ -75,78 +79,52 @@ $(KF_DEF): $(KF_REPO)
 $(KF_APP): $(KF_DEF)
 $(KF_APP): build
 apply delete build: $(kfctl) patch
-apply delete: $(KF_APP)
+apply delete: $(KF_APP) change-kubecontext
 apply: namespace bucket
+
 apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
-	
-delete: $(KF_DEF) drop-finalizers
+
+delete: $(KF_DEF)
 	$(kfctl) $@ --delete_storage -V -f "$<"
 
-drop-finalizers:
-	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o json \
-		| jq '. | del(.spec.finalizers)' \
-		| $(kubectl) replace --raw "/api/v1/namespaces/$(HUB_COMPONENT_NAMESPACE)/finalize" -f -
+change-kubecontext:
+	kubectl config use-context "$(HUB_DOMAIN_NAME)"
 
+deploy: clean apply
 
-deploy: clean patch dex apply
+cleanup-%: RESOURCES:=$(shell $(kubectl) api-resources --namespaced=true -o name | xargs)
+cleanup-% undeploy: NS:=$(basename $(shell $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o name 2>/dev/null | xargs))
+cleanup-kubeflow:
+	echo "Cleaning up dangling resources in namespace $(NS)..."
+	if test -n "$(NS)"; then \
+		for r in $(RESOURCES); do \
+			$(kubectl) -n "$(NS)" delete $$r --all > /dev/null; \
+		done; \
+	fi
 
-undeploy: SA:=$(shell $(kubectl) get serviceaccount -l 'app.kubernetes.io/part-of=kubeflow' -o name | xargs)
-undeploy: clean patch delete
-	$(kubectl) delete --all --force applications 
-	# $(kubectl) delete --all --force profiles
-	$(kubectl) delete --all --force validatingwebhookconfigurations
-	$(kubectl) delete --all --force mutatingwebhookconfigurations
-	$(kubectl) delete rolebinding,clusterrolebinding,sa centraldashboard
-	$(kubectl) delete --all --force \
-		daemonsets,replicasets,services,deployments,pods,rc,configmaps,secrets,services,ingress,statefulsets,gateways,envoyfilters,jobs.batch,jobs
-	$(kubectl) delete $(SA)
+cleanup-istio-system:
+	echo "Cleaning up dangling resources in $(HUB_ISTIO_NAMESPACE)..."
+	for r in $(RESOURCES); do \
+		$(kubectl) delete $$r -n $(HUB_ISTIO_NAMESPACE) -l 'app.kubernetes.io/part-of=kubeflow' > /dev/null; \
+	done;
 
-
-wait: EXPECTED_APPS := 28
-wait: WAIT_TIMEOUT  := 1800
-wait:
-	$(eval count_apps := $(kubectl) get applications.app.k8s.io -l 'app.kubernetes.io/managed-by=kfctl' -o json)
-	$(eval count_apps += | $(jq) '[ .items[]? | select(.status.conditions[]?.type="ready").metadata.name ] | length')
-	$(eval timeout    := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
-	$(eval current_time   := date +%s)
-	@ echo 'Waiting for kubeflow applications to report "ready"'
-	@ while [ `$(current_time)` -le "$(timeout)" ]; do \
-		ready=`$(count_apps)`; \
-		if [ "$$ready" -ge '$(EXPECTED_APPS)' ]; then \
-			echo "Succeeded (ready: $$ready; expected: $(EXPECTED_APPS))"; \
-			exit 0; \
-		fi; \
-		echo "Still waiting (ready: $$ready; expected: $(EXPECTED_APPS))..."; \
-		sleep 8; \
-	done; \
-	echo "ERROR timeout $(WAIT_TIMEOUT)sec"; \
-	exit 1;
-
-wait_nons:
-	$(eval timeout := $(shell echo "`date +%s` + $(WAIT_TIMEOUT)" | bc ))
-	$(eval current_time := date +%s)
-	@ echo 'Waiting for $(HUB_COMPONENT_NAMESPACE) namespace to be deleted'
-	@ while [ `$(current_time)` -le "$(timeout)" ]; do \
-		rv=`$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) > /dev/null 2>&1; echo $$?`; \
-		$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) > /dev/null 2>&1 || { \
-			echo "Done!"; \
-			exit 0; \
-		}; \
-		echo "Still waiting..."; \
-		sleep 8; \
-	done; \
-	echo "ERROR timeout $(WAIT_TIMEOUT)sec; Moving on";
+undeploy: clean delete cleanup-kubeflow cleanup-istio-system
+undeploy: 
+	if test -n "$(NS)"; then \
+		$(kubectl) get namespace "$(NS)" -o json \
+			| jq '. | del(.spec.finalizers)' \
+			| $(kubectl) replace --raw "/api/v1/namespaces/$(NS)/finalize" -f - ; \
+		$(kubectl) delete namespace "$(NS)"; \
+	fi
+	$(kubectl) delete serviceaccount -l 'app.kubernetes.io/part-of=kubeflow';
 
 clean:
 	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
-	# rm -rf $(KF_DEF) kustomize $(LIBSONNET)
 
-.PHONY: deploy undeploy clean apply build delete wait wait_nons patch dex bucket
+.PHONY: deploy undeploy clean apply build delete patch bucket change-kubecontext
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
-.IGNORE: delete drop-finalizers cleanup-namespace oidc-delete dex bucket
-
+.IGNORE: delete bucket undeploy cleanup-kubeflow cleanup-istio-system
+.INTERMEDIATE: $(KF_TARBALL_FILE)
+.SILENT: undeploy cleanup-kubeflow cleanup-istio-system
 .DELETE_ON_ERROR: $(KF_DEF) $(KF_REPO)
-
-# cleanup-namespace: CRB:=$(shell $(kubectl) get clusterrolebindings -o json | \
-# 	$(jq) '.items[] | select(.subjects[]?.namespace=="kubeflow").metadata.name')

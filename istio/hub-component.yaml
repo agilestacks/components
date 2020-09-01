@@ -101,5 +101,4 @@ outputs:
 templates:
   files:
     - "prometheus-config/*.template"
-    - "external-dns/*.template"
     - "*.template"

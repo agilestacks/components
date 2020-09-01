@@ -67,22 +67,7 @@ output "fqdn" {
   value = "${var.endpoints[ data.aws_region.current.name ]}"
 }
 
-output "bucket" {
-  value = "${aws_s3_bucket.main.bucket}"
-}
-
-output "arn" {
-  value = "${aws_s3_bucket.main.arn}"
-}
-
-output "domain" {
-  value = "${aws_s3_bucket.main.bucket_domain_name}"
-}
-
 output "region" {
-  value = "${aws_s3_bucket.main.region}"
+  value = "${data.aws_region.current.name}"
 }
 
-output "console_url" {
-  value = "https://s3.console.aws.amazon.com/s3/buckets/${aws_s3_bucket.main.bucket}/"
-}

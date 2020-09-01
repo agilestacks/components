@@ -8,7 +8,7 @@ meta:
   description: ExternalDNS synchronizes exposed Kubernetes Services and Ingresses with DNS providers.
   license: Apache 2.0
   maturity: beta
-  version: 0.7.2
+  version: 0.7.3
   source:
     dir: ../../components/external-dns
 
@@ -64,6 +64,8 @@ parameters:
   - name: name
     value: external-dns
     env: COMPONENT_NAME
+  - name: interval
+    value: 1m
   - name: provider
     value: aws
     env: PROVIDER

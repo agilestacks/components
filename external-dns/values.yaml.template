@@ -1,7 +1,7 @@
 image:
   registry: docker.io
   repository: bitnami/external-dns
-  tag: 0.7.2
+  tag: 0.7.3
   pullPolicy: Always
 
 sources:
@@ -10,9 +10,9 @@ sources:
 - crd
 # - istio-gateway
 
-interval: 20s
+interval: ${component.external-dns.interval}
 policy: sync
-triggerLoopOnEvent: true
+triggerLoopOnEvent: false
 crd:
   create: true
   apiversion: externaldns.k8s.io/v1alpha1

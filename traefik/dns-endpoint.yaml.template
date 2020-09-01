@@ -14,13 +14,13 @@ spec:
     recordType: "CNAME"
     targets:
     - "##LB##"
-  - dnsName: "*.${component.ingress.urlPrefix}.${dns.domain}"
-    recordTTL: 300
-    recordType: "CNAME"
-    targets:
-    - "##LB##"
-  - dnsName: "*.${component.ingress.ssoUrlPrefix}.${dns.domain}"
-    recordTTL: 300
-    recordType: "CNAME"
-    targets:
-    - "##LB##"
+  # - dnsName: "*.${component.ingress.urlPrefix}.${dns.domain}"
+  #   recordTTL: 300
+  #   recordType: "CNAME"
+  #   targets:
+  #   - "##LB##"
+  # - dnsName: "*.${component.ingress.ssoUrlPrefix}.${dns.domain}"
+  #   recordTTL: 300
+  #   recordType: "CNAME"
+  #   targets:
+  #   - "##LB##"

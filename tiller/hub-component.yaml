@@ -3,7 +3,11 @@ version: 1
 kind: component
 meta:
   name: tiller
-  brief: Tiller
+  title: Tiller
+  brief: The package manager for Kubernetes
+  description: >
+    Tiller is the in-cluster component of Helm. It interacts directly with the Kubernetes API server to install, upgrade, query, and remove Kubernetes resources. It also stores the objects that represent releases.
+  version: 2.16.10
   source:
     dir: ../../components/tiller
 

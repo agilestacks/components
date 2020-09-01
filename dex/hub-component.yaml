@@ -104,6 +104,7 @@ parameters:
 outputs:
   - name: component.dex.issuer
     value: ${component.ingress.protocol}://${component.dex.oidcIssuerFqdn}
+  - name: component.dex.namespace
 
 templates:
   files:

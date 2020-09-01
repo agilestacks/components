@@ -6,10 +6,10 @@ meta:
   title: Kubeflow
   brief: Machine learning
   description: >
-    Cloud Native platform for machine learning based on Google’s internal machine learning pipelines.
+    Kubeflow is an open source machine learning platform built on top of Kubernetes.
   category: AI and Machine Learning
   version: 1.0.2
-  maturity: alpha
+  maturity: beta
   licence: Apache 2.0
   source:
     dir: ../../components/kubeflow-v1.0
@@ -26,11 +26,16 @@ provides:
 parameters:
 - name: dns.domain
   env: HUB_DOMAIN_NAME
-- name: component.dex.issuer
-  env: HUB_DEX_ISSUER
-- name: component.dex.namespace
-  value: kube-system
-  env: HUB_DEX_NAMESPACE
+- name: component.dex
+  parameters:
+  - name: issuer
+    env: HUB_DEX_ISSUER
+  - name: component.dex.namespace
+    value: dex
+    env: HUB_DEX_NAMESPACE
+  - name: passwordDb.email
+    value: support@agilestacks.com
+    empty: allow
 - name: component.kubeflow
   parameters:
     # To deploy multiple kubeflow on the same cluster
@@ -61,17 +66,10 @@ parameters:
       env: HUB_OIDC_SECRET
     - name: oidc.redirectURI
       value: http://${component.kubeflow.name}.${dns.domain}/login/oidc
-      # value: http://${component.kubeflow.name}.${dns.domain}/login/callback
       env: HUB_OIDC_REDIRECT_URI
-    - name: passwd
-      empty: allow
-      parameters:
-      - name: 0.user
-        value: admin@agilestacks.com
-        env: HUB_DEX_USER
-      - name: 0.password
-        value: 12341234
-        env: PLAIN_PASS
+    - name: profile.owner.username
+      value: ${component.dex.passwordDb.email}
+      env: HUB_DEX_USER
 - name: component.istio
   parameters:
   - name: namespace
@@ -79,8 +77,8 @@ parameters:
     env: HUB_ISTIO_NAMESPACE
   - name: ingressGateway
     value: ${component.kubeflow.name}-ingressgateway
-- name: component.minio.namespace
-  value: ${component.kubeflow.namespace}
+# - name: component.minio.namespace
+#   value: ${component.kubeflow.namespace}
 - name: component.bucket
   parameters:
   - name: endpoint
@@ -115,12 +113,11 @@ outputs:
 
 templates:
   files:
-    # - "*.template"
-    - hack/argo/overlays/agilestacks/*.template
-    - hack/istio/istio/overlays/agilestacks/*.template
-    - hack/istio/oidc-authservice/overlays/agilestacks/*.template
-    - hack/knative/knative-serving-install/overlays/agilestacks/*.template
-    - hack/profiles/overlays/agilestacks/*.template
-    # - hack/pipeline/api-service/overlays/agilestacks/*.template
-    - hack/common/centraldashboard/base/*.template
-    - hack/metadata/overlays/agilestacks/*.template
+    - ext/argo/overlays/agilestacks/*.template
+    - ext/istio/istio/overlays/agilestacks/*.template
+    - ext/istio/add-anonymous-user-filter/overlays/agilestacks/*.template
+    - ext/istio/oidc-authservice/overlays/agilestacks/*.template
+    - ext/knative/knative-serving-install/overlays/agilestacks/*.template
+    - ext/profiles/overlays/agilestacks/*.template
+    - ext/common/centraldashboard/base/*.template
+    - ext/metadata/overlays/agilestacks/*.template

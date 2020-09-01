@@ -8,7 +8,7 @@ provider "aws" {
 }
 
 locals {
-  version = "1.16"
+  version = var.k8s_version
   gpu_instance_types = [
     "p2.xlarge",
     "p2.8xlarge",

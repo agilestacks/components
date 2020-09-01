@@ -55,7 +55,7 @@ ifneq ($(TLS_KIND),)
 HELM_OPTS += --values $(TLS_KIND)/values.yaml
 endif
 
-deploy: clean init fetch purge install configure output wait-dns 
+deploy: clean init fetch purge install output wait-dns
 ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
 wait-tls: ENDPOINT:=$(COMPONENT_NAME).$(INGRESS_DOMAIN)
 wait-tls: TIMEOUT:=$(shell echo "`date +%s` + 600" | bc )
@@ -93,9 +93,9 @@ namespace:
 wait:
 	sleep 10
 
-wait-dns: ENDPOINT:=$(COMPONENT_NAME).$(INGRESS_DOMAIN)
+wait-dns: ENDPOINT:=$(COMPONENT_NAME).$(INGRESS_DOMAIN).
 wait-dns: TIMEOUT:=$(shell echo "`date +%s` + 600" | bc )
-wait-dns: 
+wait-dns:
 	@ echo "Waiting for DNS to resolve $(ENDPOINT):"
 	while [ `date +%s` -le "$(TIMEOUT)" ]; do \
 		if nslookup $(ENDPOINT) > /dev/null; then \
@@ -140,7 +140,7 @@ undeploy: init
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 	# TODO: implement pv cleanup
 	$(kubectl) delete job $(COMPONENT_NAME)-make-bucket-job
-	kubectl --context="$(DOMAIN_NAME)" patch pvc $(COMPONENT_NAME) -p '{"metadata":{"finalizers":null}}'		
+	kubectl --context="$(DOMAIN_NAME)" patch pvc $(COMPONENT_NAME) -p '{"metadata":{"finalizers":null}}'
 	kubectl --context="$(DOMAIN_NAME)" delete pvc --force $(COMPONENT_NAME)
 
 clean:

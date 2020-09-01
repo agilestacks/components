@@ -8,7 +8,7 @@ meta:
   description: >
     Træfik (pronounced traffic) is a modern HTTP reverse proxy and load balancer that makes deploying microservices easy.
   category: Edge Proxy
-  version: 2.2.1
+  version: 2.2.8
   maturity: ga
   license: MIT
   icon: https://www.jpaul.me/wp-content/uploads/2018/12/traefik-300.png
@@ -25,9 +25,9 @@ lifecycle:
   verbs:
   - deploy
   - undeploy
-  readyConditions:
-  - dns: ${component.ingress.ssoFqdn}
-    url: ${component.ingress.protocol}://${component.ingress.fqdn}
+  # readyConditions:
+  # - dns: ${component.ingress.ssoFqdn}
+  # - url: ${component.ingress.protocol}://${component.ingress.fqdn}
 
 parameters:
 - name: terraform.bucket.name
@@ -91,7 +91,7 @@ parameters:
 - name: component.traefik
   parameters:
   - name: app.version
-    value: 2.2.1
+    value: 2.2.8
   - name: kubernetes.nodeSelector
     value: '{}'
   - name: kubernetes.tolerations
@@ -108,9 +108,10 @@ parameters:
 
 outputs:
 - name: component.ingress.fqdn
+  brief: Ingress FQDN
   value: ${component.ingress.urlPrefix}.${dns.domain}
 - name: component.ingress.ssoFqdn
-  brief: FQDN of ingress protected by SSO
+  brief: Ingress FQDN protected by SSO
   value: ${component.ingress.ssoUrlPrefix}.${dns.domain}
 - name: component.ingress.protocol
   fromTfVar: ingress_protocol
@@ -119,6 +120,7 @@ outputs:
 - name: component.ingress.kubernetes.ingressClass
   value: ${component.traefik.kubernetes.ingressClass}
 - name: component.ingress.dashboard.url
+  brief: Traefik dashboard
   value: https://${component.ingress.fqdn}/dashboard/
 - name: component.ingress.loadBalancer
   fromTfVar: load_balancer

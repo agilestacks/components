@@ -11,6 +11,7 @@ local istio = [
       "clusterRbacConfig": "OFF",
     }),
   kf.KustomizeConfig("istio/kfserving-gateway", parameters={"namespace": "istio-system"}),
+  // kf.KustomizeConfig("istio/istio", overlays=["agilestacks"], parameters={"clusterRbacConfig": "ON_WITH_EXCLUSION"}),
   kf.KustomizeConfig("istio/istio", overlays=["agilestacks"], parameters={"clusterRbacConfig": "OFF"}),
   kf.KustomizeConfig("istio/oidc-authservice", overlays=["application", "agilestacks"],
     parameters={
@@ -23,7 +24,7 @@ local istio = [
       "userid-header":      "kubeflow-userid",
       "namespace":          "istio-system"
     }),
-  kf.KustomizeConfig("istio/add-anonymous-user-filter", overlays=["agilestacks"]),
+  // kf.KustomizeConfig("istio/add-anonymous-user-filter", overlays=["agilestacks"]),
 ];
 
 local installCertManager = false;
@@ -116,7 +117,8 @@ local jupyter = [
 ];
 
 local tensorboard = [
-  kf.KustomizeConfig("tensorboard", overlays=["istio"]),
+  // Tensorboard removed in v1.1.0
+  // kf.KustomizeConfig("tensorboard", overlays=["istio"]),
   kf.KustomizeConfig("tf-training/tf-job-crds", overlays=["application"]),
   kf.KustomizeConfig("tf-training/tf-job-operator", overlays=["application"]),
 ];

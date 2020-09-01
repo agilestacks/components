@@ -4,6 +4,7 @@ kind: component
 meta:
   name: eks-worker-nodes
   brief: EKS worker nodes pool
+  version: 1.17
   source:
     dir: ../../components/eks-worker-nodes
 
@@ -24,6 +25,9 @@ parameters:
   - name: dns.domain
     env: DOMAIN_NAME
 
+  - name: kubernetes.version
+    value: "1.17"
+    env: TF_VAR_k8s_version
   - name: kubernetes.eks.cluster
     env: TF_VAR_cluster_name
   - name: cloud.vpc.worker.subnet.ids

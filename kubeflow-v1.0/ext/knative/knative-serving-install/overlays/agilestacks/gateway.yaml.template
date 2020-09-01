@@ -12,8 +12,7 @@ spec:
     istio: cluster-local-gateway
   servers:
     - hosts:
-      - 'local.${component.kubeflow.name}.${dns.domain}'
-      - '*'
+      - '*.cluster.local'
       port:
         name: http
         number: 80
@@ -33,7 +32,6 @@ spec:
   servers:
   - hosts:
     - 'serving.${component.kubeflow.name}.${dns.domain}'
-    - '*'
     port:
       name: http
       number: 80

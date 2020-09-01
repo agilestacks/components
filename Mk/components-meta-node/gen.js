@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const log = require('ulog');
-const base64 = require('base64-img');
 const {get, keyBy, pick, mapValues} = require('lodash');
 
 const outputFilename = get(process.argv, '[2]') || 'components-meta.json';
@@ -23,13 +22,20 @@ function checkIcon(name, property) {
     return property.replace(/(\r\n|\n|\r)/gm, '');
 }
 
+function base64Icon(filename) {
+    const data = fs.readFileSync(filename);
+    let format = path.extname(filename).substr(1) || 'png';
+    if (format === 'svg') format = 'svg+xml';
+    return `data:image/${format};base64,${data.toString('base64')}`;
+}
+
 function extractOutputs(outputs, name, basePath) {
     return outputs.map(({icon, ...output}) => {
         if (icon) {
             try {
                 return {
                     ...output,
-                    icon: base64.base64Sync(`${basePath}/${icon}`)
+                    icon: base64Icon(`${basePath}/${icon}`)
                 };
             } catch (error) {
                 throw new Error(`Can not find icon file of "${output.name}" output for component "${name}"`);
@@ -51,7 +57,7 @@ function extract(components) {
                 pick(meta, 'disabled'),
                 (value) => !FALSY_STRINGS.test(value)
             ),
-            ...(iconFilePath ? {icon: base64.base64Sync(iconFilePath)} : {}),
+            ...(iconFilePath ? {icon: base64Icon(iconFilePath)} : {}),
             ...(meta.icon ? {icon: checkIcon(name, meta.icon)} : {}),
             requires,
             provides,
