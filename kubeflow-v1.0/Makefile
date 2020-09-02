@@ -93,18 +93,19 @@ change-kubecontext:
 
 deploy: clean apply
 
-undeploy: NS:=$(notdir $(shell $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o name 2>/dev/null | xargs))
-undeploy: clean delete
+sundeploy: clean delete
 undeploy:
 	bin/delete-resources.sh '$(HUB_ISTIO_NAMESPACE)' -l app.kubernetes.io/part-of=kubeflow
-	if test -n "$(NS)"; then \
+	if $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) > /dev/null 2>&1; then \
 		bin/delete-resources.sh '$(HUB_COMPONENT_NAMESPACE)' --all; \
 		$(kubectl) get namespace "$(NS)" -o json \
 			| jq '. | del(.spec.finalizers)' \
 			| $(kubectl) replace --raw "/api/v1/namespaces/$(NS)/finalize" -f - ; \
 		$(kubectl) delete namespace "$(NS)"; \
 	fi
-	$(kubectl) delete serviceaccount -l 'app.kubernetes.io/part-of=kubeflow'
+	$(kubectl) delete serviceaccount \
+		-l 'app.kubernetes.io/part-of=kubeflow' \
+		--ignore-not-found 1> /dev/null
 
 
 clean:
