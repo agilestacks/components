@@ -93,38 +93,26 @@ change-kubecontext:
 
 deploy: clean apply
 
-cleanup-%: RESOURCES:=$(shell $(kubectl) api-resources --namespaced=true -o name | xargs)
-cleanup-% undeploy: NS:=$(basename $(shell $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o name 2>/dev/null | xargs))
-cleanup-kubeflow:
-	echo "Cleaning up dangling resources in namespace $(NS)..."
+undeploy: NS:=$(notdir $(shell $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o name 2>/dev/null | xargs))
+undeploy: clean delete
+undeploy:
+	bin/delete-resources.sh '$(HUB_ISTIO_NAMESPACE)' -l app.kubernetes.io/part-of=kubeflow
 	if test -n "$(NS)"; then \
-		for r in $(RESOURCES); do \
-			$(kubectl) -n "$(NS)" delete $$r --all > /dev/null; \
-		done; \
-	fi
-
-cleanup-istio-system:
-	echo "Cleaning up dangling resources in $(HUB_ISTIO_NAMESPACE)..."
-	for r in $(RESOURCES); do \
-		$(kubectl) delete $$r -n $(HUB_ISTIO_NAMESPACE) -l 'app.kubernetes.io/part-of=kubeflow' > /dev/null; \
-	done;
-
-undeploy: clean delete cleanup-kubeflow cleanup-istio-system
-undeploy: 
-	if test -n "$(NS)"; then \
+		bin/delete-resources.sh '$(HUB_COMPONENT_NAMESPACE)' --all; \
 		$(kubectl) get namespace "$(NS)" -o json \
 			| jq '. | del(.spec.finalizers)' \
 			| $(kubectl) replace --raw "/api/v1/namespaces/$(NS)/finalize" -f - ; \
 		$(kubectl) delete namespace "$(NS)"; \
 	fi
-	$(kubectl) delete serviceaccount -l 'app.kubernetes.io/part-of=kubeflow';
+	$(kubectl) delete serviceaccount -l 'app.kubernetes.io/part-of=kubeflow'
+
 
 clean:
 	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
 
 .PHONY: deploy undeploy clean apply build delete patch bucket change-kubecontext
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
-.IGNORE: delete bucket undeploy cleanup-kubeflow cleanup-istio-system
+.IGNORE: delete bucket undeploy
 .INTERMEDIATE: $(KF_TARBALL_FILE)
-.SILENT: undeploy cleanup-kubeflow cleanup-istio-system
+.SILENT: undeploy 
 .DELETE_ON_ERROR: $(KF_DEF) $(KF_REPO)
