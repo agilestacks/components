@@ -40,13 +40,11 @@ global:
 
 gateways:
   enabled: true
-  # if skipped chart will fail with
-  # error: can't give argument to non-function $spec.sds
-  sds:
-    enabled: false
 
   istio-ingressgateway:
     enabled: true
+    sds:
+      enabled: true
     labels:
-      app: istio-ingressgateway
+      app: istio-${component.istio.ingressGateway}
       istio: ${component.istio.ingressGateway}
