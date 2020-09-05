@@ -18,6 +18,7 @@ requires:
   - kubernetes
   - helm
   - tiller
+  - istio
 
 provides:
   - ingressgateway
