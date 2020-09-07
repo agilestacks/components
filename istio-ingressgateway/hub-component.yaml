@@ -36,12 +36,13 @@ parameters:
   - name: chart.version
     value: 1.5.0
     env: CHART_VERSION
+  - name: ingressGateway
+    value: "${hub.componentName}"
   - name: ingressGateway.type
     value: sds
 
 outputs:
 - name: component.istio.ingressGateway
-  value: ${hub.componentName}
 
 templates:
   files:

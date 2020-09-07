@@ -1,0 +1,23 @@
+# We must deploy Certificatre in istio namespace
+# so ingressgateway would find secret afterwards
+# kfctl will move override namespace to `kubeflow`
+# we don't want that
+apiVersion: cert-manager.io/v1beta1
+kind: Certificate
+metadata:
+  labels:
+    app: ${component.kubeflow.name}
+  name: ${component.kubeflow.name}-tls
+  namespace: ${component.istio.namespace}
+spec:
+  secretName: ${component.kubeflow.name}-tls
+  issuerRef:
+    # see: cert-manager component
+    # name: letsencrypt-prod-default
+    name: letsencrypt-prod-dns
+    kind: ClusterIssuer
+  dnsNames:
+  - '${component.kubeflow.name}.${dns.domain}'
+  usages:
+  - server auth
+  - client auth

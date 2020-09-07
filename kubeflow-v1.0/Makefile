@@ -19,8 +19,9 @@ jsonnet       := $(shell which jsonnet)
 jsonnet       += $(addprefix -V ,$(filter HUB_%,$(.VARIABLES)))
 jsonnet       += $(addprefix -V ,$(filter KF_%,$(.VARIABLES)))
 jsonnet       += $(addprefix --jpath ,$(dir $(LIBSONNET)))
-KF_DEF        := kfctl_istio_dex.json
+KF_DEF        := kfctl_istio_dex.yaml
 ARCH          := $(shell uname -s | tr '[:upper:]' '[:lower:]')
+# KFCTL_TARBALL := https://github.com/kubeflow/kfctl/releases/download/v1.1.0/kfctl_v1.1.0-0-g9a3621e_$(ARCH).tar.gz
 KFCTL_TARBALL := https://github.com/kubeflow/kfctl/releases/download/v1.1.0/kfctl_v1.1.0-0-g9a3621e_$(ARCH).tar.gz
 KF_APP        := kustomzie
 kfctl         := $(shell which kfctl)
@@ -28,7 +29,6 @@ ifeq ($(kfctl),)
 kfctl := $(abspath bin/kfctl)
 export PATH := $(dir $(kfctl)):$(PATH)
 endif
-
 
 $(kfctl):
 	mkdir -p "$(@D)"
@@ -75,12 +75,15 @@ namespace:
 	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) 2>/dev/null || \
 		$(kubectl) create namespace $(HUB_COMPONENT_NAMESPACE)
 
+knative:
+	$(kubectl) get -f "knative-namespace.yaml" 2>/dev/null || \
+		$(kubectl) apply -f "knative-namespace.yaml"
+
 $(KF_DEF): $(KF_REPO)
-$(KF_APP): $(KF_DEF)
-$(KF_APP): build
+$(KF_APP): $(KF_DEF) build
 apply delete build: $(kfctl) patch
 apply delete: $(KF_APP) change-kubecontext
-apply: namespace bucket
+apply: namespace knative
 
 apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
@@ -92,28 +95,26 @@ change-kubecontext:
 	kubectl config use-context "$(HUB_DOMAIN_NAME)"
 
 deploy: clean apply
+	$(kubectl) apply -f certificate.yaml
 
-sundeploy: clean delete
+undeploy: clean delete
 undeploy:
+	$(kubectl) delete -f certificate.yaml
 	bin/delete-resources.sh '$(HUB_ISTIO_NAMESPACE)' -l app.kubernetes.io/part-of=kubeflow
 	if $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) > /dev/null 2>&1; then \
 		bin/delete-resources.sh '$(HUB_COMPONENT_NAMESPACE)' --all; \
-		$(kubectl) get namespace "$(NS)" -o json \
+		$(kubectl) get namespace "$(HUB_COMPONENT_NAMESPACE)" -o json \
 			| jq '. | del(.spec.finalizers)' \
 			| $(kubectl) replace --raw "/api/v1/namespaces/$(NS)/finalize" -f - ; \
-		$(kubectl) delete namespace "$(NS)"; \
+		$(kubectl) delete namespace "$(HUB_COMPONENT_NAMESPACE)"; \
 	fi
-	$(kubectl) delete serviceaccount \
-		-l 'app.kubernetes.io/part-of=kubeflow' \
-		--ignore-not-found 1> /dev/null
-
 
 clean:
 	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
 
-.PHONY: deploy undeploy clean apply build delete patch bucket change-kubecontext
+.PHONY: deploy undeploy clean apply build delete patch bucket change-kubecontext knative
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
 .IGNORE: delete bucket undeploy
-.INTERMEDIATE: $(KF_TARBALL_FILE)
 .SILENT: undeploy 
-.DELETE_ON_ERROR: $(KF_DEF) $(KF_REPO)
+# comment intermediate to debug
+.INTERMEDIATE: $(KF_TARBALL_FILE) $(KF_DEF)

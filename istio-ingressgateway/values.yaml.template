@@ -4,8 +4,8 @@ ${hub.componentName}:
   sds:
     enabled: true 
   labels:
-    app: istio-${hub.componentName}
-    istio: ${hub.componentName}
+    app: istio-${component.istio.ingressGateway}
+    istio: ${component.istio.ingressGateway}
   type: LoadBalancer
   ports:
     # You can add custom gateway ports

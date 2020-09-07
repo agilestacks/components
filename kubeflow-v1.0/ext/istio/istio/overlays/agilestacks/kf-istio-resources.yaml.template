@@ -1,10 +1,10 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: kubeflow-gateway
+  name: ${component.kubeflow.name}-gateway
 spec:
   selector:
-    istio: ${component.kubeflow.istio.ingressGateway}
+    istio: ${component.istio.ingressGateway}
   servers:
   - port:
       number: 80
@@ -12,4 +12,14 @@ spec:
       protocol: HTTP
     hosts:
     - '${component.kubeflow.name}.${dns.domain}'
-    # - '*'
+    tls:
+      httpsRedirect: true
+  - port: 
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: ${component.kubeflow.name}-tls
+    hosts:
+    - '${component.kubeflow.name}.${dns.domain}'
