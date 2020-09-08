@@ -1,3 +1,4 @@
+# Shared resource! Should not delete!
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -5,5 +6,3 @@ metadata:
     istio-injection: enabled
     serving.knative.dev/release: "v0.11.1"
   name: knative-serving
-
-

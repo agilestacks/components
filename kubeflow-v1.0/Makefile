@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := gen
 
-export KF_TARBALL         := https://github.com/kubeflow/manifests/tarball/v1.0.2
+export KF_TARBALL         := https://github.com/kubeflow/manifests/archive/v1.1.0.tar.gz
 # manifests-0.7-branch is a directory inside the tarball
 export KF_TARBALL_FILE    := .cache/kubeflow.tar
 export KF_REPO            := .cache/repo
@@ -21,14 +21,16 @@ jsonnet       += $(addprefix -V ,$(filter KF_%,$(.VARIABLES)))
 jsonnet       += $(addprefix --jpath ,$(dir $(LIBSONNET)))
 KF_DEF        := kfctl_istio_dex.yaml
 ARCH          := $(shell uname -s | tr '[:upper:]' '[:lower:]')
-# KFCTL_TARBALL := https://github.com/kubeflow/kfctl/releases/download/v1.1.0/kfctl_v1.1.0-0-g9a3621e_$(ARCH).tar.gz
 KFCTL_TARBALL := https://github.com/kubeflow/kfctl/releases/download/v1.1.0/kfctl_v1.1.0-0-g9a3621e_$(ARCH).tar.gz
+
 KF_APP        := kustomzie
 kfctl         := $(shell which kfctl)
 ifeq ($(kfctl),)
 kfctl := $(abspath bin/kfctl)
 export PATH := $(dir $(kfctl)):$(PATH)
 endif
+
+K8S_MANIFESTS := $(wildcard k8s/*.yaml)
 
 $(kfctl):
 	mkdir -p "$(@D)"
@@ -75,15 +77,15 @@ namespace:
 	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) 2>/dev/null || \
 		$(kubectl) create namespace $(HUB_COMPONENT_NAMESPACE)
 
-knative:
-	$(kubectl) get -f "knative-namespace.yaml" 2>/dev/null || \
-		$(kubectl) apply -f "knative-namespace.yaml"
+$(K8S_MANIFESTS):
+	$(kubectl) get -f "$@" 2>/dev/null || \
+		$(kubectl) apply -f "$@"
 
 $(KF_DEF): $(KF_REPO)
 $(KF_APP): $(KF_DEF) build
 apply delete build: $(kfctl) patch
 apply delete: $(KF_APP) change-kubecontext
-apply: namespace knative
+apply: namespace $(K8S_MANIFESTS)
 
 apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
@@ -95,11 +97,10 @@ change-kubecontext:
 	kubectl config use-context "$(HUB_DOMAIN_NAME)"
 
 deploy: clean apply
-	$(kubectl) apply -f certificate.yaml
 
 undeploy: clean delete
 undeploy:
-	$(kubectl) delete -f certificate.yaml
+	$(kubectl) delete -f k8s/certificate.yaml
 	bin/delete-resources.sh '$(HUB_ISTIO_NAMESPACE)' -l app.kubernetes.io/part-of=kubeflow
 	if $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) > /dev/null 2>&1; then \
 		bin/delete-resources.sh '$(HUB_COMPONENT_NAMESPACE)' --all; \
@@ -112,7 +113,8 @@ undeploy:
 clean:
 	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
 
-.PHONY: deploy undeploy clean apply build delete patch bucket change-kubecontext knative
+.PHONY: deploy undeploy clean apply build delete patch bucket change-kubecontext
+.PHONY: $(K8S_MANIFESTS)
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
 .IGNORE: delete bucket undeploy
 .SILENT: undeploy 

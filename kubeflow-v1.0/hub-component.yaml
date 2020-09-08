@@ -48,7 +48,7 @@ parameters:
       value: kubeflow
       env: HUB_COMPONENT_NAMESPACE
     - name: version
-      value: v1.0.2
+      value: v1.1.0
       env: HUB_COMPONENT_VERSION
     - name: oidc.authURI
       value: ${component.dex.issuer}
@@ -118,7 +118,6 @@ outputs:
 
 templates:
   files:
-    - "*.template"
     - ext/argo/overlays/agilestacks/*.template
     - ext/istio/istio/overlays/agilestacks/*.template
     - ext/istio/add-anonymous-user-filter/overlays/agilestacks/*.template
@@ -127,3 +126,4 @@ templates:
     - ext/profiles/overlays/agilestacks/*.template
     - ext/common/centraldashboard/base/*.template
     - ext/metadata/overlays/agilestacks/*.template
+    - "k8s/*.template"
