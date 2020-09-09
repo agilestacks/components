@@ -1,0 +1,6 @@
+ingress:
+  tls:
+    - secretName: ${component.graphite.name}-tls
+      hosts:
+        - ${component.ingress.ssoFqdn}
+        - ${component.graphite.hostname}
