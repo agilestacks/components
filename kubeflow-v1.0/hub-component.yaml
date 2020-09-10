@@ -9,7 +9,7 @@ meta:
     Kubeflow is an open source machine learning platform built on top of Kubernetes.
   category: AI and Machine Learning
   version: 1.1.0
-  maturity: beta
+  maturity: ga
   licence: Apache 2.0
   source:
     dir: ../../components/kubeflow-v1.0
@@ -73,7 +73,7 @@ parameters:
   - name: namespace
     value: istio-system
     env: HUB_ISTIO_NAMESPACE
-  - name: ingressGateway 
+  - name: ingressGateway
 # - name: component.minio.namespace
 #   value: ${component.kubeflow.namespace}
 - name: component.bucket
