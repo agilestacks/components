@@ -1,0 +1,12 @@
+apiVersion: auth.agilestacks.com/v1alpha1
+kind: Oidc
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: grafana
+spec:
+  id: ${component.grafana.oauth.oidcId}
+  secret: ${component.grafana.oauth.oidcSecret}
+  redirectURIs:
+  - ${component.ingress.protocol}://${component.grafana.hostname}/login/generic_oauth
+  name: 'Grafana'

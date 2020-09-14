@@ -1,0 +1,6 @@
+ingress:
+  tls:
+    - secretName: ${component.grafana.name}-tls
+      hosts:
+        - ${component.ingress.fqdn}
+        - ${component.grafana.hostname}
