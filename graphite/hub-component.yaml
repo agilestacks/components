@@ -10,7 +10,7 @@ meta:
     Teams use Graphite to track the performance of their websites, applications, business services,
     and networked servers. It marked the start of a new generation of monitoring tools, making it
     easier than ever to store, retrieve, share, and visualize time-series data.
-  category: App Stack
+  category: Monitoring
   version: 1.1.7
   maturity: beta
   license: Apache 2.0
