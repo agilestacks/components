@@ -227,7 +227,7 @@ extraContainerVolumes: []
 ##
 persistence:
   type: pvc
-  enabled: trur
+  enabled: true
   storageClassName: "${component.grafana.storageClass}"
   accessModes:
     - ReadWriteOnce
