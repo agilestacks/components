@@ -18,6 +18,11 @@ ifeq (,$(filter tls-ingress,$(HUB_PROVIDES)))
 	INGRESS_TLS_VALUES:=--values values-tls.yaml
 endif
 
+# TODO create read-only user, set schema search_path
+ifneq (,$(POSTGRESQL_HOST))
+	POSTGRESQL_VALUES:=--values values-pg.yaml
+endif
+
 deploy: clean init fetch purge install output
 ifeq (true,$(OAUTH_ENABLED))
 deploy: oidc
@@ -52,6 +57,7 @@ install:
 			--wait \
 			--values $(VALUES_FILE) \
 			$(INGRESS_TLS_VALUES) \
+			$(POSTGRESQL_VALUES) \
 			--version $(CHART_VERSION); \
 	else \
 		$(MAKE) upgrade; \

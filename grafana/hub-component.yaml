@@ -27,6 +27,16 @@ parameters:
   - name: component.ingress.protocol
   - name: component.ingress.fqdn
   - name: component.dex.issuer
+  - name: component.postgresql
+    empty: allow
+    parameters:
+    - name: host
+      env: POSTGRESQL_HOST
+    - name: port
+    - name: database
+    - name: user
+    - name: password
+    - name: schema
   - name: component.grafana
     parameters:
     - name: storageClass
