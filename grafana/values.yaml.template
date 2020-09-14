@@ -450,15 +450,6 @@ grafana.ini:
   #   enabled: true
   #   allow_sign_up: true
   #   config_file: /etc/grafana/ldap.toml
-  auth.generic_oauth:
-    name: Okta
-    enabled: ${component.grafana.oauth.enabled}
-    scopes: openid profile email
-    client_id: ${component.grafana.oauth.oidcId}
-    client_secret: ${component.grafana.oauth.oidcSecret}
-    auth_url: ${component.dex.issuer}/auth
-    token_url: ${component.dex.issuer}/token
-    api_url: ${component.dex.issuer}/userinfo
 
 ## Grafana's LDAP configuration
 ## Templated by the template in _helpers.tpl

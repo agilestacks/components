@@ -5,7 +5,6 @@ DOMAIN_NAME    ?= test.dev.superhub
 NAMESPACE      ?= grafana
 HELM_CHART     ?= grafana/grafana
 CHART_VERSION  ?= 5.6.5
-VALUES_FILE    ?= values.yaml
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
@@ -55,7 +54,8 @@ install:
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
 			--wait \
-			--values $(VALUES_FILE) \
+			--values values.yaml \
+			--values values-okta.yaml \
 			$(INGRESS_TLS_VALUES) \
 			$(POSTGRESQL_VALUES) \
 			--version $(CHART_VERSION); \
@@ -68,8 +68,10 @@ upgrade:
 	$(helm) upgrade $(COMPONENT_NAME) charts/$(notdir $(HELM_CHART)) \
 		--namespace $(NAMESPACE) \
 		--wait \
-		--values $(VALUES_FILE) \
+		--values values.yaml \
+		--values values-okta.yaml \
 		$(INGRESS_TLS_VALUES) \
+		$(POSTGRESQL_VALUES) \
 		--version $(CHART_VERSION)
 
 output:
