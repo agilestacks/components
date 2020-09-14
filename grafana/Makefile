@@ -18,7 +18,7 @@ ifeq (,$(filter tls-ingress,$(HUB_PROVIDES)))
 	INGRESS_TLS_VALUES:=--values values-tls.yaml
 endif
 
-deploy: clean init fetch purge install
+deploy: clean init fetch purge install output
 ifeq (true,$(OAUTH_ENABLED))
 deploy: oidc
 endif
@@ -65,6 +65,13 @@ upgrade:
 		--values $(VALUES_FILE) \
 		$(INGRESS_TLS_VALUES) \
 		--version $(CHART_VERSION)
+
+output:
+	@echo Outputs:
+	@$(kubectl) get secret $(COMPONENT_NAME) -o json | \
+		jq -r '"password = " + .data["admin-password"]' | \
+		$(HUB) util otp
+	@echo
 
 undeploy: init
 	-$(kubectl) delete -f oidc.yaml

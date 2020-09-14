@@ -65,6 +65,8 @@ parameters:
 outputs:
   - name: component.grafana.url
     value: ${component.ingress.protocol}://${component.grafana.hostname}
+  - name: component.grafana.adminPassword
+    fromTfVar: password/base64
 
 templates:
   files:
