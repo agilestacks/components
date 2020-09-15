@@ -58,6 +58,10 @@ outputs:
 - name: component.postgresql.user
 - name: component.postgresql.password
 - name: component.postgresql.namespace
+- name: component.postgresql.admin.user
+  value: postgres
+- name: component.postgresql.admin.password
+  value: ${component.postgresql.password}
 
 templates:
   files:
