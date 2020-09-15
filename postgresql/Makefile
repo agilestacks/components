@@ -3,6 +3,8 @@
 COMPONENT_NAME ?= postgresql
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= postgresql
+HELM_CHART     ?= bitnami/postgresql
+CHART_VERSION  ?= 9.4.1
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
@@ -16,23 +18,37 @@ init:
 	$(helm) init --client-only --upgrade
 
 fetch:
+	$(helm) repo add bitnami https://charts.bitnami.com/bitnami
 	$(helm) fetch \
 		--destination charts \
-		--untar stable/postgresql \
-		--version 7.7.2
+		--untar $(HELM_CHART) \
+		--version $(CHART_VERSION)
 
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
 install:
-	$(kubectl) apply -f namespace.yaml
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' || \
-		$(helm) install charts/postgresql \
+	-$(kubectl) create ns $(NAMESPACE)
+	if ! $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$'; then \
+		echo Installing...; \
+		$(helm) install charts/$(notdir $(HELM_CHART)) \
 			--name $(COMPONENT_NAME) \
 			--namespace $(NAMESPACE) \
-			--replace \
-			--values values.yaml
+			--wait \
+			--values values.yaml \
+			--version $(CHART_VERSION); \
+	else \
+		$(MAKE) upgrade; \
+	fi
+
+upgrade:
+	@echo Upgrading...
+	$(helm) upgrade $(COMPONENT_NAME) charts/$(notdir $(HELM_CHART)) \
+		--namespace $(NAMESPACE) \
+		--wait \
+		--values values.yaml \
+		--version $(CHART_VERSION)
 
 undeploy: init
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
