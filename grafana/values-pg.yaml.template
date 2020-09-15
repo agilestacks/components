@@ -6,7 +6,7 @@ datasources:
       type: postgres
       url: ${component.postgresql.host}:${component.postgresql.port}
       database: ${component.postgresql.database}
-      user: ${component.postgresql.user}
+      user: ${component.grafana.postgresql.user}
       secureJsonData:
         password: "${component.postgresql.password}"
       jsonData:

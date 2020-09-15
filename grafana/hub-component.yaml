@@ -21,6 +21,14 @@ requires:
   - helm
   - tiller
 
+lifecycle:
+  verbs:
+    - deploy
+    - undeploy
+    - pguser
+    - pgconnect
+    - pgconnectadmin
+
 parameters:
   - name: dns.domain
     env: DOMAIN_NAME
@@ -33,10 +41,18 @@ parameters:
     - name: host
       env: POSTGRESQL_HOST
     - name: port
+      env: POSTGRESQL_PORT
     - name: database
-    - name: user
+      env: POSTGRESQL_DATABASE
+    - name: admin.user
+      env: POSTGRESQL_ADMIN_USER
+    - name: admin.password
+      env: POSTGRESQL_ADMIN_PASSWORD
     - name: password
+      env: POSTGRESQL_PASSWORD
     - name: schema
+      value: default
+      env: POSTGRESQL_SCHEMA
   - name: component.grafana
     parameters:
     - name: storageClass
@@ -62,6 +78,9 @@ parameters:
     - name: chart.version
       value: 5.6.5
       env: CHART_VERSION
+    - name: postgresql.user
+      value: ${component.grafana.name}
+      env: GRAFANA_POSTGRESQL_USER
     - name: oauth
       parameters:
       - name: enabled

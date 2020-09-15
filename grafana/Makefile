@@ -11,18 +11,19 @@ export HELM_HOME ?= $(shell pwd)/.helm
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
+deploy: clean init fetch purge install output
+
 # if ingress-tls in provides then tls-host-controler will manage TLS block for us
 # else install our own TLS block
 ifeq (,$(filter tls-ingress,$(HUB_PROVIDES)))
-	INGRESS_TLS_VALUES:=--values values-tls.yaml
+INGRESS_TLS_VALUES:=--values values-tls.yaml
 endif
 
-# TODO create read-only user, set schema search_path
 ifneq (,$(POSTGRESQL_HOST))
-	POSTGRESQL_VALUES:=--values values-pg.yaml
+POSTGRESQL_VALUES:=--values values-pg.yaml
+deploy: pguser
 endif
 
-deploy: clean init fetch purge install output
 ifeq (true,$(OAUTH_ENABLED))
 deploy: oidc
 endif
@@ -41,6 +42,30 @@ fetch:
 purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+
+# TODO hide password
+pguser:
+	$(kubectl) run psql -i --rm --image=postgres --restart=Never --env="PGPASSWORD=$$POSTGRESQL_ADMIN_PASSWORD" -- \
+		psql -h $(POSTGRESQL_HOST) -p $(POSTGRESQL_PORT) -U $(POSTGRESQL_ADMIN_USER) $(POSTGRESQL_DATABASE) -c " \
+			revoke select on all tables in schema $(POSTGRESQL_SCHEMA) from \"$(GRAFANA_POSTGRESQL_USER)\"; \
+			revoke usage on schema $(POSTGRESQL_SCHEMA) from \"$(GRAFANA_POSTGRESQL_USER)\"; \
+			revoke usage on schema public from \"$(GRAFANA_POSTGRESQL_USER)\"; \
+			drop user if exists \"$(GRAFANA_POSTGRESQL_USER)\"; \
+			create user \"$(GRAFANA_POSTGRESQL_USER)\" password '$(POSTGRESQL_PASSWORD)'; \
+			grant usage on schema $(POSTGRESQL_SCHEMA) to \"$(GRAFANA_POSTGRESQL_USER)\"; \
+			grant select on all tables in schema $(POSTGRESQL_SCHEMA) to \"$(GRAFANA_POSTGRESQL_USER)\"; \
+			alter user \"$(GRAFANA_POSTGRESQL_USER)\" in database $(POSTGRESQL_DATABASE) set search_path to $(POSTGRESQL_SCHEMA);"
+.PHONY: pguser
+
+pgconnect:
+	$(kubectl) run psql -ti --rm --image=postgres --restart=Never --env="PGPASSWORD=$$POSTGRESQL_PASSWORD" -- \
+		psql -h $(POSTGRESQL_HOST) -p $(POSTGRESQL_PORT) -U $(GRAFANA_POSTGRESQL_USER) $(POSTGRESQL_DATABASE) -c '\d'
+.PHONY: pgconnect
+
+pgconnectadmin:
+	$(kubectl) run psql -ti --rm --image=postgres --restart=Never --env="PGPASSWORD=$$POSTGRESQL_ADMIN_PASSWORD" -- \
+		psql -h $(POSTGRESQL_HOST) -p $(POSTGRESQL_PORT) -U $(POSTGRESQL_ADMIN_USER) $(POSTGRESQL_DATABASE) -c '\d'
+.PHONY: pgconnectadmin
 
 oidc:
 	$(kubectl) apply -f oidc.yaml
