@@ -1,4 +1,6 @@
 grafana.ini:
+  users:
+    auto_assign_org_role: Admin
   auth.generic_oauth:
     name: Okta
     enabled: ${component.grafana.oauth.enabled}
@@ -8,4 +10,4 @@ grafana.ini:
     auth_url: ${component.dex.issuer}/auth
     token_url: ${component.dex.issuer}/token
     api_url: ${component.dex.issuer}/userinfo
-    role_attribute_path: "contains(join('', groups), '.Admin') && 'Admin' || contains(join('', groups), '.Dev') && 'Editor' || 'Viewer'"
+    # role_attribute_path: "contains(join('', groups), '.Admin') && 'Admin' || contains(join('', groups), '.Dev') && 'Editor' || 'Viewer'"
