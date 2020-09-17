@@ -14,7 +14,7 @@ meta:
     DaemonSets, etc). For example, you can scale a Deployment, initiate a rolling update,
     restart a pod or deploy new applications using a deploy wizard.
   category: Kubernetes Tools
-  version: 2.0.3
+  version: 2.0.4
   maturity: ga
   license: Apache 2.0
   icon: https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg
@@ -45,7 +45,7 @@ parameters:
     env:   NAMESPACE
   - name:  version
     brief: Kubernetes Dashboard version
-    value: v2.0.3
+    value: v2.0.4
   - name:  ingress.urlPrefix
     value: kubernetes
   - name:  ingress.path
