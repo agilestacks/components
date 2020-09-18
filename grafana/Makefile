@@ -13,10 +13,13 @@ helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 deploy: clean init fetch purge install output
 
-# if ingress-tls in provides then tls-host-controler will manage TLS block for us
+# ACM terminates TLS on ELB
+ifneq (acm,$(TLS_KIND))
+# if ingress-tls is provided then tls-host-controler will manage TLS block for us
 # else install our own TLS block
 ifeq (,$(filter tls-ingress,$(HUB_PROVIDES)))
 INGRESS_TLS_VALUES:=--values values-tls.yaml
+endif
 endif
 
 ifneq (,$(POSTGRESQL_HOST))

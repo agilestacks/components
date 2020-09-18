@@ -32,6 +32,8 @@ lifecycle:
 parameters:
   - name: dns.domain
     env: DOMAIN_NAME
+  - name: component.tls.kind
+    env: TLS_KIND
   - name: component.ingress.protocol
   - name: component.ingress.fqdn
   - name: component.dex.issuer
