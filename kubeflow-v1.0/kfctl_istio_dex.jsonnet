@@ -10,7 +10,6 @@ local istio = [
       // OFF is interpreted as "false".  
       "clusterRbacConfig": "OFF",
     }),
-  kf.KustomizeConfig("istio/kfserving-gateway", parameters={"namespace": "istio-system"}),
   // kf.KustomizeConfig("istio/istio", overlays=["agilestacks"], parameters={"clusterRbacConfig": "ON_WITH_EXCLUSION"}),
   kf.KustomizeConfig("istio/istio", overlays=["agilestacks"], parameters={"clusterRbacConfig": "OFF"}),
   kf.KustomizeConfig("istio/oidc-authservice", overlays=["application", "agilestacks"],
@@ -117,8 +116,7 @@ local jupyter = [
 ];
 
 local tensorboard = [
-  // Tensorboard removed in v1.1.0
-  // kf.KustomizeConfig("tensorboard", overlays=["istio"]),
+  kf.KustomizeConfig("tensorboard", overlays=["istio"]),
   kf.KustomizeConfig("tf-training/tf-job-crds", overlays=["application"]),
   kf.KustomizeConfig("tf-training/tf-job-operator", overlays=["application"]),
 ];
@@ -161,6 +159,7 @@ local pipeline = [
   kf.KustomizeConfig("pipeline/persistent-agent", overlays=["application"]),
   kf.KustomizeConfig("pipeline/pipelines-runner", overlays=["application"]),
   kf.KustomizeConfig("pipeline/pipelines-ui", overlays=["istio", "application"]),
+  kf.KustomizeConfig("pipeline/pipelines-viewer", overlays=["application"]),
   kf.KustomizeConfig("pipeline/scheduledworkflow", overlays=["application"]),
   kf.KustomizeConfig("pipeline/pipeline-visualization-service", overlays=["application"]),
 ];

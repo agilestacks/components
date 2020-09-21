@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := gen
 
-export KF_TARBALL         := https://github.com/kubeflow/manifests/tarball/v1.0.2
+export KF_TARBALL         := https://github.com/kubeflow/manifests/archive/v1.1.0.tar.gz
 # manifests-0.7-branch is a directory inside the tarball
 export KF_TARBALL_FILE    := .cache/kubeflow.tar
 export KF_REPO            := .cache/repo
@@ -19,9 +19,10 @@ jsonnet       := $(shell which jsonnet)
 jsonnet       += $(addprefix -V ,$(filter HUB_%,$(.VARIABLES)))
 jsonnet       += $(addprefix -V ,$(filter KF_%,$(.VARIABLES)))
 jsonnet       += $(addprefix --jpath ,$(dir $(LIBSONNET)))
-KF_DEF        := kfctl_istio_dex.json
+KF_DEF        := kfctl_istio_dex.yaml
 ARCH          := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 KFCTL_TARBALL := https://github.com/kubeflow/kfctl/releases/download/v1.1.0/kfctl_v1.1.0-0-g9a3621e_$(ARCH).tar.gz
+
 KF_APP        := kustomzie
 kfctl         := $(shell which kfctl)
 ifeq ($(kfctl),)
@@ -29,6 +30,7 @@ kfctl := $(abspath bin/kfctl)
 export PATH := $(dir $(kfctl)):$(PATH)
 endif
 
+K8S_MANIFESTS := $(wildcard k8s/*.yaml)
 
 $(kfctl):
 	mkdir -p "$(@D)"
@@ -75,12 +77,15 @@ namespace:
 	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) 2>/dev/null || \
 		$(kubectl) create namespace $(HUB_COMPONENT_NAMESPACE)
 
+$(K8S_MANIFESTS):
+	$(kubectl) get -f "$@" 2>/dev/null || \
+		$(kubectl) apply -f "$@"
+
 $(KF_DEF): $(KF_REPO)
-$(KF_APP): $(KF_DEF)
-$(KF_APP): build
+$(KF_APP): $(KF_DEF) build
 apply delete build: $(kfctl) patch
 apply delete: $(KF_APP) change-kubecontext
-apply: namespace bucket
+apply: namespace $(K8S_MANIFESTS)
 
 apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
@@ -93,38 +98,25 @@ change-kubecontext:
 
 deploy: clean apply
 
-cleanup-%: RESOURCES:=$(shell $(kubectl) api-resources --namespaced=true -o name | xargs)
-cleanup-% undeploy: NS:=$(basename $(shell $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o name 2>/dev/null | xargs))
-cleanup-kubeflow:
-	echo "Cleaning up dangling resources in namespace $(NS)..."
-	if test -n "$(NS)"; then \
-		for r in $(RESOURCES); do \
-			$(kubectl) -n "$(NS)" delete $$r --all > /dev/null; \
-		done; \
-	fi
-
-cleanup-istio-system:
-	echo "Cleaning up dangling resources in $(HUB_ISTIO_NAMESPACE)..."
-	for r in $(RESOURCES); do \
-		$(kubectl) delete $$r -n $(HUB_ISTIO_NAMESPACE) -l 'app.kubernetes.io/part-of=kubeflow' > /dev/null; \
-	done;
-
-undeploy: clean delete cleanup-kubeflow cleanup-istio-system
-undeploy: 
-	if test -n "$(NS)"; then \
-		$(kubectl) get namespace "$(NS)" -o json \
+undeploy: clean delete
+undeploy:
+	$(kubectl) delete -f k8s/certificate.yaml
+	bin/delete-resources.sh '$(HUB_ISTIO_NAMESPACE)' -l app.kubernetes.io/part-of=kubeflow
+	if $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) > /dev/null 2>&1; then \
+		bin/delete-resources.sh '$(HUB_COMPONENT_NAMESPACE)' --all; \
+		$(kubectl) get namespace "$(HUB_COMPONENT_NAMESPACE)" -o json \
 			| jq '. | del(.spec.finalizers)' \
 			| $(kubectl) replace --raw "/api/v1/namespaces/$(NS)/finalize" -f - ; \
-		$(kubectl) delete namespace "$(NS)"; \
+		$(kubectl) delete namespace "$(HUB_COMPONENT_NAMESPACE)"; \
 	fi
-	$(kubectl) delete serviceaccount -l 'app.kubernetes.io/part-of=kubeflow';
 
 clean:
 	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
 
 .PHONY: deploy undeploy clean apply build delete patch bucket change-kubecontext
+.PHONY: $(K8S_MANIFESTS)
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
-.IGNORE: delete bucket undeploy cleanup-kubeflow cleanup-istio-system
-.INTERMEDIATE: $(KF_TARBALL_FILE)
-.SILENT: undeploy cleanup-kubeflow cleanup-istio-system
-.DELETE_ON_ERROR: $(KF_DEF) $(KF_REPO)
+.IGNORE: delete bucket undeploy
+.SILENT: undeploy 
+# comment intermediate to debug
+.INTERMEDIATE: $(KF_TARBALL_FILE) $(KF_DEF)

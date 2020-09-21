@@ -6,7 +6,10 @@ NAMESPACE 	   ?= cert-manager
 HELM_CHART     ?= jetstack/cert-manager
 VERSION        ?= v0.16.1
 
-export HELM_HOME ?= $(shell pwd)/.helm
+HELM_HOME := $(abspath .helm)
+CRD_FILE  := $(abspath charts/$(notdir $(HELM_CHART))/crds.yaml)
+
+export HELM_HOME
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
@@ -30,20 +33,26 @@ fetch:
 		--untar $(HELM_CHART) \
 		--version $(VERSION)
 
-purge:
+purge: $(CRD_FILE)
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) && \
-		$(kubectl) get crd -o name | grep -F cert-manager.io | xargs $(kubectl) delete || exit 0
+		$(helm) delete --purge $(COMPONENT_NAME)
 
-crds:
-	$(kubectl) apply -f https://github.com/jetstack/cert-manager/releases/download/$(VERSION)/cert-manager.crds.yaml
-	@echo "Waiting for CRDs to install"; \
+$(CRD_FILE):
+	mkdir -p "$(dir $@)"
+	curl -sL -o "$@" https://github.com/jetstack/cert-manager/releases/download/$(VERSION)/cert-manager.crds.yaml
+
+crds: $(CRD_FILE)
+	echo "Checking cert-manager CRDs";
+	$(kubectl) get -f "$^" -o name 2>/dev/null \
+	|| $(kubectl) apply -f "$^"
+
+	echo "Waiting for CRDs to install";
 	for i in $$(seq 1 30); do \
-		if test $$($(kubectl) get crds | grep -F .cert-manager.io | wc -l) -ge 6; then \
-			echo "done"; \
+		if $(kubectl) get -f "$^" > /dev/null 2>&1; then \
+			echo "Done"; \
 			exit 0; \
 		fi; \
-		echo "still waiting"; \
+		echo "Still waiting..."; \
 		sleep 10; \
 	done; \
 	echo "timeout"; \
@@ -98,3 +107,7 @@ clean:
 	rm -rf $(HELM_HOME) charts/$(notdir $(HELM_CHART))
 
 -include ../Mk/phonies
+
+.INTERMEDIATE: $(CRD_FILE)
+.SILENT: $(CRD_FILE) crds
+.IGNORE: purge

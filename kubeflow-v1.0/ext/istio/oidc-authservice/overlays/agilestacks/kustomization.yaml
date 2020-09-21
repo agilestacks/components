@@ -4,7 +4,6 @@ bases:
 - ../../base
 resources:
 - oidc.yaml
-- istio-gateway.yaml
 patchesStrategicMerge:
 - envoy-filter.yaml
 commonLabels:

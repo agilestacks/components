@@ -11,7 +11,7 @@ meta:
     It has more than 15 years of active development and a proven architecture that has earned it a strong
     reputation for reliability, data integrity, and correctness.
   category: App Stack
-  version: 11.6.0
+  version: 11.9.0
   maturity: ga
   license: BSD/MIT
   source:
@@ -31,7 +31,7 @@ parameters:
 - name: component.postgresql
   parameters:
   - name: version
-    value: 11.6.0-debian-9-r0
+    value: 11.9.0-debian-10-r22
   - name:  name
     value: postgresql-${dns.name}-${hub.componentName}
     env:   COMPONENT_NAME
@@ -58,6 +58,10 @@ outputs:
 - name: component.postgresql.user
 - name: component.postgresql.password
 - name: component.postgresql.namespace
+- name: component.postgresql.admin.user
+  value: postgres
+- name: component.postgresql.admin.password
+  value: ${component.postgresql.password}
 
 templates:
   files:

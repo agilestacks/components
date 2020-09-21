@@ -9,7 +9,7 @@ meta:
     etcd-metal is a simple etcd deployment intended for bare-metal, specifically KubeFlex Prime clusters
   category: App Stack
   version: 0.10.3
-  maturity: ga
+  maturity: alpha
   license: BSD/MIT
   source:
     dir: ../../components/etcd-metal

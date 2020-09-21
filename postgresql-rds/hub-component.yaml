@@ -88,5 +88,8 @@ outputs:
   fromTfVar: name
 - name: component.postgresql.user
   fromTfVar: username
-# cannot be captured securely from Terraform outputs
 - name: component.postgresql.password
+- name: component.postgresql.admin.user
+  value: ${component.postgresql.user}
+- name: component.postgresql.admin.password
+  value: ${component.postgresql.password}

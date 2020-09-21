@@ -1,0 +1,14 @@
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: PostgreSQL
+      type: postgres
+      url: ${component.postgresql.host}:${component.postgresql.port}
+      database: ${component.postgresql.database}
+      user: ${component.grafana.postgresql.user}
+      secureJsonData:
+        password: "${component.postgresql.password}"
+      jsonData:
+        sslmode: "disable"
+        postgresVersion: 1100

@@ -1,0 +1,104 @@
+---
+version: 1
+kind: component
+meta:
+  name: grafana
+  title: Grafana
+  brief: The analytics platform for all your metrics
+  description: >
+    Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored.
+    Create, explore, and share dashboards with your team and foster a data driven culture.
+  category: Monitoring
+  version: 7.1.5
+  maturity: beta
+  license: Apache 2.0
+  icon: https://grafana.com/static/img/logos/grafana_logo_swirl-events.svg
+  source:
+      dir: ../../components/grafana
+
+requires:
+  - kubernetes
+  - helm
+  - tiller
+
+lifecycle:
+  verbs:
+    - deploy
+    - undeploy
+    - pguser
+    - pgconnect
+    - pgconnectadmin
+
+parameters:
+  - name: dns.domain
+    env: DOMAIN_NAME
+  - name: component.tls.kind
+    env: TLS_KIND
+  - name: component.ingress.protocol
+  - name: component.ingress.fqdn
+  - name: component.dex.issuer
+  - name: component.postgresql
+    empty: allow
+    parameters:
+    - name: host
+      env: POSTGRESQL_HOST
+    - name: port
+      env: POSTGRESQL_PORT
+    - name: database
+      env: POSTGRESQL_DATABASE
+    - name: admin.user
+      env: POSTGRESQL_ADMIN_USER
+    - name: admin.password
+      env: POSTGRESQL_ADMIN_PASSWORD
+    - name: password
+      env: POSTGRESQL_PASSWORD
+    - name: schema
+      value: public
+      env: POSTGRESQL_SCHEMA
+  - name: component.grafana
+    parameters:
+    - name: storageClass
+      value: default
+    - name: volumeSize
+      value: 1Gi
+    - name: namespace
+      env: NAMESPACE
+      value: grafana
+    - name: name
+      env: COMPONENT_NAME
+      value: grafana-${dns.name}-${hub.componentName}
+    - name: hostname
+      value: ${component.grafana.name}.${component.ingress.fqdn}
+    - name: image.repository
+      value: grafana/grafana
+    - name: image.tag
+      value: 7.1.5
+    - name: requests.memory
+      value: 128Mi
+    - name: requests.cpu
+      value: 100m
+    - name: chart.version
+      value: 5.6.5
+      env: CHART_VERSION
+    - name: postgresql.user
+      value: ${component.grafana.name}
+      env: GRAFANA_POSTGRESQL_USER
+    - name: oauth
+      parameters:
+      - name: enabled
+        value: true
+        env: OAUTH_ENABLED
+      - name: oidcId
+        value: grafana
+      - name: oidcSecret
+        value: axesh4dohC
+
+outputs:
+  - name: component.grafana.url
+    value: ${component.ingress.protocol}://${component.grafana.hostname}
+  - name: component.grafana.adminPassword
+    fromTfVar: password/base64
+
+templates:
+  files:
+    - "*.template"

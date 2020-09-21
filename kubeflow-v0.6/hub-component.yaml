@@ -12,7 +12,7 @@ meta:
     components such as Tensorflow, Jupiter Notebook etc.
   category: AI and Machine Learning
   version: 0.6.2
-  maturity: alpha
+  maturity: deprecated
   licence: Apache 2.0
   source:
     dir: ../../components/kubeflow-v0.6

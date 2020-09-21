@@ -9,7 +9,7 @@ meta:
     CoreDNS is a Kubernetes centric DNS server
   category: App Stack
   version: 1.6.7
-  maturity: ga
+  maturity: alpha
   license: BSD/MIT
   source:
     dir: ../../components/coredns
