@@ -27,9 +27,9 @@ kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 
 ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
-	INGRESS:=ingress-tls
+INGRESS:=ingress-tls
 else
-	INGRESS:=ingress
+INGRESS:=ingress
 endif
 
 deploy: clean install
