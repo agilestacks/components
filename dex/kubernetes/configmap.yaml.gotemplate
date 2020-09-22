@@ -36,7 +36,7 @@ data:
     staticPasswords:
     - email: '{{.component.dex.passwordDb.email}}'
       username: '{{.component.dex.passwordDb.email}}'
-      hash: '{{.component.dex.passwordDb.passwordHash}}'
+      hash: '{{.component.dex.passwordDb.password | bcrypt}}'
       userID: '{{.component.dex.passwordDb.email | b64enc}}'
 {{else}}
     enablePasswordDB: false

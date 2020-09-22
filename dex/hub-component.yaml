@@ -91,7 +91,7 @@ parameters:
     empty: allow
     parameters:
       - name: email
-      - name: passwordHash # Bcrypt encoded password
+      - name: password
   - name: component.dex.authproxy.image
     value: agilestacks/oauth2_proxy:v2.3
   - name: component.dex.authOperator.image
