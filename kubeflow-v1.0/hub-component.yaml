@@ -68,6 +68,8 @@ parameters:
     - name: profile.owner.username
       value: ${component.dex.passwordDb.email}
       env: HUB_DEX_USER
+- name: component.ingress.protocol
+  value: https
 - name: component.istio
   parameters:
   - name: namespace
@@ -114,7 +116,7 @@ parameters:
 outputs:
 - name: component.kubeflow.url
   brief: Kubeflow Central Dashboard
-  value: http://${component.kubeflow.name}.${dns.domain}/
+  value: ${component.ingress.protocol}://${component.kubeflow.name}.${dns.domain}/
 
 templates:
   files:
