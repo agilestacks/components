@@ -40,10 +40,10 @@ $(error cloud.kind / CLOUD_KIND must be one of: aws)
 endif
 
 ifneq (,$(filter cert-manager,$(HUB_PROVIDES)))
-	PROTOCOL:=https
-	PROVIDES:=tls-ingress
+PROTOCOL:=https
+PROVIDES:=tls-ingress
 else
-	PROTOCOL:=http
+PROTOCOL:=http
 endif
 
 ifneq (,$(filter external-dns,$(HUB_PROVIDES)))
@@ -104,12 +104,12 @@ dashboard:
 	$(kubectl) apply -f dashboard.yaml
 
 dns: NAMESERVER=$(firstword $(shell dig +short NS $(DOMAIN_NAME)))
-dns: DNS1="$(URL_PREFIX).$(DOMAIN_NAME)."
-dns: DNS2="$(SSO_URL_PREFIX).$(DOMAIN_NAME)."
+dns: DNS1:="$(URL_PREFIX).$(DOMAIN_NAME)."
+dns: DNS2:="$(SSO_URL_PREFIX).$(DOMAIN_NAME)."
 dns: LOAD_BALANCER=$(shell $(kubectl) get svc $(COMPONENT_NAME) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
 dns:
 	cat dns.yaml | sed -e 's/\$$load_balancer/$(LOAD_BALANCER)/' | $(kubectl) apply -f -
-	echo "Waiting for DNS records to propagate $(LOAD_BALANCER) at (nameserver: $(NAMESERVER:.=)"
+	echo "Waiting for DNS records to propagate $(LOAD_BALANCER) at nameserver $(NAMESERVER)"
 	for i in $$(seq 1 60); do \
 		if nslookup $(DNS1) $(NAMESERVER) >/dev/null; then \
 			if nslookup $(DNS2) $(NAMESERVER) >/dev/null; then \
