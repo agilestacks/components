@@ -63,7 +63,7 @@ parameters:
       value: pUBnBOY80SnXgjibTYM9ZWNzY2xreNGQok
       env: HUB_OIDC_SECRET
     - name: oidc.redirectURI
-      value: http://${component.kubeflow.name}.${dns.domain}/login/oidc
+      value: ${component.ingress.protocol}://${component.kubeflow.name}.${dns.domain}/login/oidc
       env: HUB_OIDC_REDIRECT_URI
     - name: profile.owner.username
       value: ${component.dex.passwordDb.email}
