@@ -83,6 +83,6 @@ templates:
   - "*.template"
   - "issuers/*.template"
   extra:
-    - kind: go
-      files:
-        - "issuers/*.gotemplate"
+  - kind: go
+    files:
+    - "issuers/*.gotemplate"

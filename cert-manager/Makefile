@@ -2,7 +2,7 @@
 
 COMPONENT_NAME ?= cert-manager
 DOMAIN_NAME    ?= test.dev.superhub.io
-NAMESPACE 	   ?= cert-manager
+NAMESPACE      ?= cert-manager
 HELM_CHART     ?= jetstack/cert-manager
 VERSION        ?= v1.0.2
 
