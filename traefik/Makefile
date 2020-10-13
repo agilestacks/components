@@ -170,7 +170,7 @@ apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
 	@echo
 
-ext-dns-output: LOAD_BALANCER:=$(shell $(kubectl) get svc $(TF_VAR_component) \
+ext-dns-output: LOAD_BALANCER=$(shell $(kubectl) get svc $(TF_VAR_component) \
 				-o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
 ext-dns-output:
 	@echo

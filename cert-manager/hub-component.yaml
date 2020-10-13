@@ -9,7 +9,7 @@ meta:
     Let’s Encrypt is a free, automated, and open certificate authority (CA), run for the public’s benefit.
     It is a service provided by the Internet Security Research Group (ISRG).
   category: Transport Layer Security
-  version: v0.16.1
+  version: v1.0.2
   maturity: ga
   license: Apache 2.0
   source:
@@ -83,6 +83,6 @@ templates:
   - "*.template"
   - "issuers/*.template"
   extra:
-    - kind: go
-      files:
-        - "issuers/*.gotemplate"
+  - kind: go
+    files:
+    - "issuers/*.gotemplate"

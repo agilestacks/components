@@ -2,12 +2,12 @@
 
 COMPONENT_NAME ?= cert-manager
 DOMAIN_NAME    ?= test.dev.superhub.io
-NAMESPACE 	   ?= cert-manager
+NAMESPACE      ?= cert-manager
 HELM_CHART     ?= jetstack/cert-manager
-VERSION        ?= v0.16.1
+VERSION        ?= v1.0.2
 
 HELM_HOME := $(abspath .helm)
-CRD_FILE  := $(abspath charts/$(notdir $(HELM_CHART))/crds.yaml)
+CRD_FILE  := charts/$(notdir $(HELM_CHART))/crds.yaml
 
 export HELM_HOME
 
@@ -33,20 +33,18 @@ fetch:
 		--untar $(HELM_CHART) \
 		--version $(VERSION)
 
-purge: $(CRD_FILE)
-	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
+purge:
+	-$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME)
 
 $(CRD_FILE):
 	mkdir -p "$(dir $@)"
 	curl -sL -o "$@" https://github.com/jetstack/cert-manager/releases/download/$(VERSION)/cert-manager.crds.yaml
+.INTERMEDIATE: $(CRD_FILE)
 
 crds: $(CRD_FILE)
-	echo "Checking cert-manager CRDs";
-	$(kubectl) get -f "$^" -o name 2>/dev/null \
-	|| $(kubectl) apply -f "$^"
-
-	echo "Waiting for CRDs to install";
+	$(kubectl) apply -f "$^"
+	@echo "Waiting for CRDs to install"; \
 	for i in $$(seq 1 30); do \
 		if $(kubectl) get -f "$^" > /dev/null 2>&1; then \
 			echo "Done"; \
@@ -107,7 +105,3 @@ clean:
 	rm -rf $(HELM_HOME) charts/$(notdir $(HELM_CHART))
 
 -include ../Mk/phonies
-
-.INTERMEDIATE: $(CRD_FILE)
-.SILENT: $(CRD_FILE) crds
-.IGNORE: purge

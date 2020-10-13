@@ -4,10 +4,10 @@ local utils             = import "utils.libsonnet";
 local s3url = utils.parse_url(std.extVar("HUB_S3_ENDPOINT"));
 
 local istio = [
-  kf.KustomizeConfig("istio/cluster-local-gateway", 
+  kf.KustomizeConfig("istio/cluster-local-gateway",
     parameters={
       "namespace": "istio-system",
-      // OFF is interpreted as "false".  
+      // OFF is interpreted as "false".
       "clusterRbacConfig": "OFF",
     }),
   // kf.KustomizeConfig("istio/istio", overlays=["agilestacks"], parameters={"clusterRbacConfig": "ON_WITH_EXCLUSION"}),
@@ -28,12 +28,12 @@ local istio = [
 
 local installCertManager = false;
 local certManager = if installCertManager then [
-  kf.KustomizeConfig("cert-manager/cert-manager-crds", 
+  kf.KustomizeConfig("cert-manager/cert-manager-crds",
     parameters={"namespace": "cert-manager"}),
-  kf.KustomizeConfig("cert-manager/cert-manager-kube-system-resources", 
+  kf.KustomizeConfig("cert-manager/cert-manager-kube-system-resources",
     parameters={"namespace": "kube-system"}),
-  kf.KustomizeConfig("cert-manager/cert-manager", 
-    overlays=["self-signed", "application"], 
+  kf.KustomizeConfig("cert-manager/cert-manager",
+    overlays=["self-signed", "application"],
     parameters={"namespace": "cert-manager"}),
 ] else [];
 
@@ -44,7 +44,7 @@ local metacontroller = [
 ];
 
 local argo = [
-  kf.KustomizeConfig("argo", 
+  kf.KustomizeConfig("argo",
     overlays = ["istio", "application", "agilestacks"],
     parameters = {
       // minio config
@@ -57,7 +57,7 @@ local argo = [
 
 local centraldashboard = [
   kf.KustomizeConfig("kubeflow-roles"),
-  kf.KustomizeConfig("common/centraldashboard", 
+  kf.KustomizeConfig("common/centraldashboard",
     overlays=["istio", "application"],
     parameters={
       "userid-header": "kubeflow-userid",
@@ -67,7 +67,7 @@ local centraldashboard = [
 
 local mysqlPass = std.extVar("HUB_MYSQL_DB_PASS");
 local metadata = [
-  kf.KustomizeConfig("metadata", 
+  kf.KustomizeConfig("metadata",
     overlays=["istio", "application", "agilestacks"],
     parameters = {
       MYSQL_DATABASE: "metadb",
@@ -90,11 +90,11 @@ local pytorch = [
 ];
 
 local kfserving = [
-  kf.KustomizeConfig("knative/knative-serving-crds", 
-    overlays=["application"], 
+  kf.KustomizeConfig("knative/knative-serving-crds",
+    overlays=["application"],
     parameters={"namespace": "knative-serving"}),
-  kf.KustomizeConfig("knative/knative-serving-install", 
-    overlays=["application","agilestacks"], 
+  kf.KustomizeConfig("knative/knative-serving-install",
+    overlays=["application","agilestacks"],
     parameters={"namespace": "knative-serving"}),
   kf.KustomizeConfig("kfserving/kfserving-crds", overlays=["application"]),
   kf.KustomizeConfig("kfserving/kfserving-install", overlays=["application"]),
@@ -109,10 +109,12 @@ local kfserving = [
 // ];
 
 local jupyter = [
-  kf.KustomizeConfig("jupyter/jupyter-web-app", 
+  kf.KustomizeConfig("jupyter/jupyter-web-app",
     overlays=["istio", "application"],
-    parameters={"userid-header": "kubeflow-userid"}),  
-  kf.KustomizeConfig("jupyter/notebook-controller", overlays=["istio", "application"]),
+    parameters={"userid-header": "kubeflow-userid"}),
+  kf.KustomizeConfig("jupyter/notebook-controller",
+    parameters={"USE_ISTIO": "true"},
+    overlays=["istio", "application"]),
 ];
 
 local tensorboard = [
@@ -134,7 +136,7 @@ local minio = [
 ];
 
 local mysql = [
-  kf.KustomizeConfig( "pipeline/mysql", 
+  kf.KustomizeConfig( "pipeline/mysql",
     overlays=["application"],
     parameters={
       mysqlPvcName: std.extVar("HUB_COMPONENT") + "-minio"
@@ -142,7 +144,7 @@ local mysql = [
 ];
 
 local pipeline = [
-  kf.KustomizeConfig("pipeline/api-service", 
+  kf.KustomizeConfig("pipeline/api-service",
     overlays=["application", "agilestacks"],
     parameters={
       mysqlHost:      std.extVar("HUB_MYSQL_HOST"),
@@ -185,18 +187,18 @@ local profile = [
 ];
 
 kf.Definition(
-  name=std.extVar("HUB_COMPONENT"), 
+  name=std.extVar("HUB_COMPONENT"),
   namespace=std.extVar("HUB_COMPONENT_NAMESPACE")) {
   spec+: {
     applications+: []
       + metacontroller
-      + istio 
+      + istio
       + certManager
       // + dex
-      + argo 
+      + argo
       + admissionWebHook
       + centraldashboard
-      // + spark 
+      // + spark
       + metadata
       + jupyter
       + pytorch
