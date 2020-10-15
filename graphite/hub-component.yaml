@@ -17,49 +17,50 @@ meta:
   icon: https://symbols-electrical.getvecta.com/stencil_82/64_graphite-icon.6ae0461aeb.svg
   # icon: https://graphiteapp.org/img/graphite-logo_color.png
   source:
-      dir: ../../components/graphite
+    dir: ../../components/graphite
 
 requires:
-  - kubernetes
-  - helm
-  - tiller
+- kubernetes
+- helm
+- tiller
 
 parameters:
-  - name: dns.domain
-    env: DOMAIN_NAME
-  - name: component.ingress.protocol
-  - name: component.ingress.ssoFqdn
-  - name: component.graphite
-    parameters:
-    - name: storageClass
-      value: default
-    - name: volumeSize
-      value: 10Gi
-    - name: statsdInterface
-      value: TCP
-    - name: namespace
-      env: NAMESPACE
-      value: graphite
-    - name: name
-      env: COMPONENT_NAME
-      value: graphite-${dns.name}-${hub.componentName}
-    - name: hostname
-      value: ${component.graphite.name}.${component.ingress.ssoFqdn}
-    - name: image.repository
-      value: graphiteapp/graphite-statsd
-    - name: image.tag
-      value: 1.1.7-6
-    - name: requests.memory
-      value: 512Mi
-    - name: requests.cpu
-      value: 200m
-    - name: chart.version
-      value: 0.7.0
-      env: CHART_VERSION
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.ingress.protocol
+- name: component.ingress.ssoFqdn
+- name: component.graphite
+  parameters:
+  - name: storageClass
+    value: default
+  - name: volumeSize
+    value: 10Gi
+  - name: statsdInterface
+    value: TCP
+  - name: namespace
+    env: NAMESPACE
+    value: graphite
+  - name: name
+    env: COMPONENT_NAME
+    value: graphite-${dns.name}-${hub.componentName}
+  - name: hostname
+    value: ${component.graphite.name}.${component.ingress.ssoFqdn}
+  - name: image.repository
+    value: graphiteapp/graphite-statsd
+  - name: image.tag
+    value: 1.1.7-6
+  - name: requests.memory
+    value: 512Mi
+  - name: requests.cpu
+    value: 200m
+  - name: chart.version
+    value: 0.7.0
+    env: CHART_VERSION
+
 outputs:
-  - name: component.graphite.url
-    value: ${component.ingress.protocol}://${component.graphite.hostname}
+- name: component.graphite.url
+  value: ${component.ingress.protocol}://${component.graphite.hostname}
 
 templates:
   files:
-    - "*.template"
+  - "*.template"
