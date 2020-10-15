@@ -46,7 +46,6 @@ purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
-# TODO hide GRAFANA_POSTGRESQL_USER password
 pguser: psql:=$(kubectl) run psql-$(COMPONENT_NAME) -i --rm --image=postgres --restart=Never --env="PGPASSWORD=$$POSTGRESQL_ADMIN_PASSWORD" -- \
 		psql -h $(POSTGRESQL_HOST) -p $(POSTGRESQL_PORT) -U $(POSTGRESQL_ADMIN_USER) $(POSTGRESQL_DATABASE)
 pguser:
@@ -57,10 +56,12 @@ pguser:
 			drop user if exists \"$(GRAFANA_POSTGRESQL_USER)\";"
 	$(psql) -c " \
 			drop user if exists \"$(GRAFANA_POSTGRESQL_USER)\"; \
-			create user \"$(GRAFANA_POSTGRESQL_USER)\" password '$(POSTGRESQL_PASSWORD)'; \
+			create user \"$(GRAFANA_POSTGRESQL_USER)\" password null; \
 			grant usage on schema $(POSTGRESQL_SCHEMA) to \"$(GRAFANA_POSTGRESQL_USER)\"; \
 			grant select on all tables in schema $(POSTGRESQL_SCHEMA) to \"$(GRAFANA_POSTGRESQL_USER)\"; \
 			alter user \"$(GRAFANA_POSTGRESQL_USER)\" in database $(POSTGRESQL_DATABASE) set search_path to $(POSTGRESQL_SCHEMA);"
+	@echo Setting database user $(GRAFANA_POSTGRESQL_USER) password...
+	@$(psql) -c "alter user \"$(GRAFANA_POSTGRESQL_USER)\" password '$(POSTGRESQL_PASSWORD)';"
 .PHONY: pguser
 
 pgconnect:
