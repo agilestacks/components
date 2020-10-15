@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy
 
 COMPONENT_NAME ?= grafana
-DOMAIN_NAME    ?= test.dev.superhub
+DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= grafana
 HELM_CHART     ?= grafana/grafana
 CHART_VERSION  ?= 5.6.5
@@ -46,13 +46,16 @@ purge:
 	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
 
-# TODO hide password
+# TODO hide GRAFANA_POSTGRESQL_USER password
+pguser: psql:=$(kubectl) run psql-$(COMPONENT_NAME) -i --rm --image=postgres --restart=Never --env="PGPASSWORD=$$POSTGRESQL_ADMIN_PASSWORD" -- \
+		psql -h $(POSTGRESQL_HOST) -p $(POSTGRESQL_PORT) -U $(POSTGRESQL_ADMIN_USER) $(POSTGRESQL_DATABASE)
 pguser:
-	$(kubectl) run psql -i --rm --image=postgres --restart=Never --env="PGPASSWORD=$$POSTGRESQL_ADMIN_PASSWORD" -- \
-		psql -h $(POSTGRESQL_HOST) -p $(POSTGRESQL_PORT) -U $(POSTGRESQL_ADMIN_USER) $(POSTGRESQL_DATABASE) -c " \
+	-$(psql) -c " \
 			revoke select on all tables in schema $(POSTGRESQL_SCHEMA) from \"$(GRAFANA_POSTGRESQL_USER)\"; \
 			revoke usage on schema $(POSTGRESQL_SCHEMA) from \"$(GRAFANA_POSTGRESQL_USER)\"; \
 			revoke usage on schema public from \"$(GRAFANA_POSTGRESQL_USER)\"; \
+			drop user if exists \"$(GRAFANA_POSTGRESQL_USER)\";"
+	$(psql) -c " \
 			drop user if exists \"$(GRAFANA_POSTGRESQL_USER)\"; \
 			create user \"$(GRAFANA_POSTGRESQL_USER)\" password '$(POSTGRESQL_PASSWORD)'; \
 			grant usage on schema $(POSTGRESQL_SCHEMA) to \"$(GRAFANA_POSTGRESQL_USER)\"; \
@@ -61,12 +64,12 @@ pguser:
 .PHONY: pguser
 
 pgconnect:
-	$(kubectl) run psql -ti --rm --image=postgres --restart=Never --env="PGPASSWORD=$$POSTGRESQL_PASSWORD" -- \
+	$(kubectl) run psql-$(COMPONENT_NAME) -ti --rm --image=postgres --restart=Never --env="PGPASSWORD=$$POSTGRESQL_PASSWORD" -- \
 		psql -h $(POSTGRESQL_HOST) -p $(POSTGRESQL_PORT) -U $(GRAFANA_POSTGRESQL_USER) $(POSTGRESQL_DATABASE) -c '\d'
 .PHONY: pgconnect
 
 pgconnectadmin:
-	$(kubectl) run psql -ti --rm --image=postgres --restart=Never --env="PGPASSWORD=$$POSTGRESQL_ADMIN_PASSWORD" -- \
+	$(kubectl) run psql-$(COMPONENT_NAME) -ti --rm --image=postgres --restart=Never --env="PGPASSWORD=$$POSTGRESQL_ADMIN_PASSWORD" -- \
 		psql -h $(POSTGRESQL_HOST) -p $(POSTGRESQL_PORT) -U $(POSTGRESQL_ADMIN_USER) $(POSTGRESQL_DATABASE) -c '\d'
 .PHONY: pgconnectadmin
 
