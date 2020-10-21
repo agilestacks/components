@@ -108,14 +108,12 @@ drop-namespace/%:
 		$(kubectl) delete namespace '$*'; \
 	fi
 
-ifneq ($(HUB_KNATIVE_SERVING_NAMESPACE),)
+undeploy: clean
 undeploy: drop-namespace/$(HUB_KNATIVE_SERVING_NAMESPACE)
-endif
 undeploy: ALL_PROFILES:=$(shell $(kubectl) get profile.kubeflow.org -o name 2>/dev/null)
-undeploy: $(KF_DEF) $(subst profile.kubeflow.org,drop-namespace,$(ALL_PROFILES=))
-undeploy: clean delete 
+undeploy: $(subst profile.kubeflow.org,drop-namespace,$(ALL_PROFILES=))
+undeploy: delete 
 undeploy: 
-	$(error ++ $(HUB_KNATIVE_SERVING_NAMESPACE))
 	bin/delete-resources.sh '$(HUB_ISTIO_NAMESPACE)' -l app.kubernetes.io/part-of=kubeflow
 
 clean:
