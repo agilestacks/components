@@ -22,6 +22,6 @@ for R in $($KUBECTL api-resources --namespaced=true -o name); do
   if grep -q "$R" <<< "$UNWANTED"; then
     continue
   fi
-  echo "Deleting $R..."
+  echo "Deleting $NAMESPACE/$R..."
   $KUBECTL_DELETE "$R"
 done

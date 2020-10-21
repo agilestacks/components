@@ -78,6 +78,10 @@ parameters:
   - name: ingressGateway
 # - name: component.minio.namespace
 #   value: ${component.kubeflow.namespace}
+- name: component.knative-serving.namespace
+  value: knative-serving
+  env: HUB_KNATIVE_SERVING_NAMESPACE
+  empty: allow
 - name: component.bucket
   parameters:
   - name: endpoint

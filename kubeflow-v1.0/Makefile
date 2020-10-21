@@ -91,32 +91,40 @@ apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
 
 delete: $(KF_DEF)
-	$(kfctl) $@ --delete_storage -V -f "$<"
+	$(kubectl) delete profile.kubeflow.org --all --wait
+	$(kubectl) delete -f k8s/certificate.yaml --wait
+	$(kfctl)   delete --delete_storage -V -f "$(KF_DEF)"
 
 change-kubecontext:
 	kubectl config use-context "$(HUB_DOMAIN_NAME)"
 
 deploy: clean apply
-
-undeploy: clean delete
-undeploy:
-	$(kubectl) delete -f k8s/certificate.yaml
-	bin/delete-resources.sh '$(HUB_ISTIO_NAMESPACE)' -l app.kubernetes.io/part-of=kubeflow
-	if $(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) > /dev/null 2>&1; then \
-		bin/delete-resources.sh '$(HUB_COMPONENT_NAMESPACE)' --all; \
-		$(kubectl) get namespace "$(HUB_COMPONENT_NAMESPACE)" -o json \
+drop-namespace/%:
+	@ if $(kubectl) get namespace '$*' > /dev/null 2>&1; then \
+		$(CURDIR)/bin/delete-resources.sh '$*' --all; \
+		$(kubectl) get namespace '$*' -o json \
 			| jq '. | del(.spec.finalizers)' \
-			| $(kubectl) replace --raw "/api/v1/namespaces/$(NS)/finalize" -f - ; \
-		$(kubectl) delete namespace "$(HUB_COMPONENT_NAMESPACE)"; \
+			| $(kubectl) replace --raw '/api/v1/namespaces/$*/finalize' -f - ; \
+		$(kubectl) delete namespace '$*'; \
 	fi
+
+ifneq ($(HUB_KNATIVE_SERVING_NAMESPACE),)
+undeploy: drop-namespace/$(HUB_KNATIVE_SERVING_NAMESPACE)
+endif
+undeploy: ALL_PROFILES:=$(shell $(kubectl) get profile.kubeflow.org -o name 2>/dev/null)
+undeploy: $(KF_DEF) $(subst profile.kubeflow.org,drop-namespace,$(ALL_PROFILES=))
+undeploy: clean delete 
+undeploy: 
+	$(error ++ $(HUB_KNATIVE_SERVING_NAMESPACE))
+	bin/delete-resources.sh '$(HUB_ISTIO_NAMESPACE)' -l app.kubernetes.io/part-of=kubeflow
 
 clean:
 	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
 
 .PHONY: deploy undeploy clean apply build delete patch bucket change-kubecontext
-.PHONY: $(K8S_MANIFESTS)
+.PHONY: $(K8S_MANIFESTS) drop-namespace/$(HUB_KNATIVE_SERVING_NAMESPACE)
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
 .IGNORE: delete bucket undeploy
-.SILENT: undeploy 
+.SILENT: undeploy
 # comment intermediate to debug
 .INTERMEDIATE: $(KF_TARBALL_FILE) $(KF_DEF)
