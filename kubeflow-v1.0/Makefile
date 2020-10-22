@@ -91,30 +91,29 @@ apply build: $(KF_DEF)
 	$(kfctl) $@ -V -f "$<"
 
 delete: $(KF_DEF)
-	$(kubectl) delete profile.kubeflow.org --all --wait
 	$(kubectl) delete -f k8s/certificate.yaml --wait
 	$(kfctl)   delete --delete_storage -V -f "$(KF_DEF)"
 
 change-kubecontext:
 	kubectl config use-context "$(HUB_DOMAIN_NAME)"
 
-deploy: clean apply
-drop-namespace/%:
-	@ if $(kubectl) get namespace '$*' > /dev/null 2>&1; then \
-		$(CURDIR)/bin/delete-resources.sh '$*' --all; \
-		$(kubectl) get namespace '$*' -o json \
-			| jq '. | del(.spec.finalizers)' \
-			| $(kubectl) replace --raw '/api/v1/namespaces/$*/finalize' -f - ; \
-		$(kubectl) delete namespace '$*'; \
-	fi
+delete-namespace/%:
+	bin/delete-resources.sh -n '$*' --context='$(HUB_DOMAIN_NAME)' --all
+	bin/delete-namespace.sh -n '$*' --context='$(HUB_DOMAIN_NAME)'
 
-undeploy: clean
-undeploy: drop-namespace/$(HUB_KNATIVE_SERVING_NAMESPACE)
-undeploy: ALL_PROFILES:=$(shell $(kubectl) get profile.kubeflow.org -o name 2>/dev/null)
-undeploy: $(subst profile.kubeflow.org,drop-namespace,$(ALL_PROFILES=))
-undeploy: delete 
+delete-profiles: ALL_PROFILES:=$(shell $(kubectl) get profile.kubeflow.org -o name 2>/dev/null)
+delete-profiles: $(subst profile.kubeflow.org,delete-namespace,$(ALL_PROFILES=))
+delete-profiles:
+	$(kubectl) delete profile.kubeflow.org --all --wait || exit 0
+
+deploy: clean apply
+
+rundeploy: clean delete-profiles delete delete-namespace/$(HUB_KNATIVE_SERVING_NAMESPACE)
 undeploy: 
-	bin/delete-resources.sh '$(HUB_ISTIO_NAMESPACE)' -l app.kubernetes.io/part-of=kubeflow
+	bin/delete-resources.sh \
+		--context='$(HUB_DOMAIN_NAME)' \
+		-n '$(HUB_ISTIO_NAMESPACE)' \
+		-l 'app.kubernetes.io/part-of=kubeflow'
 
 clean:
 	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
