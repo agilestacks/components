@@ -74,12 +74,12 @@ bucket:
 	$(MAKE) -C "$@"
 
 namespace:
-	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) 2>/dev/null || \
+	$(kubectl) get namespace $(HUB_COMPONENT_NAMESPACE) -o name 2>/dev/null || \
 		$(kubectl) create namespace $(HUB_COMPONENT_NAMESPACE)
 
 $(K8S_MANIFESTS):
-	$(kubectl) get -f "$@" 2>/dev/null || \
-		$(kubectl) apply -f "$@"
+	$(kubectl) get -f "$@" -o name 2>/dev/null || \
+		$(kubectl) create -f "$@"
 
 $(KF_DEF): $(KF_REPO)
 $(KF_APP): $(KF_DEF) build
@@ -98,22 +98,41 @@ change-kubecontext:
 	kubectl config use-context "$(HUB_DOMAIN_NAME)"
 
 delete-namespace/%:
-	bin/delete-resources.sh -n '$*' --context='$(HUB_DOMAIN_NAME)' --all
-	bin/delete-namespace.sh -n '$*' --context='$(HUB_DOMAIN_NAME)'
+	if $(kubectl) get namespace '$*' -o name 2>/dev/null; then \
+		bin/delete-resources.sh -n '$*' --all --context='$(HUB_DOMAIN_NAME)'; \
+		bin/delete-namespace.sh '$*' --context='$(HUB_DOMAIN_NAME)'; \
+	fi
 
 delete-profiles: ALL_PROFILES:=$(shell $(kubectl) get profile.kubeflow.org -o name 2>/dev/null)
 delete-profiles: $(subst profile.kubeflow.org,delete-namespace,$(ALL_PROFILES=))
 delete-profiles:
-	$(kubectl) delete profile.kubeflow.org --all --wait || exit 0
+	$(kubectl) delete profile.kubeflow.org --all --wait 2>/dev/null
+
+delete-webhooks:
+	$(kubectl) delete  \
+		mutatingwebhookconfiguration.admissionregistration.k8s.io/admission-webhook-mutating-webhook-configuration \
+		mutatingwebhookconfiguration.admissionregistration.k8s.io/inferenceservice.serving.kubeflow.org \
+		mutatingwebhookconfiguration.admissionregistration.k8s.io/katib-mutating-webhook-config \
+		mutatingwebhookconfiguration.admissionregistration.k8s.io/seldon-mutating-webhook-configuration-kubeflow \
+		mutatingwebhookconfiguration.admissionregistration.k8s.io/webhook.serving.knative.dev \
+		validatingwebhookconfiguration.admissionregistration.k8s.io/config.webhook.serving.knative.dev  \
+		validatingwebhookconfiguration.admissionregistration.k8s.io/inferenceservice.serving.kubeflow.org  \
+		validatingwebhookconfiguration.admissionregistration.k8s.io/katib-validating-webhook-config  \
+		validatingwebhookconfiguration.admissionregistration.k8s.io/seldon-validating-webhook-configuration-kubeflow  \
+		validatingwebhookconfiguration.admissionregistration.k8s.io/validation.webhook.serving.knative.devc  2>/dev/null
 
 deploy: clean apply
 
-rundeploy: clean delete-profiles delete delete-namespace/$(HUB_KNATIVE_SERVING_NAMESPACE)
-undeploy: 
+cleanup-istio:
 	bin/delete-resources.sh \
 		--context='$(HUB_DOMAIN_NAME)' \
 		-n '$(HUB_ISTIO_NAMESPACE)' \
 		-l 'app.kubernetes.io/part-of=kubeflow'
+
+undeploy: clean delete-profiles delete delete-webhooks
+undeploy: delete-namespace/$(HUB_KNATIVE_SERVING_NAMESPACE)
+undeploy: delete-namespace/$(HUB_COMPONENT_NAMESPACE)
+undeploy: cleanup-istio
 
 clean:
 	rm -rf $(KF_DEF) $(KF_REPO) .cache $(KF_APP) $(LIBSONNET) kustomize .cache/kube
@@ -121,7 +140,7 @@ clean:
 .PHONY: deploy undeploy clean apply build delete patch bucket change-kubecontext
 .PHONY: $(K8S_MANIFESTS) drop-namespace/$(HUB_KNATIVE_SERVING_NAMESPACE)
 .PRECIOUS: %.libsonnet $(kfctl) $(KF_DEF)
-.IGNORE: delete bucket undeploy
+.IGNORE: delete bucket undeploy delete-webhooks delete-profiles
 .SILENT: undeploy
 # comment intermediate to debug
 .INTERMEDIATE: $(KF_TARBALL_FILE) $(KF_DEF)

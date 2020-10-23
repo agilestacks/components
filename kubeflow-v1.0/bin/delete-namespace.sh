@@ -1,26 +1,33 @@
 #!/bin/bash -e
-
-ARGS=$*
-while [ "$1" != "" ]; do
-  case $1 in
-    -n | --namespace ) 
-      shift
-      NAMESPACE="$1"
-      ;;                
-  esac
-  shift
-done
-
 # shellcheck disable=SC2086
-if ! kubectl $ARGS get namespace "$NAMESPACE" > /dev/null 2>&1; then
+NAMESPACE=$1
+shift
+ARGS=$*
+
+if test -z "$(kubectl $ARGS get namespace "$NAMESPACE" -o name)"; then
   exit
 fi
 
-echo -n "Dropping finalizers: "
+TIMEOUT=60s
+GRACE_PERIOD=5
+
+echo -n "Gracefully deleting namespace $NAMESPACE: "
+set +e
+kubectl $ARGS delete namespace $NAMESPACE \
+  --wait \
+  --timeout=$TIMEOUT \
+  --grace-period=$GRACE_PERIOD >/dev/null
+if test "$?" = "0" && test -z "$(kubectl $ARGS get namespace "$NAMESPACE" -o name)"; then
+  echo "$NAMESPACE deleted successfully";
+  exit 0
+fi
+echo "Attempting to force delete: $NAMESPACE"
+sleep 5
+echo -n "Dropping namespace finalizers: "
 kubectl $ARGS get namespace "$NAMESPACE" -o json \
   | jq '. | del(.spec.finalizers)' \
   | kubectl $ARGS replace --raw "/api/v1/namespaces/$NAMESPACE/finalize" -f - >/dev/null
 echo "Done"
-echo -n "Deleting $NAMESPACE: "
-# shellcheck disable=SC2086
-kubectl $ARGS delete namespace "$NAMESPACE"
+
+echo -n "Deleting starting force delete for: $NAMESPACE"
+kubectl $ARGS delete namespace "$NAMESPACE" --force || exit 0
