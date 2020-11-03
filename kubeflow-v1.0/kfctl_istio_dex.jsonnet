@@ -6,7 +6,7 @@ local s3url = utils.parse_url(std.extVar("HUB_S3_ENDPOINT"));
 local istio = [
   kf.KustomizeConfig("istio/cluster-local-gateway",
     parameters={
-      "namespace": "istio-system",
+      "namespace": std.extVar("HUB_ISTIO_NAMESPACE"),
       // OFF is interpreted as "false".
       "clusterRbacConfig": "OFF",
     }),
@@ -21,7 +21,7 @@ local istio = [
       "application_secret": std.extVar("HUB_OIDC_SECRET"),
       "skip_auth_uri":      std.extVar("HUB_OIDC_AUTH_URI"),
       "userid-header":      "kubeflow-userid",
-      "namespace":          "istio-system"
+      "namespace":          std.extVar("HUB_ISTIO_NAMESPACE")
     }),
   // kf.KustomizeConfig("istio/add-anonymous-user-filter", overlays=["agilestacks"]),
 ];
@@ -92,10 +92,10 @@ local pytorch = [
 local kfserving = [
   kf.KustomizeConfig("knative/knative-serving-crds",
     overlays=["application"],
-    parameters={"namespace": "knative-serving"}),
+    parameters={"namespace": std.extVar("HUB_KNATIVE_SERVING_NAMESPACE")}),
   kf.KustomizeConfig("knative/knative-serving-install",
     overlays=["application","agilestacks"],
-    parameters={"namespace": "knative-serving"}),
+    parameters={"namespace": std.extVar("HUB_KNATIVE_SERVING_NAMESPACE")}),
   kf.KustomizeConfig("kfserving/kfserving-crds", overlays=["application"]),
   kf.KustomizeConfig("kfserving/kfserving-install", overlays=["application"]),
 ];

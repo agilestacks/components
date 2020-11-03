@@ -10,7 +10,7 @@ kfctl.tar.gz
 /kfctl_istio_dex.yaml
 oidc.yaml
 /ingress.yaml
-/k8s/certificate.yaml
+/k8s/*.yaml
 /ext/argo/overlays/agilestacks/cluster-role-binding.yaml
 /ext/argo/overlays/agilestacks/config-map.yaml
 /ext/argo/overlays/agilestacks/deployment.yaml
