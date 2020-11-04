@@ -5,7 +5,7 @@ export STORAGE_KIND ?= local
 export NAMESPACE    ?= harbor
 
 deploy:
-	scripts/patch_tls.sh $(NAMESPACE) &
+	scripts/patch_tls.sh &
 	$(MAKE) -C $(CLOUD_KIND) $@
 
 undeploy:
