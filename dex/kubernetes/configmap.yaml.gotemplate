@@ -31,7 +31,7 @@ data:
         GetUserInfo: true
         insecureSkipEmailVerified: true
 {{end}}
-{{if .component.dex.passwordDb.email}}
+{{if and .component.dex.passwordDb.email .component.dex.passwordDb.password}}
     enablePasswordDB: true
     staticPasswords:
     - email: '{{.component.dex.passwordDb.email}}'
