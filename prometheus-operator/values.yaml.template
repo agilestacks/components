@@ -495,7 +495,7 @@ grafana:
     users:
       auto_assign_org_role: Admin
     server:
-      root_url: ${component.ingress.protocol}://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+      root_url: ${component.ingress.protocol}://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.fqdn}
     analytics:
       check_for_updates: true
     log:
@@ -539,7 +539,7 @@ grafana:
     # hosts:
     #   - grafana.domain.com
     hosts:
-      - ${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+      - ${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.fqdn}
 
     ## Path for grafana ingress
     path: /

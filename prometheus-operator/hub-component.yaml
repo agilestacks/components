@@ -25,6 +25,7 @@ provides:
   - prometheus
 
 parameters:
+  - name: component.ingress.fqdn
   - name: component.ingress.ssoFqdn
   - name: component.ingress.protocol
   - name: component.dex.issuer
@@ -116,9 +117,9 @@ parameters:
     - name: adminPassword
       value: asiPromOp3r
     - name: oidcId
-      value: grafana-client
+      value: prometheus-grafana
     - name: oidcSecret
-      value: SDndcn378ddfg4-57yDSDfjeuDVQEW
+      value: AiMoo8aoMi
   - name: component.prometheus.thanos
     parameters:
     - name: enabled
@@ -147,7 +148,7 @@ outputs:
     value: ${component.ingress.protocol}://${component.prometheus.alertmanager.ingress.urlPrefix}.${component.ingress.ssoFqdn}
   - name: component.prometheus.grafana.url
     brief: 3.Grafana Dashboard
-    value: ${component.ingress.protocol}://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.ssoFqdn}
+    value: ${component.ingress.protocol}://${component.prometheus.grafana.ingress.urlPrefix}.${component.ingress.fqdn}
   - name: component.prometheus.namespace
   - name: component.prometheus.name
   - name: component.prometheus.grafana.adminPassword
