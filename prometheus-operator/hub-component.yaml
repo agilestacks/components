@@ -113,11 +113,11 @@ parameters:
     - name:  ingress.enabled
       value: true
     - name:  ingress.urlPrefix
-      value: grafana
+      value: grafana-prometheus
     - name: adminPassword
       value: asiPromOp3r
     - name: oidcId
-      value: prometheus-grafana
+      value: grafana-prometheus
     - name: oidcSecret
       value: AiMoo8aoMi
   - name: component.prometheus.thanos
