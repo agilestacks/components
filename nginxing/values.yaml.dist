@@ -61,7 +61,7 @@ controller:
 
   ## Name of the ingress class to route through this controller
   ##
-  ingressClass: ${component.nginxing.kubernetes.ingressClass}
+  ingressClass: nginx
 
   # labels to add to the pod container metadata
   podLabels: {}
@@ -257,7 +257,7 @@ controller:
   ##
   podAnnotations: {}
 
-  replicaCount: ${component.nginxing.replicaCount}
+  replicaCount: 1
 
   minAvailable: 1
 

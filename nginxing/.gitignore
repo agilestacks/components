@@ -1,4 +1,3 @@
-/.terraform
 /.helm
 /charts
 /*.yaml

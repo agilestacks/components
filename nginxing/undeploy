@@ -1,0 +1,24 @@
+#!/bin/sh -xe
+
+export COMPONENT_NAME=${COMPONENT_NAME:-nginxing}
+export DOMAIN_NAME=${DOMAIN_NAME:-test.dev.superhub.io}
+export NAMESPACE=${NAMESPACE:-ingress}
+
+HELM_REPO=https://kubernetes.github.io/ingress-nginx
+HELM_CHART=ingress-nginx/ingress-nginx
+CHART_VERSION=3.10.1
+
+export kubectl="kubectl --context=$DOMAIN_NAME --namespace=$NAMESPACE"
+export helm="helm3 --kube-context=$DOMAIN_NAME --namespace $NAMESPACE"
+
+if test -x pre-undeploy; then
+    ./pre-undeploy
+fi
+
+if $helm list -q | grep -E "^$COMPONENT_NAME\$"; then
+	  $helm uninstall $COMPONENT_NAME
+fi
+
+if test -x post-undeploy; then
+    ./post-undeploy
+fi

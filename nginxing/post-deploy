@@ -1,0 +1,24 @@
+#!/bin/sh
+
+LOAD_BALANCER=$($kubectl get svc ${COMPONENT_NAME}-ingress-nginx-controller --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
+
+if grep cert-manager <<<$HUB_PROVIDES; then
+    PROTOCOL=https
+    PROVIDES=tls-ingress
+else
+    if test "$TLS_KIND" = acm || grep acm <<<$HUB_PROVIDES; then
+        PROTOCOL=https
+    else
+        PROTOCOL=http
+    fi
+fi
+
+cat <<EOO
+
+Outputs:
+ingress_protocol = $PROTOCOL
+provides = $PROVIDES
+load_balancer = $LOAD_BALANCER
+load_balancer_dns_record_type = CNAME
+
+EOO

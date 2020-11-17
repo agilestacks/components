@@ -3,60 +3,62 @@ version: 1
 kind: component
 meta:
   name: nginxing
-  brief: Nginx ingress Controller
+  title: Nginx
+  brief: Ingress controller
+  description: Ingress controller for Kubernetes using NGINX as a reverse proxy and load balancer
+  category: Edge Proxy
+  version: 0.41.2
+  maturity: ga
+  license: BSD
+  icon: https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Nginx_logo.svg/500px-Nginx_logo.svg.png
   source:
       dir: ../../components/nginxing
 
 requires:
-  - kubernetes
-  - helm
-  - tiller
+- aws
+- kubernetes
+- helm
+
 provides:
-  - nginxing
+- nginxing
 
 parameters:
-  - name: terraform.bucket.name
-    env: STATE_BUCKET
-  - name: terraform.bucket.region
-    env: STATE_REGION
-  - name: dns.domain
-    env: TF_VAR_domain_name
-  - name: cloud.kind
-    env: CLOUD_KIND
-  - name: component.wowza.namespace
-  - name: component.wowza.name
-  - name: component.wowza.streamPrefix
-  - name: component.nginxing
-    parameters:
-    - name:  name
-      value: nginxing
-      env:   TF_VAR_component
-    - name:  version
-      brief: nginx-ingress version
-      value: "0.12.0"
-    - name:  image.repository
-      value: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
-    - name:  image.pullPolicy
-      value: IfNotPresent
-    - name:  replicaCount
-      value: 1
-    - name:  urlPrefix
-      value: ${component.wowza.streamPrefix}
-      env:   TF_VAR_url_prefix
-    - name:  namespace
-      value: nginx-ingress
-      env:   TF_VAR_namespace
-    - name:  chart
-      value: stable/nginx-ingress
-      env:   CHART
-    - name:  chart.version
-      value: 0.13.1
-      env:   CHART_VERSION
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.tls.kind
+  empty: allow
+  env: TLS_KIND
+- name: component.ingress
+  parameters:
+  - name: urlPrefix
+    value: app
+  - name: ssoUrlPrefix
+    value: apps
+- name: component.nginxing
+  parameters:
+  - name: replicaCount
+    value: 1
+  - name: kubernetes.ingressClass
+    value: nginx
 
 outputs:
-- name: component.nginxing.fqdn
-  brief: FQDN of ingress
-  fromTfVar: ingress_fqdn
+- name: component.ingress.fqdn
+  brief: Ingress FQDN
+  value: ${component.ingress.urlPrefix}.${dns.domain}
+- name: component.ingress.ssoFqdn
+  brief: Ingress FQDN protected by SSO
+  value: ${component.ingress.ssoUrlPrefix}.${dns.domain}
+- name: component.ingress.protocol
+  fromTfVar: ingress_protocol
+- name: component.ingress.urlPrefix
+- name: component.ingress.ssoUrlPrefix
+- name: component.ingress.kubernetes.ingressClass
+  value: ${component.nginxing.kubernetes.ingressClass}
+- name: component.ingress.loadBalancer
+  fromTfVar: load_balancer
+- name: component.ingress.loadBalancerDnsRecordType
+  fromTfVar: load_balancer_dns_record_type
 
 templates:
-  files: ["values.yaml.template"]
+  files:
+  - '*.template'
