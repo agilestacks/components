@@ -1,15 +1,19 @@
-#!/bin/sh -xe
+#!/bin/sh
 
-export COMPONENT_NAME=${COMPONENT_NAME:-nginxing}
-export DOMAIN_NAME=${DOMAIN_NAME:-test.dev.superhub.io}
-export NAMESPACE=${NAMESPACE:-ingress}
+if test -z "$COMPONENT_NAME" -o -z "$DOMAIN_NAME" -o -z "$NAMESPACE" -o -z "$HELM_REPO" -o -z "$HELM_CHART"; then
+    echo "COMPONENT_NAME, DOMAIN_NAME, NAMESPACE, HELM_REPO, HELM_CHART must be set"
+    exit 1
+fi
 
-HELM_REPO=https://kubernetes.github.io/ingress-nginx
-HELM_CHART=ingress-nginx/ingress-nginx
-CHART_VERSION=3.10.1
+if test -n "$HELM_CHART_VERSION"; then
+    chart_version="--version $HELM_CHART_VERSION"
+fi
+
+helm3=helm
+if which helm3; then helm3=helm3; fi
 
 export kubectl="kubectl --context=$DOMAIN_NAME --namespace=$NAMESPACE"
-export helm="helm3 --kube-context=$DOMAIN_NAME --namespace $NAMESPACE"
+export helm="$helm3 --kube-context=$DOMAIN_NAME --namespace $NAMESPACE"
 
 # TODO no HELM_HOME in Helm 3
 # https://helm.sh/docs/faq/#xdg-base-directory-support
@@ -19,23 +23,28 @@ export helm="helm3 --kube-context=$DOMAIN_NAME --namespace $NAMESPACE"
 # - When no other location is set a default location will be used based on the operating system
 #export HELM_HOME=$(pwd)/.helm
 
-rm -rf charts
-mkdir -p charts
+charts=charts
+
+set -xe
+
+rm -rf $charts
+mkdir -p $charts
 
 if $helm list --failed --pending -q | grep -E "^$COMPONENT_NAME\$"; then
 	  $helm uninstall $COMPONENT_NAME
 fi
 
+$helm repo add stable https://charts.helm.sh/stable
+$helm repo add $COMPONENT_NAME $HELM_REPO
+$helm repo update
+$helm fetch $COMPONENT_NAME/$HELM_CHART --destination $charts --untar $chart_version
+
 if test -x pre-deploy; then
     ./pre-deploy
 fi
 
-$helm repo add stable https://charts.helm.sh/stable
-$helm repo add ingress-nginx $HELM_REPO
-$helm repo update
-$helm fetch $HELM_CHART --destination charts --untar --version $CHART_VERSION
-$helm upgrade $COMPONENT_NAME charts/$(basename $HELM_CHART) \
-    --install --wait --values values.yaml --version $CHART_VERSION
+$helm upgrade $COMPONENT_NAME $charts/$(basename $HELM_CHART) \
+    --install --wait --values values.yaml $chart_version
 
 if test -x post-deploy; then
     ./post-deploy
