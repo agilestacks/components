@@ -40,7 +40,7 @@ purge:
 	-$(kubectl) delete secret gitlab-backup-storage
 	-$(kubectl) delete -f $(GITLAB_CRDS_URL)
 	$(helm) list --failed --pending -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-	  $(helm) --namespace $(NAMESPACE) delete $(COMPONENT_NAME) || exit 0
+	  $(helm) --namespace $(NAMESPACE) uninstall $(COMPONENT_NAME) || exit 0
 
 install: $(CHART_DIR)
 	-$(kubectl) get namespace $(NAMESPACE) 2>/dev/null || $(kubectl) create namespace $(NAMESPACE)
@@ -60,9 +60,9 @@ install: $(CHART_DIR)
 
 undeploy:
 	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-	  $(helm) --namespace $(NAMESPACE) delete $(COMPONENT_NAME) || exit 0
+	  $(helm) --namespace $(NAMESPACE) uninstall $(COMPONENT_NAME) || exit 0
 	$(helm) list --pending --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-	  $(helm) --namespace $(NAMESPACE) delete $(COMPONENT_NAME) || exit 0
+	  $(helm) --namespace $(NAMESPACE) uninstall $(COMPONENT_NAME) || exit 0
 	-$(kubectl) delete secret generic gitlab-dex-oicd
 	-kubectl --context="$(DOMAIN_NAME)" delete ClusterRole $(COMPONENT_NAME)-prometheus-server
 	-kubectl --context="$(DOMAIN_NAME)" delete ClusterRoleBinding $(COMPONENT_NAME)-prometheus-server
