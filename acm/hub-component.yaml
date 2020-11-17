@@ -45,6 +45,9 @@ meta:
 requires:
 - aws
 
+provides:
+- acm
+
 parameters:
 - name: cloud.region
   env: AWS_DEFAULT_REGION
