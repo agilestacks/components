@@ -4,8 +4,8 @@ COMPONENT_NAME ?= prometheus-operator
 HELM_CHART     ?= prometheus-operator
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= monitoring
-CHART_VERSION  ?= 8.12.12
-OPER_VERSION   ?= v0.38.0
+CHART_VERSION  ?= 9.3.2
+OPER_VERSION   ?= v0.38.2
 CLOUD_KIND     ?= aws
 
 export HELM_HOME ?= $(shell pwd)/.helm
