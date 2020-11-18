@@ -55,9 +55,6 @@ parameters:
       - name: name
         env: PROMETHEUS_NAME
         value: prometheus-operator
-      - name: addr
-        value: http://${component.prometheus.name}-prometheus.${component.prometheus.namespace}.svc.cluster.local:9090
-        env: PROMETHEUS_ADDR
 
   - name: component.istio
     parameters:
