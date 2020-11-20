@@ -4,7 +4,7 @@ COMPONENT_NAME ?= postgresql
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= postgresql
 HELM_CHART     ?= bitnami/postgresql
-CHART_VERSION  ?= 9.4.1
+CHART_VERSION  ?= 10.0.2
 
 export HELM_HOME ?= $(shell pwd)/.helm
 
