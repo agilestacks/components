@@ -1,0 +1,6 @@
+#!/bin/sh -xe
+exit 0
+# under SSO proxy port must be numeric
+ingress=.charts/pgadmin4/templates/ingress.yaml
+sed -i~ -e 's/servicePort: http/servicePort: 80/' ${ingress} && \
+    rm -f ${ingress}~

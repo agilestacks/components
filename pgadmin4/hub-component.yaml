@@ -1,0 +1,75 @@
+---
+version: 1
+kind: component
+meta:
+  name: pgadmin4
+  title: pgAdmin 4
+  brief: PostgreSQL administration
+  description: >
+    The most popular and feature rich Open Source administration and development platform for PostgreSQL,
+    the most advanced Open Source database in the world.
+  category: App Stack
+  version: 4.28
+  maturity: alpha
+  license: PostgreSQL, similar to BSD/MIT
+  icon: https://www.pgadmin.org/static/docs/pgadmin4-4.28-docs/_images/logo-right-128.png
+  source:
+    dir: ../../components/pgadmin4
+
+requires:
+- kubernetes
+- helm
+
+provides:
+- postgresql
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.ingress.protocol
+- name: component.postgresql
+  parameters:
+  - name: host
+  - name: port
+  - name: database
+  - name: admin.user
+  - name: admin.password
+- name: component.pgadmin4
+  parameters:
+  - name: name
+    value: pgadmin4
+    # value: pgadmin4-${dns.name}-${hub.componentName}
+    env: COMPONENT_NAME
+  - name: namespace
+    value: ${component.postgresql.namespace}
+    env: NAMESPACE
+  - name: ingress.urlPrefix
+    value: ${component.pgadmin4.name}
+  - name: ingress.hostname
+    value: ${component.pgadmin4.ingress.urlPrefix}.${component.ingress.fqdn}
+  - name: email
+    value: chart@example.local
+  - name: password
+    value: ${component.postgresql.admin.password}
+  - name: helm
+    parameters:
+    - name: repo
+      value: https://helm.runix.net/
+      env: HELM_REPO
+    - name: chart
+      value: pgadmin4
+      env: HELM_CHART
+    - name: version
+      value: 1.3.8
+      env: HELM_CHART_VERSION
+
+outputs:
+- name: component.pgadmin4.url
+  brief: pgAdmin 4 URL
+  value: ${component.ingress.protocol}://${component.pgadmin4.ingress.hostname}
+- name: component.pgadmin4.email
+- name: component.pgadmin4.password
+
+templates:
+  files:
+    - "*.template"
