@@ -1,0 +1,62 @@
+---
+version: 1
+kind: component
+meta:
+  name: rabbitmq
+  title: RabbitMQ
+  brief: AMQP message broker
+  description: Open source message broker software that implements the Advanced Message Queuing Protocol (AMQP)
+  category: App Stack
+  version: 3.8.9
+  maturity: alpha
+  license: MPL
+  icon: https://www.rabbitmq.com/img/logo-rabbitmq.svg
+  source:
+      dir: ../../components/rabbitmq
+
+requires:
+- kubernetes
+- helm
+
+provides:
+- rabbitmq
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.ingress.protocol
+- name: component.rabbitmq
+  parameters:
+  - name: name
+    env: COMPONENT_NAME
+    value: rabbitmq
+  - name: namespace
+    value: rabbitmq
+    env: NAMESPACE
+  - name: ingress.urlPrefix
+    value: ${component.rabbitmq.name}
+  - name: ingress.hostname
+    value: ${component.rabbitmq.ingress.urlPrefix}.${component.ingress.fqdn}
+  - name: helm
+    parameters:
+    - name: repo
+      value: https://charts.bitnami.com/bitnami
+      env: HELM_REPO
+    - name: chart
+      value: rabbitmq
+      env: HELM_CHART
+    - name: version
+      value: 8.0.5
+      env: HELM_CHART_VERSION
+
+outputs:
+- name: component.rabbitmq.endpoint
+  brief: Protocol endpoint
+  value: ${component.rabbitmq.name}.${component.rabbitmq.namespace}.svc.cluster.local
+- name: component.rabbitmq.url
+  brief: Ingress URL
+  value: ${component.ingress.protocol}://${component.rabbitmq.ingress.hostname}
+
+templates:
+  files:
+  - '*.template'
