@@ -54,7 +54,7 @@ HELM_OPTS += --values $(abspath values-awscreds.yaml)
 # undeploy: unrole
 endif
 
-ifneq (,ROUTE53_ZONE_TAGS)
+ifneq (,$(ROUTE53_ZONE_TAGS))
 HELM_OPTS += --set 'aws.zoneTags={$(subst $(space),$(comma),$(foreach i,$(ROUTE53_ZONE_TAGS),$(i)))}'
 endif
 
