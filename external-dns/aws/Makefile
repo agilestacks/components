@@ -48,9 +48,10 @@ undeploy:
 ifeq (2,$(words $(NON_CONFLICTING_AWS_ACCESS_KEY) $(NON_CONFLICTING_AWS_ACCESS_KEY)))
 HELM_OPTS += --set 'aws.region='
 HELM_OPTS += --values $(abspath values-awscreds.yaml)
-else
-deploy: role arn
-undeploy: unrole
+# https://github.com/agilestacks/components/issues/443
+# else
+# deploy: role arn
+# undeploy: unrole
 endif
 
 ifneq (,ROUTE53_ZONE_TAGS)
