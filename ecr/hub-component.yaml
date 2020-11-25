@@ -15,11 +15,15 @@ meta:
 
 requires:
 - aws
+- terraform
 provides:
 - ecr
 - docker-registry
 
 parameters:
+- name: cloud.kind
+  value: aws
+  env: CLOUD_KIND
 - name: component.ecr
   parameters:
   - name: name

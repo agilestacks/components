@@ -1,0 +1,4 @@
+#!/bin/sh -e
+
+echo "export TF_VAR_name=$COMPONENT_NAME"
+$terraform import $TF_CLI_ARGS aws_ecr_repository.main $COMPONENT_NAME

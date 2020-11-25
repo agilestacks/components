@@ -1,38 +1,25 @@
 terraform {
-  required_version = ">= 0.12"
-  backend "s3" {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "3.17.0"
+    }
   }
+  required_version = ">= 0.13"
+  backend "s3" {}
 }
 
-provider "aws" {
-  version = "2.61.0"
+data "aws_caller_identity" "current" {
 }
 
-resource "aws_ecr_repository" "main" {
-  name = var.name
-}
-
-resource "aws_ecr_repository_policy" "main" {
-  repository = aws_ecr_repository.main.name
-  policy     = var.policy
-}
-
-variable "name" {
-  type        = string
-  description = "Registry name"
-}
-
-variable "policy" {
-  type        = string
-  description = "Registry IAM policy"
-  default     = <<EOF
+locals {
+  default_policy = <<EOF
 {
-    "Version": "2008-10-17",
+    "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "",
             "Effect": "Allow",
-            "Principal": "*",
+            "Principal": { "AWS": "${data.aws_caller_identity.current.account_id}" },
             "Action": [
                 "ecr:GetDownloadUrlForLayer",
                 "ecr:BatchGetImage",
@@ -54,6 +41,28 @@ variable "policy" {
 }
 EOF
 
+  policy = coalesce(var.policy, local.default_policy)
+}
+
+resource "aws_ecr_repository" "main" {
+  name = var.name
+}
+
+resource "aws_ecr_repository_policy" "main" {
+  repository = aws_ecr_repository.main.name
+  policy     = local.policy
+}
+
+variable "name" {
+  type        = string
+  description = "Registry name"
+  default     = ""
+}
+
+variable "policy" {
+  type        = string
+  description = "Registry IAM policy"
+  default     = ""
 }
 
 locals {
