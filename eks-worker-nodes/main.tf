@@ -1,10 +1,12 @@
 terraform {
-  required_version = ">= 0.12"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "3.17.0"
+    }
+  }
+  required_version = ">= 0.13"
   backend "s3" {}
-}
-
-provider "aws" {
-  version = "2.61.0"
 }
 
 locals {

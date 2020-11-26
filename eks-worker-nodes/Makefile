@@ -10,7 +10,7 @@ export DOMAIN_NAME ?= test.dev.superhub.io
 export TF_DATA_DIR ?= .terraform/$(TF_VAR_name)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
-terraform   ?= terraform-v0.12
+terraform   ?= terraform
 TF_CLI_ARGS ?= -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
