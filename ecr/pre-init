@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+echo "export TF_VAR_name=$COMPONENT_NAME"
