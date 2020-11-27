@@ -1,0 +1,4 @@
+#!/bin/sh -x
+
+$terraform import $TF_CLI_ARGS aws_db_instance.postgresql $TF_VAR_rds_name
+exit 0

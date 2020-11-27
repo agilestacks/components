@@ -3,7 +3,7 @@ variable "allocated_storage" {
 }
 
 variable "engine_version" {
-  default = "11.4"
+  default = "12.2"
 }
 
 variable "instance_type" {
@@ -18,13 +18,15 @@ variable "vpc_id" {
   default = ""
 }
 
-variable "rds_name" {}
+variable "rds_name" {
+}
 
 variable "database_name" {
   default = "postgres"
 }
 
-variable "database_password" {}
+variable "database_password" {
+}
 
 variable "database_username" {
   default = "postgres"
@@ -101,5 +103,5 @@ variable "storage_encrypted" {
 
 variable "snapshot_identifier" {
   description = "Specify snapshot ID to restore DB from it, or leave empty for fresh DB instance."
-  default = ""
+  default     = ""
 }
