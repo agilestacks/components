@@ -19,7 +19,6 @@ meta:
 requires:
   - kubernetes
   - helm
-  - tiller
 
 provides:
   - prometheus
