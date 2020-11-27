@@ -19,7 +19,7 @@ PROMETHEUS_CHART_NAME := kube-prometheus-stack
 PROMETHEUS_FULLNAME = $(shell echo $(if $(findstring $(PROMETHEUS_CHART_NAME),$(PROMETHEUS_NAME)),$(PROMETHEUS_NAME),$(PROMETHEUS_NAME)-$(PROMETHEUS_CHART_NAME)) | cut -c1-26 | sed -e 's/-$$//')
 PROMETHEUS_ADDR = http://$(PROMETHEUS_FULLNAME)-prometheus.$(PROMETHEUS_NAMESPACE).svc.cluster.local:9090
 
-helm := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm := helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 HELM_VALUES_ARGS += -f $(abspath values.yaml)
 HELM_VALUES_ARGS += -f $(abspath values-$(ISTIO_VERSION).yaml)
 # HELM_VALUES_ARGS += -f $(abspath values-gw.yaml)

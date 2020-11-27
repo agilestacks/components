@@ -26,7 +26,7 @@ export TF_DATA_DIR ?= .terraform/$(TF_VAR_domain_name)-$(TF_VAR_component)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
 kubectl     ?= kubectl --context="$(TF_VAR_domain_name)" -n $(TF_VAR_namespace)
-helm        ?= helm --kube-context="$(TF_VAR_kubeconfig_context)" --tiller-namespace="kube-system"
+helm        ?= helm2 --kube-context="$(TF_VAR_kubeconfig_context)" --tiller-namespace="kube-system"
 terraform   ?= terraform-v0.11
 TF_CLI_ARGS ?= -no-color -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan

@@ -6,7 +6,7 @@ export COMPONENT_NAME      ?= nfs-client-provisioner
 export NAMESPACE           ?= kube-system
 export DOMAIN_NAME         ?= kubernetes-admin@kubernetes
 export kubectl             ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-export helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+export helm                ?= helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 deploy: clean init install sc
 .PHONY: deploy

@@ -14,7 +14,7 @@ CHART_VERSION         := 71b28b46fbb87a51bedc7d405f74167e9ee25143 # Apr 4, 2019 
 CHART_ORIGIN          := https://github.com/goharbor/harbor-helm.git
 CHART_DIR             := $(HELM_HOME)/$(COMPONENT_NAME)
 
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm    ?= helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 git     ?= git -C $(CHART_DIR)
 

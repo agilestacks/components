@@ -6,7 +6,7 @@ CHART_DIR   := $(HELM_HOME)/charts/$(notdir $(CHART_NAME))
 export HELM_HOME
 
 kubectl   := kubectl --context="$(DOMAIN_NAME)" -n "$(NAMESPACE)"
-helm      := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm      := helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 HELM_OPTS += --values $(abspath $(CHART_DIR)/values.yaml)
 HELM_OPTS += --values $(abspath values.yaml)
 

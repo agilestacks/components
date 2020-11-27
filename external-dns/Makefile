@@ -6,7 +6,7 @@ DEPLOYMENT_ID    ?= $(error DEPLOYMENT_ID not defined)
 NAMESPACE        ?= kube-system
 jq               := jq -cM
 yq               := yq
-helm             := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm             := helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 aws              := aws --output=text
 rsync            := rsync -arvp
 kubectl          := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"

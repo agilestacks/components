@@ -7,7 +7,7 @@ DOMAIN_NAME    ?= dev.kubernetes.delivery
 NAMESPACE      ?= ingress
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm    ?= helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 deploy: clean init fetch purge install
     $(kubectl) apply --namespace $(NAMESPACE) -f ingress.yaml

@@ -9,7 +9,7 @@ OPERATOR_VERSION ?= v0.43.2
 CLOUD_KIND       ?= aws
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm3 --kube-context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy: clean init fetch patch purge install
 ifeq ($(THANOS_ENABLED),true)

@@ -21,7 +21,7 @@ export TS        := $(shell date +"%Y-%m-%d-%H-%M-%S")
 aws     := aws
 jq      := jq
 kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm    := helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 running_etcd_pods := $(kubectl) get pods -l app=etcd -o jsonpath='{range.items[?(@.status.containerStatuses[0].ready==true)]}{.kind}{"\n"}{end}'
 

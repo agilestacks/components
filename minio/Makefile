@@ -17,7 +17,7 @@ MINIO_ACCESS_KEY_REF ?= accesskey
 MINIO_SECRET_KEY_REF ?= secretkey
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm    ?= helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 jq      ?= jq -Ms
 
 CHART_VERSION    ?= 1.6.4

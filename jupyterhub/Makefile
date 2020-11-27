@@ -5,7 +5,7 @@ NAME              ?= jhub
 JHUB_HELM_VERSION ?= 0.7.0
 DOMAIN_NAME       ?= dev.kubernetes.delivery
 
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm    ?= helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(JHUB_NAMESPACE)"
 
 deploy:

@@ -11,7 +11,7 @@ CRD_FILE := charts/$(notdir $(HELM_CHART))/crds.yaml
 export HELM_HOME
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm3 --kube-context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy: clean init fetch purge crds install issuer
 ifeq ($(CA_ISSUER_ENABLED),true)

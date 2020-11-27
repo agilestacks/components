@@ -21,7 +21,7 @@ CHART_DIR := $(HELM_HOME)/charts/$(CHART)
 GITLAB_CRDS_URL   := https://gitlab.com/gitlab-org/charts/gitlab/raw/v${CHART_VERSION}/support/crd.yaml
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm3 --kube-context="$(DOMAIN_NAME)"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)"
 
 deploy: clean purge install configure
 
