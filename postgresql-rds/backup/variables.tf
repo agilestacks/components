@@ -1,1 +1,0 @@
-variable "rds_name" {}

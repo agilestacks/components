@@ -7,7 +7,7 @@ meta:
   title: Amazon RDS
   brief: PostgreSQL database
   description: >
-    "Amazon RDS is a managed relational database service with a choice of six popular database engines:"
+    Amazon RDS is a managed relational database service with a choice of six popular database engines:
     Amazon Aurora, PostgreSQL, MySQL, MariaDB, Oracle, and Microsoft SQL Server.
   category: AWS Native
   version: 12.2
@@ -30,6 +30,9 @@ lifecycle:
 parameters:
 - name: dns.domain
   env: DOMAIN_NAME
+- name: cloud.kind
+  value: aws
+  env: CLOUD_KIND
 - name: cloud.region
   env: AWS_DEFAULT_REGION
 - name: cloud.vpc.id
@@ -44,7 +47,7 @@ parameters:
   - name: rds.name
     brief: RDS database instance name
     value: ${dns.name}-${hub.componentName}
-    env: TF_VAR_rds_name
+    env: RDS_NAME
   - name: database
     value: agilestacks
     env: TF_VAR_database_name

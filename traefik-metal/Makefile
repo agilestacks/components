@@ -21,7 +21,7 @@ PROVIDES:=tls-ingress
 
 export HELM_HOME          ?= $(shell pwd)/.helm
 
-helm        ?= helm --kube-context="$(KUBECONFIG_CONTEXT)" --tiller-namespace="kube-system"
+helm        ?= helm2 --kube-context="$(KUBECONFIG_CONTEXT)" --tiller-namespace="kube-system"
 
 VALUES_FILE:=values.yaml
 

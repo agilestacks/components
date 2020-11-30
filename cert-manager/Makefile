@@ -4,15 +4,14 @@ COMPONENT_NAME ?= cert-manager
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= cert-manager
 HELM_CHART     ?= jetstack/cert-manager
-VERSION        ?= v1.0.2
+VERSION        ?= v1.1.0
 
-HELM_HOME := $(abspath .helm)
-CRD_FILE  := charts/$(notdir $(HELM_CHART))/crds.yaml
+CRD_FILE := charts/$(notdir $(HELM_CHART))/crds.yaml
 
 export HELM_HOME
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy: clean init fetch purge crds install issuer
 ifeq ($(CA_ISSUER_ENABLED),true)
@@ -23,8 +22,7 @@ deploy: aws-dns-key
 endif
 
 init:
-	@mkdir -p $(HELM_HOME) charts
-	$(helm) init --client-only --upgrade
+	@mkdir -p charts
 
 fetch:
 	$(helm) repo add jetstack https://charts.jetstack.io
@@ -34,8 +32,8 @@ fetch:
 		--version $(VERSION)
 
 purge:
-	-$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME)
+	-$(helm) list --uninstalled --failed -q| grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) uninstall $(COMPONENT_NAME)
 
 $(CRD_FILE):
 	mkdir -p "$(dir $@)"
@@ -59,20 +57,8 @@ crds: $(CRD_FILE)
 
 install:
 	$(kubectl) apply -f namespace.yaml
-	if ! $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$'; then \
-		$(helm) install charts/$(notdir $(HELM_CHART)) \
-			--name $(COMPONENT_NAME) \
-			--namespace $(NAMESPACE) \
-			--wait \
-			--values values.yaml \
-			--version $(VERSION); \
-	else \
-		$(MAKE) upgrade; \
-	fi
-
-upgrade:
 	$(helm) upgrade $(COMPONENT_NAME) charts/$(notdir $(HELM_CHART)) \
-		--namespace $(NAMESPACE) \
+		--install \
 		--wait \
 		--values values.yaml \
 		--version $(VERSION)
@@ -98,8 +84,8 @@ aws-dns-key:
 .PHONY: aws-dns-key
 
 undeploy: init
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) uninstall $(COMPONENT_NAME) || exit 0
 
 clean:
 	rm -rf $(HELM_HOME) charts/$(notdir $(HELM_CHART))

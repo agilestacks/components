@@ -10,7 +10,7 @@ VALUES_FILE    ?= values.yaml
 export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm    ?= helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 # if ingress-tls in provides then tls-host-controler will manage TLS block for us
 # else install our own TLS block

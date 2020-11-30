@@ -10,6 +10,7 @@ meta:
 
 requires:
   - kubernetes
+  - terraform
 provides:
   - eks-worker-nodes
 

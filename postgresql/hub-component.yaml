@@ -11,16 +11,15 @@ meta:
     It has more than 15 years of active development and a proven architecture that has earned it a strong
     reputation for reliability, data integrity, and correctness.
   category: App Stack
-  version: 11.9.0
+  version: 11.10.0
   maturity: ga
-  license: BSD/MIT
+  license: PostgreSQL, similar to BSD/MIT
   source:
     dir: ../../components/postgresql
 
 requires:
 - kubernetes
 - helm
-- tiller
 
 provides:
 - postgresql
@@ -30,8 +29,6 @@ parameters:
   env: DOMAIN_NAME
 - name: component.postgresql
   parameters:
-  - name: version
-    value: 11.9.0-debian-10-r22
   - name:  name
     value: postgresql-${dns.name}-${hub.componentName}
     env:   COMPONENT_NAME
@@ -49,6 +46,17 @@ parameters:
     value: 5432
   - name: kubernetes.tolerations
     value: '[]'
+  - name: helm
+    parameters:
+    - name: repo
+      value: https://charts.bitnami.com/bitnami
+      env: HELM_REPO
+    - name: chart
+      value: postgresql
+      env: HELM_CHART
+    - name: version
+      value: 10.1.0
+      env: HELM_CHART_VERSION
 
 outputs:
 - name: component.postgresql.host

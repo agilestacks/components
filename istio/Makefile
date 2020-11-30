@@ -13,7 +13,13 @@ rsync := rsync -aIqv
 kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 kubectl-prometheus := kubectl --context="$(DOMAIN_NAME)" --namespace="$(PROMETHEUS_NAMESPACE)"
 
-helm := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+# assume no fullnameOverride nor nameOverride is set
+# https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/templates/_helpers.tpl#L15
+PROMETHEUS_CHART_NAME := kube-prometheus-stack
+PROMETHEUS_FULLNAME = $(shell echo $(if $(findstring $(PROMETHEUS_CHART_NAME),$(PROMETHEUS_NAME)),$(PROMETHEUS_NAME),$(PROMETHEUS_NAME)-$(PROMETHEUS_CHART_NAME)) | cut -c1-26 | sed -e 's/-$$//')
+PROMETHEUS_ADDR = http://$(PROMETHEUS_FULLNAME)-prometheus.$(PROMETHEUS_NAMESPACE).svc.cluster.local:9090
+
+helm := helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 HELM_VALUES_ARGS += -f $(abspath values.yaml)
 HELM_VALUES_ARGS += -f $(abspath values-$(ISTIO_VERSION).yaml)
 # HELM_VALUES_ARGS += -f $(abspath values-gw.yaml)
@@ -69,12 +75,12 @@ dashboards-%:
 ifneq (,$(filter prometheus,$(HUB_PROVIDES)))
 HELM_VALUES_ARGS += --set "kiali.prometheusAddr=$(PROMETHEUS_ADDR)"
 HELM_VALUES_ARGS += --set "prometheus.enabled=true"
-install: configure-prometheus 
+install: configure-prometheus
 
 configure-prometheus: dashboards-apply label
 	$(kubectl-prometheus) create secret generic additional-scrape-configs \
 		--from-file=prometheus-config/istio-scrape-config.yaml --dry-run -o yaml | $(kubectl-prometheus) apply -f -
-	$(kubectl-prometheus) patch prometheus $(PROMETHEUS_NAME)-prometheus --type=merge \
+	$(kubectl-prometheus) patch prometheus $(PROMETHEUS_FULLNAME)-prometheus --type=merge \
 		-p '{"spec":{"additionalScrapeConfigs":{"name": "additional-scrape-configs", "key": "istio-scrape-config.yaml"}}}'
 
 unconfigure-prometheus: dashboards-delete

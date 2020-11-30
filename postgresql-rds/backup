@@ -1,0 +1,20 @@
+#!/bin/bash -xe -o pipefail
+
+eval $(./pre-init)
+rds_name=$TF_VAR_rds_name
+snapshot_id=$rds_name-$(date +%F-%H-%M-%S)
+
+aws rds create-db-snapshot --db-snapshot-identifier $snapshot_id --db-instance-identifier $rds_name
+aws rds wait db-snapshot-completed --db-snapshot-identifier $snapshot_id
+snapshot=$(aws rds describe-db-snapshots --db-snapshot-identifier $snapshot_id | jq .DBSnapshots[0])
+
+test "available" == "$(jq -r .Status <<<$snapshot)"
+
+set +xe
+
+echo
+echo Outputs:
+echo component.postgresql.rds.snapshot = $(jq -r .DBSnapshotIdentifier <<<$snapshot)
+echo component.postgresql.rds.version = $(jq -r .EngineVersion <<<$snapshot)
+echo kind = postgresql-rds
+echo

@@ -1,0 +1,75 @@
+---
+version: 1
+kind: component
+meta:
+  name: edns
+  title: External DNS simplified
+  description: ExternalDNS synchronizes exposed Kubernetes Services and Ingresses with DNS providers.
+  category: Networking
+  license: Apache 2.0
+  maturity: alpha
+  version: 0.7.4
+  icon: https://github.com/kubernetes-sigs/external-dns/raw/master/img/external-dns.png
+  source:
+    dir: ../../components/edns
+
+requires:
+- aws
+- kubernetes
+- helm
+
+provides:
+- external-dns
+
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
+
+parameters:
+- name: hub.deploymentId
+- name: cloud
+  parameters:
+  - name: region
+  - name: aws.secretKey
+    empty: allow
+  - name: aws.accessKey
+    empty: allow
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.external-dns
+  parameters:
+  - name: namespace
+    value: kube-system
+    env: NAMESPACE
+  - name: name
+    value: external-dns
+    env: COMPONENT_NAME
+  - name: provider
+    value: ${cloud.kind}
+  - name: interval
+    value: 1m
+  - name: domainFilters
+    # value: ${dns.domain}
+    empty: allow
+    env: DOMAIN_FILTERS
+  - name: route53.zoneTags
+    value: superhub.io/stack/${dns.domain}
+    empty: allow
+    env: ROUTE53_ZONE_TAGS
+  - name: helm
+    parameters:
+    - name: repo
+      value: https://charts.bitnami.com/bitnami
+      env: HELM_REPO
+    - name: chart
+      value: external-dns
+      env: HELM_CHART
+    - name: version
+      value: 4.0.0
+      env: HELM_CHART_VERSION
+
+templates:
+  kind: go
+  files:
+  - '*.gotemplate'

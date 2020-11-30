@@ -2,10 +2,11 @@
 export HELM_HOME := $(abspath .helm)
 CHART_DIR        := $(HELM_HOME)/charts/$(notdir $(CHART_NAME))
 DOMAIN_NAME      ?= $(error DOMAIN_NAME not defined)
+DEPLOYMENT_ID    ?= $(error DEPLOYMENT_ID not defined)
 NAMESPACE        ?= kube-system
 jq               := jq -cM
 yq               := yq
-helm             := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm             := helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 aws              := aws --output=text
 rsync            := rsync -arvp
 kubectl          := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
@@ -18,7 +19,7 @@ init: $(HELM_HOME)
 	@ $(helm) init --client-only --upgrade
 	@ $(helm) repo add bitnami https://charts.bitnami.com/bitnami
 
-HELM_OPTS := --set 'txtOwnerId=$(firstword $(shell md5sum <<<"$(DOMAIN_NAME)"))'
+HELM_OPTS := --set txtOwnerId=$(DEPLOYMENT_ID)
 HELM_OPTS += --values $(abspath values.yaml)
 ifneq (,$(filter istio,$(HUB_PROVIDES)))
 HELM_OPTS += --set 'sources=$(shell \

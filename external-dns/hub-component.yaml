@@ -26,6 +26,8 @@ lifecycle:
   - undeploy
 
 parameters:
+- name: hub.deploymentId
+  env: DEPLOYMENT_ID
 - name: cloud
   parameters:
   - name: kind

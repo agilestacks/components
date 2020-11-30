@@ -14,3 +14,4 @@
 /metal/storage-class.yaml
 **/values.yaml
 **/.helm
+**/.charts

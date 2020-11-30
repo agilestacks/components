@@ -14,7 +14,7 @@ TIMEOUT     		?= 600
 export NAMESPACE 	?= rook-ceph
 export HELM_HOME ?= $(shell pwd)/.helm
 
-helm                ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm                ?= helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 kubectl 			?= kubectl $(KUBECTL_ARGS)
 
 deploy: clean init fetch purge install_ceph config_ceph_crushmap config_ceph_dashboard install_nfs

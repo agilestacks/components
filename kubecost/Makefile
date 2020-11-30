@@ -15,7 +15,7 @@ TIMEOUT                 ?= 600
 
 aws                ?= aws
 kubectl            ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm               ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm               ?= helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 jq                 ?= jq
 
 SPOT_DATA_ENABLED := $(if $(and $(SPOT_DATA_BUCKET_NAME), $(SPOT_DATA_BUCKET_REGION), $(SPOT_DATA_PREFIX)),true)

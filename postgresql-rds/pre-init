@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+echo "export TF_VAR_rds_name=$(echo $RDS_NAME | sed -E -e 's/[^[:alnum:]]+/-/g' | cut -c 1-63)"

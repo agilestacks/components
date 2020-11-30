@@ -9,7 +9,7 @@ TIMEOUT        ?= 600
 export HELM_HOME ?= $(shell pwd)/.helm
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm    ?= helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 
 deploy: clean init fetch purge install wait
 

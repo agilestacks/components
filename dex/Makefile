@@ -89,6 +89,8 @@ install:
 	$(kubectl) apply -f kubernetes/crd/authcodes.yaml
 	$(kubectl) apply -f kubernetes/crd/authrequests.yaml
 	$(kubectl) apply -f kubernetes/crd/connectors.yaml
+	$(kubectl) apply -f kubernetes/crd/devicerequests.yaml
+	$(kubectl) apply -f kubernetes/crd/devicetokens.yaml
 	$(kubectl) apply -f kubernetes/crd/oauth2clients.yaml
 	$(kubectl) apply -f kubernetes/crd/offlinesessionses.yaml
 	$(kubectl) apply -f kubernetes/crd/passwords.yaml
@@ -109,7 +111,6 @@ destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
 uninstall:
-	-$(kubectl) delete -f kubernetes/auth_v1alpha1_oidc.yaml
 	-$(kubectl) delete -f kubernetes/auth-operator.yaml
 	-$(kubectl) delete -f kubernetes/$(INGRESS).yaml
 	-$(kubectl) delete -f kubernetes/service.yaml

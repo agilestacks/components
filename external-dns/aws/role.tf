@@ -7,6 +7,9 @@ provider "aws" {
   version = "2.49.0"
 }
 
+data "aws_caller_identity" "current" {
+}
+
 resource "aws_iam_role" "role" {
   name               = "external-dns-${element(split(".", var.domain_name), 0)}"
 
@@ -16,7 +19,7 @@ resource "aws_iam_role" "role" {
   "Statement": [
     {
       "Effect": "Allow",
-      "Principal": { "AWS": "*"},
+      "Principal": { "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"},
       "Action": "sts:AssumeRole"
     }
   ]

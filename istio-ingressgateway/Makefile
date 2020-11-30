@@ -12,7 +12,7 @@ GLOBAL_VALUES := $(HELM_HOME)/values-global.yaml
 DEFAULT_VALUES := $(HELM_HOME)/values-defaults.yaml
 
 kubectl   := kubectl --context="$(DOMAIN_NAME)"
-helm      := helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm      := helm2 --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
 HELM_OPTS += --values $(GLOBAL_VALUES)
 HELM_OPTS += --values $(DEFAULT_VALUES)
 HELM_OPTS += --values $(abspath values.yaml)

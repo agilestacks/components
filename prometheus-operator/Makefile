@@ -1,17 +1,15 @@
 .DEFAULT_GOAL := deploy
 
-COMPONENT_NAME ?= prometheus-operator
-HELM_CHART     ?= prometheus-operator
-DOMAIN_NAME    ?= test.dev.superhub.io
-NAMESPACE      ?= monitoring
-CHART_VERSION  ?= 8.12.12
-OPER_VERSION   ?= v0.38.0
-CLOUD_KIND     ?= aws
-
-export HELM_HOME ?= $(shell pwd)/.helm
+COMPONENT_NAME   ?= prometheus-operator
+HELM_CHART       ?= prometheus-community/kube-prometheus-stack
+DOMAIN_NAME      ?= test.dev.superhub.io
+NAMESPACE        ?= monitoring
+CHART_VERSION    ?= 12.0.1
+OPERATOR_VERSION ?= v0.43.2
+CLOUD_KIND       ?= aws
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
-helm    ?= helm --kube-context="$(DOMAIN_NAME)" --tiller-namespace="kube-system"
+helm    ?= helm --kube-context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 deploy: clean init fetch patch purge install
 ifeq ($(THANOS_ENABLED),true)
@@ -27,22 +25,25 @@ AZURE_VALUES := --values azure/values.yaml
 endif
 
 init:
-	@mkdir -p $(HELM_HOME) charts
-	$(helm) init --client-only --upgrade
+	@mkdir -p charts
 
 fetch:
+	$(helm) repo add prometheus-community https://prometheus-community.github.io/helm-charts
+	$(helm) repo add stable https://charts.helm.sh/stable
+	$(helm) repo update
 	$(helm) fetch \
 		--destination charts \
 		--untar $(HELM_CHART) \
 		--version $(CHART_VERSION)
 
 patch:
-	sed -i~ -e 's|metrics_path="/metrics/cadvisor", ||' charts/prometheus-operator/templates/prometheus/rules-1.14/k8s.rules.yaml
-	sed -i~ -E -e 's/(appVersion: ).*/\1$(OPER_VERSION)/' charts/prometheus-operator/Chart.yaml
+	sed -i~ -e 's|metrics_path="/metrics/cadvisor", ||' charts/kube-prometheus-stack/templates/prometheus/rules-1.14/k8s.rules.yaml
+	sed -i~ -E -e 's/(appVersion: ).*/\1$(OPERATOR_VERSION)/' charts/kube-prometheus-stack/Chart.yaml
 
 purge:
-	$(helm) list --deleted --failed -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete $(COMPONENT_NAME) --purge && \
+	$(helm) list --uninstalled --failed -q | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) uninstall $(COMPONENT_NAME) && \
+		$(kubectl) delete crd/alertmanagerconfigs.monitoring.coreos.com && \
 		$(kubectl) delete crd/alertmanagers.monitoring.coreos.com && \
 		$(kubectl) delete crd/prometheuses.monitoring.coreos.com && \
 		$(kubectl) delete crd/prometheusrules.monitoring.coreos.com && \
@@ -52,24 +53,9 @@ purge:
 
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
-	-$(kubectl) create -f oidc-crd.yaml
-	if ! $(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$'; then \
-		$(helm) install charts/$(notdir $(HELM_CHART)) \
-			--name $(COMPONENT_NAME) \
-			--name-template $(COMPONENT_NAME) \
-			--namespace $(NAMESPACE) \
-			--wait \
-			--values values.yaml \
-			$(THANOS_VALUES) \
-			$(AZURE_VALUES) \
-			--version $(CHART_VERSION); \
-	else \
-		$(MAKE) upgrade; \
-	fi
-
-upgrade:
+	$(kubectl) apply -f oidc.yaml
 	$(helm) upgrade $(COMPONENT_NAME) charts/$(notdir $(HELM_CHART)) \
-		--namespace $(NAMESPACE) \
+		--install --create-namespace \
 		--wait \
 		--values values.yaml \
 		$(THANOS_VALUES) \
@@ -97,9 +83,10 @@ unthanos:
 uninstall:
 	-$(kubectl) delete -f oidc-crd.yaml
 
-	$(helm) list -q --namespace $(NAMESPACE) | grep -E '^$(COMPONENT_NAME)$$' && \
-		$(helm) delete --purge $(COMPONENT_NAME) || exit 0
+	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
+		$(helm) uninstall $(COMPONENT_NAME) || exit 0
 
+	-$(kubectl) delete crd/alertmanagerconfigs.monitoring.coreos.com
 	-$(kubectl) delete crd/alertmanagers.monitoring.coreos.com
 	-$(kubectl) delete crd/prometheuses.monitoring.coreos.com
 	-$(kubectl) delete crd/prometheusrules.monitoring.coreos.com
@@ -108,6 +95,6 @@ uninstall:
 	-$(kubectl) delete crd/thanosrulers.monitoring.coreos.com
 
 clean:
-	rm -rf $(HELM_HOME) charts/$(notdir $(HELM_CHART))
+	rm -rf charts/$(notdir $(HELM_CHART))
 
 -include ../Mk/phonies

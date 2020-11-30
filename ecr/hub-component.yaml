@@ -15,20 +15,24 @@ meta:
 
 requires:
 - aws
+- terraform
 provides:
 - ecr
 - docker-registry
 
 parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: cloud.kind
+  value: aws
+  env: CLOUD_KIND
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
 - name: component.ecr
   parameters:
   - name: name
     value: ${dns.domain}/${dns.name}/${hub.componentName}
     env: COMPONENT_NAME
-- name: cloud.region
-  env: AWS_DEFAULT_REGION
-- name: dns.domain
-  env:  DOMAIN_NAME
 - name: terraform.bucket
   parameters:
   - name: name
