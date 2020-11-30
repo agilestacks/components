@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=${TIMEOUT:-360}
+TIMEOUT=${TIMEOUT:-600}
 COUNTER=0
 
 export kubectl="kubectl --context=$DOMAIN_NAME --namespace=$NAMESPACE"
@@ -8,7 +8,7 @@ export kubectl="kubectl --context=$DOMAIN_NAME --namespace=$NAMESPACE"
 echo "adding ca.crt to harbor"
 while [[ ${COUNTER} -ne ${TIMEOUT} ]]
 do
-    POD_SECRET=$($kubectl get secrets --field-selector type=kubernetes.io/tls 2>&1 | grep harbor-tls |awk '{print $1}')
+    POD_SECRET=$($kubectl get secrets --field-selector type=kubernetes.io/tls | grep harbor-tls |awk '{print $1}')
     if [[ -n "${POD_SECRET}" ]]; then
         $kubectl patch secret \
                 ${POD_SECRET} \
@@ -23,7 +23,7 @@ do
     fi
 
     let COUNTER=COUNTER+1
-    sleep 2
+    sleep 20
 done
 
 echo "timeout - failed find and patch harbor secret"
