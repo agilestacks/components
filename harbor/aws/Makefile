@@ -20,7 +20,7 @@ git     ?= git -C $(CHART_DIR)
 
 deploy: clean fetch namespace install $(TLS_KIND) output
 
-undeploy: undeploy-$(TLS_KIND) init delete clean
+undeploy: undeploy-$(TLS_KIND) delete clean
 	- $(kubectl) delete pvc -l 'app=harbor,release=$(COMPONENT_NAME)'
 
 $(TLS_KIND):
