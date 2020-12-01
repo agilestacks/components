@@ -1,0 +1,92 @@
+---
+version: 1
+kind: component
+meta:
+  name: mysql
+  title: MySQL
+  brief: Relational Database
+  description: >
+    MySQL is a popular, well known open source relational database
+  category: Storage
+  version: '5.7.30'
+  maturity: alpha
+  license: GNU
+  source:
+      dir: ../../components/mysql
+
+requires:
+  - kubernetes
+  - helm
+  # - tiller
+
+provides:
+  - mysql
+  - database
+  - sql
+
+parameters:
+- name: hub.componentName
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.mysql
+  empty: allow
+  parameters:
+  - name: name
+    value: mysql
+    env: COMPONENT_NAME
+  # - name: host
+  - name: namespace
+    value: mysql
+    env: NAMESPACE
+  - name: port
+    value: 3306
+  - name: user
+    env: DB_USER
+  - name: password
+    env: DB_PASSWORD
+  - name: database
+    env: DB_NAME
+  - name: rootPassword
+    env: ROOT_PASSWORD
+  - name: image.name
+    value: mysql
+  - name: image.tag
+    value: 5.7.30
+  - name: chart.version
+    value: 1.6.6
+    env: CHART_VERSION
+  - name: volumeSize
+    value: 8Gi
+  - name: storageClass
+    value: default
+  - name: helm
+    parameters:
+    - name: repo
+      value: https://storage.googleapis.com/t3n-helm-charts
+      env: HELM_REPO
+    - name: chart
+      value: mysql
+      env: HELM_CHART
+    - name: version
+      value: 0.1.0
+      env: HELM_CHART_VERSION
+
+outputs:
+- name: component.mysql.host
+  value: ${component.mysql.name}.${component.mysql.namespace}.svc.cluster.local
+- name: component.mysql.port
+- name: component.mysql.database
+- name: component.mysql.user
+- name: component.mysql.password
+  kind: secret
+- name: component.mysql.rootPassword
+  kind: secret
+
+templates:
+  files:
+    - "*.template"
+
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
