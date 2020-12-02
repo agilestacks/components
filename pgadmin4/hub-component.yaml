@@ -20,9 +20,6 @@ requires:
 - kubernetes
 - helm
 
-provides:
-- postgresql
-
 parameters:
 - name: dns.domain
   env: DOMAIN_NAME
