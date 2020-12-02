@@ -1,0 +1,48 @@
+#!/bin/sh -xe
+
+HELM_OPTS=""
+
+if test -n "$DB_NAME"
+then
+    HELM_OPTS="$HELM_OPTS --set mysqlDatabase=$DB_NAME"
+fi
+
+if test -n "$DB_USER"
+then
+    HELM_OPTS="$HELM_OPTS --set mysqlUser=$DB_USER"
+fi
+
+if test -n "$DB_PASSWORD"
+then
+    HELM_OPTS="$HELM_OPTS --set mysqlPassword=$DB_PASSWORD"
+else
+    HELM_OPTS="$HELM_OPTS --set mysqlAllowEmptyPassword=true"
+fi
+
+
+if test -n "$ROOT_PASSWORD"
+then
+    HELM_OPTS="$HELM_OPTS --set mysqlRootPassword=$ROOT_PASSWORD"
+else
+    HELM_OPTS="$HELM_OPTS --set allowEmptyRootPassword=true"
+fi
+
+if $kubectl get pvc "$COMPONENT_NAME" >/dev/null 2>&1
+then
+    HELM_OPTS="$HELM_OPTS --set persistence.existingClaim=$COMPONENT_NAME"
+fi
+
+
+if [ -n "$HELM_OPTS" ]
+then
+    echo export HELM_OPTS=\"$HELM_OPTS\"
+fi
+
+# TODO: how should we quote values
+# quoting helm flags as
+# "$HELM_OPTS --set 'mysqlPassword=$DB_PASSWORD'"
+# leads to escaped quotes in the result command e.g
+#
+# + helm --kube-context=busy-odilee-553.bubble.superhub.io --namespace=kubeflow-data upgrade mysql .charts/mysql --install --create-namespace --debug --wait --version 0.1.0 --values values.yaml \
+# --set ''\''mysqlUser=mysql''\'' --set ''\''mysqlPassword=somepass'\''' --set ''\''mysqlRootPassword=somepass''\'' --set ''\''persistence.existingClaim=mysql''\''
+

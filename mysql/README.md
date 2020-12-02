@@ -1,6 +1,6 @@
 # MySQL Hub component
 
-PostgreSQL Hub Component, installs a [stable/mysqll](https://github.com/helm/charts/tree/master/stable/mysql) helm chart
+PostgreSQL Hub Component, installs a [stable/mysql](https://github.com/helm/charts/tree/master/stable/mysql) helm chart
 
 ## TODO
 

@@ -1,0 +1,11 @@
+image: "${component.mysql.image.name}"
+imageTag: "${component.mysql.image.tag}"
+
+persistence:
+  enabled: true
+  size: ${component.mysql.volumeSize}
+  storageClass: "${component.mysql.storageClass}"
+
+serviceAccount:
+  create: true
+  name: ${hub.componentName}
