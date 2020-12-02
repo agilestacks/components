@@ -1,0 +1,11 @@
+#!/bin/sh -e
+
+secret="$kubectl get secret $COMPONENT_NAME"
+
+echo
+echo Outputs:
+(
+echo "password = $($secret -o jsonpath='{.data.rabbitmq-password}')"
+echo "cookie = $($secret -o jsonpath='{.data.rabbitmq-erlang-cookie}')"
+) | ${HUB:-hub} util otp
+echo
