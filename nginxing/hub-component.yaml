@@ -40,6 +40,9 @@ parameters:
   - name: namespace
     value: ingress
     env: NAMESPACE
+  # implemented only for ELB on AWS
+  - name: kubernetes.loadBalancer.timeout
+    value: 60
 - name: component.nginxing
   parameters:
   - name: replicaCount
