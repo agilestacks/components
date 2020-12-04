@@ -365,7 +365,6 @@ service:
     service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
     # service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
     # service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-FS-1-2-2019-08"
-    api.service.kubernetes.io/path: ${component.ingress.urlPrefix}.${dns.domain}
 gzip:
   enabled: true
 #traefikLogFormat: json
