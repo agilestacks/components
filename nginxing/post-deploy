@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 LOAD_BALANCER=$($kubectl get svc ${COMPONENT_NAME}-ingress-nginx-controller --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
 
