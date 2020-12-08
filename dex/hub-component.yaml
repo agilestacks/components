@@ -49,6 +49,7 @@ parameters:
 
   - name: component.ingress.ssoUrlPrefix
   - name: component.ingress.protocol
+  - name: component.ingress.kubernetes.ingressClass
   - name: component.ingress.loadBalancer
     env: TF_VAR_load_balancer
   - name: component.ingress.loadBalancerDnsRecordType

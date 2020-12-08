@@ -24,6 +24,7 @@ parameters:
 - name: dns.domain
   env: DOMAIN_NAME
 - name: component.ingress.protocol
+- name: component.ingress.kubernetes.ingressClass
 - name: component.postgresql
   parameters:
   - name: host

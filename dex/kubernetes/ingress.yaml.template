@@ -4,7 +4,7 @@ metadata:
   name: dex-ingress
   namespace: ${component.dex.namespace}
   annotations:
-    agilestacks.com/stack-component: dex
+    kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
 spec:
   rules:
   - host: ${component.dex.oidcIssuerFqdn}
