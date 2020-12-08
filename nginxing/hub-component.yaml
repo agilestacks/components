@@ -28,6 +28,8 @@ parameters:
 - name: component.tls.kind
   empty: allow
   env: TLS_KIND
+- name: component.acm.certificateArn
+  empty: allow
 - name: component.ingress
   parameters:
   - name: urlPrefix
@@ -43,12 +45,16 @@ parameters:
   # implemented only for ELB on AWS
   - name: kubernetes.loadBalancer.timeout
     value: 60
+  - name: kubernetes.loadBalancer.sslPorts
+    value: '#{size(component.acm.certificateArn) > 0 ? "443" : ""}'
 - name: component.nginxing
   parameters:
   - name: replicaCount
     value: 1
   - name: kubernetes.ingressClass
     value: nginx
+  - name: targetPorts.https
+    value: '#{size(component.acm.certificateArn) > 0 ? "http" : "https"}'
   - name: helm
     parameters:
     - name: repo
