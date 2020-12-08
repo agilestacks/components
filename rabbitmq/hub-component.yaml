@@ -26,6 +26,7 @@ parameters:
   env: DOMAIN_NAME
 - name: component.ingress.protocol
 - name: component.ingress.kubernetes.ingressClass
+  empty: allow
 - name: component.rabbitmq
   parameters:
   - name: name
