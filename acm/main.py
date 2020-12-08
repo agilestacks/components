@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Registers new ACM certificate and generates terraform for DNS approval
+"""Registers new ACM certificate and generates terraform for DNS validation
 
 Usage:
   main.py request <domain> [<additional_names>]...
@@ -19,37 +19,34 @@ Options:
 """
 
 __author__ = "Antons Kranga"
-__copyright__ = "Copyright 2017, Agile Stacks Inc."
-__email__ = "anton@agilestacks.com"
+__copyright__ = "Copyright 2020, Agile Stacks Inc."
+__email__ = "support@agilestacks.com"
 
 terraform = '''#
 # Generated for {{ cert_arn }}
 #
 {% if standalone: %}
 terraform {
-  required_version = ">= 0.11.10"
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "3.17.0"
+    }
+  }
+  required_version = ">= 0.13"
   backend "s3" {}
 }
-
-# upgrades must be tested as 2.x provider has a Route53 bug
-# https://github.com/terraform-providers/terraform-provider-aws/issues/7918
-provider "aws" {
-  version = "1.60.0"
-}
-
 {% endif %}
-
 {% for i,item in items %}
-module "dns_{{ i }}" {
-  source        = "github.com/agilestacks/terraform-modules//r53"
-  name          = "{{ item['name'] }}"
-  type          = "{{ item['type'] }}"
-  r53_zone_id   = "{{ item['zone_id'] }}"
-  r53_domain    = "{{ item['zone_name'] }}"
-  records       = ["{{ item['record'] }}"]
-  ttl           = "300"
-}
+resource "aws_route53_record" "dns_{{ i }}" {
+  zone_id = "{{ item['zone_id'] }}"
+  name    = join(".", compact(split(".", "{{ item['name'] }}.{{ item['zone_name'] }}")))
+  type    = "{{ item['type'] }}"
+  ttl     = "300"
+  records = ["{{ item['record'] }}"]
 
+  allow_overwrite = true
+}
 {% endfor %}
 '''
 
@@ -59,7 +56,7 @@ import logging as log
 from docopt  import docopt
 from jinja2 import Template
 
-log.basicConfig(filename='python.log', level=log.DEBUG)
+log.basicConfig(filename='python.log', level=log.INFO)
 console=log.StreamHandler() # intentionally log to stderr
 console.setFormatter(log.Formatter(log.BASIC_FORMAT))
 console.setLevel(log.WARNING)
