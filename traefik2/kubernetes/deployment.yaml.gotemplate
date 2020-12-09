@@ -2,14 +2,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ${component.ingress.name}
+  name: {{.component.ingress.name}}
   labels:
-    app: traefik2
+    app.kubernetes.io/name: traefik2
+    app.kubernetes.io/instance: {{.component.ingress.name}}
+    app.kubernetes.io/component: traefik
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: traefik2
+      app.kubernetes.io/name: traefik2
+      app.kubernetes.io/instance: {{.component.ingress.name}}
+      app.kubernetes.io/component: traefik
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -18,13 +22,15 @@ spec:
   template:
     metadata:
       labels:
-        app: traefik2
+        app.kubernetes.io/name: traefik2
+        app.kubernetes.io/instance: {{.component.ingress.name}}
+        app.kubernetes.io/component: traefik
     spec:
-      serviceAccountName: ${component.ingress.name}
+      serviceAccountName: {{.component.ingress.name}}
       terminationGracePeriodSeconds: 60
       containers:
-      - image: traefik:${component.traefik.app.version}
-        name: traefik2
+      - image: traefik:{{.component.traefik.app.version}}
+        name: traefik
         resources:
         readinessProbe:
           httpGet:
@@ -51,40 +57,49 @@ spec:
         - name: "web"
           containerPort: 8000
           protocol: TCP
+{{if not .component.acm.certificateArn}}
         - name: "websecure"
           containerPort: 8443
           protocol: TCP
+{{end}}
         args:
         - "--entryPoints.traefik.address=:9000"
         - "--entryPoints.web.address=:8000"
-        - "--entryPoints.websecure.address=:8443"
-        - "--entryPoints.websecure.http.tls"
-        - "--api.dashboard=${component.ingress.dashboard.enabled}"
+        - "--api.dashboard={{.component.ingress.dashboard.enabled}}"
         - "--ping=true"
         - "--log.level=INFO"
+        # https://doc.traefik.io/traefik/https/acme/
+{{if not .component.acm.certificateArn}}
+        - "--entryPoints.websecure.address=:8443"
+        - "--entryPoints.websecure.http.tls"
         - "--certificatesresolvers.prod.acme.tlschallenge"
-        - "--certificatesresolvers.prod.acme.email=${component.cert-manager.issuerEmail}"
-        - "--certificatesresolvers.prod.acme.storage=/acme/prod.json"
         - "--certificatesresolvers.staging.acme.tlschallenge"
-        - "--certificatesresolvers.staging.acme.email=${component.cert-manager.issuerEmail}"
+        - "--certificatesresolvers.prod.acme.email={{.component.cert_manager.issuerEmail}}"
+        - "--certificatesresolvers.prod.acme.storage=/acme/prod.json"
+        - "--certificatesresolvers.staging.acme.email={{.component.cert_manager.issuerEmail}}"
         - "--certificatesresolvers.staging.acme.storage=/acme/staging.json"
         - "--certificatesresolvers.staging.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+{{end}}
         - "--providers.file.directory=/config"
         - "--providers.kubernetescrd"
         - "--providers.kubernetesingress"
-        - "--providers.kubernetesingress.ingressendpoint.publishedservice=${component.ingress.namespace}/${component.ingress.name}"
-        - "--providers.kubernetesingress.namespaces=${component.traefik.kubernetes.namespaces}"
-        - "--providers.kubernetesingress.labelSelector=${component.traefik.kubernetes.labelSelector}"
-        - "--providers.kubernetesingress.ingressClass=${component.traefik.kubernetes.ingressClass}"
+        - "--providers.kubernetesingress.ingressendpoint.publishedservice={{.component.ingress.namespace}}/{{.component.ingress.name}}"
+        - "--providers.kubernetesingress.namespaces={{.component.traefik.kubernetes.namespaces}}"
+        - "--providers.kubernetesingress.labelSelector={{.component.traefik.kubernetes.labelSelector}}"
+        - "--providers.kubernetesingress.ingressClass={{.component.traefik.kubernetes.ingressClass}}"
         volumeMounts:
         - mountPath: /config
           name: config
+{{if not .component.acm.certificateArn}}
         - mountPath: /acme
           name: acme
+{{end}}
       volumes:
       - name: config
         configMap:
-          name: ${component.ingress.name}
+          name: {{.component.ingress.name}}
+{{if not .component.acm.certificateArn}}
       - name: acme
         persistentVolumeClaim:
-          claimName: ${component.ingress.name}-acme
+          claimName: {{.component.ingress.name}}-acme
+{{end}}

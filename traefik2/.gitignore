@@ -1,4 +1,3 @@
 /.terraform
-/*.yaml
-!/crds.yaml
-!/hub-component.yaml
+/kubernetes/*.yaml
+!/kubernetes/crds.yaml
