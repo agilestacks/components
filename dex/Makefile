@@ -21,10 +21,10 @@ export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
 terraform   ?= terraform-v0.11
-TF_CLI_ARGS ?= -no-color -input=false
+TF_CLI_ARGS ?= -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
-kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
+kubectl := kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
 
 ifneq (,$(filter tls-ingress,$(HUB_PROVIDES)))
 INGRESS:=ingress-tls
@@ -32,14 +32,14 @@ else
 INGRESS:=ingress
 endif
 
-deploy: clean install
+deploy: install
+undeploy: uninstall
 
 # If external-dns is present, then we rely on our ingress to create the 'auth' subdomain.
 # Otherwise we use Terraform.
 ifeq (,$(filter external-dns,$(HUB_PROVIDES)))
-deploy: init plan apply
+deploy: clean init plan apply
 undeploy: init destroy apply
-endif
 
 ifeq ($(CLOUD_KIND),aws)
 STATE_BACKEND_CONFIG := -backend-config="bucket=$(STATE_BUCKET)" \
@@ -58,6 +58,7 @@ STATE_BACKEND_CONFIG := -backend-config="storage_account_name=$(STATE_BUCKET)" \
 				-backend-config="key=$(DOMAIN_NAME)/$(COMPONENT_NAME)/terraform.tfstate"
 else ifneq ($(CLOUD_KIND),metal)
 $(error cloud.kind / CLOUD_KIND must be one of: aws, azure, gcp, metal)
+endif
 endif
 
 
@@ -81,7 +82,7 @@ apply:
 	@echo
 
 install:
-	$(kubectl) apply -f kubernetes/namespace.yaml
+	-$(kubectl) create ns $(NAMESPACE)
 	$(kubectl) apply -f kubernetes/grpc-client-secret.yaml
 	$(kubectl) apply -f kubernetes/grpc-server-secret.yaml
 
@@ -105,8 +106,6 @@ install:
 	$(kubectl) apply -f kubernetes/$(INGRESS).yaml
 	$(kubectl) apply -f kubernetes/auth-operator.yaml
 
-undeploy: uninstall
-
 destroy: TF_CLI_ARGS:=-destroy $(TF_CLI_ARGS)
 destroy: plan
 
@@ -125,4 +124,3 @@ clean:
 	rm -rf $(TF_DATA_DIR)
 
 -include ../Mk/phonies
-.IGNORE: undeploy

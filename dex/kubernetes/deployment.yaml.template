@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dex
+  name: ${component.dex.name}
   namespace: ${component.dex.namespace}
   labels:
-    provider:  agilestacks.com
-    project:   dex
-    component: dex
+    app.kubernetes.io/name: dex
+    app.kubernetes.io/instance: ${component.dex.name}
+    app.kubernetes.io/component: dex
 spec:
   replicas: 1
   # New dex pods must be healthy for 30 seconds
@@ -19,26 +19,28 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      component: dex
+      app.kubernetes.io/name: dex
+      app.kubernetes.io/instance: ${component.dex.name}
+      app.kubernetes.io/component: dex
   template:
     metadata:
-      name: dex
+      name: ${component.dex.name}
       labels:
-        provider:  agilestacks.com
-        project:   dex
-        component: dex
+        app.kubernetes.io/name: dex
+        app.kubernetes.io/instance: ${component.dex.name}
+        app.kubernetes.io/component: dex
     spec:
-      serviceAccountName: dex
+      serviceAccountName: ${component.dex.name}
       volumes:
       - name: config
         configMap:
-          name: dex
+          name: ${component.dex.name}
           items:
           - key: config.yaml
             path: config.yaml
-      - name: dex-grpc-server-secret
+      - name: grpc-server-secret
         secret:
-          secretName: dex-grpc-server-secret
+          secretName: ${component.dex.name}-grpc-server-secret
       containers:
       - name: dex
         imagePullPolicy: Always
@@ -47,7 +49,7 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /etc/dex
-        - name: dex-grpc-server-secret
+        - name: grpc-server-secret
           mountPath: /etc/dex-grpc-server-secret
           readOnly: true
         ports:

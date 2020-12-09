@@ -1,20 +1,20 @@
 kind: ServiceAccount
 apiVersion: v1
 metadata:
-  name: dex
+  name: ${component.dex.name}
   namespace: ${component.dex.namespace}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: dex
+  name: ${component.dex.name}
 rules:
 - apiGroups: ["dex.coreos.com"] # API group created by dex
   resources: ["*"]
   verbs: ["*"]
 - apiGroups: ["apiextensions.k8s.io"]
   resources: ["customresourcedefinitions"]
-  verbs: ["create"] # To manage its own resources identity must be able to create customresourcedefinitions.
+  verbs: ["create"] # To manage its own resources identity must be able to create customresourcedefinitions
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -23,8 +23,8 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: dex
+  name: ${component.dex.name}
 subjects:
 - kind: ServiceAccount
-  name: dex                 # Service account assigned to the dex pod.
-  namespace: ${component.dex.namespace}  # The namespace dex is running in.
+  name: ${component.dex.name}            # Service account assigned to the dex pod
+  namespace: ${component.dex.namespace}  # The namespace dex is running in

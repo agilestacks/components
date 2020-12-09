@@ -5,7 +5,7 @@ metadata:
 spec:
   endpoints:
   - dnsName: ${component.dex.oidcIssuerFqdn}
-    recordTTL: 180
+    recordTTL: 300
     recordType: ${component.ingress.loadBalancerDnsRecordType}
     targets:
     - ${component.ingress.loadBalancer}
