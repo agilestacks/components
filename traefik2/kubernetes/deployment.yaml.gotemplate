@@ -68,8 +68,8 @@ spec:
         - "--api.dashboard={{.component.ingress.dashboard.enabled}}"
         - "--ping=true"
         - "--log.level=INFO"
-        # https://doc.traefik.io/traefik/https/acme/
 {{if not .component.acm.certificateArn}}
+        # https://doc.traefik.io/traefik/https/acme/
         - "--entryPoints.websecure.address=:8443"
         - "--entryPoints.websecure.http.tls"
         - "--certificatesresolvers.prod.acme.tlschallenge"
