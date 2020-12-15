@@ -5,9 +5,6 @@ metadata:
   namespace: ${component.kubernetes-dashboard.namespace}
   annotations:
     kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
-  labels:
-    provider: agilestacks.com
-    project: kubernetes
 spec:
   rules:
   - host: ${component.kubernetes-dashboard.ingress.urlPrefix}.${component.ingress.ssoFqdn}

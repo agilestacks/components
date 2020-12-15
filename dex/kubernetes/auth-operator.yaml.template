@@ -2,14 +2,13 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: auth-operator-manager
+  name: ${component.dex.name}-auth-operator
   namespace: ${component.dex.namespace}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  creationTimestamp: null
-  name: auth-operator-manager-role
+  name: ${component.dex.name}-auth-operator
 rules:
   - apiGroups:
       - extensions
@@ -101,59 +100,59 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  creationTimestamp: null
-  name: auth-operator-manager-rolebinding
+  name: ${component.dex.name}-auth-operator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: auth-operator-manager-role
+  name: ${component.dex.name}-auth-operator
 subjects:
   - kind: ServiceAccount
-    name: auth-operator-manager
+    name: ${component.dex.name}-auth-operator
     namespace: ${component.dex.namespace}
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: auth-operator-webhook-server-secret
+  name: ${component.dex.name}-auth-operator
   namespace: ${component.dex.namespace}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    control-plane: controller-manager
-    controller-tools.k8s.io: "1.0"
-  name: auth-operator-controller-manager-service
+  name: ${component.dex.name}-auth-operator
   namespace: ${component.dex.namespace}
 spec:
   ports:
     - port: 443
   selector:
-    control-plane: controller-manager
-    controller-tools.k8s.io: "1.0"
+    app.kubernetes.io/name: dex
+    app.kubernetes.io/instance: ${component.dex.name}
+    app.kubernetes.io/component: auth-operator
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   labels:
-    control-plane: controller-manager
-    controller-tools.k8s.io: "1.0"
-  name: auth-operator-controller-manager
+    app.kubernetes.io/name: dex
+    app.kubernetes.io/instance: ${component.dex.name}
+    app.kubernetes.io/component: auth-operator
+  name: ${component.dex.name}-auth-operator
   namespace: ${component.dex.namespace}
 spec:
   selector:
     matchLabels:
-      control-plane: controller-manager
-      controller-tools.k8s.io: "1.0"
-  serviceName: auth-operator-controller-manager-service
+      app.kubernetes.io/name: dex
+      app.kubernetes.io/instance: ${component.dex.name}
+      app.kubernetes.io/component: auth-operator
+  serviceName: ${component.dex.name}-auth-operator
   template:
     metadata:
       labels:
-        control-plane: controller-manager
-        controller-tools.k8s.io: "1.0"
+        app.kubernetes.io/name: dex
+        app.kubernetes.io/instance: ${component.dex.name}
+        app.kubernetes.io/component: auth-operator
     spec:
-      serviceAccountName: auth-operator-manager
+      serviceAccountName: ${component.dex.name}-auth-operator
       containers:
         - command:
             - /root/manager
@@ -163,7 +162,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: SECRET_NAME
-              value: auth-operator-webhook-server-secret
+              value: ${component.dex.name}-auth-operator
             - name: APROXY_IMAGE
               value: ${component.dex.authproxy.image}
             - name: APROXY_COOKIE_EXP
@@ -177,7 +176,6 @@ spec:
             - name: APROXY_DEX_NAMESPACE
               value: ${component.dex.namespace}
           image: ${component.dex.authOperator.image}
-          imagePullPolicy: Always
           name: manager
           ports:
             - containerPort: 9876
@@ -199,4 +197,4 @@ spec:
         - name: cert
           secret:
             defaultMode: 420
-            secretName: auth-operator-webhook-server-secret
+            secretName: ${component.dex.name}-auth-operator

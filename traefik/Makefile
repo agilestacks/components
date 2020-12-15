@@ -33,21 +33,21 @@ TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
 VALUES_FILE:=values.yaml
 ifneq (,$(ACM_CERTIFICATE_ARN))
-	PROTOCOL:=https
-	ACM_VALUES_FILE:=--values aws/values-acm.yaml
+PROTOCOL:=https
+ACM_VALUES_FILE:=--values aws/values-acm.yaml
 else
 ifneq (,$(filter cert-manager,$(HUB_PROVIDES)))
-	PROTOCOL:=https
-	TLS_VALUES_FILE:=--values values-tls.yaml --values $(CLOUD_KIND)/values-tls.yaml
-	DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
-	PROVIDES:=tls-ingress
+PROTOCOL:=https
+TLS_VALUES_FILE:=--values values-tls.yaml --values $(CLOUD_KIND)/values-tls.yaml
+DASHBOARD_VALUES_FILE:=--values values-dashboard.yaml
+PROVIDES:=tls-ingress
 else
-	PROTOCOL:=http
+PROTOCOL:=http
 endif
 endif
 
 ifeq (2,$(words $(CLOUD_AWS_ACCESS_KEY) $(CLOUD_AWS_SECRET_KEY)))
-	EXT_DNS_VALUES_FILE:=--values aws/values-tls-ext-dns.yaml
+EXT_DNS_VALUES_FILE:=--values aws/values-tls-ext-dns.yaml
 endif
 
 deploy: clean fetch patch purge install

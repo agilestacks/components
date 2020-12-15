@@ -25,6 +25,8 @@ parameters:
 - name: dns.domain
   env: DOMAIN_NAME
 - name: component.ingress.protocol
+- name: component.ingress.kubernetes.ingressClass
+  empty: allow
 - name: component.rabbitmq
   parameters:
   - name: name
@@ -53,6 +55,13 @@ outputs:
 - name: component.rabbitmq.endpoint
   brief: Protocol endpoint
   value: ${component.rabbitmq.name}.${component.rabbitmq.namespace}.svc.cluster.local
+- name: component.rabbitmq.user
+  value: user
+- name: component.rabbitmq.password
+  fromTfVar: password/base64
+- name: component.rabbitmq.cookie
+  brief: Erlang cookie
+  fromTfVar: cookie/base64
 - name: component.rabbitmq.url
   brief: Ingress URL
   value: ${component.ingress.protocol}://${component.rabbitmq.ingress.hostname}

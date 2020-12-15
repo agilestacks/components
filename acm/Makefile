@@ -11,18 +11,18 @@ STATE_REGION ?= us-east-1
 
 export AWS_DEFAULT_REGION ?= us-east-2
 
-export TF_LOG      ?= info
 export TF_DATA_DIR ?= .terraform/$(DOMAIN_NAME)-$(COMPONENT_NAME)
 export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 
-terraform   ?= terraform-v0.11
-TF_CLI_ARGS ?= -no-color -input=false
+terraform   ?= terraform
+TF_CLI_ARGS ?= -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
 TF_GENERATED_DIR := $(DOMAIN_NAME)-$(COMPONENT_NAME)
 
-python := . .venv/bin/activate && python3
-pip    := . .venv/bin/activate && pip3
+VENV_DIR := .venv
+python   := test -f $(VENV_DIR)/bin/activate && . $(VENV_DIR)/bin/activate; python3
+pip      := test -f $(VENV_DIR)/bin/activate && . $(VENV_DIR)/bin/activate; pip
 
 deploy: install cert init plan apply wait output
 
@@ -30,8 +30,7 @@ $(TF_DATA_DIR):
 	@rm -rf $@ && mkdir -p $@
 
 init: $(TF_DATA_DIR) $(TF_GENERATED_DIR)/generated.tf
-	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
-        -backend=true -reconfigure \
+	$(terraform) init -get=true -reconfigure -force-copy $(TF_CLI_ARGS) \
         -backend-config="bucket=$(STATE_BUCKET)" \
         -backend-config="region=$(STATE_REGION)" \
         -backend-config="key=$(DOMAIN_NAME)/acm/$(COMPONENT_NAME)/terraform.tfstate" \
@@ -39,10 +38,7 @@ init: $(TF_DATA_DIR) $(TF_GENERATED_DIR)/generated.tf
         $(TF_GENERATED_DIR)
 
 plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN) $(TF_GENERATED_DIR)
-
-refresh:
-	$(terraform) refresh $(TF_CLI_ARGS) $(TF_GENERATED_DIR)
+	$(terraform) plan $(TF_CLI_ARGS) -out=$(TFPLAN) $(TF_GENERATED_DIR)
 
 apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
@@ -58,13 +54,13 @@ destroy: plan
 delete:
 	$(python) main.py delete $(DOMAIN_NAME)
 
-.venv:
-	virtualenv-3.7 .venv || virtualenv -p $$(which python3) .venv
+$(VENV_DIR):
+	python3 -m venv $(VENV_DIR)
 
-install: .venv
-	$(pip) install -r requirements.txt --upgrade
+install: $(VENV_DIR)
+	$(pip) install -r requirements.txt --upgrade --no-cache
 
-cert:
+cert: install
 	$(python) main.py request $(DOMAIN_NAME) $(ADDITIONAL_NAMES)
 .PHONY: cert
 
@@ -75,11 +71,11 @@ $(TF_GENERATED_DIR)/generated.tf:
 		--save-to $(TF_GENERATED_DIR)/generated.tf
 .PHONY: $(TF_GENERATED_DIR)/generated.tf
 
-wait: .venv
+wait: install
 	$(python) main.py wait $(DOMAIN_NAME) --timeout $(TIMEOUT)
 
+output: CERTIFICATE_ARN=$(shell $(python) main.py arn $(DOMAIN_NAME))
 output:
-	$(eval CERTIFICATE_ARN:=$(shell $(python) main.py arn $(DOMAIN_NAME)))
 	@echo
 	@echo Outputs:
 	@echo certificate_arn=$(CERTIFICATE_ARN)

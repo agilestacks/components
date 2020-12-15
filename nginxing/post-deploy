@@ -1,8 +1,8 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 LOAD_BALANCER=$($kubectl get svc ${COMPONENT_NAME}-ingress-nginx-controller --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
 
-if grep cert-manager <<<$HUB_PROVIDES; then
+if grep cert-manager <<<$HUB_PROVIDES >/dev/null; then
     PROTOCOL=https
     PROVIDES=tls-ingress
 else

@@ -8,7 +8,7 @@ meta:
   description: >
     Træfik (pronounced traffic) is a modern HTTP reverse proxy and load balancer that makes deploying microservices easy.
   category: Edge Proxy
-  version: 2.2.11
+  version: 2.3.4
   maturity: ga
   license: MIT
   icon: https://www.jpaul.me/wp-content/uploads/2018/12/traefik-300.png
@@ -45,6 +45,9 @@ parameters:
   env: DOMAIN_NAME
 - name: dns.name
   env: NAME
+- name: component.acm.certificateArn
+  empty: allow
+  env: ACM_CERTIFICATE_ARN
 
 - name: cloud.azureResourceGroupName
   value: superhub-${cloud.region}
@@ -91,7 +94,7 @@ parameters:
 - name: component.traefik
   parameters:
   - name: app.version
-    value: 2.2.11
+    value: 2.3.4
   - name: kubernetes.nodeSelector
     value: '{}'
   - name: kubernetes.tolerations
@@ -129,4 +132,8 @@ outputs:
 
 templates:
   files:
-  - '*.yaml.template'
+  - 'kubernetes/*.yaml.template'
+  extra:
+    - kind: go
+      files:
+      - 'kubernetes/*.gotemplate'

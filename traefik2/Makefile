@@ -20,7 +20,7 @@ export TF_LOG_PATH ?= $(TF_DATA_DIR)/terraform.log
 kubectl   ?= kubectl --context="$(KUBECONFIG_CONTEXT)" --namespace="$(NAMESPACE)"
 terraform ?= terraform-v0.11
 
-TF_CLI_ARGS ?= -no-color -input=false
+TF_CLI_ARGS ?= -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
 export TF_VAR_component          := $(COMPONENT_NAME)
@@ -39,18 +39,24 @@ else
 $(error cloud.kind / CLOUD_KIND must be one of: aws)
 endif
 
+deploy: namespace
+ifneq (,$(ACM_CERTIFICATE_ARN))
+PROTOCOL:=https
+else
+deploy: acmevolume
 ifneq (,$(filter cert-manager,$(HUB_PROVIDES)))
 PROTOCOL:=https
 PROVIDES:=tls-ingress
 else
 PROTOCOL:=http
 endif
+endif
 
 ifneq (,$(filter external-dns,$(HUB_PROVIDES)))
 deploy: crds install elb dns
 undeploy: undns uninstall
 else
-deploy: init crds install elb plan apply
+deploy: clean init crds install elb plan apply
 undeploy: init destroy apply uninstall
 endif
 deploy: dashboard output
@@ -59,13 +65,12 @@ $(TF_DATA_DIR):
 	@mkdir -p $@
 
 init: $(TF_DATA_DIR)
-	$(terraform) init -get=true -force-copy $(TF_CLI_ARGS) \
-        -backend=true -reconfigure \
+	$(terraform) init -get=true -force-copy -reconfigure $(TF_CLI_ARGS) \
 		$(STATE_BACKEND_CONFIG) \
 		./$(CLOUD_KIND)
 
 crds:
-	$(kubectl) apply -f crds.yaml
+	$(kubectl) apply -f kubernetes/crds.yaml
 	@echo "Waiting for CRDs to install"; \
 	for i in $$(seq 1 30); do \
 		if test $$($(kubectl) get crds | grep -F traefik.containo.us | wc -l) -ge 5; then \
@@ -78,13 +83,17 @@ crds:
 	echo "timeout"; \
 	exit 1;
 
+namespace:
+	-$(kubectl) create ns $(NAMESPACE)
+
+acmevolume:
+	$(kubectl) apply -f kubernetes/acme-pvc.yaml
+
 install:
-	$(kubectl) apply -f namespace.yaml
-	$(kubectl) apply -f rbac.yaml
-	$(kubectl) apply -f configmap.yaml
-	$(kubectl) apply -f acme-pvc.yaml
-	$(kubectl) apply -f deployment.yaml
-	$(kubectl) apply -f service.yaml
+	$(kubectl) apply -f kubernetes/rbac.yaml
+	$(kubectl) apply -f kubernetes/configmap.yaml
+	$(kubectl) apply -f kubernetes/deployment.yaml
+	$(kubectl) apply -f kubernetes/service.yaml
 
 elb:
 	@echo "Waiting for ELB to assign"; \
@@ -101,15 +110,15 @@ elb:
 	exit 1;
 
 dashboard:
-	$(kubectl) apply -f dashboard.yaml
+	$(kubectl) apply -f kubernetes/dashboard.yaml
 
 dns: NAMESERVER=$(firstword $(shell dig +short NS $(DOMAIN_NAME)))
 dns: DNS1:="$(URL_PREFIX).$(DOMAIN_NAME)."
 dns: DNS2:="$(SSO_URL_PREFIX).$(DOMAIN_NAME)."
 dns: LOAD_BALANCER=$(shell $(kubectl) get svc $(COMPONENT_NAME) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
 dns:
-	cat dns.yaml | sed -e 's/\$$load_balancer/$(LOAD_BALANCER)/' | $(kubectl) apply -f -
-	echo "Waiting for DNS records to propagate $(LOAD_BALANCER) at nameserver $(NAMESERVER)"
+	cat kubernetes/dns.yaml | sed -e 's/\$$load_balancer/$(LOAD_BALANCER)/' | $(kubectl) apply -f -
+	echo "Waiting for DNS records to propagate $(DNS1) / $(DNS2) at nameserver $(NAMESERVER)"
 	for i in $$(seq 1 60); do \
 		if nslookup $(DNS1) $(NAMESERVER) >/dev/null; then \
 			if nslookup $(DNS2) $(NAMESERVER) >/dev/null; then \
@@ -133,17 +142,17 @@ undns:
 	-$(kubectl) delete dnsendpoint $(COMPONENT_NAME)
 
 uninstall:
-	-$(kubectl) delete -f dashboard.yaml
-	-$(kubectl) delete -f service.yaml
-	-$(kubectl) delete -f deployment.yaml
-	-$(kubectl) delete -f acme-pvc.yaml
-	-$(kubectl) delete -f configmap.yaml
-	-$(kubectl) delete -f rbac.yaml
-	-$(kubectl) delete -f crds.yaml
+	-$(kubectl) delete -f kubernetes/dashboard.yaml
+	-$(kubectl) delete -f kubernetes/service.yaml
+	-$(kubectl) delete -f kubernetes/deployment.yaml
+	-$(kubectl) delete -f kubernetes/acme-pvc.yaml
+	-$(kubectl) delete -f kubernetes/configmap.yaml
+	-$(kubectl) delete -f kubernetes/rbac.yaml
+	-$(kubectl) delete -f kubernetes/crds.yaml
 	-$(kubectl) get crd -o name | grep -F traefik.containo.us | xargs $(kubectl) delete
 
 plan:
-	$(terraform) plan $(TF_CLI_ARGS) -refresh=true -module-depth=-1 -out=$(TFPLAN) ./$(CLOUD_KIND)
+	$(terraform) plan $(TF_CLI_ARGS) -out=$(TFPLAN) ./$(CLOUD_KIND)
 
 apply:
 	$(terraform) apply $(TF_CLI_ARGS) -auto-approve $(TFPLAN)
@@ -163,5 +172,5 @@ clean:
 	rm -rf $(TF_DATA_DIR)
 
 .SILENT: dns output
-.PHONY: dashboard dns undns
+.PHONY: namespace acmevolume dashboard dns undns
 -include ../Mk/phonies

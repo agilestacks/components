@@ -20,13 +20,12 @@ requires:
 - kubernetes
 - helm
 
-provides:
-- postgresql
-
 parameters:
 - name: dns.domain
   env: DOMAIN_NAME
 - name: component.ingress.protocol
+- name: component.ingress.kubernetes.ingressClass
+  empty: allow
 - name: component.postgresql
   parameters:
   - name: host

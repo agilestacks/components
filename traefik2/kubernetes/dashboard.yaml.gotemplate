@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: ${component.ingress.name}-admins
+  name: {{.component.ingress.name}}-admins
 data:
-  users: ${component.ingress.dashboard.auth/base64}
+  users: {{.component.ingress.dashboard.auth | b64enc}}
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: TLSOption
@@ -16,29 +16,35 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
-  name: ${component.ingress.name}-admins
+  name: {{.component.ingress.name}}-admins
 spec:
   basicAuth:
-    secret: ${component.ingress.name}-admins
+    secret: {{.component.ingress.name}}-admins
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: ${component.ingress.name}-dashboard
+  name: {{.component.ingress.name}}-dashboard
   labels:
     app: traefik2
 spec:
   entryPoints:
+{{if .component.acm.certificateArn}}
+  - web
+{{else}}
   - websecure
+{{end}}
   routes:
-  - match: Host(`${component.ingress.urlPrefix}.${dns.domain}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+  - match: Host(`{{.component.ingress.urlPrefix}}.{{.dns.domain}}`) && (PathPrefix(`/dashboard/`) || PathPrefix(`/api/`))
     kind: Rule
     services:
     - name: api@internal
       kind: TraefikService
     middlewares:
-    - name: ${component.ingress.name}-admins
+    - name: {{.component.ingress.name}}-admins
+{{if not .component.acm.certificateArn}}
   tls:
     certResolver: prod
     options:
       name: tls12
+{{end}}

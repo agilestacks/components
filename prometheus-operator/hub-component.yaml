@@ -27,6 +27,8 @@ parameters:
   - name: component.ingress.fqdn
   - name: component.ingress.ssoFqdn
   - name: component.ingress.protocol
+  - name: component.ingress.kubernetes.ingressClass
+    empty: allow
   - name: component.dex.issuer
     empty: allow
   - name: dns.domain
@@ -42,8 +44,6 @@ parameters:
     env: AWS_DEFAULT_REGION
   - name: cloud.kind
     env: CLOUD_KIND
-  - name: component.ingress.kubernetes.ingressClass
-    empty: allow
   - name: component.bucket.name
     empty: allow
   - name: component.bucket.fqdn
