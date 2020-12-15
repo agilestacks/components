@@ -1,7 +1,7 @@
 variable "k8s_version" {
   type        = string
   description = "Kubernetes version"
-  default     = "1.17"
+  default     = "1.18"
 }
 
 variable "keypair" {
