@@ -66,7 +66,7 @@ undeploy: ext-dns-endpoint-delete
 endif
 undeploy: uninstall
 
-ext-dns-endpoint-%: LOAD_BALANCER:=$(shell $(kubectl) get svc $(TF_VAR_component) \
+ext-dns-endpoint-%: LOAD_BALANCER=$(shell $(kubectl) get svc $(TF_VAR_component) \
 						-o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
 ext-dns-endpoint-%:
 	sed 's/##LB##/$(LOAD_BALANCER)/g' dns-endpoint.yaml | $(kubectl) $* -f -
@@ -75,7 +75,7 @@ wait-elb:
 	@echo "Waiting for ELB to assign"; \
 	for i in $$(seq 1 30); do \
 		if $(kubectl) get svc $(TF_VAR_component) --template='{{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}' | \
-				grep -F elb.amazonaws.com; then \
+				grep -F .amazonaws.com; then \
 			echo "done"; \
 			exit 0; \
 		fi; \

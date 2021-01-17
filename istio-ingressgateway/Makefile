@@ -36,12 +36,10 @@ $(HELM_HOME):
 	$(helm) init --client-only --upgrade --wait
 
 $(GLOBAL_VALUES): $(CHART_DIR)
-	yq r $</values.yaml global -j \
-	| jq -c '{"global": .}' | yq r -P - > $@
+	yq e '{"global": .global}' $</values.yaml > $@
 
 $(DEFAULT_VALUES): $(CHART_DIR)
-	yq r $</charts/gateways/values.yaml istio-ingressgateway -j \
-	| jq -c '{"$(COMPONENT_NAME)": .}' | yq r -P - > $@ 
+	yq e '{"$(COMPONENT_NAME)": .istio-ingressgateway}' $</charts/gateways/values.yaml > $@
 
 $(CHART_DIR): $(HELM_HOME)
 	$(helm) repo add istio https://storage.googleapis.com/istio-release/releases/$(ISTIO_VERSION)/charts/

@@ -17,6 +17,7 @@ meta:
 
 requires:
 - kubernetes
+- helm
 provides:
 - cert-manager
 
