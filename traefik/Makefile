@@ -66,7 +66,7 @@ undeploy: ext-dns-endpoint-delete
 endif
 undeploy: uninstall
 
-ext-dns-endpoint-%: LOAD_BALANCER:=$(shell $(kubectl) get svc $(TF_VAR_component) \
+ext-dns-endpoint-%: LOAD_BALANCER=$(shell $(kubectl) get svc $(TF_VAR_component) \
 						-o jsonpath="{.status.loadBalancer.ingress[*].hostname}")
 ext-dns-endpoint-%:
 	sed 's/##LB##/$(LOAD_BALANCER)/g' dns-endpoint.yaml | $(kubectl) $* -f -
