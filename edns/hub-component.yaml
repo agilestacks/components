@@ -28,13 +28,17 @@ lifecycle:
 
 parameters:
 - name: hub.deploymentId
+- name: cloud.region
 - name: cloud
+  empty: allow
   parameters:
-  - name: region
   - name: aws.secretKey
-    empty: allow
   - name: aws.accessKey
-    empty: allow
+  - name: azureResourceGroupName
+  - name: azureTenantId
+  - name: azureSubscriptionId
+  - name: azureClientId
+  - name: azureClientSecret
 - name: dns.domain
   env: DOMAIN_NAME
 - name: component.external-dns
@@ -52,11 +56,9 @@ parameters:
   - name: domainFilters
     # value: ${dns.domain}
     empty: allow
-    env: DOMAIN_FILTERS
   - name: route53.zoneTags
     value: superhub.io/stack/${dns.domain}
     empty: allow
-    env: ROUTE53_ZONE_TAGS
   - name: helm
     parameters:
     - name: repo

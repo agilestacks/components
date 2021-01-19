@@ -155,19 +155,19 @@ azure:
   cloud: ""
   ## Azure Cloud to use
   ##
-  resourceGroup: ""
+  resourceGroup: "{{.cloud.azureResourceGroupName}}"
   ## Azure tenant ID to use
   ##
-  tenantId: ""
+  tenantId: "{{.cloud.azureTenantId}}"
   ## Azure subscription ID to use
   ##
-  subscriptionId: ""
+  subscriptionId: "{{.cloud.azureSubscriptionId}}"
   ## Azure Application Client ID to use
   ##
-  aadClientId: ""
+  aadClientId: "{{.cloud.azureClientId}}"
   ## Azure Application Client Secret to use
   ##
-  aadClientSecret: ""
+  aadClientSecret: "{{.cloud.azureClientSecret}}"
   ## If you use Azure MSI, this should be set to true
   ##
   useManagedIdentityExtension: false
