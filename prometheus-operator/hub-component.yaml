@@ -10,7 +10,7 @@ meta:
     given intervals, evaluates rule expressions, displays the results, and can trigger alerts if some condition
     is observed to be true.
   category: Monitoring
-  version: 2.22.1
+  version: 2.24.0
   maturity: beta
   license: Apache 2.0
   source:
@@ -60,13 +60,13 @@ parameters:
       value: prometheus-community/kube-prometheus-stack
       env: HELM_CHART
     - name: chart.version
-      value: 12.0.1
+      value: 13.2.1
       env: CHART_VERSION
     - name:  prometheus.version
       brief: Prometheus version
-      value: v2.22.1
+      value: v2.24.0
     - name:  operator.version
-      value: v0.43.2
+      value: v0.45.0
       env: OPERATOR_VERSION
     - name:  name
       value: prometheus-operator
@@ -108,7 +108,7 @@ parameters:
     parameters:
     - name:  version
       brief: Grafana version
-      value: 7.1.1
+      value: 7.3.5
     - name:  ingress.enabled
       value: true
     - name:  ingress.urlPrefix
