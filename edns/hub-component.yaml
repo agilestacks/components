@@ -15,6 +15,7 @@ meta:
 
 requires:
 - aws
+- azure
 - kubernetes
 - helm
 
