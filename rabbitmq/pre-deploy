@@ -1,0 +1,8 @@
+#!/bin/sh -e
+
+secret="$($kubectl get secret $COMPONENT_NAME -o json || true)"
+if test -n "$secret"; then
+    password=$(echo "$secret" | jq -r '.data["rabbitmq-password"]' | base64 -d)
+    cookie=$(echo "$secret" | jq -r '.data["rabbitmq-erlang-cookie"]' | base64 -d)
+    echo "export HELM_OPTS=\"$HELM_OPTS --set auth.password=$password --set auth.erlangCookie=$cookie\""
+fi
