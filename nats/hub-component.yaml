@@ -53,7 +53,7 @@ outputs:
 - name:  component.nats.monitor.url
   value: ${component.ingress.protocol}://${component.nats.monitor.ingress}
 - name:  component.minio.nats.enabled
-  value: true
+  value: "true"
 - name:  component.minio.nats.subject
   value: bucketevents
 - name: component.minio.nats.client.fqdn

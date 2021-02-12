@@ -90,7 +90,7 @@ outputs:
 - name:  component.jenkins.internal.host
   value: jenkins.${component.jenkins.namespace}.svc.cluster.local
 - name:  component.jenkins.internal.port
-  value: 8080
+  value: "8080"
 - name:  component.jenkins.internal.endpoint
   value: http://jenkins.${component.jenkins.namespace}.svc.cluster.local:8080
 - name:  component.jenkins.fqdn # for Spinnaker
