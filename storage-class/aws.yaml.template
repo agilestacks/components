@@ -3,6 +3,7 @@ kind: StorageClass
 metadata:
   name: ${component.storage-class.name}
 provisioner: kubernetes.io/aws-ebs
+volumeBindingMode: WaitForFirstConsumer
 parameters:
   type: "${component.storage-class.type}"
   encrypted: "true"
