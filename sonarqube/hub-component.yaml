@@ -1,0 +1,71 @@
+---
+version: 1
+kind: component
+meta:
+  name: sonarqube
+  title: SonarQube
+  brief: Code Quality & Code Security
+  description: SonarQube empowers all developers to write cleaner and safer code.
+  category: DevOps Stack
+  version: 8.5.1
+  maturity: beta
+  license: LGPLv3
+  icon: |
+    data:image/svg+xml;base64,PHN2ZyBpZD0iQ2FscXVlXzEiIGRhdGEtbmFtZT0iQ2FscXVlIDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxkZWZzPjxzdHlsZT4uY2xzLTF7ZmlsbDojNTQ5ZGQwO308L3N0eWxlPjwvZGVmcz48dGl0bGU+U29uYXJRdWJlIGljb248L3RpdGxlPjxnIGlkPSJJbGx1c3RyYXRpb25fNSIgZGF0YS1uYW1lPSJJbGx1c3RyYXRpb24gNSI+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNNDA4Ljc4LDQ0OC4wOUgzODYuNWMwLTE3OS4zNi0xNDgtMzI1LjI4LTMyOS45MS0zMjUuMjhWMTAwLjUzQzI1MC43OSwxMDAuNTMsNDA4Ljc4LDI1Ni40NCw0MDguNzgsNDQ4LjA5WiIvPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTQyNC4xOCwzMjguNDhDMzk3LjQzLDIxNiwzMDYuMjcsMTIyLDE5Miw4OS4ybDUuMTItMTcuODRDMzE3LjczLDEwNiw0MTQsMjA1LjIzLDQ0Mi4yNCwzMjQuMTlaIi8+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNNDQxLjMxLDIyMi44N2MtMjcuNTUtNjAuMDgtNzQuNDktMTEyLjQ2LTEzMi4xNy0xNDcuNTFsNy43Mi0xMi43YzYwLjE5LDM2LjU4LDEwOS4xOCw5MS4yNywxMzgsMTU0WiIvPjwvZz48L3N2Zz4=
+  source:
+    dir: ../../components/sonarqube
+
+requires:
+- kubernetes
+- helm
+
+provides:
+- sonarqube
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.ingress.protocol
+- name: component.ingress.kubernetes.ingressClass
+  empty: allow
+- name: component.sonarqube
+  parameters:
+  - name: name
+    env: COMPONENT_NAME
+    value: sonarqube
+  - name: namespace
+    value: sonarqube
+    env: NAMESPACE
+  - name: ingress.urlPrefix
+    value: ${component.sonarqube.name}
+  - name: ingress.hostname
+    value: ${component.sonarqube.ingress.urlPrefix}.${component.ingress.fqdn}
+  - name: volumeSize
+    value: 10Gi
+  - name: databaseVolumeSize
+    value: 20Gi
+  - name: storageClass
+    value: default
+  - name: helm
+    parameters:
+    - name: repo
+      value: https://oteemo.github.io/charts
+      env: HELM_REPO
+    - name: chart
+      value: sonarqube
+      env: HELM_CHART
+    - name: version
+      value: 9.5.1
+      env: HELM_CHART_VERSION
+
+outputs:
+- name: component.sonarqube.endpoint
+  brief: API endpoint
+  value: ${component.sonarqube.name}.${component.sonarqube.namespace}.svc.cluster.local
+- name: component.sonarqube.url
+  brief: Ingress URL
+  value: ${component.ingress.protocol}://${component.sonarqube.ingress.hostname}
+
+templates:
+  files:
+  - '*.template'
