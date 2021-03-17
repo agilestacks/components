@@ -12,7 +12,7 @@ meta:
   license: MPL
   icon: https://www.rabbitmq.com/img/logo-rabbitmq.svg
   source:
-      dir: ../../components/rabbitmq
+    dir: ../../components/rabbitmq
 
 requires:
 - kubernetes
