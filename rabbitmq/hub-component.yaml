@@ -39,6 +39,10 @@ parameters:
     value: ${component.rabbitmq.name}
   - name: ingress.hostname
     value: ${component.rabbitmq.ingress.urlPrefix}.${component.ingress.fqdn}
+  - name: volumeSize
+    value: 8Gi
+  - name: storageClass
+    value: default
   - name: helm
     parameters:
     - name: repo
