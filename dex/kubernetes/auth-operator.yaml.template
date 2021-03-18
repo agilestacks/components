@@ -154,8 +154,9 @@ spec:
     spec:
       serviceAccountName: ${component.dex.name}-auth-operator
       containers:
-        - command:
-            - /root/manager
+        - name: manager
+          image: ${component.dex.authOperator.image}
+          imagePullPolicy: Always
           env:
             - name: POD_NAMESPACE
               valueFrom:
@@ -175,8 +176,6 @@ spec:
               value: ${component.ingress.protocol}
             - name: APROXY_DEX_NAMESPACE
               value: ${component.dex.namespace}
-          image: ${component.dex.authOperator.image}
-          name: manager
           ports:
             - containerPort: 9876
               name: webhook-server
@@ -184,10 +183,10 @@ spec:
           resources:
             limits:
               cpu: 300m
-              memory: 100Mi
+              memory: 300Mi
             requests:
-              cpu: 100m
-              memory: 20Mi
+              cpu: 50m
+              memory: 50Mi
           volumeMounts:
             - mountPath: /tmp/cert
               name: cert

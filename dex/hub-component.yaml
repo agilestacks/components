@@ -93,9 +93,9 @@ parameters:
       - name: email
       - name: password
   - name: component.dex.authproxy.image
-    value: agilestacks/oauth2_proxy:v2.3
+    value: bitnami/oauth2-proxy:7
   - name: component.dex.authOperator.image
-    value: agilestacks/auth-operator:0.1.1
+    value: agilestacks/auth-operator:0.2.0
   - name: component.dex.authproxy.emailDomain
     value: "'*'"
   - name: component.dex.authproxy.cookieExpire
