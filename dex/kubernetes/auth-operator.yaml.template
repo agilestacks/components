@@ -156,7 +156,6 @@ spec:
       containers:
         - name: manager
           image: ${component.dex.authOperator.image}
-          imagePullPolicy: Always
           env:
             - name: POD_NAMESPACE
               valueFrom:
