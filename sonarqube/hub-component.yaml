@@ -40,6 +40,8 @@ parameters:
     value: ${component.sonarqube.name}
   - name: ingress.hostname
     value: ${component.sonarqube.ingress.urlPrefix}.${component.ingress.fqdn}
+  - name: ingress.ssoHostname
+    value: ${component.sonarqube.ingress.urlPrefix}.${component.ingress.ssoFqdn}
   - name: volumeSize
     value: 10Gi
   - name: databaseVolumeSize
@@ -63,6 +65,9 @@ outputs:
   brief: API endpoint
   value: ${component.sonarqube.name}.${component.sonarqube.namespace}.svc.cluster.local
 - name: component.sonarqube.url
+  brief: Ingress URL
+  value: ${component.ingress.protocol}://${component.sonarqube.ingress.ssoHostname}
+- name: component.sonarqube.adminUrl
   brief: Ingress URL
   value: ${component.ingress.protocol}://${component.sonarqube.ingress.hostname}
 

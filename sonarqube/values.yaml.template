@@ -55,6 +55,9 @@ ingress:
   enabled: true
   # Used to create an Ingress record.
   hosts:
+    # SSO must be first or it will break auth-operator logic
+    - name: ${component.sonarqube.ingress.ssoHostname}
+      path: /
     - name: ${component.sonarqube.ingress.hostname}
       # Different clouds or configurations might need /* as the default path
       path: /
@@ -66,6 +69,12 @@ ingress:
   # kubernetes.io/tls-acme: "true"
   # This property allows for reports up to a certain size to be uploaded to SonarQube
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  # Only oauth2_proxy is allowed to set X-Forwarded headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header X-Forwarded-User "";
+      proxy_set_header X-Forwarded-Email "";
+      proxy_set_header X-Forwarded-Groups "";
+      proxy_set_header X-Forwarded-Preferred-Username "";
 
 # Additional labels for Ingress manifest file
   # labels:
@@ -243,6 +252,16 @@ emptyDir: {}
 #   sonar.forceAuthentication: true
 #   sonar.security.realm: LDAP
 #   ldap.url: ldaps://organization.com
+
+sonarProperties:
+  # sonar.log.level: DEBUG
+  sonar.web.sso.enable: true
+  sonar.web.sso.loginHeader: X-Forwarded-Email
+  sonar.web.sso.nameHeader: X-Forwarded-Preferred-Username
+  # these are the defaults
+  # sonar.web.sso.nameHeader: X-Forwarded-User
+  sonar.web.sso.emailHeader: X-Forwarded-Email
+  sonar.web.sso.groupsHeader: X-Forwarded-Groups
 
 # Additional sonar properties to load from a secret with a key "secret.properties" (must be a string)
 # sonarSecretProperties:
