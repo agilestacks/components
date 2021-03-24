@@ -629,7 +629,7 @@ grafana:
     #   allow_sign_up: true
     #   config_file: /etc/grafana/ldap.toml
     auth.generic_oauth:
-      name: Okta
+      name: SSO
       enabled: ${component.prometheus.oauth.enabled}
       scopes: openid profile email
       client_id: ${component.prometheus.grafana.oidcId}
