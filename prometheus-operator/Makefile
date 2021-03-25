@@ -4,8 +4,8 @@ COMPONENT_NAME   ?= prometheus-operator
 HELM_CHART       ?= prometheus-community/kube-prometheus-stack
 DOMAIN_NAME      ?= test.dev.superhub.io
 NAMESPACE        ?= monitoring
-CHART_VERSION    ?= 12.0.1
-OPERATOR_VERSION ?= v0.43.2
+CHART_VERSION    ?= 14.3.0
+OPERATOR_VERSION ?= v0.46.0
 CLOUD_KIND       ?= aws
 
 kubectl ?= kubectl --context="$(DOMAIN_NAME)" --namespace="$(NAMESPACE)"
