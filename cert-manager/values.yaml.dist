@@ -24,6 +24,21 @@ global:
     # Override the namespace used to store the ConfigMap for leader election
     namespace: "kube-system"
 
+    # The duration that non-leader candidates will wait after observing a
+    # leadership renewal until attempting to acquire leadership of a led but
+    # unrenewed leader slot. This is effectively the maximum duration that a
+    # leader can be stopped before it is replaced by another candidate.
+    # leaseDuration: 60s
+
+    # The interval between attempts by the acting master to renew a leadership
+    # slot before it stops leading. This must be less than or equal to the
+    # lease duration.
+    # renewDeadline: 40s
+
+    # The duration the clients should wait between attempting acquisition and
+    # renewal of a leadership.
+    # retryPeriod: 15s
+
 installCRDs: false
 
 replicaCount: 1
@@ -65,6 +80,8 @@ serviceAccount:
   # name: ""
   # Optional additional annotations to add to the controller's ServiceAccount
   # annotations: {}
+  # Automount API credentials for a Service Account.
+  automountServiceAccountToken: true
 
 # Optional additional arguments
 extraArgs: []
@@ -178,6 +195,7 @@ tolerations: []
 
 webhook:
   replicaCount: 1
+  timeoutSeconds: 10
 
   strategy: {}
     # type: RollingUpdate
@@ -238,6 +256,9 @@ webhook:
 
   tolerations: []
 
+  # Optional additional labels to add to the Webhook Pods
+  podLabels: {}
+
   image:
     repository: quay.io/jetstack/cert-manager-webhook
     # You can manage a registry with
@@ -261,6 +282,8 @@ webhook:
     # name: ""
     # Optional additional annotations to add to the controller's ServiceAccount
     # annotations: {}
+    # Automount API credentials for a Service Account.
+    automountServiceAccountToken: true
 
   # The port that the webhook should listen on for requests.
   # In GKE private clusters, by default kubernetes apiservers are allowed to
@@ -322,6 +345,9 @@ cainjector:
 
   tolerations: []
 
+  # Optional additional labels to add to the CA Injector Pods
+  podLabels: {}
+
   image:
     repository: quay.io/jetstack/cert-manager-cainjector
     # You can manage a registry with
@@ -345,3 +371,5 @@ cainjector:
     # name: ""
     # Optional additional annotations to add to the controller's ServiceAccount
     # annotations: {}
+    # Automount API credentials for a Service Account.
+    automountServiceAccountToken: true

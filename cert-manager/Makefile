@@ -4,7 +4,7 @@ COMPONENT_NAME ?= cert-manager
 DOMAIN_NAME    ?= test.dev.superhub.io
 NAMESPACE      ?= cert-manager
 HELM_CHART     ?= jetstack/cert-manager
-VERSION        ?= v1.1.0
+VERSION        ?= v1.2.0
 
 CRD_FILE := charts/$(notdir $(HELM_CHART))/crds.yaml
 
