@@ -54,6 +54,12 @@ purge:
 install:
 	-$(kubectl) create namespace $(NAMESPACE)
 	$(kubectl) apply -f oidc.yaml
+	-$(kubectl) delete configmap $(COMPONENT_NAME)-dashboards
+	if echo dashboards/*.json | xargs -n1 test -f; then \
+		$(kubectl) create configmap $(COMPONENT_NAME)-dashboards --from-file=dashboards/; \
+		$(kubectl) label  configmap $(COMPONENT_NAME)-dashboards grafana_dashboard=1; \
+	fi
+
 	$(helm) upgrade $(COMPONENT_NAME) charts/$(notdir $(HELM_CHART)) \
 		--install --create-namespace \
 		--wait \
@@ -81,6 +87,7 @@ unthanos:
 .PHONY: thanos unthanos
 
 uninstall:
+	-$(kubectl) delete configmap $(COMPONENT_NAME)-dashboards
 	-$(kubectl) delete -f oidc.yaml
 
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \

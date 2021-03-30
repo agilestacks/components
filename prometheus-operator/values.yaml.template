@@ -696,6 +696,10 @@ grafana:
     dashboards:
       enabled: true
       label: grafana_dashboard
+      # disableDelete to activate a import-only behaviour
+      disableDelete: false
+      # allow updating provisioned dashboards from the UI
+      allowUiUpdates: true
 
       ## Annotations for Grafana dashboard configmaps
       ##
