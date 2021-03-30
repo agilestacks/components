@@ -81,7 +81,7 @@ unthanos:
 .PHONY: thanos unthanos
 
 uninstall:
-	-$(kubectl) delete -f oidc-crd.yaml
+	-$(kubectl) delete -f oidc.yaml
 
 	$(helm) list -q | grep -E '^$(COMPONENT_NAME)$$' && \
 		$(helm) uninstall $(COMPONENT_NAME) || exit 0
