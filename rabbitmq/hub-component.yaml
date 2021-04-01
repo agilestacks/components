@@ -7,8 +7,8 @@ meta:
   brief: AMQP message broker
   description: Open source message broker software that implements the Advanced Message Queuing Protocol (AMQP)
   category: App Stack
-  version: 3.8.9
-  maturity: alpha
+  version: 3.8.14
+  maturity: beta
   license: MPL
   icon: https://www.rabbitmq.com/img/logo-rabbitmq.svg
   source:
@@ -52,7 +52,7 @@ parameters:
       value: rabbitmq
       env: HELM_CHART
     - name: version
-      value: 8.0.5
+      value: 8.11.5
       env: HELM_CHART_VERSION
 
 outputs:
