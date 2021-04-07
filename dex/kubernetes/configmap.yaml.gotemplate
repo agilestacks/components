@@ -31,6 +31,17 @@ data:
         GetUserInfo: true
         insecureSkipEmailVerified: true
 {{end}}
+{{if and .component.dex.microsoft.clientId .component.dex.microsoft.clientSecret}}
+    - type: microsoft
+      id: microsoft
+      name: Microsoft
+      config:
+        clientID: {{.component.dex.microsoft.clientId}}
+        clientSecret: {{.component.dex.microsoft.clientSecret}}
+        redirectURI: {{.component.ingress.protocol}}://{{.component.dex.oidcIssuerFqdn}}/callback
+        tenant: {{.component.dex.microsoft.tenant}}
+        groups: {{.component.dex.microsoft.groups}}
+{{end}}
 {{if and .component.dex.passwordDb.email .component.dex.passwordDb.password}}
     enablePasswordDB: true
     staticPasswords:
