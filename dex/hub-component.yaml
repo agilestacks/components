@@ -90,6 +90,13 @@ parameters:
       - name: issuer
       - name: clientId
       - name: clientSecret
+  - name: component.dex.microsoft
+    empty: allow
+    parameters:
+      - name: clientId
+      - name: clientSecret
+      - name: tenant
+      - name: groups
   - name: component.dex.passwordDb
     empty: allow
     parameters:
