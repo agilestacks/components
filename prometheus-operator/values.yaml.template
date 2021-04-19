@@ -454,7 +454,7 @@ alertmanager:
 
     ## Size is the expected size of the alertmanager cluster. The controller will eventually make the size of the
     ## running cluster equal to the expected size.
-    replicas: 1
+    replicas: ${component.prometheus.alertmanager.replicas}
 
     ## Time duration Alertmanager shall retain data for. Default is '120h', and must match the regular expression
     ## [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours).
@@ -505,12 +505,12 @@ alertmanager:
     ## The value "hard" means that the scheduler is *required* to not schedule two replica pods onto the same node.
     ## The value "" will disable pod anti-affinity so that no anti-affinity rules will be configured.
     ##
-    podAntiAffinity: ""
+    podAntiAffinity: "hard"
 
     ## If anti-affinity is enabled sets the topologyKey to use for anti-affinity.
     ## This can be changed to, for example, failure-domain.beta.kubernetes.io/zone
     ##
-    podAntiAffinityTopologyKey: kubernetes.io/hostname
+    podAntiAffinityTopologyKey: topology.kubernetes.io/zone
 
     ## Assign custom affinity rules to the alertmanager instance
     ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
@@ -1662,7 +1662,7 @@ prometheus:
     ##
     type: ClusterIP
 
-    sessionAffinity: ""
+    sessionAffinity: ClientIP
 
   ## Configuration for creating a separate Service for each statefulset Prometheus replica
   ##
@@ -2131,12 +2131,12 @@ prometheus:
     ## The default value "soft" means that the scheduler should *prefer* to not schedule two replica pods onto the same node but no guarantee is provided.
     ## The value "hard" means that the scheduler is *required* to not schedule two replica pods onto the same node.
     ## The value "" will disable pod anti-affinity so that no anti-affinity rules will be configured.
-    podAntiAffinity: ""
+    podAntiAffinity: "hard"
 
     ## If anti-affinity is enabled sets the topologyKey to use for anti-affinity.
     ## This can be changed to, for example, failure-domain.beta.kubernetes.io/zone
     ##
-    podAntiAffinityTopologyKey: kubernetes.io/hostname
+    podAntiAffinityTopologyKey: topology.kubernetes.io/zone
 
     ## Assign custom affinity rules to the prometheus instance
     ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/

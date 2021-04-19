@@ -104,6 +104,8 @@ parameters:
       value: alertmanager
     - name:  ingress.path
       value: /
+    - name:  replicas
+      value: 1
   - name: component.prometheus.grafana
     parameters:
     - name:  version
