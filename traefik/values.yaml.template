@@ -358,6 +358,7 @@ service:
     kubernetes.io/name: Traefik-${component.ingress.name}
     kubernetes.io/cluster-service: "true"
   annotations:
+    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "domain=${dns.domain}"
     # Changed from "http" to default "tcp", to mitigate ELB doesn't supporting websocket on L7 level
     # https://kubernetes.io/docs/concepts/cluster-administration/cloud-providers/#aws
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
