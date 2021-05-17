@@ -11,12 +11,18 @@ controller:
   name: controller
   image:
     repository: k8s.gcr.io/ingress-nginx/controller
-    tag: "v0.44.0"
-    digest: sha256:3dd0fac48073beaca2d67a78c746c7593f9c575168a17139a9955a82c63c4b9a
+    tag: "v0.46.0"
+    digest: sha256:52f0058bed0a17ab0fb35628ba97e8d52b5d32299fbc03cc0f6c7b9ff036b61a
     pullPolicy: IfNotPresent
     # www-data -> uid 101
     runAsUser: 101
     allowPrivilegeEscalation: true
+
+  # Use an existing PSP instead of creating one
+  existingPsp: ""
+
+  # Configures the controller container name
+  containerName: controller
 
   # Configures the ports the nginx-controller listens on
   containerPort:
@@ -482,6 +488,9 @@ controller:
     namespaceSelector: {}
     objectSelector: {}
 
+    # Use an existing PSP instead of creating one
+    existingPsp: ""
+
     service:
       annotations: {}
       # clusterIP: ""
@@ -524,7 +533,7 @@ controller:
 
       # loadBalancerIP: ""
       loadBalancerSourceRanges: []
-      servicePort: 9913
+      servicePort: 10254
       type: ClusterIP
       # externalTrafficPolicy: ""
       # nodePort: ""
@@ -532,6 +541,8 @@ controller:
     serviceMonitor:
       enabled: false
       additionalLabels: {}
+      # The label to use to retrieve the job name from.
+      # jobLabel: "app.kubernetes.io/name"
       namespace: ""
       namespaceSelector: {}
       # Default: scrape .Release.Namespace only
@@ -617,6 +628,9 @@ defaultBackend:
     runAsNonRoot: true
     readOnlyRootFilesystem: true
     allowPrivilegeEscalation: false
+
+  # Use an existing PSP instead of creating one
+  existingPsp: ""
 
   extraArgs: {}
 

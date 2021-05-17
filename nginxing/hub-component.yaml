@@ -7,7 +7,7 @@ meta:
   brief: Ingress controller
   description: Ingress controller for Kubernetes using NGINX as a reverse proxy and load balancer
   category: Edge Proxy
-  version: 0.44.0
+  version: 0.46.0
   maturity: ga
   license: BSD
   icon: https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Nginx_logo.svg/500px-Nginx_logo.svg.png
@@ -64,7 +64,7 @@ parameters:
       value: ingress-nginx
       env: HELM_CHART
     - name: version
-      value: 3.25.0
+      value: 3.30.0
       env: HELM_CHART_VERSION
 
 outputs:
