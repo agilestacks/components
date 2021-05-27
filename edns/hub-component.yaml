@@ -48,12 +48,14 @@ parameters:
     value: kube-system
     env: NAMESPACE
   - name: name
-    value: external-dns
+    value: ${hub.componentName}
     env: COMPONENT_NAME
   - name: provider
     value: ${cloud.kind}
   - name: interval
     value: 1m
+  - name: crdCreate
+    value: true
   - name: domainFilters
     # value: ${dns.domain}
     empty: allow
@@ -61,6 +63,8 @@ parameters:
     value: public
   - name: route53.zoneTags
     value: superhub.io/stack/${dns.domain}
+    empty: allow
+  - name: kubernetes.ingressClass
     empty: allow
   - name: helm
     parameters:

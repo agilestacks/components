@@ -393,7 +393,11 @@ excludeDomains: []
 zoneIdFilters: []
 ## Filter sources managed by external-dns via annotation using label selector semantics (optional)
 ##
+{{if .component.external_dns.kubernetes.ingressClass}}
+annotationFilter: "kubernetes.io/ingress.class in ({{.component.external_dns.kubernetes.ingressClass}})"
+{{else}}
 annotationFilter: ""
+{{end}}
 ## When enabled, prints DNS record changes rather than actually performing them
 ##
 dryRun: false
@@ -514,7 +518,7 @@ secretAnnotations: {}
 ##
 crd:
   ## Install and use the integrated DNSEndpoint CRD
-  create: true
+  create: {{.component.external_dns.crdCreate}}
   ## Change these to use an external DNSEndpoint CRD (E.g. from kubefed)
   apiversion: "externaldns.k8s.io/v1alpha1"
   kind: "DNSEndpoint"
