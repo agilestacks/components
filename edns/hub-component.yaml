@@ -57,6 +57,8 @@ parameters:
   - name: domainFilters
     # value: ${dns.domain}
     empty: allow
+  - name: route53.zoneType
+    value: public
   - name: route53.zoneTags
     value: superhub.io/stack/${dns.domain}
     empty: allow
