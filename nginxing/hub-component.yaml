@@ -38,11 +38,13 @@ parameters:
     value: apps
   - name: name
     env: COMPONENT_NAME
-    value: nginxing
+    value: ${hub.componentName}
   - name: namespace
     value: ingress
     env: NAMESPACE
   # implemented only for ELB on AWS
+  - name: kubernetes.loadBalancer.internal
+    value: false
   - name: kubernetes.loadBalancer.timeout
     value: 60
   - name: kubernetes.loadBalancer.sslPorts
