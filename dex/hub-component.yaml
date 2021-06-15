@@ -14,7 +14,7 @@ meta:
     Clients write their authentication logic once to talk to dex,
     then dex handles the protocols for a given backend.
   category: Edge Proxy
-  version: 2.28.0
+  version: 2.28.1
   maturity: ga
   license: Apache 2.0
   source:
@@ -73,7 +73,7 @@ parameters:
     value: kube-system
     env: NAMESPACE
   - name: component.dex.image
-    value: dexidp/dex:v2.28.0
+    value: dexidp/dex:v2.28.1
   - name: component.dex.saml.id
     value: saml
   - name: component.dex.saml.name
@@ -105,7 +105,7 @@ parameters:
   - name: component.dex.authproxy.image
     value: bitnami/oauth2-proxy:7
   - name: component.dex.authOperator.image
-    value: agilestacks/auth-operator:0.2.3
+    value: agilestacks/auth-operator:0.2.4
   - name: component.dex.authproxy.emailDomain
     value: "'*'"
   - name: component.dex.authproxy.cookieExpire
