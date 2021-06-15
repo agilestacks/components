@@ -1,21 +1,47 @@
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ${component.dex.name}
-  namespace: ${component.dex.namespace}
+  name: {{.component.dex.name}}
+  namespace: {{.component.dex.namespace}}
   annotations:
-    kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
+    kubernetes.io/ingress.class: "{{.component.ingress.kubernetes.ingressClass}}"
     kubernetes.io/tls-acme: "true"
 spec:
   rules:
-  - host: ${component.dex.oidcIssuerFqdn}
+  - host: {{.component.dex.oidcIssuerFqdn}}
     http:
       paths:
       - path: /
         backend:
-          serviceName: ${component.dex.name}
+          serviceName: {{.component.dex.name}}
           servicePort: 5556
   tls:
     - hosts:
-      - ${component.dex.oidcIssuerFqdn}
-      secretName: ${component.dex.name}-tls
+      - {{.component.dex.oidcIssuerFqdn}}
+      secretName: {{.component.dex.name}}-tls
+
+{{if .component.ingress.kubernetes.publicIngressClass}}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{.component.dex.name}}-public
+  namespace: {{.component.dex.namespace}}
+  annotations:
+    kubernetes.io/ingress.class: "{{.component.ingress.kubernetes.publicIngressClass}}"
+    kubernetes.io/tls-acme: "true"
+spec:
+  rules:
+  - host: {{.component.dex.oidcIssuerFqdn}}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{.component.dex.name}}
+          servicePort: 5556
+  tls:
+    - hosts:
+      - {{.component.dex.oidcIssuerFqdn}}
+      secretName: {{.component.dex.name}}-tls
+{{end}}

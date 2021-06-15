@@ -51,6 +51,8 @@ parameters:
   - name: component.ingress.protocol
   - name: component.ingress.kubernetes.ingressClass
     empty: allow
+  - name: component.ingress.kubernetes.publicIngressClass
+    empty: allow
   - name: component.ingress.loadBalancer
     env: TF_VAR_load_balancer
   - name: component.ingress.loadBalancerDnsRecordType

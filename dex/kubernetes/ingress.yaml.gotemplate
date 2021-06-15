@@ -1,16 +1,37 @@
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ${component.dex.name}
-  namespace: ${component.dex.namespace}
+  name: {{.component.dex.name}}
+  namespace: {{.component.dex.namespace}}
   annotations:
-    kubernetes.io/ingress.class: "${component.ingress.kubernetes.ingressClass}"
+    kubernetes.io/ingress.class: "{{.component.ingress.kubernetes.ingressClass}}"
 spec:
   rules:
-  - host: ${component.dex.oidcIssuerFqdn}
+  - host: {{.component.dex.oidcIssuerFqdn}}
     http:
       paths:
       - path: /
         backend:
-          serviceName: ${component.dex.name}
+          serviceName: {{.component.dex.name}}
           servicePort: 5556
+
+{{if .component.ingress.kubernetes.publicIngressClass}}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{.component.dex.name}}-public
+  namespace: {{.component.dex.namespace}}
+  annotations:
+    kubernetes.io/ingress.class: "{{.component.ingress.kubernetes.publicIngressClass}}"
+spec:
+  rules:
+  - host: {{.component.dex.oidcIssuerFqdn}}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{.component.dex.name}}
+          servicePort: 5556
+{{end}}
