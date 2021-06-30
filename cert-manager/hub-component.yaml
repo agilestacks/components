@@ -40,6 +40,8 @@ parameters:
   - name: namespace
     value: cert-manager
     env: NAMESPACE
+  - name: iamRole
+    empty: allow
   - name: issuerEmail
     value: admin@superhub.io
   - name: defaultIssuerName

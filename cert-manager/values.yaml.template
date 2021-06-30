@@ -79,7 +79,8 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   # name: ""
   # Optional additional annotations to add to the controller's ServiceAccount
-  # annotations: {}
+  annotations:
+    eks.amazonaws.com/role-arn: "${component.cert-manager.iamRole}"
   # Automount API credentials for a Service Account.
   automountServiceAccountToken: true
 
@@ -103,7 +104,8 @@ resources: {}
 
 # Pod Security Context
 # ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-securityContext: {}
+securityContext:
+  fsGroup: 1001
 # legacy securityContext parameter format: if enabled is set to true, only fsGroup and runAsUser are supported
 # securityContext:
 #   enabled: false
