@@ -64,6 +64,8 @@ parameters:
   - name: route53.zoneTags
     value: superhub.io/stack/${dns.domain}
     empty: allow
+  - name: iamRole
+    empty: allow
   - name: kubernetes.ingressClass
     empty: allow
   - name: helm
