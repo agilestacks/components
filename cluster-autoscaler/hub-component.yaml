@@ -11,7 +11,7 @@ meta:
     due to insufficient resources, there are nodes in the cluster that have been underutilized for
     an extended period of time and their pods can be placed on other existing nodes.
   category: Kubernetes Tools
-  version: 1.17.4
+  version: 1.20.0
   maturity: ga
   source:
     dir: ../../components/cluster-autoscaler
@@ -39,7 +39,7 @@ parameters:
       value: kube-system
       env:   NAMESPACE
     - name:  version
-      value: v1.17.4
+      value: v1.20.0
     - name: asgTagCluster
       value: ${dns.name}-${dns.baseDomain} # stack-k8s-aws naming convention
     - name: asgTag
