@@ -133,6 +133,11 @@ variable "role" {
   description = "Worker IAM role"
 }
 
+variable "domain_name" {
+  type        = string
+  description = "DNS domain of the cluster"
+}
+
 variable "cluster_name" {
   type        = string
   description = "EKS cluster name"

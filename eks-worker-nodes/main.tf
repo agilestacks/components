@@ -48,6 +48,11 @@ locals {
       value               = "owned"
       propagate_at_launch = true
     },
+    {
+      key                 = "superhub.io/stack/${var.domain_name}"
+      value               = "owned"
+      propagate_at_launch = true
+    },
   ]
 
   asg_additional_autoscaling_tags = [

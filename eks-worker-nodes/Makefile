@@ -14,8 +14,9 @@ terraform   ?= terraform
 TF_CLI_ARGS ?= -input=false
 TFPLAN      := $(TF_DATA_DIR)/terraform.tfplan
 
-export TF_VAR_subnet_ids := $(shell echo '$(SUBNET_IDS)' | jq -cR 'split(",")')
-export TF_VAR_sg_ids     := $(shell echo '$(SG_IDS)' | jq -cR 'split(",")')
+export TF_VAR_domain_name := $(DOMAIN_NAME)
+export TF_VAR_subnet_ids  := $(shell echo '$(SUBNET_IDS)' | jq -cR 'split(",")')
+export TF_VAR_sg_ids      := $(shell echo '$(SG_IDS)' | jq -cR 'split(",")')
 
 # If instance_type contains comma, ie. r5.large:1,m5.large:2,c5.large (implicit :1 weight)
 # then it is Mixed ASG - with empty spot price that defaults on AWS side to on-demand price, or a specified spot price
