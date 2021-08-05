@@ -65,7 +65,7 @@ parameters:
       value: 50
     - name: volume.type
       env: TF_VAR_root_volume_type
-      value: gp2
+      value: gp3
     - name: volume.iops
       env: TF_VAR_root_volume_iops
       value: 100
