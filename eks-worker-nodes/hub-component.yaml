@@ -37,8 +37,8 @@ parameters:
     env: SG_IDS
   - name: cloud.iam.worker.instanceProfile
     env: TF_VAR_instance_profile
-  - name: cloud.role.worker
-    env: TF_VAR_role
+  # - name: cloud.role.worker
+  #   env: TF_VAR_role
 
   - name: component.worker-pool
     parameters:

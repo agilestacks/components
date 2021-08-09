@@ -140,10 +140,10 @@ variable "instance_profile" {
   description = "Worker instance profile"
 }
 
-variable "role" {
-  type        = string
-  description = "Worker IAM role"
-}
+# variable "role" {
+#   type        = string
+#   description = "Worker IAM role"
+# }
 
 variable "domain_name" {
   type        = string
