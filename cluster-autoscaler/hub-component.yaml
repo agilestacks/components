@@ -40,6 +40,8 @@ parameters:
       env:   NAMESPACE
     - name:  version
       value: v1.20.0
+    - name: iamRole
+      empty: allow
     - name: asgTagCluster
       value: ${dns.name}-${dns.baseDomain} # stack-k8s-aws naming convention
     - name: asgTag
