@@ -570,8 +570,12 @@ serviceAccount:
   name:
   ## Annotations for the Service Account
   ##
+{{if .component.external_dns.iamRole}}
   annotations:
     eks.amazonaws.com/role-arn: "{{.component.external_dns.iamRole}}"
+{{else}}
+  annotations: {}
+{{end}}
 
 ## RBAC parameteres
 ## https://kubernetes.io/docs/reference/access-authn-authz/rbac/
