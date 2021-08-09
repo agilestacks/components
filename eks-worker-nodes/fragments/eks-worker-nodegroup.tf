@@ -17,6 +17,11 @@ resource "aws_eks_node_group" "nodes" {
   ami_type       = "AL2_x86_64${local.instance_gpu ? "_GPU" : ""}"
   disk_size      = var.root_volume_size
   instance_types = [var.instance_type]
+  # TODO
+  # capacity_type =
+  labels         = {for label in split(",", var.labels) : split("=", label)[0] => split("=", label)[1]}
+  # TODO bootstrap userdata via aws_launch_template.user_data
+  # launch_template =
 
   remote_access {
     ec2_ssh_key = var.keypair

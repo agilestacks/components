@@ -10,6 +10,18 @@ variable "keypair" {
   description = "Name of an SSH key located within the AWS region. Example: coreos-user."
 }
 
+variable "labels" {
+  type        = string
+  default     = ""
+  description = "Kubernetes worker node labels"
+}
+
+variable "bootstrap" {
+  type        = string
+  default     = ""
+  description = "VM userdata to run commands prior to node Kubernetes bootstrap"
+}
+
 variable "instance_type" {
   type        = string
   default     = "r5.large"
