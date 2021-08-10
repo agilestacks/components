@@ -50,6 +50,10 @@ parameters:
     value: chart@example.local
   - name: password
     value: ${component.postgresql.admin.password}
+  - name: volumeSize
+    value: 1Gi
+  - name: storageClass
+    value: default
   - name: helm
     parameters:
     - name: repo

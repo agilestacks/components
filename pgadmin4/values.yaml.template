@@ -174,7 +174,7 @@ persistentVolume:
 
   ## pgAdmin4 Persistent Volume Size
   ##
-  size: 1Gi
+  size: "${component.pgadmin4.volumeSize}"
 
   ## pgAdmin4 Persistent Volume Storage Class
   ## If defined, storageClassName: <storageClass>
@@ -183,7 +183,7 @@ persistentVolume:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  # storageClass: "-"
+  storageClass: "${component.pgadmin4.storageClass}"
   # existingClaim: ""
 
 ## Security context to be added to pgAdmin4 pods
