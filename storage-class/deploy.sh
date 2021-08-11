@@ -1,4 +1,10 @@
 #!/bin/sh -x
-if test ! -f $CLOUD_KIND.yaml; then exit 0; fi
-cat $CLOUD_KIND.yaml
-exec kubectl --context="$DOMAIN_NAME" apply -f $CLOUD_KIND.yaml
+KIND=$CLOUD_KIND
+case $HUB_PROVIDES in
+    *aws-ebs-csi-driver*)
+        KIND=aws-ebs-csi-driver
+        ;;
+esac
+if test ! -f $KIND.yaml; then exit 0; fi
+cat $KIND.yaml
+exec kubectl --context="$DOMAIN_NAME" apply -f $KIND.yaml
