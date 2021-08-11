@@ -1,0 +1,56 @@
+---
+version: 1
+kind: component
+meta:
+  name: https://github.com/kubernetes-sigs/aws-ebs-csi-driver
+  title: CSI driver for Amazon EBS
+  description: The Amazon Elastic Block Store Container Storage Interface (CSI) Driver provides a CSI interface used by Container Orchestrators to manage the lifecycle of Amazon EBS volumes.
+  category: Kubernetes Tools
+  license: Apache 2.0
+  maturity: beta
+  version: 1.2.0
+  source:
+    dir: ../../components/aws-ebs-csi-driver
+
+requires:
+- aws
+- kubernetes
+- helm
+
+provides:
+- aws-ebs-csi-driver
+
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
+
+parameters:
+- name: cloud.region
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.aws-ebs-csi-driver
+  parameters:
+  - name: namespace
+    value: kube-system
+    env: NAMESPACE
+  - name: name
+    value: ${hub.componentName}
+    env: COMPONENT_NAME
+  - name: iamRole
+    empty: allow
+  - name: helm
+    parameters:
+    - name: repo
+      value: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
+      env: HELM_REPO
+    - name: chart
+      value: aws-ebs-csi-driver
+      env: HELM_CHART
+    - name: version
+      value: 2.0.4
+      env: HELM_CHART_VERSION
+
+templates:
+  files:
+  - '*.template'
