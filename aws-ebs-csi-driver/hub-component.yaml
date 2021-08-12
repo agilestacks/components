@@ -2,7 +2,7 @@
 version: 1
 kind: component
 meta:
-  name: https://github.com/kubernetes-sigs/aws-ebs-csi-driver
+  name: aws-ebs-csi-driver
   title: CSI driver for Amazon EBS
   description: The Amazon Elastic Block Store Container Storage Interface (CSI) Driver provides a CSI interface used by Container Orchestrators to manage the lifecycle of Amazon EBS volumes.
   category: Kubernetes Tools
