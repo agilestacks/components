@@ -1,0 +1,12 @@
+#!/bin/sh -xe
+
+verb=$(basename "$0")
+hub=${HUB:-hub}
+
+if test "$verb" = deploy; then
+    kubectl --context=$DOMAIN_NAME apply -f crd/
+fi
+COMPONENT_NAME=${COMPONENT_NAME}-webhook HELM_CHART=$WEBHOOK_HELM_CHART EXTRA_VALUES_FILE=webhook-values.yaml \
+    $hub ext component helm $verb
+COMPONENT_NAME=${COMPONENT_NAME}-controller HELM_CHART=$CONTROLLER_HELM_CHART EXTRA_VALUES_FILE=controller-values.yaml \
+    $hub ext component helm $verb

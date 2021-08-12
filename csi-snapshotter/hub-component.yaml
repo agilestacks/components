@@ -1,0 +1,51 @@
+---
+version: 1
+kind: component
+meta:
+  name: csi-snapshotter
+  title: CSI Snapshotter
+  description: A controller that watches Kubernetes Snapshot CRD objects and triggers CreateSnapshot/DeleteSnapshot against a CSI endpoint.
+  category: Kubernetes Tools
+  license: Apache 2.0
+  maturity: beta
+  version: 4.1.1
+  source:
+    dir: ../../components/csi-snapshotter
+
+requires:
+- kubernetes
+- helm
+
+provides:
+- csi-snapshotter
+
+lifecycle:
+  verbs:
+  - deploy
+  - undeploy
+
+parameters:
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: component.csi-snapshotter
+  parameters:
+  - name: namespace
+    value: kube-system
+    env: NAMESPACE
+  - name: name
+    value: ${hub.componentName}
+    env: COMPONENT_NAME
+  - name: helm
+    parameters:
+    - name: repo
+      value: https://piraeus.io/helm-charts/
+      env: HELM_REPO
+    - name: webhookChart
+      value: snapshot-validation-webhook
+      env: WEBHOOK_HELM_CHART
+    - name: controllerChart
+      value: snapshot-controller
+      env: CONTROLLER_HELM_CHART
+    - name: version
+      value: 1.1.0
+      env: HELM_CHART_VERSION
