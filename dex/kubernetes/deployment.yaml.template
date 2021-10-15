@@ -46,6 +46,11 @@ spec:
         imagePullPolicy: Always
         image: ${component.dex.image}
         command: ["/usr/local/bin/dex", "serve", "/etc/dex/config.yaml"]
+        env:
+        - name: KUBERNETES_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         volumeMounts:
         - name: config
           mountPath: /etc/dex
