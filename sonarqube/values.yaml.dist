@@ -51,6 +51,8 @@ service:
   # loadBalancerSourceRanges:
   #   - 0.0.0.0/0
   # loadBalancerIP: 1.2.3.4
+  # You can set the port to be exposed when type is NodePort or LoadBalancer.
+  # nodePort: 30000
 ingress:
   enabled: false
   # Used to create an Ingress record.
@@ -76,6 +78,8 @@ ingress:
   # - secretName: chart-example-tls
   #   hosts:
   #     - chart-example.local
+
+  # className: nginx
 
 # Affinity for pod assignment
 # Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
@@ -139,6 +143,13 @@ extraInitContainers: {}
 #      - name: "downloads"
 #        mountPath: "/downloads"
 
+extraContainers: []
+## Array of extra containers to run alongside the sonarqube container
+## Example:
+#  - name: "example-container"
+#    image: "busybox"
+#    imagePullPolicy: Always
+#    command: ['sh', '-c', 'tail -f /dev/null']
 
 ## Provide a secret containing one or more certificate files in the keys that will be added to cacerts
 ## The cacerts file will be set via SONARQUBE_WEB_JVM_OPTS and SONAR_CE_JAVAOPTS
@@ -255,6 +266,9 @@ emptyDir: {}
 ## JDBC Database Type; by default postgresql. To use a different Database type, adjust
 jdbcDatabaseType: postgresql
 
+createPostgresqlSecret: true
+# create the postgresql secret in Sonarqube chart, outside of the postgresql chart.
+
 ## Override JDBC URL
 # jdbcUrlOverride: "jdbc:postgresql://myPostgress/myDatabase;socketTimeout=1500"
 
@@ -269,10 +283,12 @@ postgresql:
   # To use an external secret for the password for an external PostgreSQL
   # instance, set enabled to false and provide the name of the secret on the
   # line below:
-  # existingSecret: ""
   postgresqlUsername: "sonarUser"
-  postgresqlPassword: "sonarPass"
+  postgresqlPassword: ""
   postgresqlDatabase: "sonarDB"
+  existingSecret: sonar-postgresql
+  # This is the full name of the secret that will be created
+  secretKey: postgresql-password
   # Specify the TCP port that PostgreSQL should use
   service:
     port: 5432
@@ -356,5 +372,6 @@ extraConfig:
 #   adminPassword: admin
 #   currentAdminPassword: admin
 # curlContainerImage: curlimages/curl:latest
+# adminJobAnnotations: {}
 
 terminationGracePeriodSeconds: 60

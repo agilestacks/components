@@ -7,7 +7,7 @@ meta:
   brief: Code Quality & Code Security
   description: SonarQube empowers all developers to write cleaner and safer code.
   category: DevOps Stack
-  version: 8.5.1
+  version: 8.9.3
   maturity: beta
   license: LGPLv3
   icon: |
@@ -57,7 +57,7 @@ parameters:
       value: sonarqube
       env: HELM_CHART
     - name: version
-      value: 9.5.1
+      value: 9.9.0
       env: HELM_CHART_VERSION
 
 outputs:
