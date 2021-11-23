@@ -99,6 +99,13 @@ parameters:
       - name: clientSecret
       - name: tenant
       - name: groups
+  - name: component.dex.google
+    empty: allow
+    parameters:
+      - name: clientId
+      - name: clientSecret
+      - name: serviceAccountFile
+      - name: adminEmail
   - name: component.dex.passwordDb
     empty: allow
     parameters:

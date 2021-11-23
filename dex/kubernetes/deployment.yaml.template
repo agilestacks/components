@@ -38,6 +38,8 @@ spec:
           items:
           - key: config.yaml
             path: config.yaml
+          - key: google.json
+            path: google.json
       - name: grpc-server-secret
         secret:
           secretName: ${component.dex.name}-grpc-server-secret

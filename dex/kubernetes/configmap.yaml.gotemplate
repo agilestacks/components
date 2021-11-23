@@ -4,6 +4,9 @@ metadata:
   name: {{.component.dex.name}}
   namespace: {{.component.dex.namespace}}
 data:
+  google.json: |
+{{indent 4 .component.dex.google.serviceAccountFile}}
+
   config.yaml: |
     issuer: {{.component.ingress.protocol}}://{{.component.dex.oidcIssuerFqdn}}
     storage:
@@ -41,6 +44,19 @@ data:
         redirectURI: {{.component.ingress.protocol}}://{{.component.dex.oidcIssuerFqdn}}/callback
         tenant: {{.component.dex.microsoft.tenant}}
         groups: {{.component.dex.microsoft.groups}}
+{{end}}
+{{if and .component.dex.google.clientId .component.dex.google.clientSecret}}
+    - type: google
+      id: google
+      name: Google
+      config:
+        clientID: {{.component.dex.google.clientId}}
+        clientSecret: {{.component.dex.google.clientSecret}}
+        redirectURI: {{.component.ingress.protocol}}://{{.component.dex.oidcIssuerFqdn}}/callback
+{{if and .component.dex.google.serviceAccountFile .component.dex.google.adminEmail}}
+        serviceAccountFilePath: /etc/dex/google.json
+        adminEmail: {{.component.dex.google.adminEmail}}
+{{end}}
 {{end}}
 {{if and .component.dex.passwordDb.email .component.dex.passwordDb.password}}
     enablePasswordDB: true
