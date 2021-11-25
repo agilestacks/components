@@ -10,7 +10,7 @@ meta:
     Amazon RDS is a managed relational database service with a choice of six popular database engines:
     Amazon Aurora, PostgreSQL, MySQL, MariaDB, Oracle, and Microsoft SQL Server.
   category: AWS Native
-  version: 12.2
+  version: 13.4
   maturity: ga
   source:
     dir: ../../components/postgresql-rds
@@ -49,7 +49,6 @@ parameters:
     value: ${dns.name}-${hub.componentName}
     env: RDS_NAME
   - name: database
-    value: agilestacks
     env: TF_VAR_database_name
   - name: user
     value: postgres
@@ -57,10 +56,10 @@ parameters:
   - name: password
     env: TF_VAR_database_password
   - name: rds.instanceType
-    value: db.t2.micro
+    value: db.t3.micro
     env: TF_VAR_instance_type
   - name: rds.version
-    value: "12.2"
+    value: "13.4"
     env: TF_VAR_engine_version
   - name: rds.snapshot
     empty: allow
@@ -72,7 +71,7 @@ parameters:
     value: true
     env: TF_VAR_skip_final_snapshot
   - name: rds.storageEncrypted
-    value: false
+    value: true
     env: TF_VAR_storage_encrypted
   - name: rds.finalSnapshotName
     value: ${dns.name}-${hub.componentName}-final

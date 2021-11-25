@@ -1,14 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-      version = "3.17.0"
-    }
-  }
-  required_version = ">= 0.13"
-  backend "s3" {}
-}
-
 data "aws_vpc" "selected" {
   id      = var.vpc_id
   default = var.vpc_id == "" ? true : null
@@ -45,21 +34,6 @@ resource "aws_security_group" "default" {
     protocol    = "TCP"
     cidr_blocks = [data.aws_vpc.selected.cidr_block]
   }
-  # Note: Postgres only need TCP
-  # ingress {
-  #     from_port   = "${var.database_port}"
-  #     to_port     = "${var.database_port}"
-  #     protocol    = "UDP"
-  #     cidr_blocks = ["${data.aws_vpc.selected.cidr_block}"]
-  # }
-
-  # Note: Postgres should not go outside by itself
-  # egress {
-  #   from_port   = 0
-  #   to_port     = 0
-  #   protocol    = "-1"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
 }
 
 resource "aws_db_instance" "postgresql" {
