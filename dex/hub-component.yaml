@@ -14,121 +14,130 @@ meta:
     Clients write their authentication logic once to talk to dex,
     then dex handles the protocols for a given backend.
   category: Edge Proxy
-  version: 2.30.2
+  version: 2.33.0
   maturity: ga
   license: Apache 2.0
   source:
     dir: ../../components/dex
 
 requires:
-  - aws
-  - azure
-  - gcp
-  - kubernetes
+- aws
+- azure
+- gcp
+- kubernetes
+
+provides:
+- dex
 
 parameters:
-  - name: dns.domain
-    env: DOMAIN_NAME
-  - name: terraform.bucket.name
-    env: STATE_BUCKET
-  - name: terraform.bucket.region
-    env: STATE_REGION
-  - name: terraform.bucket.container
-    empty: allow
-    env: STATE_CONTAINER
-  - name: cloud.kind
-    env: CLOUD_KIND
-  - name: cloud.region
-    env: AWS_DEFAULT_REGION
-  - name: cloud.azureResourceGroupName
-    value: superhub-${cloud.region}
-    env: TF_VAR_azure_resource_group_name
-  - name: cloud.gcpProjectId
-    empty: allow
-    env: TF_VAR_gcp_project_id
+- name: dns.domain
+  env: DOMAIN_NAME
+- name: terraform.bucket.name
+  env: STATE_BUCKET
+- name: terraform.bucket.region
+  env: STATE_REGION
+- name: terraform.bucket.container
+  empty: allow
+  env: STATE_CONTAINER
+- name: cloud.kind
+  env: CLOUD_KIND
+- name: cloud.region
+  env: AWS_DEFAULT_REGION
+- name: cloud.azureResourceGroupName
+  value: superhub-${cloud.region}
+  env: TF_VAR_azure_resource_group_name
+- name: cloud.gcpProjectId
+  empty: allow
+  env: TF_VAR_gcp_project_id
 
-  - name: component.ingress.ssoUrlPrefix
-  - name: component.ingress.protocol
-  - name: component.ingress.kubernetes.ingressClass
+- name: component.ingress
+  parameters:
+  - name: ssoUrlPrefix
+  - name: protocol
+  - name: fqdn
+  - name: kubernetes.ingressClass
     empty: allow
-  - name: component.ingress.kubernetes.publicIngressClass
+  - name: kubernetes.publicIngressClass
     empty: allow
-  - name: component.ingress.loadBalancer
+  - name: loadBalancer
     env: TF_VAR_load_balancer
-  - name: component.ingress.loadBalancerDnsRecordType
+  - name: loadBalancerDnsRecordType
     value: '#{matches(component.ingress.loadBalancer, r"^[\d.]+$") ? "A" : "CNAME"}'
     env: TF_VAR_load_balancer_dns_record_type
 
+- name: component.dex
+  parameters:
   # this should be set to unique value per deployment
-  - name: component.dex.secret
+  - name: secret
     value: noh4oiB5eiRai8av
-  - name: component.dex.name
+  - name: name
     value: dex
     env: COMPONENT_NAME
-  - name: component.dex.urlPrefix
-    value: auth
-    env: TF_VAR_url_prefix
-  - name: component.dex.oidcIssuerFqdn
-    value: ${component.dex.urlPrefix}.${dns.domain}
-  - name: component.dex.namespace
+  - name: namespace
     brief: Kubernetes namespace to install into
     value: kube-system
     env: NAMESPACE
-  - name: component.dex.image
-    value: dexidp/dex:v2.30.2
-  - name: component.dex.saml.id
-    value: saml
-  - name: component.dex.saml.name
-    value: "Okta with SAML"
-  - name: component.dex.saml.usernameAttr
-    value: name
-  - name: component.dex.saml.emailAttr
-    value: email
-  - name: component.dex.saml.groupsAttr
-    value: groups
-  - name: component.dex.okta
+  - name: urlPrefix
+    value: auth
+    env: TF_VAR_url_prefix
+  - name: oidcIssuerFqdn
+    value: ${component.dex.urlPrefix}.${dns.domain}
+  - name: issuer
+    value: ${component.ingress.protocol}://${component.dex.oidcIssuerFqdn}
+  # predefined static client for in-stack integration
+  - name: oidc.client
+    value: in-cluster-static-client
+  - name: oidc.secret
+    value: ${component.dex.secret}
+  - name: image
+    value: dexidp/dex:v2.33.0
+
+  - name: okta
     empty: allow
     parameters:
       - name: issuer
       - name: clientId
       - name: clientSecret
-  - name: component.dex.microsoft
+  - name: microsoft
     empty: allow
     parameters:
       - name: clientId
       - name: clientSecret
       - name: tenant
       - name: groups
-  - name: component.dex.google
+  - name: google
     empty: allow
     parameters:
       - name: clientId
       - name: clientSecret
       - name: serviceAccountFile
       - name: adminEmail
-  - name: component.dex.passwordDb
+  - name: passwordDb
     empty: allow
     parameters:
       - name: email
       - name: password
-  - name: component.dex.authproxy.image
+
+  - name: authproxy.image
     value: bitnami/oauth2-proxy:7
-  - name: component.dex.authOperator.image
-    value: agilestacks/auth-operator:0.2.4
-  - name: component.dex.authproxy.emailDomain
+  - name: authOperator.image
+    value: agilestacks/auth-operator:0.3.0
+  - name: authproxy.emailDomain
     value: "'*'"
-  - name: component.dex.authproxy.cookieExpire
-    value: "'12h0m0s'"
+  - name: authproxy.cookieExpire
+    value: "'20h0m0s'"
 
 outputs:
-  - name: component.dex.issuer
-    value: ${component.ingress.protocol}://${component.dex.oidcIssuerFqdn}
-  - name: component.dex.namespace
+- name: component.dex.namespace
+- name: component.dex.issuer
+- name: component.dex.secret
+- name: component.dex.oidc.client
+- name: component.dex.oidc.secret
 
 templates:
   files:
-    - "kubernetes/*.template"
+  - "kubernetes/*.template"
   extra:
-    - kind: go
-      files:
-        - "kubernetes/*.gotemplate"
+  - kind: go
+    files:
+    - "kubernetes/*.gotemplate"

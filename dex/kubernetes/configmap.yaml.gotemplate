@@ -79,6 +79,11 @@ data:
       redirectURIs: []
       name: Auth Operator
       secret: {{.component.dex.secret}}
+    - id: {{.component.dex.oidc.client}}
+      redirectURIs:
+      - {{.component.ingress.protocol}}://{{.component.ingress.fqdn}}/_oauth
+      name: In-cluster OIDC integration
+      secret: {{.component.dex.oidc.secret}}
   # used by auth-operator; consoleClientID must match an id of staticClient the operator will take care of
   consoleClientID: auth-operator
   consoleSecret: {{.component.dex.secret}}

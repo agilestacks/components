@@ -1,5 +1,5 @@
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{.component.dex.name}}
@@ -12,13 +12,16 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{.component.dex.name}}
-          servicePort: 5556
+          service:
+            name: {{.component.dex.name}}
+            port:
+              number: 5556
 
 {{if .component.ingress.kubernetes.publicIngressClass}}
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{.component.dex.name}}-public
@@ -31,7 +34,10 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: {{.component.dex.name}}
-          servicePort: 5556
+          service:
+            name: {{.component.dex.name}}
+            port:
+              number: 5556
 {{end}}
